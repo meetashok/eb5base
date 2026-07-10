@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-size: 14px;
+  color: #1f2937;
+  background: #ffffff;
+}
+
+@layer utilities {
+  .text-meta {
+    font-size: 12px;
+  }
+
+  .skeleton-shimmer {
+    @apply animate-pulse bg-base-300 rounded;
+  }
+}
