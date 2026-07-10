@@ -5,8 +5,9 @@ import { NextResponse } from 'next/server';
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  let next = searchParams.get('next') ?? '/';
-  if (!next.startsWith('/')) next = '/';
+  // Default to setup; the setup page sends completed profiles home
+  let next = searchParams.get('next') ?? '/profile/setup';
+  if (!next.startsWith('/')) next = '/profile/setup';
 
   if (code) {
     const cookieStore = cookies();

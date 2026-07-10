@@ -89,11 +89,37 @@ export const SUBSCRIPTION_OPTIONS: { value: SubscriptionStatus; label: string }[
 export const CONTACT_ROLES = ['Sales', 'Owner', 'Manager', 'Legal', 'Other'] as const;
 
 export const ROLE_OPTIONS = [
-  { value: 'investor', label: "I'm an Investor" },
-  { value: 'rc_operator', label: "I'm an RC Operator" },
-  { value: 'attorney', label: "I'm an Attorney" },
-  { value: 'agent', label: "I'm an Agent" },
+  {
+    value: 'investor',
+    label: 'Investor',
+    description: "I'm considering or have made an EB-5 investment",
+  },
+  {
+    value: 'rc_operator',
+    label: 'RC Representative',
+    description: 'I work for a regional center',
+  },
+  {
+    value: 'attorney',
+    label: 'Attorney',
+    description: 'I practice immigration law',
+  },
+  {
+    value: 'agent',
+    label: 'Agent',
+    description: 'I help connect investors with projects',
+  },
 ] as const;
+
+export const ROLE_BADGE_LABELS: Record<
+  'investor' | 'rc_operator' | 'attorney' | 'agent',
+  string
+> = {
+  investor: 'Investor',
+  rc_operator: 'RC Representative',
+  attorney: 'Attorney',
+  agent: 'Agent',
+};
 
 export const DISCLAIMER =
   'EB5 Base is a community-maintained directory of EB-5 projects for informational purposes only. It is not affiliated with USCIS, any regional center, or any immigration law firm. Listings are user-contributed and not independently verified. Nothing on this site constitutes legal, financial, or investment advice. Always consult a qualified immigration attorney before making investment decisions.';

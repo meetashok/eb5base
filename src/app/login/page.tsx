@@ -9,7 +9,6 @@ import AuthBrandPanel from '@/components/AuthBrandPanel';
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get('redirect') || '/';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +21,7 @@ function LoginForm() {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(redirect)}`,
+        redirectTo: `${origin}/auth/callback?next=${encodeURIComponent('/profile/setup')}`,
       },
     });
   }
@@ -38,7 +37,8 @@ function LoginForm() {
       setError(err.message);
       return;
     }
-    router.push(redirect);
+    // Setup page redirects home if profile is already complete
+    router.push('/profile/setup');
     router.refresh();
   }
 
