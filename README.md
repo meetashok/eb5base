@@ -30,6 +30,6 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Notes
 
-- Configure Google OAuth and email auth in the Supabase dashboard.
+- Configure Google OAuth and magic link (email OTP) in the Supabase dashboard.
 - Set the auth redirect URL to `https://your-domain/auth/callback` (and `http://localhost:3000/auth/callback` for local).
 - The database schema, RLS policies, and triggers are assumed to already exist in Supabase.
