@@ -96,7 +96,11 @@ function LoginForm() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </label>
-        {error && <p className="text-error text-sm">{error}</p>}
+        {(error || searchParams.get('error')) && (
+          <p className="text-error text-sm">
+            {error || searchParams.get('error')}
+          </p>
+        )}
         {message && <p className="text-success text-sm">{message}</p>}
         <button type="submit" className="btn btn-primary w-full" disabled={loading}>
           {loading ? 'Signing in…' : 'Sign in'}
