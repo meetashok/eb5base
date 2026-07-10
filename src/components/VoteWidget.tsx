@@ -151,7 +151,7 @@ export default function VoteWidget({ projectId }: VoteWidgetProps) {
 
   if (loading) {
     return (
-      <section className="border border-base-300 rounded-lg p-4 space-y-3">
+      <section className="bg-base-200/50 rounded-xl p-6 space-y-3">
         <div className="skeleton-shimmer h-6 w-2/3" />
         <div className="skeleton-shimmer h-16 w-full" />
         <div className="skeleton-shimmer h-10 w-40" />
@@ -160,7 +160,7 @@ export default function VoteWidget({ projectId }: VoteWidgetProps) {
   }
 
   return (
-    <section className="border border-base-300 rounded-lg p-4 md:p-6 space-y-5">
+    <section className="bg-base-200/50 rounded-xl p-4 md:p-6 space-y-5">
       <h2 className="text-lg font-bold text-primary">
         Is this project still accepting subscriptions?
       </h2>
