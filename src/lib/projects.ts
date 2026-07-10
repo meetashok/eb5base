@@ -1,7 +1,56 @@
 import { createClient } from '@/lib/supabase-server';
 import type { ProjectWithVotes } from '@/lib/types';
-import { PROJECT_SELECT } from '@/lib/types';
 import { PAGE_SIZE } from '@/lib/constants';
+
+/** Safer list select — avoid fragile embeds that empty the whole result set */
+const LIST_SELECT = '*, regional_centers(id, name, uscis_rc_id, website_url)';
+
+function withCounts(
+  projects: ProjectWithVotes[],
+  voteMap?: Map<string, { count: number; last_status: string | null; last_at: string | null }>
+): ProjectWithVotes[] {
+  return projects.map((p) => {
+    const v = voteMap?.get(p.id);
+    const count = v?.count ?? p.project_votes?.[0]?.count ?? 0;
+    return {
+      ...p,
+      vote_count: count,
+      confirmation_count: count,
+      last_vote_status: v?.last_status || null,
+      last_vote_at: v?.last_at || null,
+    };
+  });
+}
+
+async function attachVoteSummaries(projects: ProjectWithVotes[]) {
+  if (!projects.length) return projects;
+  const supabase = createClient();
+  const ids = projects.map((p) => p.id);
+  const { data: votes } = await supabase
+    .from('project_votes')
+    .select('project_id, subscription_status, created_at')
+    .in('project_id', ids)
+    .order('created_at', { ascending: false });
+
+  const byProject = new Map<
+    string,
+    { count: number; last_status: string | null; last_at: string | null }
+  >();
+  for (const v of votes || []) {
+    const cur = byProject.get(v.project_id) || {
+      count: 0,
+      last_status: null,
+      last_at: null,
+    };
+    cur.count += 1;
+    if (!cur.last_at) {
+      cur.last_status = v.subscription_status;
+      cur.last_at = v.created_at;
+    }
+    byProject.set(v.project_id, cur);
+  }
+  return withCounts(projects, byProject);
+}
 
 export async function getHomeStats() {
   const supabase = createClient();
@@ -25,17 +74,32 @@ export async function getHomeStats() {
 
 export async function getRecentProjects(limit = 6): Promise<ProjectWithVotes[]> {
   const supabase = createClient();
-  const { data } = await supabase
+
+  let { data, error } = await supabase
     .from('projects')
-    .select(PROJECT_SELECT)
+    .select(LIST_SELECT)
     .is('merged_into', null)
     .order('created_at', { ascending: false })
     .limit(limit);
-  return ((data as ProjectWithVotes[]) || []).map((p) => ({
-    ...p,
-    confirmation_count: p.project_votes?.[0]?.count ?? 0,
-    vote_count: p.project_votes?.[0]?.count ?? 0,
-  }));
+
+  if (error) {
+    console.error('getRecentProjects joined select failed:', error.message);
+    const fallback = await supabase
+      .from('projects')
+      .select('*')
+      .is('merged_into', null)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    data = fallback.data;
+    error = fallback.error;
+  }
+
+  if (error || !data) {
+    console.error('getRecentProjects failed:', error?.message);
+    return [];
+  }
+
+  return attachVoteSummaries(data as ProjectWithVotes[]);
 }
 
 function parseList(value: string | undefined): string[] {
@@ -83,101 +147,66 @@ export async function getFilteredProjects(filters: ProjectFilters) {
     rcIdsFromSearch = (matchingRcs || []).map((r) => r.id);
   }
 
-  let query = supabase
-    .from('projects')
-    .select(PROJECT_SELECT, { count: 'exact' })
-    .is('merged_into', null);
+  function applyFilters(select: string) {
+    let query = supabase
+      .from('projects')
+      .select(select, { count: 'exact' })
+      .is('merged_into', null);
 
-  if (filters.rc) {
-    query = query.eq('rc_id', filters.rc);
-  }
+    if (filters.rc) query = query.eq('rc_id', filters.rc);
 
-  if (filters.q?.trim()) {
-    const q = filters.q.trim();
-    if (rcIdsFromSearch.length) {
-      query = query.or(
-        `name.ilike.%${q}%,location_city.ilike.%${q}%,location_state.ilike.%${q}%,rc_id.in.(${rcIdsFromSearch.join(',')})`
-      );
-    } else {
-      query = query.or(
-        `name.ilike.%${q}%,location_city.ilike.%${q}%,location_state.ilike.%${q}%`
-      );
+    if (filters.q?.trim()) {
+      const q = filters.q.trim();
+      if (rcIdsFromSearch.length) {
+        query = query.or(
+          `name.ilike.%${q}%,location_city.ilike.%${q}%,location_state.ilike.%${q}%,rc_id.in.(${rcIdsFromSearch.join(',')})`
+        );
+      } else {
+        query = query.or(
+          `name.ilike.%${q}%,location_city.ilike.%${q}%,location_state.ilike.%${q}%`
+        );
+      }
     }
+
+    for (const t of tea) query = query.contains('tea_designations', [t]);
+    for (const t of parseList(filters.type)) query = query.contains('project_type', [t]);
+    if (f956.length) query = query.in('f956_status', f956);
+    if (subscription.length) query = query.in('subscription_status', subscription);
+    if (filters.state) query = query.eq('location_state', filters.state);
+
+    if (filters.amount === 'under_800k') query = query.lt('investment_amount', 800000);
+    if (filters.amount === '800k') query = query.eq('investment_amount', 800000);
+    if (filters.amount === '800k_1050k')
+      query = query.gte('investment_amount', 800000).lte('investment_amount', 1050000);
+    if (filters.amount === 'over_1050k') query = query.gt('investment_amount', 1050000);
+
+    const sort = filters.sort || 'newest';
+    if (sort === 'az') query = query.order('name', { ascending: true });
+    else if (sort === 'amount')
+      query = query.order('investment_amount', { ascending: true, nullsFirst: false });
+    else query = query.order('created_at', { ascending: false });
+
+    return query.range(from, to);
   }
 
-  for (const t of tea) {
-    query = query.contains('tea_designations', [t]);
-  }
-  for (const t of parseList(filters.type)) {
-    query = query.contains('project_type', [t]);
-  }
-  if (f956.length) query = query.in('f956_status', f956);
-  if (subscription.length) query = query.in('subscription_status', subscription);
-  if (filters.state) query = query.eq('location_state', filters.state);
+  let { data, count, error } = await applyFilters(LIST_SELECT);
 
-  if (filters.amount === 'under_800k') query = query.lt('investment_amount', 800000);
-  if (filters.amount === '800k') query = query.eq('investment_amount', 800000);
-  if (filters.amount === '800k_1050k')
-    query = query.gte('investment_amount', 800000).lte('investment_amount', 1050000);
-  if (filters.amount === 'over_1050k') query = query.gt('investment_amount', 1050000);
-
-  const sort = filters.sort || 'newest';
-  if (sort === 'az') query = query.order('name', { ascending: true });
-  else if (sort === 'amount')
-    query = query.order('investment_amount', { ascending: true, nullsFirst: false });
-  else query = query.order('created_at', { ascending: false });
-
-  const { data, count, error } = await query.range(from, to);
   if (error) {
-    console.error('getFilteredProjects', error);
+    console.error('getFilteredProjects joined select failed:', error.message);
+    ({ data, count, error } = await applyFilters('*'));
+  }
+
+  if (error) {
+    console.error('getFilteredProjects failed:', error);
     return { projects: [] as ProjectWithVotes[], total: 0, page };
   }
 
-  let projects = (data as ProjectWithVotes[]) || [];
+  let projects = await attachVoteSummaries((data as ProjectWithVotes[]) || []);
 
-  if (projects.length) {
-    const ids = projects.map((p) => p.id);
-    const { data: votes } = await supabase
-      .from('project_votes')
-      .select('project_id, subscription_status, created_at')
-      .in('project_id', ids)
-      .order('created_at', { ascending: false });
-
-    const byProject = new Map<
-      string,
-      { count: number; last_status: string | null; last_at: string | null }
-    >();
-    for (const v of votes || []) {
-      const cur = byProject.get(v.project_id) || {
-        count: 0,
-        last_status: null,
-        last_at: null,
-      };
-      cur.count += 1;
-      if (!cur.last_at) {
-        cur.last_status = v.subscription_status;
-        cur.last_at = v.created_at;
-      }
-      byProject.set(v.project_id, cur);
-    }
-
-    projects = projects.map((p) => {
-      const v = byProject.get(p.id);
-      const countFromJoin = p.project_votes?.[0]?.count;
-      return {
-        ...p,
-        vote_count: countFromJoin ?? v?.count ?? 0,
-        confirmation_count: countFromJoin ?? v?.count ?? 0,
-        last_vote_status: v?.last_status || null,
-        last_vote_at: v?.last_at || null,
-      };
-    });
-
-    if (sort === 'votes') {
-      projects = [...projects].sort(
-        (a, b) => (b.confirmation_count || 0) - (a.confirmation_count || 0)
-      );
-    }
+  if (filters.sort === 'votes') {
+    projects = [...projects].sort(
+      (a, b) => (b.confirmation_count || 0) - (a.confirmation_count || 0)
+    );
   }
 
   return { projects, total: count || 0, page };

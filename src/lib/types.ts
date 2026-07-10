@@ -129,4 +129,4 @@ export interface VoteWithProfile extends ProjectVote {
 }
 
 export const PROJECT_SELECT =
-  '*, regional_centers(id, name, uscis_rc_id, website_url), profiles!added_by(display_name, avatar_url), project_votes(count)';
+  '*, regional_centers(id, name, uscis_rc_id, website_url)';
