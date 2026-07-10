@@ -52,7 +52,7 @@ export function projectTypeLabel(value: string): string {
   return PROJECT_TYPES.find((o) => o.value === value)?.label ?? value;
 }
 
-export type BadgeVariant = 'success' | 'warning' | 'error' | 'info' | 'ghost';
+export type BadgeVariant = 'success' | 'warning' | 'error' | 'info' | 'muted';
 
 export function f956Variant(status: F956Status | string | null | undefined): BadgeVariant {
   switch (status) {
@@ -67,7 +67,7 @@ export function f956Variant(status: F956Status | string | null | undefined): Bad
     case 'not_filed':
     case 'unknown':
     default:
-      return 'ghost';
+      return 'muted';
   }
 }
 
@@ -82,7 +82,7 @@ export function subscriptionVariant(
     case 'not_yet_open':
     case 'unknown':
     default:
-      return 'ghost';
+      return 'muted';
   }
 }
 

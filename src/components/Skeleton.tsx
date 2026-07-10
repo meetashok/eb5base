@@ -4,16 +4,45 @@ export function Skeleton({ className = '' }: { className?: string }) {
 
 export function ProjectCardSkeleton() {
   return (
-    <div className="card card-bordered bg-base-100">
-      <div className="card-body p-4 gap-3">
-        <Skeleton className="h-5 w-3/4" />
-        <Skeleton className="h-4 w-1/2" />
-        <Skeleton className="h-3 w-2/3" />
+    <div className="card card-bordered border-base-300/50 shadow-sm animate-pulse">
+      <div className="card-body p-4">
+        <div className="h-5 bg-base-300 rounded w-3/4 mb-3" />
+        <div className="h-3 bg-base-300 rounded w-1/2 mb-2" />
+        <div className="h-3 bg-base-300 rounded w-1/3 mb-4" />
         <div className="flex gap-2">
-          <Skeleton className="h-5 w-14 rounded-full" />
-          <Skeleton className="h-5 w-20 rounded-full" />
+          <div className="h-5 bg-base-300 rounded-full w-16" />
+          <div className="h-5 bg-base-300 rounded-full w-20" />
         </div>
-        <Skeleton className="h-4 w-24" />
+      </div>
+    </div>
+  );
+}
+
+export function AddProjectCTACard() {
+  return (
+    <div className="card card-bordered border-dashed border-2 border-base-300 bg-base-100 h-full">
+      <div className="card-body items-center text-center py-12">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-10 h-10 text-secondary/40 mb-2"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+        <h3 className="font-semibold text-neutral/70">Know an EB-5 project?</h3>
+        <p className="text-sm text-neutral/50">
+          Help fellow investors by adding it to the directory
+        </p>
+        <a href="/projects/new" className="btn btn-outline btn-secondary btn-sm mt-3">
+          Add a Project
+        </a>
       </div>
     </div>
   );

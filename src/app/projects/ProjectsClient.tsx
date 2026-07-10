@@ -1,10 +1,18 @@
 'use client';
 
 import Link from 'next/link';
+import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import ProjectCard from '@/components/ProjectCard';
 import type { ProjectWithVotes } from '@/lib/types';
 import type { ProjectFilters } from '@/lib/projects';
+import {
+  F956_OPTIONS,
+  PROJECT_TYPES,
+  SUBSCRIPTION_OPTIONS,
+  TEA_OPTIONS,
+  US_STATES,
+} from '@/lib/constants';
 
 interface ProjectsClientProps {
   projects: ProjectWithVotes[];
@@ -24,6 +32,25 @@ function buildQuery(filters: ProjectFilters, overrides: Record<string, string | 
   return qs ? `?${qs}` : '';
 }
 
+function parseList(value?: string): string[] {
+  if (!value) return [];
+  return value.split(',').filter(Boolean);
+}
+
+const AMOUNT_LABELS: Record<string, string> = {
+  under_800k: 'Under $800K',
+  '800k': '$800K',
+  '800k_1050k': '$800K–$1.05M',
+  over_1050k: 'Over $1.05M',
+};
+
+const FILTER_CHIP_LABELS: Record<string, string> = {
+  rural: 'Rural',
+  hua: 'HUA',
+  open: 'Open Subscriptions',
+  approved: 'I-956F Approved',
+};
+
 export default function ProjectsClient({
   projects,
   total,
@@ -33,8 +60,121 @@ export default function ProjectsClient({
 }: ProjectsClientProps) {
   const router = useRouter();
 
+  const activeChips = useMemo(() => {
+    const chips: { key: string; value: string; label: string }[] = [];
+
+    parseList(filters.tea).forEach((v) => {
+      chips.push({
+        key: 'tea',
+        value: v,
+        label: TEA_OPTIONS.find((o) => o.value === v)?.label || v,
+      });
+    });
+    parseList(filters.f956).forEach((v) => {
+      chips.push({
+        key: 'f956',
+        value: v,
+        label: F956_OPTIONS.find((o) => o.value === v)?.label || v,
+      });
+    });
+    parseList(filters.subscription).forEach((v) => {
+      chips.push({
+        key: 'subscription',
+        value: v,
+        label: SUBSCRIPTION_OPTIONS.find((o) => o.value === v)?.label || v,
+      });
+    });
+    parseList(filters.type).forEach((v) => {
+      chips.push({
+        key: 'type',
+        value: v,
+        label: PROJECT_TYPES.find((o) => o.value === v)?.label || v,
+      });
+    });
+    if (filters.state) {
+      chips.push({
+        key: 'state',
+        value: filters.state,
+        label: US_STATES.find((s) => s.code === filters.state)?.name || filters.state,
+      });
+    }
+    if (filters.amount) {
+      chips.push({
+        key: 'amount',
+        value: filters.amount,
+        label: AMOUNT_LABELS[filters.amount] || filters.amount,
+      });
+    }
+    if (filters.filter) {
+      chips.push({
+        key: 'filter',
+        value: filters.filter,
+        label: FILTER_CHIP_LABELS[filters.filter] || filters.filter,
+      });
+    }
+    return chips;
+  }, [filters]);
+
+  function removeChip(key: string, value: string) {
+    const next: ProjectFilters = { ...filters };
+    delete next.page;
+
+    if (['tea', 'f956', 'subscription', 'type'].includes(key)) {
+      const current = filters[key as 'tea' | 'f956' | 'subscription' | 'type'];
+      const list = parseList(current).filter((v) => v !== value);
+      if (list.length) {
+        next[key as 'tea' | 'f956' | 'subscription' | 'type'] = list.join(',');
+      } else {
+        delete next[key as 'tea' | 'f956' | 'subscription' | 'type'];
+      }
+    } else if (key === 'state') {
+      delete next.state;
+    } else if (key === 'amount') {
+      delete next.amount;
+    } else if (key === 'filter') {
+      delete next.filter;
+    }
+
+    router.push(`/projects${buildQuery(next)}`);
+  }
+
+  function clearAll() {
+    const next: ProjectFilters = {};
+    if (filters.q) next.q = filters.q;
+    if (filters.sort) next.sort = filters.sort;
+    router.push(`/projects${buildQuery(next)}`);
+  }
+
   return (
     <div>
+      {activeChips.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-4 items-center">
+          {activeChips.map((chip) => (
+            <span
+              key={`${chip.key}-${chip.value}`}
+              className="badge badge-primary badge-outline gap-1 rounded-full"
+            >
+              {chip.label}
+              <button
+                type="button"
+                className="ml-0.5"
+                aria-label={`Remove ${chip.label}`}
+                onClick={() => removeChip(chip.key, chip.value)}
+              >
+                ✕
+              </button>
+            </span>
+          ))}
+          <button
+            type="button"
+            className="text-sm text-secondary hover:underline"
+            onClick={clearAll}
+          >
+            Clear all
+          </button>
+        </div>
+      )}
+
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <p className="text-sm text-neutral/70">
           Showing <span className="font-semibold text-neutral">{total}</span> project
@@ -46,7 +186,9 @@ export default function ProjectsClient({
             className="select select-bordered select-sm"
             value={filters.sort || 'newest'}
             onChange={(e) => {
-              router.push(`/projects${buildQuery(filters, { sort: e.target.value, page: undefined })}`);
+              router.push(
+                `/projects${buildQuery(filters, { sort: e.target.value, page: undefined })}`
+              );
             }}
           >
             <option value="newest">Newest first</option>

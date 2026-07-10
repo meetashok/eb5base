@@ -12,6 +12,17 @@ body {
   background: #ffffff;
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @layer utilities {
   .text-meta {
     font-size: 12px;
@@ -20,4 +31,29 @@ body {
   .skeleton-shimmer {
     @apply animate-pulse bg-base-300 rounded;
   }
+
+  .page-enter {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .hero-glow {
+    background:
+      radial-gradient(ellipse at top, rgba(30, 58, 95, 0.06) 0%, transparent 70%),
+      linear-gradient(to bottom, #f8fafc, #ffffff);
+  }
+}
+
+@layer components {
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2;
+  }
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
 }

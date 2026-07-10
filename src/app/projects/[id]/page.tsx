@@ -100,15 +100,23 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
         <div className="flex flex-col items-start md:items-end gap-2 shrink-0">
           <ReportDuplicateButton projectId={p.id} userId={userId} />
           {!p.claimed_by && <ClaimProjectButton projectId={p.id} userId={userId} />}
-          {p.claimed_by && (
-            <span className="text-meta text-neutral/50">
-              {p.claim_verified ? 'Claimed & verified' : 'Claim pending verification'}
-            </span>
-          )}
+          {p.claimed_by &&
+            (p.claim_verified ? (
+              <span className="badge badge-success badge-outline gap-1 rounded-full">
+                Claimed & verified
+              </span>
+            ) : (
+              <span className="badge badge-warning badge-outline gap-1 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Claim pending verification
+              </span>
+            ))}
         </div>
       </div>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 p-4 border border-base-300 rounded-lg">
+      <section className="grid grid-cols-1 md:grid-cols-2 mb-8 border border-base-300 rounded-lg overflow-hidden">
         <InfoRow label="Location" value={location || '—'} />
         <InfoRow
           label="Regional Center"
@@ -116,7 +124,9 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
             <>
               {p.regional_center || '—'}
               {p.regional_center_id && (
-                <span className="text-meta text-neutral/50 ml-2">{p.regional_center_id}</span>
+                <span className="text-meta text-neutral/50 ml-2 font-normal">
+                  {p.regional_center_id}
+                </span>
               )}
             </>
           }
@@ -128,7 +138,10 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
             (p.project_type || []).length ? (
               <span className="flex flex-wrap gap-1">
                 {(p.project_type || []).map((t) => (
-                  <span key={t} className="badge badge-ghost rounded-full">
+                  <span
+                    key={t}
+                    className="badge bg-base-200 text-neutral/70 border-0 rounded-full text-xs font-semibold px-3 py-1"
+                  >
                     {projectTypeLabel(t)}
                   </span>
                 ))}
@@ -146,7 +159,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
                 href={p.website_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="link link-secondary break-all"
+                className="link link-secondary break-all font-semibold"
               >
                 {p.website_url}
               </a>
@@ -211,9 +224,9 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
 
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div>
-      <p className="text-meta text-neutral/50 mb-0.5">{label}</p>
-      <div className="text-sm font-medium">{value}</div>
+    <div className="border-b border-base-200 py-3 px-4">
+      <p className="text-xs uppercase tracking-wide text-neutral/50 mb-1">{label}</p>
+      <div className="text-base font-semibold text-neutral">{value}</div>
     </div>
   );
 }

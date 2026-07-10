@@ -29,7 +29,7 @@ export default function RootLayout({
     <html lang="en" data-theme="eb5base">
       <body className={`${jakarta.variable} font-sans antialiased min-h-screen flex flex-col`}>
         <Navbar />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 page-enter">{children}</main>
         <Footer />
       </body>
     </html>
