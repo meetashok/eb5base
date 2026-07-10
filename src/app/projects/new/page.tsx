@@ -4,7 +4,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
-import RCAutocomplete from '@/components/RCAutocomplete';
+import RCAutocomplete, { type RCSelection } from '@/components/RCAutocomplete';
 import DuplicateCheckModal, { type SimilarProject } from '@/components/DuplicateCheckModal';
 import TEATag from '@/components/TEATag';
 import StatusBadge from '@/components/StatusBadge';
@@ -45,8 +45,9 @@ export default function NewProjectForm() {
   const [userId, setUserId] = useState<string | null>(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
 
-  const [regionalCenter, setRegionalCenter] = useState('');
-  const [regionalCenterId, setRegionalCenterId] = useState('');
+  const [rcName, setRcName] = useState('');
+  const [rcSelection, setRcSelection] = useState<RCSelection | null>(null);
+  const [uscisRcId, setUscisRcId] = useState('');
   const [name, setName] = useState('');
   const [projectTypes, setProjectTypes] = useState<string[]>([]);
   const [city, setCity] = useState('');
@@ -68,6 +69,9 @@ export default function NewProjectForm() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const selectedRcId = rcSelection && !rcSelection.isNew ? rcSelection.id : null;
+  const isExistingRc = Boolean(selectedRcId);
+
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data }) => {
@@ -81,7 +85,7 @@ export default function NewProjectForm() {
   }, [router]);
 
   useEffect(() => {
-    if (!regionalCenter || name.trim().length < 3 || dismissedSimilar) {
+    if (!selectedRcId || name.trim().length < 3 || dismissedSimilar) {
       setSimilarWhileTyping([]);
       return;
     }
@@ -89,39 +93,86 @@ export default function NewProjectForm() {
       const supabase = createClient();
       const { data } = await supabase
         .from('projects')
-        .select('id, name, location_state, regional_center')
-        .eq('regional_center', regionalCenter)
+        .select('id, name, location_state, regional_centers(name)')
+        .eq('rc_id', selectedRcId)
         .ilike('name', `%${name.trim()}%`)
         .is('merged_into', null)
         .limit(5);
       setSimilarWhileTyping((data as SimilarProject[]) || []);
     }, 300);
     return () => clearTimeout(t);
-  }, [name, regionalCenter, dismissedSimilar]);
+  }, [name, selectedRcId, dismissedSimilar]);
 
   function toggle(list: string[], value: string, setter: (v: string[]) => void) {
     setter(list.includes(value) ? list.filter((x) => x !== value) : [...list, value]);
   }
 
+  function handleRcSelect(selection: RCSelection) {
+    setRcSelection(selection);
+    setDismissedSimilar(false);
+    if (!selection.isNew) {
+      setUscisRcId(selection.uscis_rc_id || '');
+    }
+  }
+
+  async function resolveRcId(): Promise<string | null> {
+    const supabase = createClient();
+    if (rcSelection && !rcSelection.isNew && rcSelection.id) {
+      return rcSelection.id;
+    }
+
+    const nameToCreate = (rcSelection?.name || rcName).trim();
+    if (!nameToCreate) return null;
+
+    const { data: existing } = await supabase
+      .from('regional_centers')
+      .select('id')
+      .ilike('name', nameToCreate)
+      .maybeSingle();
+
+    if (existing?.id) return existing.id;
+
+    const { data: created, error: createError } = await supabase
+      .from('regional_centers')
+      .insert({
+        name: nameToCreate,
+        uscis_rc_id: uscisRcId.trim() || null,
+      })
+      .select('id')
+      .single();
+
+    if (createError || !created) {
+      throw new Error(createError?.message || 'Failed to create regional center');
+    }
+    return created.id;
+  }
+
   async function runDuplicateCheck(): Promise<SimilarProject[]> {
     const supabase = createClient();
-    const [{ data: byName }, { data: byRc }] = await Promise.all([
+    const queries = [
       supabase
         .from('projects')
-        .select('id, name, regional_center, location_state')
+        .select('id, name, location_state, regional_centers(name)')
         .is('merged_into', null)
         .ilike('name', `%${name.trim()}%`)
         .limit(5),
-      supabase
-        .from('projects')
-        .select('id, name, regional_center, location_state')
-        .is('merged_into', null)
-        .eq('regional_center', regionalCenter)
-        .limit(5),
-    ]);
+    ];
+    if (selectedRcId) {
+      queries.push(
+        supabase
+          .from('projects')
+          .select('id, name, location_state, regional_centers(name)')
+          .is('merged_into', null)
+          .eq('rc_id', selectedRcId)
+          .limit(5)
+      );
+    }
+    const results = await Promise.all(queries);
     const map = new Map<string, SimilarProject>();
-    for (const p of [...(byName || []), ...(byRc || [])] as SimilarProject[]) {
-      map.set(p.id, p);
+    for (const res of results) {
+      for (const p of (res.data as SimilarProject[]) || []) {
+        map.set(p.id, p);
+      }
     }
     return Array.from(map.values()).slice(0, 5);
   }
@@ -129,7 +180,7 @@ export default function NewProjectForm() {
   async function handlePreview(e: FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!name.trim() || !regionalCenter.trim()) {
+    if (!name.trim() || !rcName.trim()) {
       setError('Project name and regional center are required.');
       return;
     }
@@ -148,47 +199,58 @@ export default function NewProjectForm() {
     setError(null);
     const supabase = createClient();
 
-    const { data: project, error: insertError } = await supabase
-      .from('projects')
-      .insert({
-        name: name.trim(),
-        project_type: projectTypes.length ? projectTypes : null,
-        location_city: city.trim() || null,
-        location_state: state || null,
-        regional_center: regionalCenter.trim(),
-        regional_center_id: regionalCenterId.trim() || null,
-        tea_designations: tea.length ? tea : null,
-        f956_status: f956,
-        f956_approval_date: f956 === 'approved' && f956Date ? f956Date : null,
-        investment_amount: amount ? parseInt(amount, 10) : null,
-        subscription_status: subscription,
-        website_url: website.trim() || null,
-        notes: notes.trim() || null,
-        added_by: userId,
-      })
-      .select('id')
-      .single();
+    try {
+      const rcId = await resolveRcId();
+      if (!rcId) {
+        setError('Regional center is required.');
+        setSubmitting(false);
+        return;
+      }
 
-    if (insertError || !project) {
-      setError(insertError?.message || 'Failed to create project');
+      const { data: project, error: insertError } = await supabase
+        .from('projects')
+        .insert({
+          name: name.trim(),
+          project_type: projectTypes.length ? projectTypes : null,
+          location_city: city.trim() || null,
+          location_state: state || null,
+          rc_id: rcId,
+          tea_designations: tea.length ? tea : null,
+          f956_status: f956,
+          f956_approval_date: f956 === 'approved' && f956Date ? f956Date : null,
+          investment_amount: amount ? parseInt(amount, 10) : null,
+          subscription_status: subscription,
+          website_url: website.trim() || null,
+          notes: notes.trim() || null,
+          added_by: userId,
+        })
+        .select('id')
+        .single();
+
+      if (insertError || !project) {
+        setError(insertError?.message || 'Failed to create project');
+        setSubmitting(false);
+        return;
+      }
+
+      const validContacts = contacts.filter((c) => c.name.trim());
+      if (validContacts.length) {
+        await supabase.from('project_contacts').insert(
+          validContacts.map((c) => ({
+            project_id: project.id,
+            name: c.name.trim(),
+            role: c.role || null,
+            email: c.email.trim() || null,
+            phone: c.phone.trim() || null,
+          }))
+        );
+      }
+
+      router.push(`/projects/${project.id}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to submit');
       setSubmitting(false);
-      return;
     }
-
-    const validContacts = contacts.filter((c) => c.name.trim());
-    if (validContacts.length) {
-      await supabase.from('project_contacts').insert(
-        validContacts.map((c) => ({
-          project_id: project.id,
-          name: c.name.trim(),
-          role: c.role || null,
-          email: c.email.trim() || null,
-          phone: c.phone.trim() || null,
-        }))
-      );
-    }
-
-    router.push(`/projects/${project.id}`);
   }
 
   if (checkingAuth) {
@@ -228,9 +290,9 @@ export default function NewProjectForm() {
             <div>
               <dt className="text-meta text-neutral/50">Regional Center</dt>
               <dd>
-                {regionalCenter}
-                {regionalCenterId && (
-                  <span className="text-meta text-neutral/50 ml-2">{regionalCenterId}</span>
+                {rcName}
+                {uscisRcId && (
+                  <span className="text-meta text-neutral/50 ml-2">{uscisRcId}</span>
                 )}
               </dd>
             </div>
@@ -284,11 +346,13 @@ export default function NewProjectForm() {
           <label className="form-control">
             <span className="label-text mb-1">RC Name *</span>
             <RCAutocomplete
-              value={regionalCenter}
+              value={rcName}
               onChange={(v) => {
-                setRegionalCenter(v);
+                setRcName(v);
+                setRcSelection(null);
                 setDismissedSimilar(false);
               }}
+              onSelect={handleRcSelect}
             />
           </label>
           <label className="form-control">
@@ -297,9 +361,16 @@ export default function NewProjectForm() {
               type="text"
               className="input input-bordered"
               placeholder="e.g. ID1516152743"
-              value={regionalCenterId}
-              onChange={(e) => setRegionalCenterId(e.target.value)}
+              value={uscisRcId}
+              onChange={(e) => setUscisRcId(e.target.value)}
+              readOnly={isExistingRc}
+              disabled={isExistingRc}
             />
+            {isExistingRc && (
+              <span className="text-meta text-neutral/50 mt-1">
+                Auto-filled from the selected regional center
+              </span>
+            )}
           </label>
         </section>
 
@@ -321,7 +392,7 @@ export default function NewProjectForm() {
           {similarWhileTyping.length > 0 && !dismissedSimilar && (
             <div className="p-3 border border-warning/40 bg-warning/5 rounded-lg">
               <p className="text-sm font-medium mb-2">
-                These projects already exist under {regionalCenter} — is yours one of these?
+                These projects already exist under {rcName} — is yours one of these?
               </p>
               <ul className="space-y-1 mb-2">
                 {similarWhileTyping.map((p) => (
@@ -486,7 +557,10 @@ export default function NewProjectForm() {
             </button>
           </div>
           {contacts.map((c, i) => (
-            <div key={i} className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 border border-base-300 rounded-lg">
+            <div
+              key={i}
+              className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 border border-base-300 rounded-lg"
+            >
               <input
                 type="text"
                 className="input input-bordered input-sm"

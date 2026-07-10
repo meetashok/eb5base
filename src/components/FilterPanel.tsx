@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { createClient } from '@/lib/supabase';
 import {
   F956_OPTIONS,
   PROJECT_TYPES,
@@ -119,6 +120,90 @@ function StateCombobox({
   );
 }
 
+function RCCombobox({
+  value,
+  label,
+  onChange,
+}: {
+  value: string;
+  label: string;
+  onChange: (id: string, name: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [options, setOptions] = useState<{ id: string; name: string }[]>([]);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function onDoc(e: MouseEvent) {
+      if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, []);
+
+  useEffect(() => {
+    const term = open ? search : '';
+    const t = setTimeout(async () => {
+      const supabase = createClient();
+      let q = supabase.from('regional_centers').select('id, name').order('name').limit(20);
+      if (term.trim()) q = q.ilike('name', `%${term.trim()}%`);
+      const { data } = await q;
+      setOptions(data || []);
+    }, 200);
+    return () => clearTimeout(t);
+  }, [search, open]);
+
+  return (
+    <div ref={wrapRef} className="relative">
+      <input
+        type="text"
+        className="input input-bordered input-sm w-full"
+        placeholder="Search regional centers…"
+        value={open ? search : label || ''}
+        onFocus={() => {
+          setOpen(true);
+          setSearch('');
+        }}
+        onChange={(e) => {
+          setSearch(e.target.value);
+          setOpen(true);
+        }}
+      />
+      {open && (
+        <ul className="absolute z-20 mt-1 w-full max-h-48 overflow-auto rounded-lg border border-base-300 bg-base-100 shadow-sm menu p-1">
+          <li>
+            <button
+              type="button"
+              className={!value ? 'active' : ''}
+              onClick={() => {
+                onChange('', '');
+                setOpen(false);
+              }}
+            >
+              All regional centers
+            </button>
+          </li>
+          {options.map((rc) => (
+            <li key={rc.id}>
+              <button
+                type="button"
+                className={value === rc.id ? 'active' : ''}
+                onClick={() => {
+                  onChange(rc.id, rc.name);
+                  setOpen(false);
+                }}
+              >
+                {rc.name}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 export default function FilterPanel() {
   const router = useRouter();
   const pathname = usePathname();
@@ -131,13 +216,16 @@ export default function FilterPanel() {
   const projectType = parseList(searchParams.get('type'));
   const state = searchParams.get('state') || '';
   const amount = searchParams.get('amount') || '';
+  const rc = searchParams.get('rc') || '';
+  const rcName = searchParams.get('rc_name') || '';
 
   const activeCount = useMemo(() => {
     let count = tea.length + f956.length + subscription.length + projectType.length;
     if (state) count += 1;
     if (amount) count += 1;
+    if (rc) count += 1;
     return count;
-  }, [tea, f956, subscription, projectType, state, amount]);
+  }, [tea, f956, subscription, projectType, state, amount, rc]);
 
   function updateParam(key: string, values: string[] | string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -153,6 +241,19 @@ export default function FilterPanel() {
     router.push(`${pathname}?${params.toString()}`);
   }
 
+  function setRcFilter(id: string, name: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('page');
+    if (id) {
+      params.set('rc', id);
+      params.set('rc_name', name);
+    } else {
+      params.delete('rc');
+      params.delete('rc_name');
+    }
+    router.push(`${pathname}?${params.toString()}`);
+  }
+
   function toggleList(key: string, current: string[], value: string) {
     const next = current.includes(value)
       ? current.filter((v) => v !== value)
@@ -162,8 +263,8 @@ export default function FilterPanel() {
 
   function clearAll() {
     const params = new URLSearchParams(searchParams.toString());
-    ['tea', 'f956', 'subscription', 'type', 'state', 'amount', 'page', 'filter'].forEach((k) =>
-      params.delete(k)
+    ['tea', 'f956', 'subscription', 'type', 'state', 'amount', 'page', 'filter', 'rc', 'rc_name'].forEach(
+      (k) => params.delete(k)
     );
     const q = params.get('q');
     router.push(q ? `${pathname}?q=${encodeURIComponent(q)}` : pathname);
@@ -179,6 +280,12 @@ export default function FilterPanel() {
           </button>
         )}
       </div>
+
+      <FilterGroup title="Regional Center" defaultOpen>
+        <div className="pt-1">
+          <RCCombobox value={rc} label={rcName} onChange={setRcFilter} />
+        </div>
+      </FilterGroup>
 
       <FilterGroup title="TEA Type" defaultOpen>
         <div className="space-y-1.5 pt-1">
@@ -212,7 +319,7 @@ export default function FilterPanel() {
         </div>
       </FilterGroup>
 
-      <FilterGroup title="Subscription Status" defaultOpen>
+      <FilterGroup title="Subscription Status">
         <div className="space-y-1.5 pt-1">
           {SUBSCRIPTION_OPTIONS.map((opt) => (
             <label key={opt.value} className="flex items-center gap-2 cursor-pointer">

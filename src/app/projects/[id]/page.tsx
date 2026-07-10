@@ -5,8 +5,8 @@ import TEATag from '@/components/TEATag';
 import StatusBadge from '@/components/StatusBadge';
 import VoteWidget from '@/components/VoteWidget';
 import ReportDuplicateButton from './ReportDuplicateButton';
-import ClaimProjectButton from './ClaimProjectButton';
 import type { Project, ProjectContact, Profile } from '@/lib/types';
+import { PROJECT_SELECT } from '@/lib/types';
 import {
   formatCurrency,
   formatDate,
@@ -20,7 +20,7 @@ import {
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
-  const supabase = await createClient();
+  const supabase = createClient();
   const { data } = await supabase
     .from('projects')
     .select('name')
@@ -30,11 +30,11 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 }
 
 export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
-  const supabase = await createClient();
+  const supabase = createClient();
 
   const { data: project, error } = await supabase
     .from('projects')
-    .select('*')
+    .select(PROJECT_SELECT)
     .eq('id', params.id)
     .maybeSingle();
 
@@ -43,24 +43,34 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
   const p = project as Project;
   if (p.merged_into) redirect(`/projects/${p.merged_into}`);
 
-  const [{ data: contacts }, { data: adder }, { data: auth }] = await Promise.all([
+  const [{ data: contacts }, { data: auth }] = await Promise.all([
     supabase
       .from('project_contacts')
       .select('*')
       .eq('project_id', p.id)
       .order('created_at', { ascending: true }),
-    p.added_by
-      ? supabase
-          .from('profiles')
-          .select('display_name')
-          .eq('id', p.added_by)
-          .maybeSingle()
-      : Promise.resolve({ data: null }),
     supabase.auth.getUser(),
   ]);
 
-  const location = [p.location_city, p.location_state].filter(Boolean).join(', ');
   const userId = auth.user?.id ?? null;
+  let canEdit = Boolean(userId && p.added_by === userId);
+
+  if (!canEdit && userId && p.rc_id) {
+    const { data: membership } = await supabase
+      .from('rc_memberships')
+      .select('id')
+      .eq('rc_id', p.rc_id)
+      .eq('user_id', userId)
+      .eq('active', true)
+      .not('verified_at', 'is', null)
+      .is('revoked_at', null)
+      .maybeSingle();
+    canEdit = Boolean(membership);
+  }
+
+  const location = [p.location_city, p.location_state].filter(Boolean).join(', ');
+  const adder = p.profiles as Pick<Profile, 'display_name'> | null | undefined;
+  const rc = p.regional_centers;
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -99,20 +109,14 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
         </div>
         <div className="flex flex-col items-start md:items-end gap-2 shrink-0">
           <ReportDuplicateButton projectId={p.id} userId={userId} />
-          {!p.claimed_by && <ClaimProjectButton projectId={p.id} userId={userId} />}
-          {p.claimed_by &&
-            (p.claim_verified ? (
-              <span className="badge badge-success badge-outline gap-1 rounded-full">
-                Claimed & verified
-              </span>
-            ) : (
-              <span className="badge badge-warning badge-outline gap-1 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Claim pending verification
-              </span>
-            ))}
+          {canEdit && (
+            <Link
+              href={`/projects/${p.id}/edit`}
+              className="btn btn-outline btn-sm transition-all duration-150"
+            >
+              Edit Project
+            </Link>
+          )}
         </div>
       </div>
 
@@ -121,14 +125,20 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
         <InfoRow
           label="Regional Center"
           value={
-            <>
-              {p.regional_center || '—'}
-              {p.regional_center_id && (
-                <span className="text-meta text-neutral/50 ml-2 font-normal">
-                  {p.regional_center_id}
-                </span>
-              )}
-            </>
+            rc ? (
+              <>
+                <Link href={`/rc/${rc.id}`} className="link link-secondary">
+                  {rc.name}
+                </Link>
+                {rc.uscis_rc_id && (
+                  <span className="text-meta text-neutral/50 ml-2 font-normal">
+                    {rc.uscis_rc_id}
+                  </span>
+                )}
+              </>
+            ) : (
+              '—'
+            )
           }
         />
         <InfoRow label="Investment Amount" value={formatCurrency(p.investment_amount)} />
@@ -169,10 +179,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
           }
         />
         <InfoRow label="Date Added" value={formatDate(p.created_at)} />
-        <InfoRow
-          label="Added By"
-          value={(adder as Profile | null)?.display_name || 'Anonymous'}
-        />
+        <InfoRow label="Added By" value={adder?.display_name || 'Anonymous'} />
       </section>
 
       <section className="mb-8">

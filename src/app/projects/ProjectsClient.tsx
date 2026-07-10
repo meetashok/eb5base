@@ -98,6 +98,13 @@ export default function ProjectsClient({
         label: US_STATES.find((s) => s.code === filters.state)?.name || filters.state,
       });
     }
+    if (filters.rc) {
+      chips.push({
+        key: 'rc',
+        value: filters.rc,
+        label: filters.rc_name || 'Regional Center',
+      });
+    }
     if (filters.amount) {
       chips.push({
         key: 'amount',
@@ -133,6 +140,9 @@ export default function ProjectsClient({
       delete next.amount;
     } else if (key === 'filter') {
       delete next.filter;
+    } else if (key === 'rc') {
+      delete next.rc;
+      delete next.rc_name;
     }
 
     router.push(`/projects${buildQuery(next)}`);

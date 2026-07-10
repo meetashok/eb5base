@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import type { Profile, Project, ProjectVote } from '@/lib/types';
+import { PROJECT_SELECT } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
 
 type Tab = 'votes' | 'projects' | 'investments' | 'settings';

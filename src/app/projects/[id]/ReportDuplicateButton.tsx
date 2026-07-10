@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase';
 import type { Project } from '@/lib/types';
+import { PROJECT_SELECT } from '@/lib/types';
 
 interface ReportDuplicateButtonProps {
   projectId: string;
@@ -29,10 +30,10 @@ export default function ReportDuplicateButton({
       const supabase = createClient();
       const { data } = await supabase
         .from('projects')
-        .select('*')
+        .select(PROJECT_SELECT)
         .is('merged_into', null)
         .neq('id', projectId)
-        .or(`name.ilike.%${query.trim()}%,regional_center.ilike.%${query.trim()}%`)
+        .ilike('name', `%${query.trim()}%`)
         .limit(8);
       setResults((data as Project[]) || []);
     }, 250);
@@ -100,13 +101,15 @@ export default function ReportDuplicateButton({
                   <button
                     type="button"
                     className={`w-full text-left px-3 py-2 rounded-lg transition-all duration-150 ${
-                      selected?.id === r.id ? 'bg-primary text-primary-content' : 'hover:bg-base-200'
+                      selected?.id === r.id
+                        ? 'bg-primary text-primary-content'
+                        : 'hover:bg-base-200'
                     }`}
                     onClick={() => setSelected(r)}
                   >
                     <span className="font-medium">{r.name}</span>
                     <span className="block text-meta opacity-70">
-                      {[r.regional_center, r.location_state].filter(Boolean).join(' · ')}
+                      {[r.regional_centers?.name, r.location_state].filter(Boolean).join(' · ')}
                     </span>
                   </button>
                 </li>
