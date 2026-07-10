@@ -2,15 +2,25 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { createClient } from '@/lib/supabase';
+import type { RegionalCenter } from '@/lib/types';
+
+export interface RCSelection {
+  id: string | null;
+  name: string;
+  uscis_rc_id: string | null;
+  isNew: boolean;
+}
 
 interface RCAutocompleteProps {
   value: string;
   onChange: (value: string) => void;
-  onSelect?: (value: string) => void;
+  onSelect: (selection: RCSelection) => void;
 }
 
 export default function RCAutocomplete({ value, onChange, onSelect }: RCAutocompleteProps) {
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [suggestions, setSuggestions] = useState<
+    Pick<RegionalCenter, 'id' | 'name' | 'uscis_rc_id'>[]
+  >([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [allowNew, setAllowNew] = useState(false);
@@ -35,19 +45,15 @@ export default function RCAutocomplete({ value, onChange, onSelect }: RCAutocomp
       setLoading(true);
       const supabase = createClient();
       const { data } = await supabase
-        .from('projects')
-        .select('regional_center')
-        .not('regional_center', 'is', null)
-        .ilike('regional_center', `%${value.trim()}%`)
-        .is('merged_into', null)
-        .limit(50);
+        .from('regional_centers')
+        .select('id, name, uscis_rc_id')
+        .ilike('name', `%${value.trim()}%`)
+        .order('name')
+        .limit(10);
 
-      const unique = Array.from(
-        new Set((data || []).map((r) => r.regional_center).filter(Boolean) as string[])
-      ).sort((a, b) => a.localeCompare(b));
-
-      setSuggestions(unique);
-      setAllowNew(!unique.some((s) => s.toLowerCase() === value.trim().toLowerCase()));
+      const list = data || [];
+      setSuggestions(list);
+      setAllowNew(!list.some((s) => s.name.toLowerCase() === value.trim().toLowerCase()));
       setOpen(true);
       setLoading(false);
     }, 250);
@@ -55,9 +61,26 @@ export default function RCAutocomplete({ value, onChange, onSelect }: RCAutocomp
     return () => clearTimeout(timer);
   }, [value]);
 
-  function pick(name: string) {
+  function pickExisting(rc: Pick<RegionalCenter, 'id' | 'name' | 'uscis_rc_id'>) {
+    onChange(rc.name);
+    onSelect({
+      id: rc.id,
+      name: rc.name,
+      uscis_rc_id: rc.uscis_rc_id,
+      isNew: false,
+    });
+    setOpen(false);
+  }
+
+  function pickNew() {
+    const name = value.trim();
     onChange(name);
-    onSelect?.(name);
+    onSelect({
+      id: null,
+      name,
+      uscis_rc_id: null,
+      isNew: true,
+    });
     setOpen(false);
   }
 
@@ -80,13 +103,16 @@ export default function RCAutocomplete({ value, onChange, onSelect }: RCAutocomp
         <ul className="absolute z-20 mt-1 w-full max-h-56 overflow-auto rounded-lg border border-base-300 bg-base-100 shadow-sm">
           {loading && <li className="px-3 py-2 text-meta text-neutral/60">Searching…</li>}
           {suggestions.map((s) => (
-            <li key={s}>
+            <li key={s.id}>
               <button
                 type="button"
                 className="w-full text-left px-3 py-2 hover:bg-base-200 transition-all duration-150"
-                onClick={() => pick(s)}
+                onClick={() => pickExisting(s)}
               >
-                {s}
+                <span className="font-medium">{s.name}</span>
+                {s.uscis_rc_id && (
+                  <span className="block text-meta text-neutral/50">{s.uscis_rc_id}</span>
+                )}
               </button>
             </li>
           ))}
@@ -95,7 +121,7 @@ export default function RCAutocomplete({ value, onChange, onSelect }: RCAutocomp
               <button
                 type="button"
                 className="w-full text-left px-3 py-2 text-secondary hover:bg-base-200 transition-all duration-150"
-                onClick={() => pick(value.trim())}
+                onClick={pickNew}
               >
                 + Add new regional center “{value.trim()}”
               </button>

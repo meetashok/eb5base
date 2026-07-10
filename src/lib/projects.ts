@@ -1,29 +1,33 @@
 import { createClient } from '@/lib/supabase-server';
 import type { ProjectWithVotes } from '@/lib/types';
+import { PROJECT_SELECT } from '@/lib/types';
 import { PAGE_SIZE } from '@/lib/constants';
 
 export async function getHomeStats() {
-  const supabase = await createClient();
-  const [{ count: projects }, { count: investors }, { count: votes }] = await Promise.all([
-    supabase
-      .from('projects')
-      .select('*', { count: 'exact', head: true })
-      .is('merged_into', null),
-    supabase.from('profiles').select('*', { count: 'exact', head: true }),
-    supabase.from('project_votes').select('*', { count: 'exact', head: true }),
-  ]);
+  const supabase = createClient();
+  const [{ count: projects }, { count: regionalCenters }, { count: investors }, { count: votes }] =
+    await Promise.all([
+      supabase
+        .from('projects')
+        .select('*', { count: 'exact', head: true })
+        .is('merged_into', null),
+      supabase.from('regional_centers').select('*', { count: 'exact', head: true }),
+      supabase.from('profiles').select('*', { count: 'exact', head: true }),
+      supabase.from('project_votes').select('*', { count: 'exact', head: true }),
+    ]);
   return {
     projects: projects || 0,
+    regionalCenters: regionalCenters || 0,
     investors: investors || 0,
     votes: votes || 0,
   };
 }
 
 export async function getRecentProjects(limit = 6): Promise<ProjectWithVotes[]> {
-  const supabase = await createClient();
+  const supabase = createClient();
   const { data } = await supabase
     .from('projects')
-    .select('*')
+    .select(PROJECT_SELECT)
     .is('merged_into', null)
     .order('created_at', { ascending: false })
     .limit(limit);
@@ -43,18 +47,19 @@ export interface ProjectFilters {
   type?: string;
   state?: string;
   amount?: string;
+  rc?: string;
+  rc_name?: string;
   filter?: string;
   sort?: string;
   page?: string;
 }
 
 export async function getFilteredProjects(filters: ProjectFilters) {
-  const supabase = await createClient();
+  const supabase = createClient();
   const page = Math.max(1, parseInt(filters.page || '1', 10) || 1);
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
 
-  // Map quick filter chips from home
   let tea = parseList(filters.tea);
   let f956 = parseList(filters.f956);
   let subscription = parseList(filters.subscription);
@@ -64,16 +69,36 @@ export async function getFilteredProjects(filters: ProjectFilters) {
     subscription = Array.from(new Set([...subscription, 'open']));
   if (filters.filter === 'approved') f956 = Array.from(new Set([...f956, 'approved']));
 
+  let rcIdsFromSearch: string[] = [];
+  if (filters.q?.trim() && !filters.rc) {
+    const { data: matchingRcs } = await supabase
+      .from('regional_centers')
+      .select('id')
+      .ilike('name', `%${filters.q.trim()}%`)
+      .limit(50);
+    rcIdsFromSearch = (matchingRcs || []).map((r) => r.id);
+  }
+
   let query = supabase
     .from('projects')
-    .select('*', { count: 'exact' })
+    .select(PROJECT_SELECT, { count: 'exact' })
     .is('merged_into', null);
+
+  if (filters.rc) {
+    query = query.eq('rc_id', filters.rc);
+  }
 
   if (filters.q?.trim()) {
     const q = filters.q.trim();
-    query = query.or(
-      `name.ilike.%${q}%,regional_center.ilike.%${q}%,location_city.ilike.%${q}%,location_state.ilike.%${q}%`
-    );
+    if (rcIdsFromSearch.length) {
+      query = query.or(
+        `name.ilike.%${q}%,location_city.ilike.%${q}%,location_state.ilike.%${q}%,rc_id.in.(${rcIdsFromSearch.join(',')})`
+      );
+    } else {
+      query = query.or(
+        `name.ilike.%${q}%,location_city.ilike.%${q}%,location_state.ilike.%${q}%`
+      );
+    }
   }
 
   for (const t of tea) {
@@ -106,7 +131,6 @@ export async function getFilteredProjects(filters: ProjectFilters) {
 
   let projects = (data as ProjectWithVotes[]) || [];
 
-  // Attach vote summaries
   if (projects.length) {
     const ids = projects.map((p) => p.id);
     const { data: votes } = await supabase

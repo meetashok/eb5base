@@ -18,6 +18,7 @@ interface ProjectCardProps {
 
 export default function ProjectCard({ project, showVoteSummary = true }: ProjectCardProps) {
   const location = [project.location_city, project.location_state].filter(Boolean).join(', ');
+  const rcName = project.regional_centers?.name;
 
   return (
     <Link
@@ -31,9 +32,7 @@ export default function ProjectCard({ project, showVoteSummary = true }: Project
 
         {location && <p className="text-sm text-neutral/80">{location}</p>}
 
-        {project.regional_center && (
-          <p className="text-meta text-neutral/60">{project.regional_center}</p>
-        )}
+        {rcName && <p className="text-meta text-neutral/60">{rcName}</p>}
 
         <div className="flex flex-wrap gap-1.5">
           {(project.tea_designations || []).map((tea) => (

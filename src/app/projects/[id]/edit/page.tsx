@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
-import RCAutocomplete from '@/components/RCAutocomplete';
+import RCAutocomplete, { type RCSelection } from '@/components/RCAutocomplete';
 import {
   F956_OPTIONS,
   PROJECT_TYPES,
@@ -12,6 +12,7 @@ import {
   US_STATES,
 } from '@/lib/constants';
 import type { F956Status, Project, SubscriptionStatus } from '@/lib/types';
+import { PROJECT_SELECT } from '@/lib/types';
 
 export default function EditProjectPage() {
   const params = useParams();
@@ -21,8 +22,9 @@ export default function EditProjectPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [regionalCenter, setRegionalCenter] = useState('');
-  const [regionalCenterId, setRegionalCenterId] = useState('');
+  const [rcName, setRcName] = useState('');
+  const [rcSelection, setRcSelection] = useState<RCSelection | null>(null);
+  const [uscisRcId, setUscisRcId] = useState('');
   const [name, setName] = useState('');
   const [projectTypes, setProjectTypes] = useState<string[]>([]);
   const [city, setCity] = useState('');
@@ -35,6 +37,8 @@ export default function EditProjectPage() {
   const [amount, setAmount] = useState('');
   const [notes, setNotes] = useState('');
 
+  const isExistingRc = Boolean(rcSelection && !rcSelection.isNew && rcSelection.id);
+
   useEffect(() => {
     const supabase = createClient();
     (async () => {
@@ -43,25 +47,53 @@ export default function EditProjectPage() {
         router.replace(`/login?redirect=/projects/${id}/edit`);
         return;
       }
+
       const { data, error: err } = await supabase
         .from('projects')
-        .select('*')
+        .select(PROJECT_SELECT)
         .eq('id', id)
         .single();
+
       if (err || !data) {
         setError('Project not found');
         setLoading(false);
         return;
       }
+
       const p = data as Project;
-      if (p.added_by !== auth.user.id && p.claimed_by !== auth.user.id) {
-        setError('You can only edit projects you added or claimed.');
+
+      // Allow edit if user added the project OR is an active verified RC member
+      let canEdit = p.added_by === auth.user.id;
+      if (!canEdit && p.rc_id) {
+        const { data: membership } = await supabase
+          .from('rc_memberships')
+          .select('id')
+          .eq('rc_id', p.rc_id)
+          .eq('user_id', auth.user.id)
+          .eq('active', true)
+          .not('verified_at', 'is', null)
+          .is('revoked_at', null)
+          .maybeSingle();
+        canEdit = Boolean(membership);
+      }
+
+      if (!canEdit) {
+        setError('You can only edit projects you added or that belong to your regional center.');
         setLoading(false);
         return;
       }
+
       setName(p.name);
-      setRegionalCenter(p.regional_center || '');
-      setRegionalCenterId(p.regional_center_id || '');
+      setRcName(p.regional_centers?.name || '');
+      setUscisRcId(p.regional_centers?.uscis_rc_id || '');
+      if (p.rc_id && p.regional_centers) {
+        setRcSelection({
+          id: p.rc_id,
+          name: p.regional_centers.name,
+          uscis_rc_id: p.regional_centers.uscis_rc_id,
+          isNew: false,
+        });
+      }
       setProjectTypes(p.project_type || []);
       setCity(p.location_city || '');
       setState(p.location_state || '');
@@ -80,35 +112,69 @@ export default function EditProjectPage() {
     setter(list.includes(value) ? list.filter((x) => x !== value) : [...list, value]);
   }
 
+  async function resolveRcId(): Promise<string | null> {
+    const supabase = createClient();
+    if (rcSelection && !rcSelection.isNew && rcSelection.id) return rcSelection.id;
+
+    const nameToCreate = (rcSelection?.name || rcName).trim();
+    if (!nameToCreate) return null;
+
+    const { data: existing } = await supabase
+      .from('regional_centers')
+      .select('id')
+      .ilike('name', nameToCreate)
+      .maybeSingle();
+    if (existing?.id) return existing.id;
+
+    const { data: created, error: createError } = await supabase
+      .from('regional_centers')
+      .insert({
+        name: nameToCreate,
+        uscis_rc_id: uscisRcId.trim() || null,
+      })
+      .select('id')
+      .single();
+
+    if (createError || !created) {
+      throw new Error(createError?.message || 'Failed to create regional center');
+    }
+    return created.id;
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setSaving(true);
     setError(null);
     const supabase = createClient();
-    const { error: err } = await supabase
-      .from('projects')
-      .update({
-        name: name.trim(),
-        project_type: projectTypes.length ? projectTypes : null,
-        location_city: city.trim() || null,
-        location_state: state || null,
-        regional_center: regionalCenter.trim(),
-        regional_center_id: regionalCenterId.trim() || null,
-        tea_designations: tea.length ? tea : null,
-        f956_status: f956,
-        f956_approval_date: f956 === 'approved' && f956Date ? f956Date : null,
-        investment_amount: amount ? parseInt(amount, 10) : null,
-        subscription_status: subscription,
-        website_url: website.trim() || null,
-        notes: notes.trim() || null,
-      })
-      .eq('id', id);
-    setSaving(false);
-    if (err) {
-      setError(err.message);
-      return;
+    try {
+      const rcId = await resolveRcId();
+      const { error: err } = await supabase
+        .from('projects')
+        .update({
+          name: name.trim(),
+          project_type: projectTypes.length ? projectTypes : null,
+          location_city: city.trim() || null,
+          location_state: state || null,
+          rc_id: rcId,
+          tea_designations: tea.length ? tea : null,
+          f956_status: f956,
+          f956_approval_date: f956 === 'approved' && f956Date ? f956Date : null,
+          investment_amount: amount ? parseInt(amount, 10) : null,
+          subscription_status: subscription,
+          website_url: website.trim() || null,
+          notes: notes.trim() || null,
+        })
+        .eq('id', id);
+      setSaving(false);
+      if (err) {
+        setError(err.message);
+        return;
+      }
+      router.push(`/projects/${id}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save');
+      setSaving(false);
     }
-    router.push(`/projects/${id}`);
   }
 
   if (loading) {
@@ -134,14 +200,26 @@ export default function EditProjectPage() {
       <form onSubmit={handleSubmit} className="space-y-6">
         <label className="form-control">
           <span className="label-text mb-1">RC Name</span>
-          <RCAutocomplete value={regionalCenter} onChange={setRegionalCenter} />
+          <RCAutocomplete
+            value={rcName}
+            onChange={(v) => {
+              setRcName(v);
+              setRcSelection(null);
+            }}
+            onSelect={(sel) => {
+              setRcSelection(sel);
+              if (!sel.isNew) setUscisRcId(sel.uscis_rc_id || '');
+            }}
+          />
         </label>
         <label className="form-control">
           <span className="label-text mb-1">RC ID</span>
           <input
             className="input input-bordered"
-            value={regionalCenterId}
-            onChange={(e) => setRegionalCenterId(e.target.value)}
+            value={uscisRcId}
+            onChange={(e) => setUscisRcId(e.target.value)}
+            readOnly={isExistingRc}
+            disabled={isExistingRc}
           />
         </label>
         <label className="form-control">

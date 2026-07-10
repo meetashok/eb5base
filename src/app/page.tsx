@@ -45,7 +45,7 @@ const STEPS = [
 ];
 
 export default async function HomePage() {
-  let stats = { projects: 0, investors: 0, votes: 0 };
+  let stats = { projects: 0, regionalCenters: 0, investors: 0, votes: 0 };
   let recent: ProjectWithVotes[] = [];
 
   try {
@@ -70,10 +70,16 @@ export default async function HomePage() {
             <SearchBar large />
           </div>
           {stats.projects >= 10 ? (
-            <div className="mt-10 flex flex-wrap justify-center gap-8 md:gap-16">
+            <div className="mt-10 flex flex-wrap justify-center gap-6 md:gap-12">
               <div>
                 <p className="text-4xl font-bold text-primary">{stats.projects}</p>
                 <p className="text-xs uppercase tracking-widest text-neutral/50 mt-1">Projects</p>
+              </div>
+              <div>
+                <p className="text-4xl font-bold text-primary">{stats.regionalCenters}</p>
+                <p className="text-xs uppercase tracking-widest text-neutral/50 mt-1">
+                  Regional Centers
+                </p>
               </div>
               <div>
                 <p className="text-4xl font-bold text-primary">{stats.investors}</p>
@@ -152,6 +158,16 @@ export default async function HomePage() {
             ))}
           </div>
         </div>
+      </section>
+
+      <section className="max-w-6xl mx-auto px-4 py-14 text-center">
+        <h2 className="text-2xl font-bold text-primary mb-3">Explore Regional Centers</h2>
+        <p className="text-neutral/70 mb-6 max-w-xl mx-auto">
+          Browse USCIS-approved regional centers and see their active projects
+        </p>
+        <Link href="/regional-centers" className="btn btn-primary transition-all duration-150">
+          Browse Regional Centers
+        </Link>
       </section>
     </div>
   );
