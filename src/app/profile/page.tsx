@@ -4,7 +4,9 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
+import CountrySelect from '@/components/CountrySelect';
 import { ROLE_BADGE_LABELS } from '@/lib/constants';
+import { findCountry } from '@/data/countries';
 import type { Profile, Project, ProjectVote, RcMembership } from '@/lib/types';
 import { PROJECT_SELECT } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
@@ -246,19 +248,22 @@ export default function ProfilePage() {
             </fieldset>
           )}
 
-          <label className="form-control max-w-xs">
-            <span className="label-text text-meta mb-1">Country of birth</span>
-            <input
-              type="text"
-              className="input input-bordered input-sm"
-              defaultValue={profile.country_of_birth || ''}
-              onBlur={(e) => {
-                if (e.target.value !== (profile.country_of_birth || '')) {
-                  saveProfile({ country_of_birth: e.target.value || null });
+          <div className="form-control max-w-xs">
+            <label className="label py-1">
+              <span className="label-text text-meta">Country of birth</span>
+            </label>
+            <CountrySelect
+              value={
+                findCountry(profile.country_of_birth)?.code || profile.country_of_birth
+              }
+              onChange={(country) => {
+                const next = country?.code || null;
+                if (next !== profile.country_of_birth) {
+                  saveProfile({ country_of_birth: next });
                 }
               }}
             />
-          </label>
+          </div>
 
           <label className="flex items-center gap-2 cursor-pointer text-sm">
             <input

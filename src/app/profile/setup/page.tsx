@@ -3,7 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
+import CountrySelect from '@/components/CountrySelect';
 import { ROLE_OPTIONS } from '@/lib/constants';
+import { findCountry } from '@/data/countries';
 import type { InvestorStage, RegionalCenter, UserRole } from '@/lib/types';
 
 type RcPick = Pick<RegionalCenter, 'id' | 'name' | 'uscis_rc_id'>;
@@ -14,8 +16,8 @@ function ProgressDots({ step, total }: { step: number; total: number }) {
       {Array.from({ length: total }, (_, i) => (
         <div
           key={i}
-          className={`w-8 h-1 rounded-full transition-colors duration-200 ${
-            i + 1 <= step ? 'bg-primary' : 'bg-base-300'
+          className={`w-8 h-1 rounded-full transition-all duration-300 ${
+            i + 1 <= step ? 'bg-primary scale-100' : 'bg-base-300'
           }`}
         />
       ))}
@@ -39,45 +41,11 @@ function InfoIcon({ className }: { className?: string }) {
   );
 }
 
-function RoleIcon({ role }: { role: UserRole }) {
-  const common = 'w-7 h-7 text-primary';
-  if (role === 'investor') {
-    return (
-      <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
-        <path d="M4 19V5M4 19h16M8 15l3-4 3 2 4-6" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    );
-  }
-  if (role === 'rc_operator') {
-    return (
-      <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
-        <path d="M3 21h18M5 21V8l7-4 7 4v13M9 21v-6h6v6" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    );
-  }
-  if (role === 'attorney') {
-    return (
-      <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
-        <path d="M12 3v3M7 8h10l-1.5 8h-7L7 8zM9 21h6M10 16v5M14 16v5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    );
-  }
-  return (
-    <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
-      <path
-        d="M8 14a4 4 0 118 0M6 20a4 4 0 018 0M16 20a4 4 0 014 0M12 11a3 3 0 100-6 3 3 0 000 6zM18 10a2.5 2.5 0 100-5 2.5 2.5 0 000 5z"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 export default function ProfileSetupPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [displayName, setDisplayName] = useState('');
-  const [countryOfBirth, setCountryOfBirth] = useState('');
+  const [countryOfBirth, setCountryOfBirth] = useState<string | null>(null);
   const [role, setRole] = useState<UserRole | null>(null);
   const [investorStage, setInvestorStage] = useState<InvestorStage | null>(null);
   const [loading, setLoading] = useState(true);
@@ -118,7 +86,10 @@ export default function ProfileSetupPage() {
       }
 
       setDisplayName(profile?.display_name || metaName);
-      if (profile?.country_of_birth) setCountryOfBirth(profile.country_of_birth);
+      if (profile?.country_of_birth) {
+        const match = findCountry(profile.country_of_birth);
+        setCountryOfBirth(match?.code || profile.country_of_birth);
+      }
       if (profile?.role) setRole(profile.role);
       if (profile?.investor_stage) setInvestorStage(profile.investor_stage as InvestorStage);
       setLoading(false);
@@ -155,7 +126,7 @@ export default function ProfileSetupPage() {
       .from('profiles')
       .update({
         display_name: displayName.trim(),
-        country_of_birth: countryOfBirth.trim() || null,
+        country_of_birth: countryOfBirth || null,
         role,
         investor_stage: role === 'investor' ? investorStage : null,
         profile_completed: true,
@@ -180,7 +151,7 @@ export default function ProfileSetupPage() {
       .from('profiles')
       .update({
         display_name: displayName.trim(),
-        country_of_birth: countryOfBirth.trim() || null,
+        country_of_birth: countryOfBirth || null,
         role: 'rc_operator',
         investor_stage: null,
         profile_completed: true,
@@ -289,12 +260,9 @@ export default function ProfileSetupPage() {
               <label className="label">
                 <span className="label-text font-medium">Country of Birth</span>
               </label>
-              <input
-                type="text"
-                className="input input-bordered"
+              <CountrySelect
                 value={countryOfBirth}
-                onChange={(e) => setCountryOfBirth(e.target.value)}
-                placeholder="Optional"
+                onChange={(country) => setCountryOfBirth(country?.code || null)}
               />
               <label className="label">
                 <span className="label-text-alt text-neutral/50">
@@ -305,7 +273,7 @@ export default function ProfileSetupPage() {
 
             <button
               type="button"
-              className="btn btn-primary w-full"
+              className="btn btn-primary w-full rounded-full"
               disabled={!displayName.trim()}
               onClick={() => setStep(2)}
             >
@@ -333,8 +301,8 @@ export default function ProfileSetupPage() {
                       : 'hover:border-primary/30'
                   }`}
                 >
-                  <div className="mb-2">
-                    <RoleIcon role={opt.value} />
+                  <div className="text-2xl mb-2" aria-hidden>
+                    {opt.emoji}
                   </div>
                   <h3 className="font-bold text-sm">{opt.label}</h3>
                   <p className="text-xs text-neutral/60 mt-1">{opt.description}</p>
@@ -343,12 +311,16 @@ export default function ProfileSetupPage() {
             </div>
 
             <div className="flex gap-3 mt-6">
-              <button type="button" className="btn btn-ghost flex-1" onClick={() => setStep(1)}>
+              <button
+                type="button"
+                className="btn btn-ghost flex-1 rounded-full"
+                onClick={() => setStep(1)}
+              >
                 Back
               </button>
               <button
                 type="button"
-                className="btn btn-primary flex-1"
+                className="btn btn-primary flex-1 rounded-full"
                 disabled={!role}
                 onClick={() => setStep(3)}
               >
@@ -381,7 +353,7 @@ export default function ProfileSetupPage() {
               ).map((opt) => (
                 <label
                   key={opt.value}
-                  className={`card card-bordered p-4 cursor-pointer transition-all ${
+                  className={`card card-bordered p-4 cursor-pointer transition-all duration-150 ${
                     investorStage === opt.value
                       ? 'border-primary border-2 bg-primary/5'
                       : 'hover:border-primary/30'
@@ -396,7 +368,7 @@ export default function ProfileSetupPage() {
                       onChange={() => setInvestorStage(opt.value)}
                     />
                     <div>
-                      <span className="font-semibold">{opt.title}</span>
+                      <span className="font-semibold text-sm">{opt.title}</span>
                       <p className="text-xs text-neutral/60">{opt.desc}</p>
                     </div>
                   </div>
@@ -407,16 +379,20 @@ export default function ProfileSetupPage() {
             {error && <p className="text-error text-sm mb-2">{error}</p>}
 
             <div className="flex gap-3 mt-4">
-              <button type="button" className="btn btn-ghost flex-1" onClick={() => setStep(2)}>
+              <button
+                type="button"
+                className="btn btn-ghost flex-1 rounded-full"
+                onClick={() => setStep(2)}
+              >
                 Back
               </button>
               <button
                 type="button"
-                className="btn btn-primary flex-1"
+                className="btn btn-primary flex-1 rounded-full"
                 disabled={!investorStage || saving}
                 onClick={handleComplete}
               >
-                {saving ? 'Saving…' : 'Complete Setup'}
+                {saving ? <span className="loading loading-spinner loading-sm" /> : 'Complete Setup'}
               </button>
             </div>
           </div>
@@ -449,16 +425,20 @@ export default function ProfileSetupPage() {
             {error && <p className="text-error text-sm mb-2">{error}</p>}
 
             <div className="flex gap-3 mt-4">
-              <button type="button" className="btn btn-ghost flex-1" onClick={() => setStep(2)}>
+              <button
+                type="button"
+                className="btn btn-ghost flex-1 rounded-full"
+                onClick={() => setStep(2)}
+              >
                 Back
               </button>
               <button
                 type="button"
-                className="btn btn-primary flex-1"
+                className="btn btn-primary flex-1 rounded-full"
                 disabled={saving}
                 onClick={handleComplete}
               >
-                {saving ? 'Saving…' : 'Complete Setup'}
+                {saving ? <span className="loading loading-spinner loading-sm" /> : 'Complete Setup'}
               </button>
             </div>
           </div>
@@ -554,7 +534,7 @@ export default function ProfileSetupPage() {
                 </div>
                 <button
                   type="button"
-                  className="btn btn-sm btn-secondary"
+                  className="btn btn-sm btn-secondary rounded-full"
                   disabled={!newRcName.trim() || saving}
                   onClick={addRegionalCenter}
                 >
@@ -601,16 +581,20 @@ export default function ProfileSetupPage() {
             {error && <p className="text-error text-sm mb-2">{error}</p>}
 
             <div className="flex gap-3 mt-4">
-              <button type="button" className="btn btn-ghost flex-1" onClick={() => setStep(2)}>
+              <button
+                type="button"
+                className="btn btn-ghost flex-1 rounded-full"
+                onClick={() => setStep(2)}
+              >
                 Back
               </button>
               <button
                 type="button"
-                className="btn btn-primary flex-1"
+                className="btn btn-primary flex-1 rounded-full"
                 disabled={!selectedRc || saving}
                 onClick={handleCompleteRcOperator}
               >
-                {saving ? 'Saving…' : 'Complete Setup'}
+                {saving ? <span className="loading loading-spinner loading-sm" /> : 'Complete Setup'}
               </button>
             </div>
           </div>
