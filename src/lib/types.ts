@@ -21,17 +21,20 @@ export type ProjectType =
 
 export type TeaDesignation = 'rural' | 'hua' | 'infra';
 
+export type InvestorStage = 'considering' | 'invested';
+
 export interface Profile {
   id: string;
-  email: string;
+  email: string | null;
   display_name: string | null;
   avatar_url: string | null;
-  role: UserRole;
+  role: UserRole | null;
   bio: string | null;
   country_of_birth: string | null;
-  investor_stage: string | null;
+  investor_stage: InvestorStage | null;
   show_profile_public: boolean;
   email_notifications: boolean;
+  profile_completed: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -61,6 +64,7 @@ export interface RcMembership {
   verified_at: string | null;
   revoked_at: string | null;
   created_at: string;
+  regional_centers?: Pick<RegionalCenter, 'id' | 'name'> | null;
 }
 
 export interface Project {

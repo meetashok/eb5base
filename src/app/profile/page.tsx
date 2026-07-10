@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
-import type { Profile, Project, ProjectVote } from '@/lib/types';
+import { ROLE_BADGE_LABELS } from '@/lib/constants';
+import type { Profile, Project, ProjectVote, RcMembership } from '@/lib/types';
 import { PROJECT_SELECT } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
 
@@ -14,10 +15,28 @@ interface ConfirmationRow extends ProjectVote {
   projects?: Pick<Project, 'id' | 'name'> | null;
 }
 
+function CheckIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden>
+      <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function ClockIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export default function ProfilePage() {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>('confirmations');
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [rcMembership, setRcMembership] = useState<RcMembership | null>(null);
   const [confirmations, setConfirmations] = useState<ConfirmationRow[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,24 +52,32 @@ export default function ProfilePage() {
         router.replace('/login?redirect=/profile');
         return;
       }
-      const [{ data: p }, { data: v }, { data: myProjects }] = await Promise.all([
-        supabase.from('profiles').select('*').eq('id', auth.user.id).single(),
-        supabase
-          .from('project_votes')
-          .select('*, projects:project_id(id, name)')
-          .eq('user_id', auth.user.id)
-          .order('created_at', { ascending: false }),
-        supabase
-          .from('projects')
-          .select(PROJECT_SELECT)
-          .eq('added_by', auth.user.id)
-          .is('merged_into', null)
-          .order('created_at', { ascending: false }),
-      ]);
+      const [{ data: p }, { data: v }, { data: myProjects }, { data: membership }] =
+        await Promise.all([
+          supabase.from('profiles').select('*').eq('id', auth.user.id).single(),
+          supabase
+            .from('project_votes')
+            .select('*, projects:project_id(id, name)')
+            .eq('user_id', auth.user.id)
+            .order('created_at', { ascending: false }),
+          supabase
+            .from('projects')
+            .select(PROJECT_SELECT)
+            .eq('added_by', auth.user.id)
+            .is('merged_into', null)
+            .order('created_at', { ascending: false }),
+          supabase
+            .from('rc_memberships')
+            .select('*, regional_centers(id, name)')
+            .eq('user_id', auth.user.id)
+            .eq('active', true)
+            .maybeSingle(),
+        ]);
       setProfile(p);
       setNameDraft(p?.display_name || '');
       setConfirmations((v as ConfirmationRow[]) || []);
       setProjects((myProjects as Project[]) || []);
+      setRcMembership((membership as RcMembership) || null);
       setLoading(false);
     })();
   }, [router]);
@@ -113,6 +140,8 @@ export default function ProfilePage() {
     { id: 'settings', label: 'Settings' },
   ];
 
+  const roleLabel = profile.role ? ROLE_BADGE_LABELS[profile.role] : null;
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="flex flex-col sm:flex-row gap-4 items-start mb-8">
@@ -155,10 +184,29 @@ export default function ProfilePage() {
                 {profile.display_name || 'Click to set display name'}
               </button>
             )}
-            <span className="badge badge-ghost rounded-full capitalize">
-              {profile.role?.replace('_', ' ')}
-            </span>
+            {roleLabel && (
+              <span className="badge badge-primary badge-outline rounded-full">{roleLabel}</span>
+            )}
           </div>
+
+          {profile.role === 'rc_operator' && rcMembership && (
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm text-neutral/70">
+                {rcMembership.regional_centers?.name || 'Regional center'}
+              </span>
+              {rcMembership.verified_at ? (
+                <span className="badge badge-success badge-sm gap-1 rounded-full">
+                  <CheckIcon className="w-3 h-3" />
+                  Verified
+                </span>
+              ) : (
+                <span className="badge badge-warning badge-outline badge-sm gap-1 rounded-full">
+                  <ClockIcon className="w-3 h-3" />
+                  Verification pending
+                </span>
+              )}
+            </div>
+          )}
 
           <textarea
             className="textarea textarea-bordered w-full text-sm"
@@ -172,29 +220,31 @@ export default function ProfilePage() {
             }}
           />
 
-          <fieldset className="flex flex-wrap gap-4 text-sm">
-            <legend className="sr-only">Investor stage</legend>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name="stage"
-                className="radio radio-sm radio-primary"
-                checked={profile.investor_stage === 'considering'}
-                onChange={() => saveProfile({ investor_stage: 'considering' })}
-              />
-              Considering EB-5
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name="stage"
-                className="radio radio-sm radio-primary"
-                checked={profile.investor_stage === 'invested'}
-                onChange={() => saveProfile({ investor_stage: 'invested' })}
-              />
-              Already Invested
-            </label>
-          </fieldset>
+          {profile.role === 'investor' && (
+            <fieldset className="flex flex-wrap gap-4 text-sm">
+              <legend className="sr-only">Investor stage</legend>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="stage"
+                  className="radio radio-sm radio-primary"
+                  checked={profile.investor_stage === 'considering'}
+                  onChange={() => saveProfile({ investor_stage: 'considering' })}
+                />
+                Considering EB-5
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="stage"
+                  className="radio radio-sm radio-primary"
+                  checked={profile.investor_stage === 'invested'}
+                  onChange={() => saveProfile({ investor_stage: 'invested' })}
+                />
+                Already Invested
+              </label>
+            </fieldset>
+          )}
 
           <label className="form-control max-w-xs">
             <span className="label-text text-meta mb-1">Country of birth</span>
