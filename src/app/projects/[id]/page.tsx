@@ -6,7 +6,6 @@ import StatusBadge from '@/components/StatusBadge';
 import ConfirmationWidget from '@/components/ConfirmationWidget';
 import ReportDuplicateButton from './ReportDuplicateButton';
 import type { Project, ProjectContact, Profile } from '@/lib/types';
-import { PROJECT_SELECT } from '@/lib/types';
 import {
   formatCurrency,
   formatDate,
@@ -29,18 +28,62 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   return { title: data?.name || 'Project' };
 }
 
-export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
+async function loadProject(id: string): Promise<Project | null> {
   const supabase = createClient();
 
-  const { data: project, error } = await supabase
+  // Prefer joined select; fall back if embeds fail (RLS / FK naming)
+  const joined = await supabase
     .from('projects')
-    .select(PROJECT_SELECT)
-    .eq('id', params.id)
+    .select(
+      '*, regional_centers(id, name, uscis_rc_id, website_url), profiles!added_by(display_name, avatar_url)'
+    )
+    .eq('id', id)
     .maybeSingle();
 
-  if (error || !project) notFound();
+  if (!joined.error && joined.data) {
+    return joined.data as Project;
+  }
 
-  const p = project as Project;
+  if (joined.error) {
+    console.error('Project detail joined select failed:', joined.error.message);
+  }
+
+  const basic = await supabase.from('projects').select('*').eq('id', id).maybeSingle();
+  if (basic.error || !basic.data) {
+    if (basic.error) console.error('Project detail basic select failed:', basic.error.message);
+    return null;
+  }
+
+  const project = basic.data as Project;
+
+  if (project.rc_id) {
+    const { data: rc } = await supabase
+      .from('regional_centers')
+      .select('id, name, uscis_rc_id, website_url')
+      .eq('id', project.rc_id)
+      .maybeSingle();
+    project.regional_centers = rc;
+  }
+
+  if (project.added_by) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('display_name, avatar_url')
+      .eq('id', project.added_by)
+      .maybeSingle();
+    project.profiles = profile;
+  }
+
+  return project;
+}
+
+export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
+  const supabase = createClient();
+  const project = await loadProject(params.id);
+
+  if (!project) notFound();
+
+  const p = project;
   if (p.merged_into) redirect(`/projects/${p.merged_into}`);
 
   const [{ data: contacts }, { data: auth }] = await Promise.all([
