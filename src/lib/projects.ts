@@ -99,7 +99,7 @@ export async function getRecentProjects(limit = 6): Promise<ProjectWithVotes[]> 
     return [];
   }
 
-  return attachVoteSummaries(data as ProjectWithVotes[]);
+  return attachVoteSummaries((data as unknown as ProjectWithVotes[]) || []);
 }
 
 function parseList(value: string | undefined): string[] {
@@ -201,7 +201,9 @@ export async function getFilteredProjects(filters: ProjectFilters) {
     return { projects: [] as ProjectWithVotes[], total: 0, page };
   }
 
-  let projects = await attachVoteSummaries((data as ProjectWithVotes[]) || []);
+  let projects = await attachVoteSummaries(
+    ((data as unknown as ProjectWithVotes[]) || [])
+  );
 
   if (filters.sort === 'votes') {
     projects = [...projects].sort(
