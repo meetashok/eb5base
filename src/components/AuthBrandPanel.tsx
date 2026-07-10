@@ -24,7 +24,7 @@ export default function AuthBrandPanel({
         </div>
         <div className="flex items-center gap-3">
           <CheckIcon />
-          <span>Vote on subscription status</span>
+          <span>Confirm subscription status</span>
         </div>
         <div className="flex items-center gap-3">
           <CheckIcon />

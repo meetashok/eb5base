@@ -19,7 +19,7 @@ export async function getHomeStats() {
     projects: projects || 0,
     regionalCenters: regionalCenters || 0,
     investors: investors || 0,
-    votes: votes || 0,
+    confirmations: votes || 0,
   };
 }
 
@@ -31,7 +31,11 @@ export async function getRecentProjects(limit = 6): Promise<ProjectWithVotes[]> 
     .is('merged_into', null)
     .order('created_at', { ascending: false })
     .limit(limit);
-  return (data as ProjectWithVotes[]) || [];
+  return ((data as ProjectWithVotes[]) || []).map((p) => ({
+    ...p,
+    confirmation_count: p.project_votes?.[0]?.count ?? 0,
+    vote_count: p.project_votes?.[0]?.count ?? 0,
+  }));
 }
 
 function parseList(value: string | undefined): string[] {
@@ -159,16 +163,20 @@ export async function getFilteredProjects(filters: ProjectFilters) {
 
     projects = projects.map((p) => {
       const v = byProject.get(p.id);
+      const countFromJoin = p.project_votes?.[0]?.count;
       return {
         ...p,
-        vote_count: v?.count || 0,
+        vote_count: countFromJoin ?? v?.count ?? 0,
+        confirmation_count: countFromJoin ?? v?.count ?? 0,
         last_vote_status: v?.last_status || null,
         last_vote_at: v?.last_at || null,
       };
     });
 
     if (sort === 'votes') {
-      projects = [...projects].sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0));
+      projects = [...projects].sort(
+        (a, b) => (b.confirmation_count || 0) - (a.confirmation_count || 0)
+      );
     }
   }
 
