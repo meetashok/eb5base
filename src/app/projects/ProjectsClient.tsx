@@ -202,7 +202,7 @@ export default function ProjectsClient({
             }}
           >
             <option value="newest">Newest first</option>
-            <option value="votes">Most votes</option>
+            <option value="votes">Most confirmed</option>
             <option value="az">A–Z</option>
             <option value="amount">Investment amount</option>
           </select>

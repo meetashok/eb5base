@@ -118,8 +118,10 @@ export interface DuplicateReport {
 
 export interface ProjectWithVotes extends Project {
   vote_count?: number;
+  confirmation_count?: number;
   last_vote_status?: string | null;
   last_vote_at?: string | null;
+  project_votes?: { count: number }[] | null;
 }
 
 export interface VoteWithProfile extends ProjectVote {
@@ -127,4 +129,4 @@ export interface VoteWithProfile extends ProjectVote {
 }
 
 export const PROJECT_SELECT =
-  '*, regional_centers(id, name, uscis_rc_id, website_url), profiles!added_by(display_name, avatar_url)';
+  '*, regional_centers(id, name, uscis_rc_id, website_url), profiles!added_by(display_name, avatar_url), project_votes(count)';

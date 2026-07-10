@@ -3,7 +3,7 @@ import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase-server';
 import TEATag from '@/components/TEATag';
 import StatusBadge from '@/components/StatusBadge';
-import VoteWidget from '@/components/VoteWidget';
+import ConfirmationWidget from '@/components/ConfirmationWidget';
 import ReportDuplicateButton from './ReportDuplicateButton';
 import type { Project, ProjectContact, Profile } from '@/lib/types';
 import { PROJECT_SELECT } from '@/lib/types';
@@ -214,7 +214,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
       </section>
 
       <div className="mb-8">
-        <VoteWidget projectId={p.id} />
+        <ConfirmationWidget projectId={p.id} />
       </div>
 
       <section className="mb-8">

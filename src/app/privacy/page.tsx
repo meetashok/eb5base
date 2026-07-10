@@ -9,7 +9,8 @@ export default function PrivacyPage() {
       <div className="space-y-4 text-sm text-neutral/80 leading-relaxed">
         <p>
           EB5 Base collects account information you provide (email, display name, optional profile
-          fields) and activity you choose to share (project submissions, votes, duplicate reports).
+          fields) and activity you choose to share (project submissions, status confirmations,
+          duplicate reports).
         </p>
         <p>
           Authentication is handled by Supabase. Google OAuth may provide your name and avatar if
@@ -17,7 +18,8 @@ export default function PrivacyPage() {
         </p>
         <p>
           We do not sell personal data. Profile visibility is controlled by your “Profile visible to
-          others” setting. Votes and project contributions may be shown publicly as part of the
+          others” setting. Confirmations and project contributions may be shown publicly as part of
+          the
           directory.
         </p>
         <p>

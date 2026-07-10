@@ -8,17 +8,17 @@ import type { Profile, Project, ProjectVote } from '@/lib/types';
 import { PROJECT_SELECT } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
 
-type Tab = 'votes' | 'projects' | 'investments' | 'settings';
+type Tab = 'confirmations' | 'projects' | 'investments' | 'settings';
 
-interface VoteRow extends ProjectVote {
+interface ConfirmationRow extends ProjectVote {
   projects?: Pick<Project, 'id' | 'name'> | null;
 }
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [tab, setTab] = useState<Tab>('votes');
+  const [tab, setTab] = useState<Tab>('confirmations');
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [votes, setVotes] = useState<VoteRow[]>([]);
+  const [confirmations, setConfirmations] = useState<ConfirmationRow[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingName, setEditingName] = useState(false);
@@ -42,31 +42,34 @@ export default function ProfilePage() {
           .order('created_at', { ascending: false }),
         supabase
           .from('projects')
-          .select('*')
+          .select(PROJECT_SELECT)
           .eq('added_by', auth.user.id)
           .is('merged_into', null)
           .order('created_at', { ascending: false }),
       ]);
       setProfile(p);
       setNameDraft(p?.display_name || '');
-      setVotes((v as VoteRow[]) || []);
+      setConfirmations((v as ConfirmationRow[]) || []);
       setProjects((myProjects as Project[]) || []);
       setLoading(false);
     })();
   }, [router]);
 
-  const investments = useMemo(() => votes.filter((v) => v.invested), [votes]);
+  const investments = useMemo(
+    () => confirmations.filter((v) => v.invested),
+    [confirmations]
+  );
 
-  const votesByMonth = useMemo(() => {
-    const groups = new Map<string, VoteRow[]>();
-    for (const v of votes) {
+  const confirmationsByMonth = useMemo(() => {
+    const groups = new Map<string, ConfirmationRow[]>();
+    for (const v of confirmations) {
       const d = new Date(v.created_at);
       const key = d.toLocaleString('en-US', { month: 'long', year: 'numeric' });
       if (!groups.has(key)) groups.set(key, []);
       groups.get(key)!.push(v);
     }
     return Array.from(groups.entries());
-  }, [votes]);
+  }, [confirmations]);
 
   async function saveProfile(updates: Partial<Profile>) {
     if (!profile) return;
@@ -104,7 +107,7 @@ export default function ProfilePage() {
   }
 
   const tabs: { id: Tab; label: string }[] = [
-    { id: 'votes', label: 'My Votes' },
+    { id: 'confirmations', label: 'My Confirmations' },
     { id: 'projects', label: 'My Projects' },
     { id: 'investments', label: 'My Investments' },
     { id: 'settings', label: 'Settings' },
@@ -234,12 +237,12 @@ export default function ProfilePage() {
         ))}
       </div>
 
-      {tab === 'votes' && (
+      {tab === 'confirmations' && (
         <div className="space-y-6">
-          {votes.length === 0 ? (
-            <p className="text-neutral/60">You haven&apos;t cast any votes yet.</p>
+          {confirmations.length === 0 ? (
+            <p className="text-neutral/60">You haven&apos;t confirmed any project statuses yet.</p>
           ) : (
-            votesByMonth.map(([month, rows]) => (
+            confirmationsByMonth.map(([month, rows]) => (
               <div key={month}>
                 <h3 className="font-semibold text-primary mb-2">{month}</h3>
                 <ul className="space-y-2">
@@ -255,7 +258,7 @@ export default function ProfilePage() {
                         {v.projects?.name || 'Project'}
                       </Link>
                       <span>
-                        voted {v.subscription_status === 'open' ? 'Open' : 'Closed'}
+                        confirmed {v.subscription_status === 'open' ? 'Open' : 'Closed'}
                         {v.invested ? ' · invested' : ''} · {formatDate(v.created_at)}
                       </span>
                     </li>

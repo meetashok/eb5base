@@ -20,7 +20,8 @@ export default function AboutPage() {
           find factual project information in one place — without paywalls or sales pitches.
         </p>
         <p>
-          Listings are contributed by the community. Status votes help surface whether a project is
+          Listings are contributed by the community. Status confirmations help surface whether a
+          project is
           still accepting subscriptions. Nothing here is independently verified by EB5 Base, and
           the directory does not replace due diligence with qualified professionals.
         </p>
@@ -45,7 +46,7 @@ export default function AboutPage() {
             center, location, TEA designation, I-956F status, and subscription status.
           </li>
           <li>
-            <strong className="text-neutral">Vote on status</strong> — Signed-in users can report
+            <strong className="text-neutral">Confirm status</strong> — Signed-in users can report
             whether a project is still open for subscriptions (rate-limited to keep signal clean).
           </li>
           <li>

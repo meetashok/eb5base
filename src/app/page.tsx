@@ -25,7 +25,7 @@ const STEPS = [
     ),
   },
   {
-    title: 'Vote on status',
+    title: 'Confirm status',
     body: 'Share whether a project is still open for subscriptions — help keep listings current.',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -45,7 +45,7 @@ const STEPS = [
 ];
 
 export default async function HomePage() {
-  let stats = { projects: 0, regionalCenters: 0, investors: 0, votes: 0 };
+  let stats = { projects: 0, regionalCenters: 0, investors: 0, confirmations: 0 };
   let recent: ProjectWithVotes[] = [];
 
   try {
@@ -86,8 +86,10 @@ export default async function HomePage() {
                 <p className="text-xs uppercase tracking-widest text-neutral/50 mt-1">Investors</p>
               </div>
               <div>
-                <p className="text-4xl font-bold text-primary">{stats.votes}</p>
-                <p className="text-xs uppercase tracking-widest text-neutral/50 mt-1">Votes</p>
+                <p className="text-4xl font-bold text-primary">{stats.confirmations}</p>
+                <p className="text-xs uppercase tracking-widest text-neutral/50 mt-1">
+                  Confirmations
+                </p>
               </div>
             </div>
           ) : (
@@ -128,7 +130,7 @@ export default async function HomePage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {recent.map((p) => (
-              <ProjectCard key={p.id} project={p} showVoteSummary={false} />
+              <ProjectCard key={p.id} project={p} showConfirmationSummary={false} />
             ))}
             {Array.from({ length: ctaCount }).map((_, i) => (
               <AddProjectCTACard key={`cta-${i}`} />
