@@ -93,21 +93,25 @@ export const ROLE_OPTIONS = [
     value: 'investor',
     label: 'Investor',
     description: "I'm considering or have made an EB-5 investment",
+    emoji: '📊',
   },
   {
     value: 'rc_operator',
     label: 'RC Representative',
     description: 'I work for a regional center',
+    emoji: '🏢',
   },
   {
     value: 'attorney',
     label: 'Attorney',
     description: 'I practice immigration law',
+    emoji: '⚖️',
   },
   {
     value: 'agent',
     label: 'Agent',
     description: 'I help connect investors with projects',
+    emoji: '🤝',
   },
 ] as const;
 
