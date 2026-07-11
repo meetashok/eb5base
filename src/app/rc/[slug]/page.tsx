@@ -157,7 +157,7 @@ export default async function RCBrandDetailPage({ params }: { params: { slug: st
         {list.length === 0 ? (
           <p className="text-neutral/50 text-sm">
             No projects listed yet.{' '}
-            <Link href="/projects/new" className="link link-secondary">
+            <Link href="/projects/add" className="link link-secondary">
               Add one
             </Link>
           </p>

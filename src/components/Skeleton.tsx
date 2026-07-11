@@ -57,7 +57,7 @@ export function AddProjectCTACard() {
         <p className="text-sm text-neutral/50">
           Help fellow investors by adding it to the directory
         </p>
-        <a href="/projects/new" className="btn btn-outline btn-secondary btn-sm mt-3">
+        <a href="/projects/add" className="btn btn-outline btn-secondary btn-sm mt-3">
           Add a Project
         </a>
       </div>

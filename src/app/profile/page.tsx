@@ -341,7 +341,7 @@ export default function ProfilePage() {
           {projects.length === 0 ? (
             <p className="text-neutral/60">
               No projects yet.{' '}
-              <Link href="/projects/new" className="link link-secondary">
+              <Link href="/projects/add" className="link link-secondary">
                 Add one
               </Link>
               .

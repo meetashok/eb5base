@@ -51,7 +51,7 @@ export default function BrandsClient({ brands, isLoggedIn }: BrandsClientProps) 
             {q ? 'Try a different search term' : 'Be the first to add one'}
           </p>
           {isLoggedIn && (
-            <Link href="/rc/new" className="btn btn-primary btn-sm rounded-full mt-4">
+            <Link href="/rc/add" className="btn btn-primary btn-sm rounded-full mt-4">
               + Add Regional Center
             </Link>
           )}

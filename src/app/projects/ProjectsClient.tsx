@@ -219,7 +219,7 @@ export default function ProjectsClient({
           <p className="text-sm text-neutral/50 mt-2 mb-4">
             Try broadening your search, or add a project the community is missing.
           </p>
-          <Link href="/projects/new" className="btn btn-primary btn-sm rounded-full">
+          <Link href="/projects/add" className="btn btn-primary btn-sm rounded-full">
             + Add Project
           </Link>
         </div>
@@ -238,7 +238,7 @@ export default function ProjectsClient({
                 <p className="text-sm text-neutral/50 mt-1">
                   Help the community by adding it to the directory
                 </p>
-                <Link href="/projects/new" className="btn btn-primary btn-sm rounded-full mt-3">
+                <Link href="/projects/add" className="btn btn-primary btn-sm rounded-full mt-3">
                   + Add Project
                 </Link>
               </div>
