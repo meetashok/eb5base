@@ -19,14 +19,18 @@ import {
   projectPath,
   slugify,
 } from '@/lib/slugs';
+import { useToast } from '@/components/Toast';
 
 export default function EditProjectPage() {
   const params = useParams();
   const param = params.id as string;
   const router = useRouter();
+  const { toast } = useToast();
   const [projectId, setProjectId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [brandName, setBrandName] = useState('');
@@ -54,17 +58,57 @@ export default function EditProjectPage() {
         return;
       }
 
-      let query = supabase.from('projects').select(PROJECT_SELECT);
-      query = isUuid(param) ? query.eq('id', param) : query.eq('slug', param);
-      const { data, error: err } = await query.maybeSingle();
+      const col = isUuid(param) ? 'id' : 'slug';
 
-      if (err || !data) {
-        setError('Project not found');
-        setLoading(false);
-        return;
+      // Prefer brand join; fall back if embed fails (permissions / pre-migration)
+      let p: Project | null = null;
+      const joined = await supabase
+        .from('projects')
+        .select(PROJECT_SELECT)
+        .eq(col, param)
+        .maybeSingle();
+
+      if (!joined.error && joined.data) {
+        p = joined.data as Project;
+      } else {
+        if (joined.error) {
+          console.error('Edit project joined select failed:', joined.error.message);
+        }
+        const basic = await supabase
+          .from('projects')
+          .select('*')
+          .eq(col, param)
+          .maybeSingle();
+
+        if (basic.error || !basic.data) {
+          setError(
+            basic.error?.message ||
+              joined.error?.message ||
+              'Project not found'
+          );
+          setLoading(false);
+          return;
+        }
+
+        p = basic.data as Project;
+        if (p.brand_id) {
+          const { data: brand } = await supabase
+            .from('rc_brands')
+            .select('id, name, website_url, slug')
+            .eq('id', p.brand_id)
+            .maybeSingle();
+          p.rc_brands = brand;
+        }
+        if (p.rc_id && !p.regional_centers) {
+          const { data: rc } = await supabase
+            .from('regional_centers')
+            .select('id, name, uscis_rc_id, website_url')
+            .eq('id', p.rc_id)
+            .maybeSingle();
+          p.regional_centers = rc;
+        }
       }
 
-      const p = data as Project;
       setProjectId(p.id);
       setExistingSlug(p.slug);
 
@@ -156,25 +200,33 @@ export default function EditProjectPage() {
         return Boolean(data);
       });
 
-      const { error: err } = await supabase
-        .from('projects')
-        .update({
-          name: name.trim(),
-          slug,
-          project_type: projectTypes.length ? projectTypes : null,
-          location_city: city.trim() || null,
-          location_state: state || null,
-          brand_id: brandId,
-          tea_designations: tea.length ? tea : null,
-          f956_status: f956,
-          f956_approval_date: f956 === 'approved' && f956Date ? f956Date : null,
-          investment_amount: amount ? parseInt(amount, 10) : null,
-          total_slots: totalSlots ? parseInt(totalSlots, 10) : null,
-          subscription_status: subscription,
-          website_url: website.trim() || null,
-          notes: notes.trim() || null,
-        })
-        .eq('id', projectId);
+      const baseUpdate = {
+        name: name.trim(),
+        project_type: projectTypes.length ? projectTypes : null,
+        location_city: city.trim() || null,
+        location_state: state || null,
+        brand_id: brandId,
+        tea_designations: tea.length ? tea : null,
+        f956_status: f956,
+        f956_approval_date: f956 === 'approved' && f956Date ? f956Date : null,
+        investment_amount: amount ? parseInt(amount, 10) : null,
+        total_slots: totalSlots ? parseInt(totalSlots, 10) : null,
+        subscription_status: subscription,
+        website_url: website.trim() || null,
+        notes: notes.trim() || null,
+      };
+
+      let err = (
+        await supabase
+          .from('projects')
+          .update({ ...baseUpdate, slug })
+          .eq('id', projectId)
+      ).error;
+
+      if (err && /slug/i.test(err.message)) {
+        err = (await supabase.from('projects').update(baseUpdate).eq('id', projectId)).error;
+      }
+
       setSaving(false);
       if (err) {
         setError(err.message);
@@ -188,7 +240,7 @@ export default function EditProjectPage() {
       router.push(
         projectPath({
           id: projectId,
-          slug,
+          slug: existingSlug || slug,
           brand_id: brandId,
           rc_brands: brandRow,
         })
@@ -197,6 +249,34 @@ export default function EditProjectPage() {
       setError(err instanceof Error ? err.message : 'Failed to save');
       setSaving(false);
     }
+  }
+
+  async function handleDelete() {
+    if (!projectId) return;
+    setDeleting(true);
+    setError(null);
+    const supabase = createClient();
+
+    // Clear dependent rows first (FKs may not cascade)
+    await supabase.from('project_contacts').delete().eq('project_id', projectId);
+    await supabase.from('project_votes').delete().eq('project_id', projectId);
+    await supabase.from('duplicate_reports').delete().eq('project_id', projectId);
+
+    const { error: delErr } = await supabase
+      .from('projects')
+      .delete()
+      .eq('id', projectId);
+
+    setDeleting(false);
+    if (delErr) {
+      setError(delErr.message);
+      setConfirmDelete(false);
+      toast(delErr.message, 'error');
+      return;
+    }
+
+    toast('Project deleted', 'success');
+    router.push('/projects');
   }
 
   if (loading) {
@@ -388,21 +468,72 @@ export default function EditProjectPage() {
 
         {error && <p className="text-error text-sm">{error}</p>}
 
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2 items-center">
           <button
             type="button"
-            className="btn btn-ghost"
+            className="btn btn-ghost rounded-full"
             onClick={() =>
               router.push(projectId ? `/projects/${existingSlug || projectId}` : '/projects')
             }
           >
             Cancel
           </button>
-          <button type="submit" className="btn btn-primary" disabled={saving}>
+          <button
+            type="submit"
+            className="btn btn-primary rounded-full"
+            disabled={saving || deleting}
+          >
             {saving ? 'Saving…' : 'Save changes'}
+          </button>
+          <button
+            type="button"
+            className="btn btn-outline btn-error rounded-full ml-auto"
+            disabled={saving || deleting}
+            onClick={() => setConfirmDelete(true)}
+          >
+            Delete
           </button>
         </div>
       </form>
+
+      {confirmDelete && (
+        <dialog className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg text-primary">Delete this project?</h3>
+            <p className="py-3 text-sm text-neutral/70">
+              This permanently removes <span className="font-medium">{name}</span> and its
+              confirmations. This cannot be undone.
+            </p>
+            <div className="modal-action">
+              <button
+                type="button"
+                className="btn btn-ghost rounded-full"
+                disabled={deleting}
+                onClick={() => setConfirmDelete(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn btn-error rounded-full"
+                disabled={deleting}
+                onClick={handleDelete}
+              >
+                {deleting ? (
+                  <span className="loading loading-spinner loading-sm" />
+                ) : (
+                  'Delete permanently'
+                )}
+              </button>
+            </div>
+          </div>
+          <form method="dialog" className="modal-backdrop">
+            <button type="button" onClick={() => !deleting && setConfirmDelete(false)}>
+              close
+            </button>
+          </form>
+        </dialog>
+      )}
     </div>
   );
 }

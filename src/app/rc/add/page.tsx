@@ -53,25 +53,47 @@ export default function NewRcBrandPage() {
     }
 
     const slug = await allocateUniqueSlug(slugify(name.trim()), async (candidate) => {
-      const { data } = await supabase
+      const { data, error: slugErr } = await supabase
         .from('rc_brands')
         .select('id')
         .eq('slug', candidate)
         .maybeSingle();
+      if (slugErr && /slug/i.test(slugErr.message)) return false;
       return Boolean(data);
     });
 
-    const { data, error: insertError } = await supabase
+    const baseInsert = {
+      name: name.trim(),
+      website_url: website.trim() || null,
+      description: description.trim() || null,
+      status: 'approved' as const,
+    };
+
+    let { data, error: insertError } = await supabase
       .from('rc_brands')
-      .insert({
-        name: name.trim(),
-        slug,
-        website_url: website.trim() || null,
-        description: description.trim() || null,
-        status: 'approved',
-      })
+      .insert({ ...baseInsert, slug })
       .select('id, slug')
       .single();
+
+    if (insertError && /slug/i.test(insertError.message)) {
+      ({ data, error: insertError } = await supabase
+        .from('rc_brands')
+        .insert(baseInsert)
+        .select('id')
+        .single());
+    }
+
+    if (insertError && /status/i.test(insertError.message)) {
+      ({ data, error: insertError } = await supabase
+        .from('rc_brands')
+        .insert({
+          name: baseInsert.name,
+          website_url: baseInsert.website_url,
+          description: baseInsert.description,
+        })
+        .select('id')
+        .single());
+    }
 
     setSaving(false);
     if (insertError || !data) {
