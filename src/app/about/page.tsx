@@ -7,6 +7,34 @@ export const metadata = {
   title: 'About',
 };
 
+function SectionHeading({
+  eyebrow,
+  title,
+  subtitle,
+  eyebrowClassName = 'text-secondary',
+  titleClassName = 'text-xl md:text-2xl',
+  className = '',
+}: {
+  eyebrow: string;
+  title: string;
+  subtitle?: string;
+  eyebrowClassName?: string;
+  titleClassName?: string;
+  className?: string;
+}) {
+  return (
+    <div className={className}>
+      <p className={`text-xs uppercase tracking-widest font-semibold mb-2 ${eyebrowClassName}`}>
+        {eyebrow}
+      </p>
+      <h2 className={`font-bold text-primary ${titleClassName}`}>{title}</h2>
+      {subtitle && (
+        <p className="text-sm text-neutral/60 mt-2 leading-relaxed max-w-2xl">{subtitle}</p>
+      )}
+    </div>
+  );
+}
+
 function PainItem({ children }: { children: React.ReactNode }) {
   return (
     <li className="flex gap-3 items-start">
@@ -58,7 +86,7 @@ const RC_REP_STEPS = [
   },
   {
     title: 'Verify your RC',
-    body: 'Select your regional center and confirm you represent it. We review requests within 24–48 hours.',
+    body: 'Select your regional center and confirm you represent it. We review requests within 24 to 48 hours.',
   },
   {
     title: 'Claim & edit projects',
@@ -81,23 +109,26 @@ export default function AboutPage() {
 
       <div className="max-w-4xl mx-auto px-4 py-10 space-y-6">
         <section className="rounded-2xl border-2 border-secondary/20 shadow-soft p-6 md:p-10 space-y-6 bg-[linear-gradient(135deg,rgba(45,90,71,0.07)_0%,#faf7f2_58%)]">
-          <div>
-            <p className="text-xs uppercase tracking-widest text-secondary font-semibold mb-2">
-              The challenge
-            </p>
-            <h2 className="text-2xl md:text-3xl font-bold text-primary">Why this exists</h2>
-          </div>
+          <SectionHeading
+            eyebrow="The challenge"
+            title="Why this exists"
+            titleClassName="text-2xl md:text-3xl"
+          />
 
           <p className="text-neutral/80 leading-relaxed text-base md:text-lg max-w-3xl">
             When someone is ready to invest in EB-5, there is a general lack of reliable public
             information. Investors often cannot tell which projects are open for subscription,
-            which have I-956F approval, or what others in the community have learned — and there is
-            no single place to search for answers.
+            which have I-956F approval, or what others in the community have learned. There is no
+            single place to search for answers.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             <div className="rounded-xl border border-base-300/60 bg-base-100/80 p-5 space-y-3">
-              <h3 className="font-bold text-primary">What investors rely on today</h3>
+              <SectionHeading
+                eyebrow="Today"
+                title="What investors rely on"
+                titleClassName="text-base"
+              />
               <ul className="space-y-2.5 text-sm text-neutral/80">
                 <PainItem>Word-of-mouth from friends, attorneys, and agents</PainItem>
                 <PainItem>Community groups where tips are shared informally</PainItem>
@@ -108,7 +139,11 @@ export default function AboutPage() {
             </div>
 
             <div className="rounded-xl border border-secondary/25 bg-secondary/[0.06] p-5 space-y-3">
-              <h3 className="font-bold text-primary">How EB5 Base helps</h3>
+              <SectionHeading
+                eyebrow="Our approach"
+                title="How EB5 Base helps"
+                titleClassName="text-base"
+              />
               <ul className="space-y-2.5 text-sm text-neutral/80">
                 <CheckItem>A searchable directory of EB-5 projects in one place</CheckItem>
                 <CheckItem>
@@ -122,21 +157,17 @@ export default function AboutPage() {
           </div>
 
           <p className="text-sm text-neutral/70 leading-relaxed max-w-3xl border-t border-base-300/50 pt-5">
-            EB5 Base brings scattered, word-of-mouth knowledge into a shared directory — so
-            investors can find projects, see what the community knows, and keep listings current
-            together.
+            EB5 Base brings scattered, word-of-mouth knowledge into a shared directory so investors
+            can find projects, see what the community knows, and keep listings current together.
           </p>
         </section>
 
         <section className="card-elevated p-6 md:p-8 space-y-6">
-          <div>
-            <h2 className="text-xl font-bold text-primary mb-2">Who it&apos;s for</h2>
-            <p className="text-neutral/70 text-sm leading-relaxed max-w-2xl">
-              EB5 Base serves two kinds of participants in the EB-5 community: investors
-              researching opportunities and regional center representatives keeping listings
-              accurate.
-            </p>
-          </div>
+          <SectionHeading
+            eyebrow="Two audiences"
+            title="Who it's for"
+            subtitle="EB5 Base serves investors researching opportunities and regional center representatives keeping listings accurate."
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="step-card p-5 space-y-4">
@@ -179,12 +210,12 @@ export default function AboutPage() {
 
         <section className="card-elevated p-6 md:p-8">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-4">
-            <div className="min-w-0">
-              <h2 className="text-xl font-bold text-primary mb-1">How it works for investors</h2>
-              <p className="text-sm text-neutral/60">
-                No account required to browse. Sign in when you want to confirm status or contribute.
-              </p>
-            </div>
+            <SectionHeading
+              eyebrow="For investors"
+              title="How it works"
+              subtitle="No account required to browse. Sign in when you want to confirm status or contribute."
+              className="min-w-0"
+            />
             <div className="flex flex-wrap gap-2 shrink-0">
               <Link href="/login" className="btn btn-accent text-accent-content btn-sm rounded-full shadow-soft">
                 Sign in as investor
@@ -209,13 +240,13 @@ export default function AboutPage() {
 
         <section className="card-elevated p-6 md:p-8">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-4">
-            <div className="min-w-0">
-              <h2 className="text-xl font-bold text-primary mb-1">How it works for RC representatives</h2>
-              <p className="text-sm text-neutral/60">
-                Keep your regional center&apos;s listings accurate. Verified representatives can edit
-                projects without waiting for admin review.
-              </p>
-            </div>
+            <SectionHeading
+              eyebrow="For RC representatives"
+              title="How it works"
+              subtitle="Keep your regional center&apos;s listings accurate. Verified representatives can edit projects without waiting for admin review."
+              eyebrowClassName="text-copper"
+              className="min-w-0"
+            />
             <div className="flex flex-wrap gap-2 shrink-0">
               <Link href="/login" className="btn btn-secondary btn-sm rounded-full">
                 Sign in as RC representative
@@ -238,8 +269,8 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section className="card-elevated p-6 md:p-8">
-          <h2 className="text-xl font-bold text-primary mb-4">Your data is safe</h2>
+        <section className="card-elevated p-6 md:p-8 space-y-4">
+          <SectionHeading eyebrow="Privacy" title="Your data is safe" titleClassName="text-xl" />
           <ul className="space-y-3 text-neutral/80">
             <CheckItem>Email used only for auth, never displayed or shared</CheckItem>
             <CheckItem>No tracking cookies, no ads, no third-party data sharing</CheckItem>
@@ -259,7 +290,7 @@ export default function AboutPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <section className="card-elevated p-6 md:p-8 space-y-3">
-            <h2 className="text-xl font-bold text-primary">Open to the community</h2>
+            <SectionHeading eyebrow="Access" title="Open to the community" titleClassName="text-xl" />
             <p className="text-neutral/80 leading-relaxed">
               EB5 Base is built for everyone in the EB-5 ecosystem. Browse, confirm status, add
               projects, and use representative tools whether you are researching opportunities or
@@ -268,7 +299,12 @@ export default function AboutPage() {
           </section>
 
           <section className="card-elevated p-6 md:p-8 space-y-3 panel-copper">
-            <h2 className="text-xl font-bold text-primary">Who&apos;s behind this</h2>
+            <SectionHeading
+              eyebrow="The founder"
+              title="Who's behind this"
+              eyebrowClassName="text-copper"
+              titleClassName="text-xl"
+            />
             <p className="text-neutral/80 leading-relaxed">
               Ashok Kumar, founder. EB-5 investor and data scientist based in the Seattle area.
               Built the directory because the information investors need was too scattered.
@@ -285,17 +321,20 @@ export default function AboutPage() {
         </div>
 
         <section className="card-elevated p-6 md:p-8 text-center">
-          <h2 className="text-xl font-bold text-primary mb-2">Questions or feedback?</h2>
-          <p className="text-neutral/70 mb-5 text-sm">
-            Corrections, project suggestions, or general questions. We read every message.
-          </p>
-          <a href="mailto:hello@eb5base.com" className="btn btn-primary rounded-full">
+          <SectionHeading
+            eyebrow="Get in touch"
+            title="Questions or feedback?"
+            subtitle="Corrections, project suggestions, or general questions. We read every message."
+            titleClassName="text-xl"
+            className="mx-auto max-w-lg text-center"
+          />
+          <a href="mailto:hello@eb5base.com" className="btn btn-primary rounded-full mt-5">
             hello@eb5base.com
           </a>
         </section>
 
         <section className="card-elevated p-6 md:p-8 space-y-4">
-          <h2 className="text-xl font-bold text-primary">Legal</h2>
+          <SectionHeading eyebrow="Disclaimer" title="Legal" titleClassName="text-xl" />
           <p className="text-sm text-neutral/80 leading-relaxed">{DISCLAIMER}</p>
           <p className="text-sm text-neutral/80">
             Read our full{' '}
