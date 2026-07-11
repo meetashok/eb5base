@@ -78,6 +78,7 @@ export interface Project {
   f956_status: F956Status | null;
   f956_approval_date: string | null;
   investment_amount: number | null;
+  total_slots: number | null;
   subscription_status: SubscriptionStatus | null;
   website_url: string | null;
   notes: string | null;

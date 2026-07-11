@@ -77,9 +77,18 @@ export default function RegionalCentersClient({ centers }: RegionalCentersClient
       </p>
 
       {filtered.length === 0 ? (
-        <p className="py-16 text-center text-neutral/60">
-          No regional centers match your search.
-        </p>
+        <div className="text-center py-16">
+          <div className="text-4xl mb-3" aria-hidden>
+            🏢
+          </div>
+          <h2 className="text-lg font-bold text-neutral/70">No regional centers found</h2>
+          <p className="text-sm text-neutral/50 mt-2">
+            {q || state ? 'Try a different search term' : 'Be the first to add a regional center'}
+          </p>
+          <Link href="/regional-centers/new" className="btn btn-primary btn-sm rounded-full mt-4">
+            + Add Regional Center
+          </Link>
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((rc) => (

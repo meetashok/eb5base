@@ -35,6 +35,7 @@ export default function EditProjectPage() {
   const [f956Date, setF956Date] = useState('');
   const [subscription, setSubscription] = useState<SubscriptionStatus>('unknown');
   const [amount, setAmount] = useState('');
+  const [totalSlots, setTotalSlots] = useState('');
   const [notes, setNotes] = useState('');
 
   const isExistingRc = Boolean(rcSelection && !rcSelection.isNew && rcSelection.id);
@@ -103,6 +104,7 @@ export default function EditProjectPage() {
       setF956Date(p.f956_approval_date || '');
       setSubscription((p.subscription_status as SubscriptionStatus) || 'unknown');
       setAmount(p.investment_amount != null ? String(p.investment_amount) : '');
+      setTotalSlots(p.total_slots != null ? String(p.total_slots) : '');
       setNotes(p.notes || '');
       setLoading(false);
     })();
@@ -160,6 +162,7 @@ export default function EditProjectPage() {
           f956_status: f956,
           f956_approval_date: f956 === 'approved' && f956Date ? f956Date : null,
           investment_amount: amount ? parseInt(amount, 10) : null,
+          total_slots: totalSlots ? parseInt(totalSlots, 10) : null,
           subscription_status: subscription,
           website_url: website.trim() || null,
           notes: notes.trim() || null,
@@ -353,6 +356,20 @@ export default function EditProjectPage() {
             onChange={(e) => setAmount(e.target.value)}
           />
         </label>
+
+        <div className="form-control">
+          <label className="label">
+            <span className="label-text font-medium">Total Investor Positions</span>
+          </label>
+          <input
+            type="number"
+            className="input input-bordered"
+            placeholder="e.g. 600"
+            value={totalSlots}
+            onChange={(e) => setTotalSlots(e.target.value)}
+            min={1}
+          />
+        </div>
 
         <label className="form-control">
           <span className="label-text mb-1">Notes</span>

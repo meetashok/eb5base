@@ -40,6 +40,12 @@ export default function ProjectCard({
 
           {rcName && <p className="text-meta text-neutral/60">{rcName}</p>}
 
+          {project.total_slots != null && project.total_slots > 0 && (
+            <p className="text-sm text-neutral/60">
+              {project.total_slots.toLocaleString()} investor positions
+            </p>
+          )}
+
           <div className="flex flex-wrap gap-1.5">
             {(project.tea_designations || []).map((tea) => (
               <TEATag key={tea} designation={tea} />

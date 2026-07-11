@@ -18,6 +18,23 @@ export function ProjectCardSkeleton() {
   );
 }
 
+export function RCCardSkeleton() {
+  return (
+    <div className="card card-bordered shadow-sm animate-pulse">
+      <div className="card-body p-5">
+        <div className="h-5 bg-base-300 rounded w-2/3 mb-3" />
+        <div className="h-4 bg-base-300 rounded-full w-24 mb-3" />
+        <div className="h-3 bg-base-300 rounded w-1/3 mb-2" />
+        <div className="flex gap-1 mt-2">
+          <div className="h-5 bg-base-300 rounded-full w-12" />
+          <div className="h-5 bg-base-300 rounded-full w-12" />
+          <div className="h-5 bg-base-300 rounded-full w-12" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function AddProjectCTACard() {
   return (
     <div className="card card-bordered border-dashed border-2 border-base-300 bg-base-100 h-full">

@@ -29,8 +29,13 @@ function isPublicPath(pathname: string): boolean {
     return true;
   }
   if (pathname.startsWith('/auth')) return true;
-  if (pathname.startsWith('/regional-centers/')) return true;
   if (pathname.startsWith('/rc/')) return true;
+
+  if (pathname === '/regional-centers') return true;
+  if (pathname.startsWith('/regional-centers/')) {
+    if (pathname === '/regional-centers/new') return false;
+    return true;
+  }
 
   // Project list + detail are public; create/edit require auth + completed profile
   if (pathname === '/projects') return true;

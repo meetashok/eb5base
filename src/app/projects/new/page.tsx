@@ -58,6 +58,7 @@ export default function NewProjectForm() {
   const [f956Date, setF956Date] = useState('');
   const [subscription, setSubscription] = useState<SubscriptionStatus>('unknown');
   const [amount, setAmount] = useState('');
+  const [totalSlots, setTotalSlots] = useState('');
   const [contacts, setContacts] = useState<ContactDraft[]>([]);
   const [notes, setNotes] = useState('');
 
@@ -219,6 +220,7 @@ export default function NewProjectForm() {
           f956_status: f956,
           f956_approval_date: f956 === 'approved' && f956Date ? f956Date : null,
           investment_amount: amount ? parseInt(amount, 10) : null,
+          total_slots: totalSlots ? parseInt(totalSlots, 10) : null,
           subscription_status: subscription,
           website_url: website.trim() || null,
           notes: notes.trim() || null,
@@ -354,6 +356,13 @@ export default function NewProjectForm() {
               }}
               onSelect={handleRcSelect}
             />
+            <span className="label-text-alt text-neutral/50 mt-1">
+              Can&apos;t find it?{' '}
+              <Link href="/regional-centers/new" className="link link-secondary">
+                Add a new regional center
+              </Link>{' '}
+              first, then come back here.
+            </span>
           </label>
           <label className="form-control">
             <span className="label-text mb-1">RC ID (optional)</span>
@@ -543,6 +552,25 @@ export default function NewProjectForm() {
               onChange={(e) => setAmount(e.target.value)}
             />
           </label>
+
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text font-medium">Total Investor Positions</span>
+            </label>
+            <input
+              type="number"
+              className="input input-bordered"
+              placeholder="e.g. 600"
+              value={totalSlots}
+              onChange={(e) => setTotalSlots(e.target.value)}
+              min={1}
+            />
+            <label className="label">
+              <span className="label-text-alt text-neutral/50">
+                How many investor slots does this project have?
+              </span>
+            </label>
+          </div>
         </section>
 
         <section className="space-y-4">

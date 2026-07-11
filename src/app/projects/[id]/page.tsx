@@ -186,6 +186,14 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
         />
         <InfoRow label="Investment Amount" value={formatCurrency(p.investment_amount)} />
         <InfoRow
+          label="Investor Positions"
+          value={
+            p.total_slots != null && p.total_slots > 0
+              ? p.total_slots.toLocaleString()
+              : '—'
+          }
+        />
+        <InfoRow
           label="Project Type"
           value={
             (p.project_type || []).length ? (

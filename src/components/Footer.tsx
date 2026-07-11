@@ -3,21 +3,34 @@ import { DISCLAIMER } from '@/lib/constants';
 
 export default function Footer() {
   return (
-    <footer className="bg-base-200 border-t border-base-300 mt-auto">
-      <div className="max-w-6xl mx-auto px-4 py-10">
-        <p className="text-meta text-neutral/70 leading-relaxed max-w-4xl">{DISCLAIMER}</p>
-        <div className="flex flex-wrap gap-4 mt-6 text-sm">
-          <Link href="/about" className="link link-hover text-secondary">
-            About
-          </Link>
-          <Link href="/privacy" className="link link-hover text-secondary">
-            Privacy
-          </Link>
-          <Link href="/contact" className="link link-hover text-secondary">
-            Contact
-          </Link>
+    <footer className="border-t border-base-200 mt-16">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <p className="text-meta text-neutral/60 leading-relaxed max-w-4xl mb-6">{DISCLAIMER}</p>
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="text-sm text-neutral/50">
+            © {new Date().getFullYear()} EB5 Base. Free for investors.
+          </div>
+          <div className="flex gap-6">
+            <Link
+              href="/about"
+              className="text-sm text-neutral/50 hover:text-primary transition-colors"
+            >
+              About
+            </Link>
+            <Link
+              href="/privacy"
+              className="text-sm text-neutral/50 hover:text-primary transition-colors"
+            >
+              Privacy
+            </Link>
+            <a
+              href="mailto:hello@eb5base.com"
+              className="text-sm text-neutral/50 hover:text-primary transition-colors"
+            >
+              Contact
+            </a>
+          </div>
         </div>
-        <p className="text-meta text-neutral/50 mt-4">© {new Date().getFullYear()} EB5 Base</p>
       </div>
     </footer>
   );

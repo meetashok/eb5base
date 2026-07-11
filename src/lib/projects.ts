@@ -181,9 +181,11 @@ export async function getFilteredProjects(filters: ProjectFilters) {
     if (filters.amount === 'over_1050k') query = query.gt('investment_amount', 1050000);
 
     const sort = filters.sort || 'newest';
-    if (sort === 'az') query = query.order('name', { ascending: true });
-    else if (sort === 'amount')
+    if (sort === 'az' || sort === 'alpha') query = query.order('name', { ascending: true });
+    else if (sort === 'amount' || sort === 'amount_low')
       query = query.order('investment_amount', { ascending: true, nullsFirst: false });
+    else if (sort === 'amount_high')
+      query = query.order('investment_amount', { ascending: false, nullsFirst: false });
     else query = query.order('created_at', { ascending: false });
 
     return query.range(from, to);
@@ -205,7 +207,7 @@ export async function getFilteredProjects(filters: ProjectFilters) {
     ((data as unknown as ProjectWithVotes[]) || [])
   );
 
-  if (filters.sort === 'votes') {
+  if (filters.sort === 'votes' || filters.sort === 'most_confirmed') {
     projects = [...projects].sort(
       (a, b) => (b.confirmation_count || 0) - (a.confirmation_count || 0)
     );
