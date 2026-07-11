@@ -28,6 +28,7 @@ import {
   subscriptionVariant,
 } from '@/lib/utils';
 import { allocateUniqueSlug, projectPath, slugify } from '@/lib/slugs';
+import { uploadProjectImage } from '@/lib/project-images';
 import { useToast } from '@/components/Toast';
 import { createSubmission } from '@/lib/approvals';
 
@@ -76,6 +77,8 @@ export default function NewProjectForm() {
   const [previewMode, setPreviewMode] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [canUploadImages, setCanUploadImages] = useState(false);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
 
   const selectedBrandId = brandSelection && !brandSelection.isNew ? brandSelection.id : null;
 
@@ -92,6 +95,32 @@ export default function NewProjectForm() {
     }
     setCheckingAuth(false);
   }, [authLoading, user, authPrompted, promptSignIn]);
+
+  useEffect(() => {
+    if (!userId) return;
+    const supabase = createClient();
+    (async () => {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', userId)
+        .maybeSingle();
+      if (profile?.is_admin) {
+        setCanUploadImages(true);
+        return;
+      }
+      const { data: membership } = await supabase
+        .from('rc_memberships')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('active', true)
+        .not('verified_at', 'is', null)
+        .is('revoked_at', null)
+        .limit(1)
+        .maybeSingle();
+      setCanUploadImages(Boolean(membership));
+    })();
+  }, [userId]);
 
   useEffect(() => {
     if (!selectedBrandId || name.trim().length < 3 || dismissedSimilar) {
@@ -290,6 +319,13 @@ export default function NewProjectForm() {
         payload,
         submitted_by: userId,
       });
+
+      if (coverFile && canUploadImages) {
+        const { error: imageError } = await uploadProjectImage(project.id, coverFile);
+        if (imageError) {
+          toast(`Project submitted, but photo upload failed: ${imageError}`, 'error');
+        }
+      }
 
       toast('Submitted for approval. It will appear publicly once an admin reviews it.', 'success');
       router.push('/profile?tab=submissions');
@@ -684,6 +720,21 @@ export default function NewProjectForm() {
             </div>
           ))}
         </section>
+
+        {canUploadImages && (
+          <section className="space-y-2">
+            <h2 className="text-lg font-bold text-primary">Cover photo (optional)</h2>
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="file-input file-input-bordered file-input-sm w-full max-w-md"
+              onChange={(e) => setCoverFile(e.target.files?.[0] || null)}
+            />
+            <p className="text-meta text-neutral/50">
+              Regional center reps and admins only. Resized to about 400 KB on upload.
+            </p>
+          </section>
+        )}
 
         <section className="space-y-2">
           <h2 className="text-lg font-bold text-primary">Notes</h2>

@@ -21,7 +21,7 @@ import { formatDate } from '@/lib/utils';
 import { brandPath, projectEditPath, projectPath } from '@/lib/slugs';
 import { statusBadgeClass, statusLabel } from '@/lib/approvals';
 
-type Tab = 'confirmations' | 'projects' | 'submissions' | 'investments' | 'settings';
+type Tab = 'confirmations' | 'projects' | 'submissions' | 'settings';
 
 interface ConfirmationRow extends ProjectVote {
   projects?: {
@@ -75,7 +75,6 @@ export default function ProfilePage() {
       t === 'confirmations' ||
       t === 'projects' ||
       t === 'submissions' ||
-      t === 'investments' ||
       t === 'settings'
     ) {
       setTab(t);
@@ -155,10 +154,12 @@ export default function ProfilePage() {
     })();
   }, [router]);
 
-  const investments = useMemo(
-    () => confirmations.filter((v) => v.invested),
-    [confirmations]
-  );
+  const tabs: { id: Tab; label: string }[] = [
+    { id: 'confirmations', label: 'My Confirmations' },
+    { id: 'projects', label: 'My Projects' },
+    { id: 'submissions', label: 'My Submissions' },
+    { id: 'settings', label: 'Settings' },
+  ];
 
   const confirmationsByMonth = useMemo(() => {
     const groups = new Map<string, ConfirmationRow[]>();
@@ -205,14 +206,6 @@ export default function ProfilePage() {
       </div>
     );
   }
-
-  const tabs: { id: Tab; label: string }[] = [
-    { id: 'confirmations', label: 'My Confirmations' },
-    { id: 'projects', label: 'My Projects' },
-    { id: 'submissions', label: 'My Submissions' },
-    { id: 'investments', label: 'My Investments' },
-    { id: 'settings', label: 'Settings' },
-  ];
 
   const roleLabel = profile.role ? ROLE_BADGE_LABELS[profile.role] : null;
 
@@ -407,8 +400,8 @@ export default function ProfilePage() {
                         {v.projects?.name || 'Project'}
                       </Link>
                       <span>
-                        confirmed {v.subscription_status === 'open' ? 'Open' : 'Closed'}
-                        {v.invested ? ' · invested' : ''} · {formatDate(v.created_at)}
+                        confirmed {v.subscription_status === 'open' ? 'Open' : 'Closed'} ·{' '}
+                        {formatDate(v.created_at)}
                       </span>
                     </li>
                   ))}
@@ -523,33 +516,6 @@ export default function ProfilePage() {
                 </li>
               ))}
             </>
-          )}
-        </ul>
-      )}
-
-      {tab === 'investments' && (
-        <ul className="space-y-2">
-          {investments.length === 0 ? (
-            <p className="text-neutral/60">No investments reported yet.</p>
-          ) : (
-            investments.map((v) => (
-              <li
-                key={v.id}
-                className="flex flex-wrap justify-between gap-2 border-b border-base-300 py-3 text-sm"
-              >
-                <Link
-                  href={
-                    v.projects ? projectPath(v.projects) : `/projects/${v.project_id}`
-                  }
-                  className="link link-secondary font-medium"
-                >
-                  {v.projects?.name || 'Project'}
-                </Link>
-                <span>
-                  Invested {formatDate(v.investment_date)} · reported {formatDate(v.created_at)}
-                </span>
-              </li>
-            ))
           )}
         </ul>
       )}

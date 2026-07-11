@@ -136,4 +136,7 @@ export const DISCLAIMER =
 
 export const PAGE_SIZE = 20;
 
+/** Show the add-project CTA card first (prominent) until the directory reaches this size. */
+export const CTA_CARD_PROMINENT_UNTIL = 12;
+
 export const ADD_PROJECT_HINT_STORAGE_KEY = 'eb5base_seen_add_project_hint';

@@ -122,12 +122,24 @@ export interface Project {
   merged_into: string | null;
   created_at: string;
   updated_at: string;
+  cover_image_id?: string | null;
   rc_brands?: Pick<RcBrand, 'id' | 'name' | 'website_url' | 'slug'> | null;
   regional_centers?: Pick<
     RegionalCenter,
     'id' | 'name' | 'uscis_rc_id' | 'website_url'
   > | null;
   profiles?: Pick<Profile, 'display_name' | 'avatar_url'> | null;
+  cover_image?: Pick<ProjectImage, 'id' | 'url'> | null;
+}
+
+export interface ProjectImage {
+  id: string;
+  project_id: string;
+  storage_path: string;
+  url: string;
+  sort_order: number;
+  uploaded_by: string | null;
+  created_at: string;
 }
 
 export interface ProjectContact {
@@ -194,10 +206,16 @@ export interface ContentSubmission {
 
 /** Prefer brand join; keep regional_centers as fallback during migration */
 export const PROJECT_SELECT =
-  '*, rc_brands!brand_id(id, name, website_url, slug), regional_centers(id, name, uscis_rc_id, website_url)';
+  '*, cover_image:project_images!cover_image_id(id, url), rc_brands!brand_id(id, name, website_url, slug), regional_centers(id, name, uscis_rc_id, website_url)';
 export const PROJECT_SELECT_LEGACY =
   '*, rc_brands!brand_id(id, name, website_url), regional_centers(id, name, uscis_rc_id, website_url)';
+export const PROJECT_SELECT_NO_IMAGES =
+  '*, rc_brands!brand_id(id, name, website_url, slug), regional_centers(id, name, uscis_rc_id, website_url)';
 
 export function projectBrandName(project: Project): string | null {
   return project.rc_brands?.name || project.regional_centers?.name || null;
+}
+
+export function projectCoverUrl(project: Project): string | null {
+  return project.cover_image?.url ?? null;
 }
