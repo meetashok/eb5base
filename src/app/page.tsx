@@ -58,9 +58,10 @@ export default async function HomePage() {
 
   return (
     <div>
-      <section className="hero-glow border-b border-base-300">
+      <section className="hero-glow border-b border-base-300/80">
         <div className="max-w-6xl mx-auto px-4 py-20 md:py-28 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-primary tracking-tight text-balance">
+          <p className="hero-eyebrow mb-4">Community-built · Investor-led</p>
+          <h1 className="text-4xl md:text-5xl font-bold hero-headline tracking-tight text-balance">
             The EB-5 Project Directory
           </h1>
           <p className="mt-4 text-base md:text-lg text-neutral/70 max-w-2xl mx-auto">
@@ -79,22 +80,22 @@ export default async function HomePage() {
             </Link>
           </div>
           {stats.projects >= 10 ? (
-            <div className="mt-10 flex flex-wrap justify-center gap-6 md:gap-12">
-              <div>
+            <div className="mt-10 flex flex-wrap justify-center gap-4 md:gap-6">
+              <div className="stat-pill">
                 <p className="text-4xl font-bold text-primary">{stats.projects}</p>
                 <p className="text-xs uppercase tracking-widest text-neutral/50 mt-1">Projects</p>
               </div>
-              <div>
+              <div className="stat-pill">
                 <p className="text-4xl font-bold text-primary">{stats.regionalCenters}</p>
                 <p className="text-xs uppercase tracking-widest text-neutral/50 mt-1">
                   Regional Centers
                 </p>
               </div>
-              <div>
+              <div className="stat-pill">
                 <p className="text-4xl font-bold text-primary">{stats.investors}</p>
                 <p className="text-xs uppercase tracking-widest text-neutral/50 mt-1">Investors</p>
               </div>
-              <div>
+              <div className="stat-pill">
                 <p className="text-4xl font-bold text-primary">{stats.confirmations}</p>
                 <p className="text-xs uppercase tracking-widest text-neutral/50 mt-1">
                   Confirmations
@@ -148,18 +149,18 @@ export default async function HomePage() {
         )}
       </section>
 
-      <section className="bg-base-200 mt-6">
+      <section className="surface-muted mt-6 border-y border-base-300/60">
         <div className="max-w-6xl mx-auto px-4 py-14">
           <h2 className="text-2xl font-bold text-primary text-center mb-10">How it works</h2>
-          <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="hidden md:block absolute top-8 left-[16%] right-[16%] border-t-2 border-dashed border-base-300 z-0" />
+          <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="hidden md:block absolute top-12 left-[16%] right-[16%] border-t-2 border-dashed border-secondary/25 z-0" />
             {STEPS.map((step, i) => (
-              <div key={step.title} className="relative z-10 text-center md:text-left">
+              <div key={step.title} className="step-card relative z-10 text-center md:text-left">
                 <div className="relative inline-block mb-4">
-                  <div className="w-16 h-16 rounded-full bg-secondary/10 flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-full bg-icon-ring shadow-soft flex items-center justify-center">
                     {step.icon}
                   </div>
-                  <span className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-accent text-white text-xs font-bold flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-accent text-accent-content text-xs font-bold flex items-center justify-center shadow-soft">
                     {i + 1}
                   </span>
                 </div>
@@ -172,13 +173,15 @@ export default async function HomePage() {
       </section>
 
       <section className="max-w-6xl mx-auto px-4 py-14 text-center">
+        <div className="card-elevated max-w-2xl mx-auto p-10">
         <h2 className="text-2xl font-bold text-primary mb-3">Explore Regional Centers</h2>
         <p className="text-neutral/70 mb-6 max-w-xl mx-auto">
           Browse USCIS-approved regional centers and see their active projects
         </p>
-        <Link href="/rc" className="btn btn-primary transition-all duration-150">
+        <Link href="/rc" className="btn btn-primary rounded-full">
           Browse Regional Centers
         </Link>
+        </div>
       </section>
     </div>
   );

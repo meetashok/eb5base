@@ -66,7 +66,7 @@ function LoginForm() {
             </p>
           </div>
 
-          <div className="card card-bordered shadow-sm bg-base-100">
+          <div className="card-elevated">
             <div className="card-body gap-4">
               {(error || urlError) && (
                 <p className="text-error text-sm">{error || urlError}</p>

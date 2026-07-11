@@ -14,8 +14,17 @@ export default function AuthBrandPanel({
   title?: string;
 }) {
   return (
-    <div className="hidden lg:flex lg:w-1/2 bg-primary text-primary-content flex-col justify-center px-12 xl:px-16">
-      <Logo size={72} className="mb-6" />
+    <div className="hidden lg:flex lg:w-1/2 bg-panel-gradient text-primary-content flex-col justify-center px-12 xl:px-16 relative overflow-hidden">
+      <div
+        className="absolute inset-0 opacity-30 pointer-events-none"
+        aria-hidden
+        style={{
+          background:
+            'radial-gradient(ellipse at 20% 80%, rgba(201, 169, 98, 0.25), transparent 50%)',
+        }}
+      />
+      <div className="relative">
+      <Logo size={72} className="mb-6 drop-shadow-lg" />
       <h1 className="text-4xl font-bold mb-4">{title}</h1>
       <p className="text-lg text-primary-content/70 mb-8">
         Help build the most comprehensive directory of EB-5 projects
@@ -33,6 +42,7 @@ export default function AuthBrandPanel({
           <CheckIcon />
           <span>Track your investments</span>
         </div>
+      </div>
       </div>
     </div>
   );

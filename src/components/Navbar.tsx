@@ -74,7 +74,7 @@ export default function Navbar() {
   );
 
   return (
-    <header className="sticky top-0 z-50 bg-primary text-primary-content">
+    <header className="sticky top-0 z-50 bg-nav-gradient text-primary-content shadow-nav">
       <div className="navbar max-w-6xl mx-auto px-4 min-h-16">
         <div className="navbar-start">
           <Link href="/" className="hover:opacity-90 transition-opacity">
@@ -130,7 +130,7 @@ export default function Navbar() {
               </ul>
             </div>
           ) : (
-            <Link href="/login" className="btn btn-sm btn-accent text-neutral transition-all duration-150">
+            <Link href="/login" className="btn btn-sm btn-accent text-accent-content shadow-soft hover:shadow-glow transition-all duration-200">
               Sign In
             </Link>
           )}

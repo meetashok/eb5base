@@ -39,7 +39,7 @@ export function RCCardSkeleton() {
 
 export function AddProjectCTACard() {
   return (
-    <div className="card card-bordered border-dashed border-2 border-base-300 bg-base-100 h-full">
+    <div className="card-elevated border-dashed border-2 border-secondary/25 h-full">
       <div className="card-body items-center text-center py-12">
         <svg
           xmlns="http://www.w3.org/2000/svg"

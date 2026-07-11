@@ -31,7 +31,7 @@ export default function ProjectCard({
     0;
 
   return (
-    <div className="card card-bordered border-base-300/50 bg-base-100 shadow-sm h-full transition-all duration-150 hover:shadow-md hover:-translate-y-0.5 hover:border-l-4 hover:border-l-primary">
+    <div className="card-elevated h-full">
       <div className="card-body p-4 gap-3">
         <Link href={projectPath(project)} className="block space-y-3">
           <h3 className="card-title text-base font-bold text-primary leading-snug">
