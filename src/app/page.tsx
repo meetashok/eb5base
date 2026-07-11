@@ -83,7 +83,7 @@ export default async function HomePage() {
             <Link href="/projects" className="btn btn-primary rounded-full">
               Browse Projects
             </Link>
-            <Link href="/projects/add" className="btn btn-accent text-accent-content rounded-full shadow-soft hover:shadow-glow">
+            <Link href="/projects/add" className="btn btn-accent text-accent-content rounded-full shadow-soft hover:shadow-glow" data-add-project-hint="primary">
               + Add a Project
             </Link>
           </div>

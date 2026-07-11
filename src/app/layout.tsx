@@ -3,6 +3,7 @@ import Script from 'next/script';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import AddProjectHint from '@/components/AddProjectHint';
 import { ToastProvider } from '@/components/Toast';
 import './globals.css';
 
@@ -55,6 +56,7 @@ export default function RootLayout({
           <Navbar />
           <main className="flex-1 page-enter">{children}</main>
           <Footer />
+          <AddProjectHint />
         </ToastProvider>
         <Script
           data-goatcounter="https://eb5base.goatcounter.com/count"

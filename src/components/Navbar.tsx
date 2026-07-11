@@ -60,9 +60,10 @@ export default function Navbar() {
     router.refresh();
   }
 
-  const navLink = (href: string, label: string) => (
+  const navLink = (href: string, label: string, hint?: string) => (
     <Link
       href={href}
+      data-add-project-hint={hint}
       className={`px-3 py-2 text-sm font-medium transition-all duration-150 hover:text-accent ${
         pathname === href || (href !== '/' && pathname.startsWith(href))
           ? 'text-accent'
@@ -90,7 +91,7 @@ export default function Navbar() {
         <div className="navbar-center hidden md:flex gap-1">
           {navLink('/projects', 'Browse')}
           {navLink('/rc', 'Regional Centers')}
-          {navLink('/projects/add', 'Add Project')}
+          {navLink('/projects/add', 'Add Project', 'nav')}
           {navLink('/about', 'About')}
         </div>
 
@@ -157,7 +158,7 @@ export default function Navbar() {
         <div className="md:hidden border-t border-primary-content/20 px-4 pb-4 flex flex-col">
           {navLink('/projects', 'Browse')}
           {navLink('/rc', 'Regional Centers')}
-          {navLink('/projects/add', 'Add Project')}
+          {navLink('/projects/add', 'Add Project', 'nav')}
           {navLink('/about', 'About')}
         </div>
       )}

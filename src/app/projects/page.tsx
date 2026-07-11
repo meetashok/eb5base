@@ -33,7 +33,7 @@ export default async function ProjectsPage({
         title="Browse Projects"
         subtitle="Search EB-5 regional center projects by name, location, TEA designation, and status."
       >
-        <Link href="/projects/add" className="btn btn-accent text-accent-content rounded-full shadow-soft hover:shadow-glow">
+        <Link href="/projects/add" className="btn btn-accent text-accent-content rounded-full shadow-soft hover:shadow-glow" data-add-project-hint="primary">
           + Add Project
         </Link>
       </PageHero>

@@ -135,3 +135,5 @@ export const DISCLAIMER =
   'EB5 Base is a community-maintained directory of EB-5 projects for informational purposes only. It is not affiliated with USCIS, any regional center, or any immigration law firm. Listings are user-contributed and not independently verified. Nothing on this site constitutes legal, financial, or investment advice. Always consult a qualified immigration attorney before making investment decisions.';
 
 export const PAGE_SIZE = 20;
+
+export const ADD_PROJECT_HINT_STORAGE_KEY = 'eb5base_seen_add_project_hint';
