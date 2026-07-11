@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import { timeAgo } from '@/lib/utils';
+import SignInPromptModal from './SignInPromptModal';
 
 interface ConfirmStatusButtonsProps {
   projectId: string;
@@ -351,43 +352,14 @@ export default function ConfirmStatusButtons({
         )}
       </div>
 
-      {showAuthPrompt && (
-        <dialog className="modal modal-open">
-          <div className="modal-box max-w-sm">
-            <h3 className="font-bold text-lg text-primary">Sign in to confirm?</h3>
-            <p className="py-2 text-sm text-neutral/70">
-              Help fellow investors by confirming whether this project is open for subscriptions.
-              Sign in takes just a moment.
-            </p>
-            <div className="modal-action mt-2">
-              <button
-                type="button"
-                className="btn btn-ghost btn-sm"
-                onClick={() => {
-                  setShowAuthPrompt(false);
-                  setPendingStatus(null);
-                }}
-              >
-                Not now
-              </button>
-              <button type="button" className="btn btn-primary btn-sm" onClick={goToLogin}>
-                Sign in
-              </button>
-            </div>
-          </div>
-          <form method="dialog" className="modal-backdrop">
-            <button
-              type="button"
-              onClick={() => {
-                setShowAuthPrompt(false);
-                setPendingStatus(null);
-              }}
-            >
-              close
-            </button>
-          </form>
-        </dialog>
-      )}
+      <SignInPromptModal
+        open={showAuthPrompt}
+        onDismiss={() => {
+          setShowAuthPrompt(false);
+          setPendingStatus(null);
+        }}
+        onSignIn={goToLogin}
+      />
     </>
   );
 }
