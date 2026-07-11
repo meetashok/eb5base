@@ -2,7 +2,7 @@ import type { F956Status, SubscriptionStatus } from './types';
 import { F956_OPTIONS, PROJECT_TYPES, SUBSCRIPTION_OPTIONS, TEA_OPTIONS } from './constants';
 
 export function formatCurrency(amount: number | null | undefined): string {
-  if (amount == null) return '—';
+  if (amount == null) return 'Not listed';
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -11,7 +11,7 @@ export function formatCurrency(amount: number | null | undefined): string {
 }
 
 export function formatDate(date: string | null | undefined): string {
-  if (!date) return '—';
+  if (!date) return 'Not listed';
   return new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',

@@ -47,7 +47,7 @@ const RC_REP_STEPS = [
   },
   {
     title: 'Verify your RC',
-    body: 'Select your regional center and confirm you represent it — we review requests within 24–48 hours.',
+    body: 'Select your regional center and confirm you represent it. We review requests within 24–48 hours.',
   },
   {
     title: 'Claim & edit projects',
@@ -83,7 +83,7 @@ export default function AboutPage() {
           <div>
             <h2 className="text-xl font-bold text-primary mb-2">Who it&apos;s for</h2>
             <p className="text-neutral/70 text-sm leading-relaxed max-w-2xl">
-              EB5 Base serves two kinds of participants in the EB-5 community — investors
+              EB5 Base serves two kinds of participants in the EB-5 community: investors
               researching opportunities and regional center representatives keeping listings
               accurate.
             </p>
@@ -129,61 +129,63 @@ export default function AboutPage() {
         </section>
 
         <section className="card-elevated p-6 md:p-8">
-          <h2 className="text-xl font-bold text-primary mb-2">How it works for investors</h2>
-          <p className="text-sm text-neutral/60 mb-5">
-            No account required to browse. Sign in when you want to confirm status or contribute.
-          </p>
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-4">
+            <div className="min-w-0">
+              <h2 className="text-xl font-bold text-primary mb-1">How it works for investors</h2>
+              <p className="text-sm text-neutral/60">
+                No account required to browse. Sign in when you want to confirm status or contribute.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2 shrink-0">
+              <Link href="/login" className="btn btn-accent text-accent-content btn-sm rounded-full shadow-soft">
+                Sign in as investor
+              </Link>
+              <Link href="/projects" className="btn btn-ghost btn-sm rounded-full">
+                Browse projects
+              </Link>
+            </div>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {INVESTOR_STEPS.map((step, i) => (
               <div key={step.title} className="step-card p-5">
                 <span className="inline-flex w-8 h-8 rounded-full bg-accent text-accent-content text-sm font-bold items-center justify-center mb-3 shadow-soft">
                   {i + 1}
                 </span>
-                <p className="text-xs uppercase tracking-widest text-secondary font-semibold mb-1">
-                  For investors
-                </p>
                 <h3 className="font-bold text-primary mb-2">{step.title}</h3>
                 <p className="text-sm text-neutral/70 leading-relaxed">{step.body}</p>
               </div>
             ))}
           </div>
-          <div className="flex flex-wrap gap-3 mt-6">
-            <Link href="/login" className="btn btn-accent text-accent-content btn-sm rounded-full shadow-soft">
-              Sign in as investor
-            </Link>
-            <Link href="/projects" className="btn btn-ghost btn-sm rounded-full">
-              Browse projects
-            </Link>
-          </div>
         </section>
 
         <section className="card-elevated p-6 md:p-8">
-          <h2 className="text-xl font-bold text-primary mb-2">How it works for RC representatives</h2>
-          <p className="text-sm text-neutral/60 mb-5">
-            Keep your regional center&apos;s listings accurate — verified representatives can edit
-            projects without waiting for admin review.
-          </p>
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-4">
+            <div className="min-w-0">
+              <h2 className="text-xl font-bold text-primary mb-1">How it works for RC representatives</h2>
+              <p className="text-sm text-neutral/60">
+                Keep your regional center&apos;s listings accurate. Verified representatives can edit
+                projects without waiting for admin review.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2 shrink-0">
+              <Link href="/login" className="btn btn-secondary btn-sm rounded-full">
+                Sign in as RC representative
+              </Link>
+              <Link href="/rc" className="btn btn-ghost btn-sm rounded-full">
+                Browse regional centers
+              </Link>
+            </div>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {RC_REP_STEPS.map((step, i) => (
               <div key={step.title} className="step-card p-5">
                 <span className="inline-flex w-8 h-8 rounded-full bg-secondary text-secondary-content text-sm font-bold items-center justify-center mb-3 shadow-soft">
                   {i + 1}
                 </span>
-                <p className="text-xs uppercase tracking-widest text-copper font-semibold mb-1">
-                  For regional center representatives
-                </p>
                 <h3 className="font-bold text-primary mb-2">{step.title}</h3>
                 <p className="text-sm text-neutral/70 leading-relaxed">{step.body}</p>
               </div>
             ))}
-          </div>
-          <div className="flex flex-wrap gap-3 mt-6">
-            <Link href="/login" className="btn btn-secondary btn-sm rounded-full">
-              Sign in as RC representative
-            </Link>
-            <Link href="/rc" className="btn btn-ghost btn-sm rounded-full">
-              Browse regional centers
-            </Link>
           </div>
         </section>
 
@@ -226,7 +228,7 @@ export default function AboutPage() {
         <section className="card-elevated p-6 md:p-8 text-center">
           <h2 className="text-xl font-bold text-primary mb-2">Questions or feedback?</h2>
           <p className="text-neutral/70 mb-5 text-sm">
-            Corrections, project suggestions, or general questions — we read every message.
+            Corrections, project suggestions, or general questions. We read every message.
           </p>
           <a href="mailto:hello@eb5base.com" className="btn btn-primary rounded-full">
             hello@eb5base.com

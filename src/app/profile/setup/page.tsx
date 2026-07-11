@@ -269,7 +269,7 @@ export default function ProfileSetupPage() {
               />
               <label className="label">
                 <span className="label-text-alt text-neutral/50">
-                  Optional — not displayed publicly
+                  Optional. Not displayed publicly.
                 </span>
               </label>
             </div>

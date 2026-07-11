@@ -80,7 +80,7 @@ export default function PrivacyPage() {
             <strong className="text-neutral">May be public:</strong> Depending on your settings and
             activity, your display name, role, project submissions, edits, and other community
             contributions may be visible to other users as part of the directory. Status
-            confirmations are aggregated — other users see counts, not who confirmed.
+            confirmations are aggregated. Other users see counts, not who confirmed.
           </p>
           <p>
             You can control whether your profile is visible to others through your profile settings.

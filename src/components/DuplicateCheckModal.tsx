@@ -69,7 +69,7 @@ export default function DuplicateCheckModal({
             Cancel
           </button>
           <button type="button" className="btn btn-primary" onClick={onProceed}>
-            None of these are mine — submit
+            None of these are mine. Submit
           </button>
         </div>
       </div>

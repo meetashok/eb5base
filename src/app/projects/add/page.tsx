@@ -344,11 +344,11 @@ export default function NewProjectForm() {
           <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
             <div>
               <dt className="text-meta text-neutral/50">Location</dt>
-              <dd>{[city, state].filter(Boolean).join(', ') || '—'}</dd>
+              <dd>{[city, state].filter(Boolean).join(', ') || 'Not listed'}</dd>
             </div>
             <div>
               <dt className="text-meta text-neutral/50">Regional Center</dt>
-              <dd>{brandName || '—'}</dd>
+              <dd>{brandName || 'Not listed'}</dd>
             </div>
             <div>
               <dt className="text-meta text-neutral/50">Investment</dt>
@@ -356,7 +356,7 @@ export default function NewProjectForm() {
             </div>
             <div>
               <dt className="text-meta text-neutral/50">Type</dt>
-              <dd>{projectTypes.map(projectTypeLabel).join(', ') || '—'}</dd>
+              <dd>{projectTypes.map(projectTypeLabel).join(', ') || 'Not listed'}</dd>
             </div>
           </dl>
           {notes && <p className="text-sm whitespace-pre-wrap">{notes}</p>}
@@ -436,7 +436,7 @@ export default function NewProjectForm() {
           {similarWhileTyping.length > 0 && !dismissedSimilar && (
             <div className="alert-heritage-warning p-3">
               <p className="text-sm font-medium mb-2">
-                These projects already exist under {brandName} — is yours one of these?
+                These projects already exist under {brandName}. Is yours one of these?
               </p>
               <ul className="space-y-1 mb-2">
                 {similarWhileTyping.map((p) => (
@@ -453,7 +453,7 @@ export default function NewProjectForm() {
                 className="btn btn-ghost btn-xs"
                 onClick={() => setDismissedSimilar(true)}
               >
-                None of these — create new
+                None of these. Create new
               </button>
             </div>
           )}

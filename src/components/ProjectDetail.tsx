@@ -104,7 +104,7 @@ export default function ProjectDetail({
       </section>
 
       <section className="card-elevated overflow-hidden mb-8 grid grid-cols-1 md:grid-cols-2">
-        <InfoRow label="Location" value={location || '—'} />
+        <InfoRow label="Location" value={location || 'Not listed'} />
         <InfoRow
           label="Regional Center"
           value={
@@ -117,7 +117,7 @@ export default function ProjectDetail({
                 brandDisplayName
               )
             ) : (
-              '—'
+              'Not listed'
             )
           }
         />
@@ -127,7 +127,7 @@ export default function ProjectDetail({
           value={
             p.total_slots != null && p.total_slots > 0
               ? p.total_slots.toLocaleString()
-              : '—'
+              : 'Not listed'
           }
         />
         <InfoRow
@@ -145,7 +145,7 @@ export default function ProjectDetail({
                 ))}
               </span>
             ) : (
-              '—'
+              'Not listed'
             )
           }
         />
@@ -162,7 +162,7 @@ export default function ProjectDetail({
                 {p.website_url}
               </a>
             ) : (
-              '—'
+              'Not listed'
             )
           }
         />
