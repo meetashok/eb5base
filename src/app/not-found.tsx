@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { AddProjectLink } from '@/components/AuthGatedLinks';
 import StatusBadge from '@/components/StatusBadge';
 
@@ -6,7 +7,15 @@ export default function NotFound() {
   return (
     <div>
       <section className="hero-glow border-b border-base-300/80">
-        <div className="max-w-xl mx-auto px-4 py-16 md:py-20 text-center">
+        <div className="max-w-xl mx-auto px-4 py-12 md:py-16 text-center">
+          <Image
+            src="/404-eagle-mascot.png"
+            alt="A friendly eagle reviewing your request with a pending clipboard"
+            width={200}
+            height={200}
+            className="mx-auto mb-4 shadow-soft rounded-2xl"
+            priority
+          />
           <p className="hero-eyebrow mb-3">Error 404 · Results pending</p>
           <h1 className="text-3xl md:text-4xl font-bold hero-headline tracking-tight text-balance">
             This page isn&apos;t open for subscriptions
