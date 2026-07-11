@@ -51,7 +51,7 @@ const RC_STEPS = [
     title: 'Sign in',
     body: 'Create an account with Google or email to access representative tools.',
     icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-copper" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
       </svg>
     ),
@@ -60,7 +60,7 @@ const RC_STEPS = [
     title: 'Verify your RC',
     body: 'Select your regional center and confirm you represent it. We review requests within 24–48 hours.',
     icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-copper" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
       </svg>
     ),
@@ -69,7 +69,7 @@ const RC_STEPS = [
     title: 'Claim & edit projects',
     body: 'Take ownership of your RC\u2019s project listings and keep details accurate. Verified edits go live right away.',
     icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-copper" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
       </svg>
     ),
@@ -208,27 +208,23 @@ export default async function HomePage() {
             listings up to date.
           </p>
 
-          <div className="mt-8">
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-4">
-              <div className="text-center md:text-left min-w-0">
-                <p className="text-xs uppercase tracking-widest text-secondary font-semibold">
-                  For investors
-                </p>
-                <p className="text-sm text-neutral/60 mt-1">
-                  No account required to browse. Sign in when you want to confirm status or
-                  contribute.
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2 justify-center md:justify-end shrink-0">
-                <Link href="/login" className="btn btn-accent text-accent-content btn-sm rounded-full shadow-soft">
-                  Sign in as investor
-                </Link>
-                <Link href="/projects" className="btn btn-ghost btn-sm rounded-full">
-                  Browse projects
-                </Link>
-              </div>
+          <div className="mt-8 panel-investor p-6 md:p-8">
+            <p className="text-xs uppercase tracking-widest text-secondary font-semibold">
+              For investors
+            </p>
+            <p className="text-sm text-neutral/60 mt-1 max-w-2xl">
+              No account required to browse. Sign in when you want to confirm status or
+              contribute.
+            </p>
+            <div className="flex flex-wrap gap-2 mt-4">
+              <Link href="/login" className="btn btn-secondary btn-sm rounded-full shadow-soft">
+                Sign in as an investor
+              </Link>
+              <Link href="/projects" className="btn btn-outline btn-secondary btn-sm rounded-full">
+                Browse projects
+              </Link>
             </div>
-            <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
               <div className="hidden md:block absolute top-12 left-[16%] right-[16%] border-t-2 border-dashed border-secondary/25 z-0" />
               {STEPS.map((step, i) => (
                 <div key={step.title} className="step-card relative z-10 text-center md:text-left">
@@ -236,7 +232,7 @@ export default async function HomePage() {
                     <div className="w-16 h-16 rounded-full bg-icon-ring shadow-soft flex items-center justify-center">
                       {step.icon}
                     </div>
-                    <span className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-accent text-accent-content text-xs font-bold flex items-center justify-center shadow-soft">
+                    <span className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-secondary text-secondary-content text-xs font-bold flex items-center justify-center shadow-soft">
                       {i + 1}
                     </span>
                   </div>
@@ -247,35 +243,34 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="mt-10">
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-4">
-              <div className="text-center md:text-left min-w-0">
-                <p className="text-xs uppercase tracking-widest text-copper font-semibold">
-                  For regional center representatives
-                </p>
-                <p className="text-sm text-neutral/60 mt-1">
-                  Keep your regional center&apos;s listings accurate. Verified representatives can
-                  edit projects without waiting for admin review.
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2 justify-center md:justify-end shrink-0">
-                <Link href="/login" className="btn btn-secondary btn-sm rounded-full">
-                  Sign in as RC representative
-                </Link>
-                <Link href="/about" className="btn btn-ghost btn-sm rounded-full">
-                  Learn more
-                </Link>
-              </div>
+          <div className="mt-8 panel-copper p-6 md:p-8">
+            <p className="text-xs uppercase tracking-widest text-copper font-semibold">
+              For regional center representatives
+            </p>
+            <p className="text-sm text-neutral/60 mt-1 max-w-2xl">
+              Keep your regional center&apos;s listings accurate. Verified representatives can
+              edit projects without waiting for admin review.
+            </p>
+            <div className="flex flex-wrap gap-2 mt-4">
+              <Link
+                href="/login"
+                className="btn btn-sm rounded-full bg-copper text-white border-0 hover:bg-copper-dark shadow-soft"
+              >
+                Sign in as an RC representative
+              </Link>
+              <Link href="/about" className="btn btn-outline btn-sm rounded-full border-copper/40 text-copper hover:bg-copper/10">
+                Learn more
+              </Link>
             </div>
-            <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="hidden md:block absolute top-12 left-[16%] right-[16%] border-t-2 border-dashed border-secondary/25 z-0" />
+            <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+              <div className="hidden md:block absolute top-12 left-[16%] right-[16%] border-t-2 border-dashed border-copper/25 z-0" />
               {RC_STEPS.map((step, i) => (
                 <div key={step.title} className="step-card relative z-10 text-center md:text-left">
                   <div className="relative inline-block mb-4">
-                    <div className="w-16 h-16 rounded-full bg-icon-ring shadow-soft flex items-center justify-center">
+                    <div className="w-16 h-16 rounded-full icon-ring-copper shadow-soft flex items-center justify-center">
                       {step.icon}
                     </div>
-                    <span className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-secondary text-secondary-content text-xs font-bold flex items-center justify-center shadow-soft">
+                    <span className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-copper text-white text-xs font-bold flex items-center justify-center shadow-soft">
                       {i + 1}
                     </span>
                   </div>

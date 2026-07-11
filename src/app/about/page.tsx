@@ -128,27 +128,26 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section className="card-elevated p-6 md:p-8">
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-4">
-            <div className="min-w-0">
-              <h2 className="text-xl font-bold text-primary mb-1">How it works for investors</h2>
-              <p className="text-sm text-neutral/60">
-                No account required to browse. Sign in when you want to confirm status or contribute.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2 shrink-0">
-              <Link href="/login" className="btn btn-accent text-accent-content btn-sm rounded-full shadow-soft">
-                Sign in as investor
-              </Link>
-              <Link href="/projects" className="btn btn-ghost btn-sm rounded-full">
-                Browse projects
-              </Link>
-            </div>
+        <section className="card-elevated p-6 md:p-8 panel-investor">
+          <p className="text-xs uppercase tracking-widest text-secondary font-semibold">
+            For investors
+          </p>
+          <h2 className="text-xl font-bold text-primary mt-1 mb-1">How it works for investors</h2>
+          <p className="text-sm text-neutral/60 max-w-2xl">
+            No account required to browse. Sign in when you want to confirm status or contribute.
+          </p>
+          <div className="flex flex-wrap gap-2 mt-4">
+            <Link href="/login" className="btn btn-secondary btn-sm rounded-full shadow-soft">
+              Sign in as an investor
+            </Link>
+            <Link href="/projects" className="btn btn-outline btn-secondary btn-sm rounded-full">
+              Browse projects
+            </Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
             {INVESTOR_STEPS.map((step, i) => (
               <div key={step.title} className="step-card p-5">
-                <span className="inline-flex w-8 h-8 rounded-full bg-accent text-accent-content text-sm font-bold items-center justify-center mb-3 shadow-soft">
+                <span className="inline-flex w-8 h-8 rounded-full bg-secondary text-secondary-content text-sm font-bold items-center justify-center mb-3 shadow-soft">
                   {i + 1}
                 </span>
                 <h3 className="font-bold text-primary mb-2">{step.title}</h3>
@@ -158,28 +157,30 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section className="card-elevated p-6 md:p-8">
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-4">
-            <div className="min-w-0">
-              <h2 className="text-xl font-bold text-primary mb-1">How it works for RC representatives</h2>
-              <p className="text-sm text-neutral/60">
-                Keep your regional center&apos;s listings accurate. Verified representatives can edit
-                projects without waiting for admin review.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2 shrink-0">
-              <Link href="/login" className="btn btn-secondary btn-sm rounded-full">
-                Sign in as RC representative
-              </Link>
-              <Link href="/rc" className="btn btn-ghost btn-sm rounded-full">
-                Browse regional centers
-              </Link>
-            </div>
+        <section className="card-elevated p-6 md:p-8 panel-copper">
+          <p className="text-xs uppercase tracking-widest text-copper font-semibold">
+            For regional center representatives
+          </p>
+          <h2 className="text-xl font-bold text-primary mt-1 mb-1">How it works for RC representatives</h2>
+          <p className="text-sm text-neutral/60 max-w-2xl">
+            Keep your regional center&apos;s listings accurate. Verified representatives can edit
+            projects without waiting for admin review.
+          </p>
+          <div className="flex flex-wrap gap-2 mt-4">
+            <Link
+              href="/login"
+              className="btn btn-sm rounded-full bg-copper text-white border-0 hover:bg-copper-dark shadow-soft"
+            >
+              Sign in as an RC representative
+            </Link>
+            <Link href="/rc" className="btn btn-outline btn-sm rounded-full border-copper/40 text-copper hover:bg-copper/10">
+              Browse regional centers
+            </Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
             {RC_REP_STEPS.map((step, i) => (
               <div key={step.title} className="step-card p-5">
-                <span className="inline-flex w-8 h-8 rounded-full bg-secondary text-secondary-content text-sm font-bold items-center justify-center mb-3 shadow-soft">
+                <span className="inline-flex w-8 h-8 rounded-full bg-copper text-white text-sm font-bold items-center justify-center mb-3 shadow-soft">
                   {i + 1}
                 </span>
                 <h3 className="font-bold text-primary mb-2">{step.title}</h3>

@@ -160,6 +160,14 @@ body {
     @apply bg-panel-copper border border-copper/20 rounded-2xl;
   }
 
+  .panel-investor {
+    @apply rounded-2xl border border-secondary/15 bg-secondary/[0.04];
+  }
+
+  .icon-ring-copper {
+    background: linear-gradient(135deg, rgba(184, 115, 51, 0.2) 0%, rgba(184, 115, 51, 0.06) 100%);
+  }
+
   .btn-primary:not(.btn-outline):not(.btn-ghost) {
     background-image: linear-gradient(135deg, #0a1628 0%, #1a3d32 50%, #0a1628 100%);
     border: 1px solid rgba(212, 175, 55, 0.35);
