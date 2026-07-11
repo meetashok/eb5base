@@ -15,12 +15,12 @@ type LogoProps = {
 
 const wordmarkPartStyles: Record<WordmarkVariant, { eb5: string; base: string }> = {
   'on-dark': {
-    eb5: 'font-semibold text-primary-content/80',
-    base: 'font-extrabold text-accent',
+    eb5: 'font-normal text-primary-content/75',
+    base: 'font-bold text-accent',
   },
   'on-light': {
-    eb5: 'font-semibold text-primary/75',
-    base: 'font-extrabold text-accent',
+    eb5: 'font-normal text-primary/70',
+    base: 'font-bold text-accent',
   },
 };
 
@@ -33,9 +33,9 @@ export function BrandWordmark({
 }) {
   const styles = wordmarkPartStyles[variant];
   return (
-    <span className={cn('inline-flex items-baseline tracking-tight leading-none', className)}>
-      <span className={cn('text-[0.92em]', styles.eb5)}>EB5</span>
-      <span className={cn('text-[1em] ml-0.5', styles.base)}>Base</span>
+    <span className={cn('inline-flex items-center gap-1 leading-none', className)}>
+      <span className={cn('font-normal tracking-wide', styles.eb5)}>EB5</span>
+      <span className={cn('font-bold tracking-tight', styles.base)}>Base</span>
     </span>
   );
 }
