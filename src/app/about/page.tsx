@@ -15,6 +15,7 @@ function SectionHeading({
   titleClassName = 'text-xl md:text-2xl',
   className = '',
   titleAction,
+  centered = false,
 }: {
   eyebrow: string;
   title: string;
@@ -23,18 +24,29 @@ function SectionHeading({
   titleClassName?: string;
   className?: string;
   titleAction?: React.ReactNode;
+  centered?: boolean;
 }) {
   return (
     <div className={className}>
-      <p className={`text-xs uppercase tracking-widest font-semibold mb-2 ${eyebrowClassName}`}>
+      <p
+        className={`text-xs uppercase tracking-widest font-semibold mb-2 ${eyebrowClassName} ${
+          centered ? 'text-center' : ''
+        }`}
+      >
         {eyebrow}
       </p>
-      <div className="flex items-center gap-2">
+      <div className={`flex items-center gap-2 ${centered ? 'justify-center' : ''}`}>
         <h2 className={`font-bold text-primary ${titleClassName}`}>{title}</h2>
         {titleAction}
       </div>
       {subtitle && (
-        <p className="text-sm text-neutral/60 mt-2 leading-relaxed max-w-2xl">{subtitle}</p>
+        <p
+          className={`text-sm text-neutral/60 mt-2 leading-relaxed max-w-2xl ${
+            centered ? 'mx-auto' : ''
+          }`}
+        >
+          {subtitle}
+        </p>
       )}
     </div>
   );
@@ -357,7 +369,8 @@ export default function AboutPage() {
             title="Questions or feedback?"
             subtitle="Corrections, project suggestions, or general questions. We read every message."
             titleClassName="text-xl"
-            className="mx-auto max-w-lg text-center"
+            className="mx-auto max-w-lg"
+            centered
           />
           <a href="mailto:hello@eb5base.com" className="btn btn-primary rounded-full mt-5">
             hello@eb5base.com
