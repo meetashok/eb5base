@@ -2,8 +2,6 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase';
-import type { VoteWithProfile } from '@/lib/types';
-import { timeAgo } from '@/lib/utils';
 import ConfirmStatusButtons from './ConfirmStatusButtons';
 
 interface ConfirmationWidgetProps {
@@ -18,7 +16,6 @@ interface Consensus {
 
 export default function ConfirmationWidget({ projectId }: ConfirmationWidgetProps) {
   const [consensus, setConsensus] = useState<Consensus>({ open: 0, closed: 0, total: 0 });
-  const [recent, setRecent] = useState<VoteWithProfile[]>([]);
   const [investorCount, setInvestorCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
@@ -27,18 +24,12 @@ export default function ConfirmationWidget({ projectId }: ConfirmationWidgetProp
     const since = new Date();
     since.setDate(since.getDate() - 30);
 
-    const [{ data: votes30 }, { data: recentVotes }, { count }] = await Promise.all([
+    const [{ data: votes30 }, { count }] = await Promise.all([
       supabase
         .from('project_votes')
         .select('subscription_status')
         .eq('project_id', projectId)
         .gte('created_at', since.toISOString()),
-      supabase
-        .from('project_votes')
-        .select('*, profiles:user_id(display_name, avatar_url)')
-        .eq('project_id', projectId)
-        .order('created_at', { ascending: false })
-        .limit(10),
       supabase
         .from('project_votes')
         .select('*', { count: 'exact', head: true })
@@ -49,7 +40,6 @@ export default function ConfirmationWidget({ projectId }: ConfirmationWidgetProp
     const open = (votes30 || []).filter((v) => v.subscription_status === 'open').length;
     const closed = (votes30 || []).filter((v) => v.subscription_status === 'closed').length;
     setConsensus({ open, closed, total: open + closed });
-    setRecent((recentVotes as VoteWithProfile[]) || []);
     setInvestorCount(count || 0);
     setLoading(false);
   }, [projectId]);
@@ -115,35 +105,6 @@ export default function ConfirmationWidget({ projectId }: ConfirmationWidgetProp
           showCount={false}
           onConfirmed={load}
         />
-
-        {recent.length > 0 && (
-          <div className="mt-6 pt-4 border-t border-base-300/60">
-            <h3 className="text-sm font-semibold text-neutral/70 mb-3">Recent confirmations</h3>
-            <div className="space-y-2">
-              {recent.map((c) => (
-                <div key={c.id} className="flex items-center gap-2 text-sm flex-wrap">
-                  <span
-                    className={`w-2 h-2 rounded-full shrink-0 ${
-                      c.subscription_status === 'open' ? 'bg-secondary' : 'bg-error'
-                    }`}
-                  />
-                  <span className="font-medium">{c.profiles?.display_name || 'Anonymous'}</span>
-                  <span className="text-neutral/50">confirmed</span>
-                  <span
-                    className={
-                      c.subscription_status === 'open'
-                        ? 'text-secondary font-medium'
-                        : 'text-error font-medium'
-                    }
-                  >
-                    {c.subscription_status === 'open' ? 'Open' : 'Closed'}
-                  </span>
-                  <span className="text-neutral/40 ml-auto">{timeAgo(c.created_at)}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         <p className="text-sm text-neutral/50 mt-4 panel-copper px-3 py-2">
           {investorCount} investor{investorCount !== 1 ? 's' : ''} have reported investing in this

@@ -173,7 +173,6 @@ export default function AboutPage() {
           <ul className="space-y-3 text-neutral/80">
             <CheckItem>Email used only for auth, never displayed or shared</CheckItem>
             <CheckItem>Country of birth optional and never shown publicly</CheckItem>
-            <CheckItem>Confirmations show display name only</CheckItem>
             <CheckItem>No tracking cookies, no ads, no third-party data sharing</CheckItem>
             <CheckItem>Analytics are privacy-focused and anonymized (GoatCounter)</CheckItem>
           </ul>
