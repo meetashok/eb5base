@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
+import Logo from '@/components/Logo';
 import type { User } from '@supabase/supabase-js';
 import type { Profile } from '@/lib/types';
 
@@ -76,8 +77,8 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 bg-primary text-primary-content">
       <div className="navbar max-w-6xl mx-auto px-4 min-h-16">
         <div className="navbar-start">
-          <Link href="/" className="text-xl font-bold tracking-tight">
-            EB5 Base
+          <Link href="/" className="hover:opacity-90 transition-opacity">
+            <Logo size={36} showWordmark wordmarkClassName="text-xl text-primary-content" />
           </Link>
         </div>
 

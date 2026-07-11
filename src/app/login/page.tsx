@@ -1,9 +1,10 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { FormEvent, Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import AuthBrandPanel from '@/components/AuthBrandPanel';
+import Logo from '@/components/Logo';
 
 function GoogleIcon() {
   return (
@@ -58,6 +59,7 @@ function LoginForm() {
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
+            <Logo size={56} className="justify-center mb-4 lg:hidden" />
             <h1 className="text-3xl font-bold text-primary">Sign in to EB5 Base</h1>
             <p className="text-neutral/60 mt-2">
               Browse projects, confirm status, and contribute
