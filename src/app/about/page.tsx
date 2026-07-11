@@ -77,19 +77,18 @@ export default function AboutPage() {
       <section className="mb-12 space-y-3 text-neutral/80 leading-relaxed">
         <h2 className="text-xl font-bold text-primary">Who&apos;s behind this</h2>
         <p>
-          Ashok Kumar, founder. EB-5 investor and software engineer based in the Seattle area.
+          Ashok Kumar, founder. EB-5 investor and data scientist based in the Seattle area.
           Built EB5 Base because the information investors need was too scattered.
         </p>
         <p>
           <a
-            href="https://www.linkedin.com/in/"
+            href="https://www.linkedin.com/in/ashokkumar42/"
             target="_blank"
             rel="noopener noreferrer"
             className="link link-secondary"
           >
             LinkedIn profile
           </a>
-          <span className="text-xs text-neutral/40 ml-2">(update with your profile URL)</span>
         </p>
       </section>
 
