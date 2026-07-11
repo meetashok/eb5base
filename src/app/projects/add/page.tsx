@@ -26,6 +26,7 @@ import {
   subscriptionVariant,
 } from '@/lib/utils';
 import { allocateUniqueSlug, projectPath, slugify } from '@/lib/slugs';
+import { useToast } from '@/components/Toast';
 
 interface ContactDraft {
   name: string;
@@ -43,6 +44,7 @@ const emptyContact = (): ContactDraft => ({
 
 export default function NewProjectForm() {
   const router = useRouter();
+  const { toast } = useToast();
   const [userId, setUserId] = useState<string | null>(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
 
@@ -141,6 +143,7 @@ export default function NewProjectForm() {
             .maybeSingle();
           return Boolean(data);
         }),
+        status: 'approved',
       })
       .select('id')
       .single();
@@ -242,12 +245,14 @@ export default function NewProjectForm() {
           website_url: website.trim() || null,
           notes: notes.trim() || null,
           added_by: userId,
+          status: 'approved',
         })
         .select('id, slug, brand_id')
         .single();
 
       if (insertError || !project) {
         setError(insertError?.message || 'Failed to create project');
+        toast(insertError?.message || 'Failed to create project', 'error');
         setSubmitting(false);
         return;
       }
@@ -271,8 +276,10 @@ export default function NewProjectForm() {
           rc_brands: brandRow,
         })
       );
+      toast('Project added', 'success');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to submit');
+      toast(err instanceof Error ? err.message : 'Failed to submit', 'error');
       setSubmitting(false);
     }
   }

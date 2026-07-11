@@ -68,6 +68,7 @@ export default function NewRcBrandPage() {
         slug,
         website_url: website.trim() || null,
         description: description.trim() || null,
+        status: 'approved',
       })
       .select('id, slug')
       .single();

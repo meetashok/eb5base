@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export function Skeleton({ className = '' }: { className?: string }) {
   return <div className={`skeleton-shimmer ${className}`} />;
 }
@@ -57,9 +59,9 @@ export function AddProjectCTACard() {
         <p className="text-sm text-neutral/50">
           Help fellow investors by adding it to the directory
         </p>
-        <a href="/projects/add" className="btn btn-outline btn-secondary btn-sm mt-3">
+        <Link href="/projects/add" className="btn btn-outline btn-secondary btn-sm mt-3">
           Add a Project
-        </a>
+        </Link>
       </div>
     </div>
   );

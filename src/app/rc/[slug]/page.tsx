@@ -68,13 +68,14 @@ export default async function RCBrandDetailPage({ params }: { params: { slug: st
   const supabase = createClient();
   const brandId = brand.id;
 
-  const [{ data: contacts }, { data: projects }, { data: entities }] = await Promise.all([
+  const [{ data: contacts }, projectsRes, { data: entities }] = await Promise.all([
     supabase.from('rc_brand_contacts').select('*').eq('brand_id', brandId),
     supabase
       .from('projects')
       .select(PROJECT_SELECT)
       .eq('brand_id', brandId)
       .is('merged_into', null)
+      .eq('status', 'approved')
       .order('created_at', { ascending: false }),
     supabase
       .from('regional_centers')
@@ -82,6 +83,18 @@ export default async function RCBrandDetailPage({ params }: { params: { slug: st
       .eq('brand_id', brandId)
       .order('name'),
   ]);
+
+  let projects = projectsRes.data;
+  if (projectsRes.error) {
+    console.error('Brand projects (approved) failed:', projectsRes.error.message);
+    const retry = await supabase
+      .from('projects')
+      .select(PROJECT_SELECT)
+      .eq('brand_id', brandId)
+      .is('merged_into', null)
+      .order('created_at', { ascending: false });
+    projects = retry.data;
+  }
 
   let list = (projects as ProjectWithVotes[]) || [];
 
