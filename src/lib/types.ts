@@ -163,6 +163,11 @@ export interface ProjectWithVotes extends Project {
   confirmation_count?: number;
   last_vote_status?: string | null;
   last_vote_at?: string | null;
+  confirmations_7d?: number;
+  open_7d?: number;
+  closed_7d?: number;
+  consensus_7d?: 'open' | 'closed' | null;
+  open_pct_7d?: number | null;
   project_votes?: { count: number }[] | null;
 }
 

@@ -6,24 +6,20 @@ import StatusBadge from './StatusBadge';
 import TEATag from './TEATag';
 import ConfirmStatusButtons from './ConfirmStatusButtons';
 import {
-  formatCurrency,
+  consensus7dLabel,
   f956Label,
   f956Variant,
-  subscriptionLabel,
-  subscriptionVariant,
+  formatConfirmations7d,
+  formatOpenPct7d,
 } from '@/lib/utils';
 
 interface ProjectCardProps {
   project: ProjectWithVotes;
-  showConfirmationSummary?: boolean;
 }
 
 const compactBadge = 'text-[10px] px-2 py-0 min-h-0 h-5 font-medium';
 
-export default function ProjectCard({
-  project,
-  showConfirmationSummary = true,
-}: ProjectCardProps) {
+export default function ProjectCard({ project }: ProjectCardProps) {
   const location = [project.location_city, project.location_state].filter(Boolean).join(', ');
   const brandName = projectBrandName(project);
   const confirmationCount =
@@ -31,23 +27,46 @@ export default function ProjectCard({
     project.project_votes?.[0]?.count ??
     project.vote_count ??
     0;
-  const metaLine = [location, brandName].filter(Boolean).join(' · ');
-  const amount = formatCurrency(project.investment_amount);
+  const confirmations7d = project.confirmations_7d ?? 0;
+  const consensus = project.consensus_7d;
+  const openPctLine = formatOpenPct7d(project.open_pct_7d);
+  const detailHref = projectPath(project);
 
   return (
     <div className="card-elevated h-full">
       <div className="card-body p-3 gap-2">
-        <Link href={projectPath(project)} className="block group">
+        <Link href={detailHref} className="block group">
           <div className="flex items-start justify-between gap-2">
-            <h3 className="text-sm font-bold text-primary leading-snug line-clamp-2 group-hover:text-secondary transition-colors">
-              {project.name}
-            </h3>
-            <span className="text-xs font-semibold text-neutral shrink-0 tabular-nums">{amount}</span>
-          </div>
+            <div className="min-w-0 flex-1">
+              <h3 className="text-sm font-bold text-primary leading-snug line-clamp-2 group-hover:text-secondary transition-colors">
+                {project.name}
+              </h3>
+              {brandName && (
+                <p className="text-xs font-semibold text-secondary truncate mt-0.5">{brandName}</p>
+              )}
+              {location && (
+                <p className="text-xs text-neutral/60 truncate mt-0.5">{location}</p>
+              )}
+            </div>
 
-          {metaLine && (
-            <p className="text-xs text-neutral/60 truncate mt-0.5">{metaLine}</p>
-          )}
+            {confirmations7d > 0 && consensus && (
+              <div className="text-right shrink-0 leading-tight">
+                <p
+                  className={`text-xs font-bold ${
+                    consensus === 'open' ? 'text-secondary' : 'text-error'
+                  }`}
+                >
+                  {consensus7dLabel(consensus)}
+                </p>
+                <p className="text-[10px] text-neutral/50 mt-0.5">
+                  {formatConfirmations7d(confirmations7d)}
+                </p>
+                {openPctLine && (
+                  <p className="text-[10px] text-neutral/50">{openPctLine}</p>
+                )}
+              </div>
+            )}
+          </div>
 
           {project.total_slots != null && project.total_slots > 0 && (
             <p className="text-[11px] text-neutral/50 mt-0.5">
@@ -66,27 +85,15 @@ export default function ProjectCard({
                 className={compactBadge}
               />
             )}
-            {project.subscription_status && (
-              <StatusBadge
-                label={subscriptionLabel(project.subscription_status)}
-                variant={subscriptionVariant(project.subscription_status)}
-                className={compactBadge}
-              />
-            )}
           </div>
-
-          {showConfirmationSummary && confirmationCount > 0 && (
-            <p className="text-[10px] text-neutral/50 mt-1">
-              {confirmationCount} confirmation{confirmationCount === 1 ? '' : 's'}
-            </p>
-          )}
         </Link>
 
         <ConfirmStatusButtons
           projectId={project.id}
+          projectHref={detailHref}
           confirmationCount={confirmationCount}
           showCount={false}
-          compact
+          variant="card"
         />
       </div>
     </div>

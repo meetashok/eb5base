@@ -103,6 +103,7 @@ export default function ConfirmationWidget({ projectId }: ConfirmationWidgetProp
           confirmationCount={consensus.total}
           size="md"
           showCount={false}
+          variant="detail"
           onConfirmed={load}
         />
 
