@@ -22,8 +22,7 @@ export default function NotFound() {
               </h1>
               <p className="text-neutral/70 leading-relaxed mt-4">
                 Our eagle checked the file. This URL is not in the directory: not approved, not
-                pending, not anywhere on EB5 Base. The good news is that unlike EB-5, a wrong click
-                costs you nothing.
+                pending, not anywhere on EB5 Base.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 mt-6 justify-center md:justify-start">
                 <Link href="/" className="btn btn-primary rounded-full">

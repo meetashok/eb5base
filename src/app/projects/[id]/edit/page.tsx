@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import BrandAutocomplete, { type BrandSelection } from '@/components/BrandAutocomplete';
+import ProjectImageManager from '@/components/ProjectImageManager';
 import {
   F956_OPTIONS,
   PROJECT_TYPES,
@@ -55,6 +56,7 @@ export default function EditProjectPage() {
   const [totalSlots, setTotalSlots] = useState('');
   const [notes, setNotes] = useState('');
   const [existingSlug, setExistingSlug] = useState<string | null>(null);
+  const [canManageImages, setCanManageImages] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -143,6 +145,13 @@ export default function EditProjectPage() {
       setAmount(p.investment_amount != null ? String(p.investment_amount) : '');
       setTotalSlots(p.total_slots != null ? String(p.total_slots) : '');
       setNotes(p.notes || '');
+
+      const [{ data: profile }, verifiedRc] = await Promise.all([
+        supabase.from('profiles').select('is_admin').eq('id', auth.user.id).maybeSingle(),
+        isVerifiedRcRepForProject(supabase, auth.user.id, p),
+      ]);
+      setCanManageImages(Boolean(profile?.is_admin) || verifiedRc);
+
       setLoading(false);
     })();
   }, [param, router]);
@@ -379,6 +388,10 @@ export default function EditProjectPage() {
             onChange={(e) => setName(e.target.value)}
           />
         </label>
+
+        {projectId && (
+          <ProjectImageManager projectId={projectId} canManage={canManageImages} />
+        )}
 
         <fieldset>
           <legend className="label-text mb-2">Project Type</legend>

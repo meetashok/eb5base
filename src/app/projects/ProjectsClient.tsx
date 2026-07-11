@@ -2,12 +2,14 @@
 
 import Link from 'next/link';
 import { AddProjectLink } from '@/components/AuthGatedLinks';
+import { AddProjectCTACard } from '@/components/Skeleton';
 import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import ProjectCard from '@/components/ProjectCard';
 import type { ProjectWithVotes } from '@/lib/types';
 import type { ProjectFilters } from '@/lib/projects';
 import {
+  CTA_CARD_PROMINENT_UNTIL,
   F956_OPTIONS,
   PROJECT_TYPES,
   SUBSCRIPTION_OPTIONS,
@@ -18,6 +20,7 @@ import {
 interface ProjectsClientProps {
   projects: ProjectWithVotes[];
   total: number;
+  directoryTotal: number;
   page: number;
   totalPages: number;
   filters: ProjectFilters;
@@ -55,11 +58,14 @@ const FILTER_CHIP_LABELS: Record<string, string> = {
 export default function ProjectsClient({
   projects,
   total,
+  directoryTotal,
   page,
   totalPages,
   filters,
 }: ProjectsClientProps) {
   const router = useRouter();
+  const ctaProminent = directoryTotal < CTA_CARD_PROMINENT_UNTIL;
+  const showCta = ctaProminent || projects.length < 3;
 
   const activeChips = useMemo(() => {
     const chips: { key: string; value: string; label: string }[] = [];
@@ -223,22 +229,11 @@ export default function ProjectsClient({
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {ctaProminent && showCta && <AddProjectCTACard prominent />}
           {projects.map((p) => (
             <ProjectCard key={p.id} project={p} />
           ))}
-          {projects.length < 3 && (
-            <div className="card-elevated border-dashed border-2 border-copper/30">
-              <div className="p-8 items-center text-center flex flex-col">
-                <h3 className="font-bold text-neutral/80">Know a project not listed here?</h3>
-                <p className="text-sm text-neutral/50 mt-1">
-                  Help the community by adding it to the directory
-                </p>
-                <AddProjectLink className="btn btn-primary btn-sm rounded-full mt-3">
-                  + Add Project
-                </AddProjectLink>
-              </div>
-            </div>
-          )}
+          {!ctaProminent && projects.length < 3 && <AddProjectCTACard />}
         </div>
       )}
 

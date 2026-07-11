@@ -1,6 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import type { ProjectWithVotes } from '@/lib/types';
-import { projectBrandName } from '@/lib/types';
+import { projectBrandName, projectCoverUrl } from '@/lib/types';
 import { projectPath } from '@/lib/slugs';
 import StatusBadge from './StatusBadge';
 import TEATag from './TEATag';
@@ -22,6 +24,7 @@ const compactBadge = 'text-[10px] px-2 py-0 min-h-0 h-5 font-medium';
 export default function ProjectCard({ project }: ProjectCardProps) {
   const location = [project.location_city, project.location_state].filter(Boolean).join(', ');
   const brandName = projectBrandName(project);
+  const coverUrl = projectCoverUrl(project);
   const confirmationCount =
     project.confirmation_count ??
     project.project_votes?.[0]?.count ??
@@ -33,8 +36,26 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   const detailHref = projectPath(project);
 
   return (
-    <div className="card-elevated h-full">
-      <div className="card-body p-3 gap-2">
+    <div className="card-elevated h-full relative overflow-hidden">
+      {coverUrl && (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={coverUrl}
+            alt=""
+            aria-hidden
+            className="absolute top-0 right-0 h-full w-[48%] object-cover object-center pointer-events-none"
+          />
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                'linear-gradient(to right, hsl(var(--b1)) 0%, hsl(var(--b1) / 0.92) 35%, hsl(var(--b1) / 0.55) 55%, transparent 72%)',
+            }}
+          />
+        </>
+      )}
+      <div className="card-body p-3 gap-2 relative z-10">
         <Link href={detailHref} className="block group">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0 flex-1">

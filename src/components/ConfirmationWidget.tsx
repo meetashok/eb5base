@@ -16,7 +16,6 @@ interface Consensus {
 
 export default function ConfirmationWidget({ projectId }: ConfirmationWidgetProps) {
   const [consensus, setConsensus] = useState<Consensus>({ open: 0, closed: 0, total: 0 });
-  const [investorCount, setInvestorCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
@@ -24,23 +23,15 @@ export default function ConfirmationWidget({ projectId }: ConfirmationWidgetProp
     const since = new Date();
     since.setDate(since.getDate() - 30);
 
-    const [{ data: votes30 }, { count }] = await Promise.all([
-      supabase
-        .from('project_votes')
-        .select('subscription_status')
-        .eq('project_id', projectId)
-        .gte('created_at', since.toISOString()),
-      supabase
-        .from('project_votes')
-        .select('*', { count: 'exact', head: true })
-        .eq('project_id', projectId)
-        .eq('invested', true),
-    ]);
+    const { data: votes30 } = await supabase
+      .from('project_votes')
+      .select('subscription_status')
+      .eq('project_id', projectId)
+      .gte('created_at', since.toISOString());
 
     const open = (votes30 || []).filter((v) => v.subscription_status === 'open').length;
     const closed = (votes30 || []).filter((v) => v.subscription_status === 'closed').length;
     setConsensus({ open, closed, total: open + closed });
-    setInvestorCount(count || 0);
     setLoading(false);
   }, [projectId]);
 
@@ -106,11 +97,6 @@ export default function ConfirmationWidget({ projectId }: ConfirmationWidgetProp
           variant="detail"
           onConfirmed={load}
         />
-
-        <p className="text-sm text-neutral/50 mt-4 panel-copper px-3 py-2">
-          {investorCount} investor{investorCount !== 1 ? 's' : ''} have reported investing in this
-          project
-        </p>
       </div>
     </section>
   );

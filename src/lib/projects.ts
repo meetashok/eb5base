@@ -5,6 +5,8 @@ import { ensureSlugsForProjects } from '@/lib/ensure-slugs';
 
 /** Prefer brand join; fall back to plain select if embed fails (pre-migration DB) */
 const LIST_SELECT =
+  '*, cover_image:project_images!cover_image_id(id, url), rc_brands!brand_id(id, name, website_url, slug), regional_centers(id, name, uscis_rc_id, website_url)';
+const LIST_SELECT_NO_IMAGES =
   '*, rc_brands!brand_id(id, name, website_url, slug), regional_centers(id, name, uscis_rc_id, website_url)';
 const LIST_SELECT_LEGACY = '*, regional_centers(id, name, uscis_rc_id, website_url)';
 
@@ -128,6 +130,17 @@ export async function getRecentProjects(limit = 6): Promise<ProjectWithVotes[]> 
       .from('projects')
       .select(LIST_SELECT)
       .is('merged_into', null)
+      .order('created_at', { ascending: false })
+      .limit(limit));
+  }
+
+  if (error) {
+    console.error('getRecentProjects cover image select failed:', error.message);
+    ({ data, error } = await supabase
+      .from('projects')
+      .select(LIST_SELECT_NO_IMAGES)
+      .is('merged_into', null)
+      .eq('status', 'approved')
       .order('created_at', { ascending: false })
       .limit(limit));
   }
@@ -267,6 +280,11 @@ export async function getFilteredProjects(filters: ProjectFilters) {
 
   if (error) {
     console.error('getFilteredProjects brand select failed:', error.message);
+    ({ data, count, error } = await applyFilters(LIST_SELECT_NO_IMAGES));
+  }
+
+  if (error) {
+    console.error('getFilteredProjects cover image select failed:', error.message);
     ({ data, count, error } = await applyFilters(LIST_SELECT_LEGACY));
   }
 

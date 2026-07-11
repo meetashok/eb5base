@@ -4,7 +4,7 @@ import SearchBar from '@/components/SearchBar';
 import FilterPanel from '@/components/FilterPanel';
 import PageHero from '@/components/PageHero';
 import ProjectsClient from './ProjectsClient';
-import { getFilteredProjects, type ProjectFilters } from '@/lib/projects';
+import { getFilteredProjects, getHomeStats, type ProjectFilters } from '@/lib/projects';
 import { PAGE_SIZE } from '@/lib/constants';
 
 export const dynamic = 'force-dynamic';
@@ -18,11 +18,14 @@ export default async function ProjectsPage({
 }: {
   searchParams: ProjectFilters;
 }) {
-  const { projects, total, page } = await getFilteredProjects(searchParams).catch(() => ({
-    projects: [],
-    total: 0,
-    page: 1,
-  }));
+  const [{ projects, total, page }, stats] = await Promise.all([
+    getFilteredProjects(searchParams).catch(() => ({
+      projects: [],
+      total: 0,
+      page: 1,
+    })),
+    getHomeStats().catch(() => ({ projects: 0, regionalCenters: 0, investors: 0, confirmations: 0 })),
+  ]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
@@ -52,6 +55,7 @@ export default async function ProjectsPage({
             <ProjectsClient
               projects={projects}
               total={total}
+              directoryTotal={stats.projects}
               page={page}
               totalPages={totalPages}
               filters={searchParams}

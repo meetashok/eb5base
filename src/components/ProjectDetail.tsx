@@ -3,8 +3,9 @@ import AuthGateLink from '@/components/AuthGateLink';
 import TEATag from '@/components/TEATag';
 import StatusBadge from '@/components/StatusBadge';
 import ConfirmationWidget from '@/components/ConfirmationWidget';
+import ProjectGallery from '@/components/ProjectGallery';
 import ReportDuplicateButton from '@/app/projects/[id]/ReportDuplicateButton';
-import type { Project, ProjectContact, Profile } from '@/lib/types';
+import type { Project, ProjectContact, ProjectImage, Profile } from '@/lib/types';
 import { brandPath, projectEditPath } from '@/lib/slugs';
 import {
   formatCurrency,
@@ -19,15 +20,19 @@ import {
 interface ProjectDetailProps {
   project: Project;
   contacts: ProjectContact[];
+  images?: ProjectImage[];
   userId: string | null;
   canEdit: boolean;
+  canManageImages?: boolean;
 }
 
 export default function ProjectDetail({
   project: p,
   contacts,
+  images = [],
   userId,
   canEdit,
+  canManageImages = false,
 }: ProjectDetailProps) {
   const location = [p.location_city, p.location_state].filter(Boolean).join(', ');
   const adder = p.profiles as Pick<Profile, 'display_name'> | null | undefined;
@@ -106,6 +111,12 @@ export default function ProjectDetail({
           </div>
         </div>
       </section>
+
+      <ProjectGallery
+        projectId={p.id}
+        initialImages={images}
+        canManage={canManageImages}
+      />
 
       <section className="card-elevated overflow-hidden mb-8 grid grid-cols-1 md:grid-cols-2">
         <InfoRow label="Location" value={location || 'Not listed'} />

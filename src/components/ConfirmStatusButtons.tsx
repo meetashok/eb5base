@@ -9,6 +9,7 @@ import { useAuthPrompt } from './AuthPromptProvider';
 
 const REPROMPT_DAYS = 3;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const DAILY_LIMIT = 1;
 
 interface ConfirmStatusButtonsProps {
   projectId: string;
@@ -49,9 +50,6 @@ export default function ConfirmStatusButtons({
   const [lastStatus, setLastStatus] = useState<string | null>(null);
   const [lastAt, setLastAt] = useState<string | null>(null);
   const [pendingStatus, setPendingStatus] = useState<'open' | 'closed' | null>(null);
-  const [askInvested, setAskInvested] = useState(false);
-  const [showDate, setShowDate] = useState(false);
-  const [investmentDate, setInvestmentDate] = useState('');
   const [saving, setSaving] = useState(false);
   const [thanks, setThanks] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -92,8 +90,7 @@ export default function ConfirmStatusButtons({
         .maybeSingle(),
     ]);
 
-    const dailyLimit = isCard ? 1 : 2;
-    setRateLimited((count || 0) >= dailyLimit);
+    setRateLimited((count || 0) >= DAILY_LIMIT);
     if (last) {
       setLastStatus(last.subscription_status);
       setLastAt(last.created_at);
@@ -102,7 +99,7 @@ export default function ConfirmStatusButtons({
       setLastAt(null);
     }
     setLoading(false);
-  }, [projectId, isCard]);
+  }, [projectId]);
 
   useEffect(() => {
     refreshUserState();
@@ -110,8 +107,6 @@ export default function ConfirmStatusButtons({
 
   async function insertConfirmation(
     status: 'open' | 'closed',
-    invested: boolean,
-    date?: string,
     options?: { bypassDailyLimit?: boolean }
   ) {
     if (!userId) return;
@@ -129,10 +124,8 @@ export default function ConfirmStatusButtons({
         .eq('user_id', userId)
         .gte('created_at', start.toISOString());
 
-      const dailyLimit = isCard ? 1 : 2;
-      if ((count || 0) >= dailyLimit) {
+      if ((count || 0) >= DAILY_LIMIT) {
         setRateLimited(true);
-        setAskInvested(false);
         setPendingStatus(null);
         setSaving(false);
         setError(
@@ -148,8 +141,8 @@ export default function ConfirmStatusButtons({
       project_id: projectId,
       user_id: userId,
       subscription_status: status,
-      invested,
-      investment_date: invested && date ? date : null,
+      invested: false,
+      investment_date: null,
     });
 
     setSaving(false);
@@ -161,13 +154,8 @@ export default function ConfirmStatusButtons({
     setLocalCount((c) => c + 1);
     setLastStatus(status);
     setLastAt(new Date().toISOString());
-    setAskInvested(false);
-    setShowDate(false);
     setPendingStatus(null);
     setThanks(true);
-    if (!isCard) {
-      setTimeout(() => setThanks(false), 2000);
-    }
     await refreshUserState();
     onConfirmed?.();
   }
@@ -179,24 +167,15 @@ export default function ConfirmStatusButtons({
       promptSignIn();
       return;
     }
-    if (rateLimited && isCard) return;
-
-    if (isCard) {
-      void insertConfirmation(status, false);
-      return;
-    }
-
-    setPendingStatus(status);
-    setAskInvested(true);
-    setShowDate(false);
-    setInvestmentDate('');
+    if (rateLimited) return;
+    void insertConfirmation(status);
   }
 
   function handleReprompt(confirmed: boolean) {
     if (!lastStatus || (lastStatus !== 'open' && lastStatus !== 'closed')) return;
     const prior = lastStatus as 'open' | 'closed';
     const next = confirmed ? prior : prior === 'open' ? 'closed' : 'open';
-    void insertConfirmation(next, false, undefined, { bypassDailyLimit: true });
+    void insertConfirmation(next, { bypassDailyLimit: true });
   }
 
   const effectiveSize = isCard ? 'sm' : size;
@@ -215,13 +194,16 @@ export default function ConfirmStatusButtons({
   const needsReprompt =
     isCard && userId && lastStatus && lastAt && daysSince(lastAt) >= REPROMPT_DAYS;
 
-  const showCardThanks =
-    isCard &&
+  const showThanks =
     userId &&
     lastStatus &&
     lastAt &&
-    daysSince(lastAt) < REPROMPT_DAYS &&
-    !needsReprompt;
+    thanks &&
+    (isCard ? daysSince(lastAt) < REPROMPT_DAYS && !needsReprompt : true);
+
+  const showCardThanks = isCard && showThanks;
+
+  const showDetailThanks = !isCard && showThanks && !rateLimited;
 
   const openBtnClass = isCard
     ? `h-6 min-h-0 px-2 text-[10px] font-medium gap-1 rounded-md border border-secondary/40 text-secondary hover:bg-secondary/10 inline-flex items-center justify-center transition-colors ${
@@ -255,6 +237,13 @@ export default function ConfirmStatusButtons({
               Change your confirmation
             </Link>
           )}
+        </div>
+      ) : showDetailThanks ? (
+        <div className="space-y-1 text-center">
+          <p className="text-sm text-success font-medium">Thank you for confirming.</p>
+          <p className="text-xs text-neutral/50">
+            <AddProjectLink className="link link-primary">Know another project?</AddProjectLink>
+          </p>
         </div>
       ) : needsReprompt ? (
         <div className="space-y-1">
@@ -343,7 +332,7 @@ export default function ConfirmStatusButtons({
         </div>
       )}
 
-      {!userId && !rateLimited && !isCard && (
+      {!userId && !rateLimited && !showDetailThanks && !isCard && (
         <p className="text-xs text-neutral/50 mt-2 text-center">
           <button type="button" className="link link-secondary" onClick={() => promptSignIn()}>
             Sign in to continue
@@ -351,91 +340,15 @@ export default function ConfirmStatusButtons({
         </p>
       )}
 
-      {askInvested && pendingStatus && !isCard && (
-        <div className="mt-2 p-2 bg-base-200 rounded-lg text-sm">
-          {!showDate ? (
-            <>
-              <p className="text-neutral/70">Did you invest in this project?</p>
-              <div className="flex gap-2 mt-1">
-                <button
-                  type="button"
-                  className="btn btn-xs btn-ghost"
-                  disabled={saving}
-                  onClick={() => setShowDate(true)}
-                >
-                  Yes
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-xs btn-ghost"
-                  disabled={saving}
-                  onClick={() => insertConfirmation(pendingStatus, false)}
-                >
-                  No
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-xs btn-ghost ml-auto"
-                  onClick={() => {
-                    setAskInvested(false);
-                    setPendingStatus(null);
-                  }}
-                >
-                  Cancel
-                </button>
-              </div>
-            </>
-          ) : (
-            <div className="space-y-2">
-              <label className="form-control">
-                <span className="label-text text-xs mb-1">Investment date</span>
-                <input
-                  type="date"
-                  className="input input-bordered input-sm"
-                  value={investmentDate}
-                  onChange={(e) => setInvestmentDate(e.target.value)}
-                />
-              </label>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  className="btn btn-xs btn-primary"
-                  disabled={saving || !investmentDate}
-                  onClick={() => insertConfirmation(pendingStatus, true, investmentDate)}
-                >
-                  {saving ? 'Saving…' : 'Confirm'}
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-xs btn-ghost"
-                  onClick={() => setShowDate(false)}
-                >
-                  Back
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {thanks && !isCard && (
-        <div className="text-center mt-2">
-          <p className="text-xs text-success font-medium">Thanks!</p>
-          <p className="text-xs text-neutral/50 mt-1">
-            <AddProjectLink className="link link-primary">Know another project?</AddProjectLink>
-          </p>
-        </div>
-      )}
-
       {error && <p className="text-xs text-error mt-2">{error}</p>}
 
-      {showCount && localCount > 0 && !isCard && (
+      {showCount && localCount > 0 && !isCard && !showDetailThanks && (
         <p className="text-xs text-neutral/40 mt-2 text-center">
           {localCount} confirmation{localCount !== 1 ? 's' : ''}
         </p>
       )}
 
-      {lastStatus && lastAt && !isCard && (
+      {lastStatus && lastAt && !isCard && !showDetailThanks && (
         <p className="text-[10px] text-neutral/40 mt-1 text-center">
           You last confirmed: {statusLabel(lastStatus)}, {timeAgo(lastAt)}
         </p>

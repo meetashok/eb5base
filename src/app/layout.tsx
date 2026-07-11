@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     template: '%s | EB5 Base',
   },
   description:
-    'Free, community-driven directory of EB-5 regional center projects. Browse projects, confirm subscription status, and make informed investment decisions.',
+    'Community-driven directory of EB-5 regional center projects. Browse projects, confirm subscription status, and make informed investment decisions.',
   metadataBase: new URL('https://eb5base.com'),
   openGraph: {
     type: 'website',
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     siteName: 'EB5 Base',
     title: 'EB5 Base - EB-5 Project Directory',
     description:
-      'Free, community-driven directory of EB-5 regional center projects.',
+      'Community-driven directory of EB-5 regional center projects.',
     images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'EB5 Base' }],
   },
   twitter: {

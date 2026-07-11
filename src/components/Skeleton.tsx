@@ -40,7 +40,37 @@ export function RCCardSkeleton() {
   );
 }
 
-export function AddProjectCTACard() {
+export function AddProjectCTACard({ prominent = false }: { prominent?: boolean }) {
+  if (prominent) {
+    return (
+      <div className="card-elevated border-2 border-secondary/40 bg-gradient-to-br from-secondary/15 via-secondary/5 to-base-100 h-full shadow-soft">
+        <div className="card-body items-center text-center p-5 py-10">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-10 h-10 text-secondary mb-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <h3 className="text-base font-bold text-primary">Know an EB-5 project?</h3>
+          <p className="text-sm text-neutral/60 mt-1 max-w-xs">
+            Help fellow investors by adding it to the directory
+          </p>
+          <AddProjectLink className="btn btn-secondary text-secondary-content btn-sm mt-4 rounded-full shadow-soft">
+            Add a Project
+          </AddProjectLink>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="card-elevated border-dashed border-2 border-secondary/25 h-full">
       <div className="card-body items-center text-center p-4 py-8">

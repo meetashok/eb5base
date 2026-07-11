@@ -4,6 +4,7 @@ import SearchBar from '@/components/SearchBar';
 import ProjectCard from '@/components/ProjectCard';
 import { AddProjectCTACard } from '@/components/Skeleton';
 import { getHomeStats, getRecentProjects } from '@/lib/projects';
+import { CTA_CARD_PROMINENT_UNTIL } from '@/lib/constants';
 import type { ProjectWithVotes } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
@@ -48,7 +49,7 @@ const STEPS = [
 const RC_STEPS = [
   {
     title: 'Sign in',
-    body: 'Create a free account with Google or email to access representative tools.',
+    body: 'Create an account with Google or email to access representative tools.',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -85,7 +86,23 @@ export default async function HomePage() {
     // Supabase may be unconfigured during local setup
   }
 
-  const ctaCount = recent.length < 3 ? Math.max(0, 3 - recent.length) : 0;
+  const ctaProminent = stats.projects < CTA_CARD_PROMINENT_UNTIL;
+  const ctaCount = ctaProminent ? 1 : recent.length < 3 ? Math.max(0, 3 - recent.length) : 0;
+
+  const recentGrid = (
+    <>
+      {ctaProminent && ctaCount > 0 && (
+        <AddProjectCTACard prominent key="cta-prominent" />
+      )}
+      {recent.map((p) => (
+        <ProjectCard key={p.id} project={p} />
+      ))}
+      {!ctaProminent &&
+        Array.from({ length: ctaCount }).map((_, i) => (
+          <AddProjectCTACard key={`cta-${i}`} />
+        ))}
+    </>
+  );
 
   return (
     <div>
@@ -172,18 +189,13 @@ export default async function HomePage() {
         </div>
         {recent.length === 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-            <AddProjectCTACard />
-            <AddProjectCTACard />
-            <AddProjectCTACard />
+            <AddProjectCTACard prominent />
+            <AddProjectCTACard prominent />
+            <AddProjectCTACard prominent />
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-            {recent.map((p) => (
-              <ProjectCard key={p.id} project={p} />
-            ))}
-            {Array.from({ length: ctaCount }).map((_, i) => (
-              <AddProjectCTACard key={`cta-${i}`} />
-            ))}
+            {recentGrid}
           </div>
         )}
       </section>

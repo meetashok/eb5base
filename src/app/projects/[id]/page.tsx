@@ -2,6 +2,10 @@ import { notFound, redirect } from 'next/navigation';
 import ProjectDetail from '@/components/ProjectDetail';
 import { createClient } from '@/lib/supabase-server';
 import { canEditProject, loadProjectByParam } from '@/lib/project-loader';
+import {
+  canManageProjectImagesServer,
+  loadProjectImages,
+} from '@/lib/project-images-server';
 import { projectPath } from '@/lib/slugs';
 import type { ProjectContact } from '@/lib/types';
 
@@ -45,14 +49,20 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
   ]);
 
   const userId = auth.user?.id ?? null;
-  const canEdit = await canEditProject(project, userId);
+  const [canEdit, images, canManageImages] = await Promise.all([
+    canEditProject(project, userId),
+    loadProjectImages(project.id),
+    canManageProjectImagesServer(project, userId),
+  ]);
 
   return (
     <ProjectDetail
       project={project}
       contacts={(contacts as ProjectContact[]) || []}
+      images={images}
       userId={userId}
       canEdit={canEdit}
+      canManageImages={canManageImages}
     />
   );
 }
