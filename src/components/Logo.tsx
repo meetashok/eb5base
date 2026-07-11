@@ -6,6 +6,8 @@ type LogoProps = {
   className?: string;
   showWordmark?: boolean;
   wordmarkClassName?: string;
+  /** When true, clips the image to rounded corners (usually unnecessary — logo PNG is pre-rounded). */
+  rounded?: boolean;
 };
 
 export default function Logo({
@@ -13,6 +15,7 @@ export default function Logo({
   className,
   showWordmark = false,
   wordmarkClassName,
+  rounded = false,
 }: LogoProps) {
   return (
     <span className={cn('inline-flex items-center gap-2.5', className)}>
@@ -21,7 +24,7 @@ export default function Logo({
         alt="EB5 Base"
         width={size}
         height={size}
-        className="rounded-lg shrink-0"
+        className={cn('shrink-0', rounded && 'rounded-lg')}
         priority
       />
       {showWordmark && (
