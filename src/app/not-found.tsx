@@ -1,7 +1,5 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { AddProjectLink } from '@/components/AuthGatedLinks';
-import StatusBadge from '@/components/StatusBadge';
 
 export default function NotFound() {
   return (
@@ -10,13 +8,13 @@ export default function NotFound() {
         <div className="max-w-xl mx-auto px-4 py-12 md:py-16 text-center">
           <Image
             src="/404-eagle-mascot.png"
-            alt="A friendly eagle reviewing your request with a pending clipboard"
+            alt="A friendly eagle who could not find this page"
             width={200}
             height={200}
             className="mx-auto mb-4 shadow-soft rounded-2xl"
             priority
           />
-          <p className="hero-eyebrow mb-3">Error 404 · Results pending</p>
+          <p className="hero-eyebrow mb-3">404 · Page not found</p>
           <h1 className="text-3xl md:text-4xl font-bold hero-headline tracking-tight text-balance">
             This page isn&apos;t open for subscriptions
           </h1>
@@ -26,27 +24,18 @@ export default function NotFound() {
       <div className="max-w-xl mx-auto px-4 py-10 md:py-14">
         <div className="card-elevated p-8 md:p-10 text-center space-y-6">
           <p className="text-neutral/70 leading-relaxed">
-            You may have invested $800,000 of attention navigating here, but unlike an EB-5
-            project, this URL offers no guarantee of approval and no timeline for results. We
-            couldn&apos;t locate the page you requested.
+            Our eagle checked the file. This URL is not in the directory: not approved, not
+            pending, not anywhere on EB5 Base. The good news is that unlike EB-5, a wrong click
+            costs you nothing.
           </p>
 
-          <div className="flex flex-wrap gap-2 justify-center">
-            <StatusBadge label="Route · Not found" variant="error" />
-            <StatusBadge label="956F · N/A" variant="muted" />
-            <StatusBadge label="Refund · Pending" variant="warning" />
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href="/" className="btn btn-primary rounded-full">
               Go home
             </Link>
-            <Link href="/projects" className="btn btn-outline btn-secondary rounded-full">
+            <Link href="/projects" className="btn btn-ghost rounded-full">
               Browse projects
             </Link>
-            <AddProjectLink className="btn btn-ghost rounded-full">
-              Add a project
-            </AddProjectLink>
           </div>
         </div>
       </div>
