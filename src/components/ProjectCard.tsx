@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { ProjectWithVotes } from '@/lib/types';
 import { projectBrandName } from '@/lib/types';
+import { projectPath } from '@/lib/slugs';
 import StatusBadge from './StatusBadge';
 import TEATag from './TEATag';
 import ConfirmStatusButtons from './ConfirmStatusButtons';
@@ -32,7 +33,7 @@ export default function ProjectCard({
   return (
     <div className="card card-bordered border-base-300/50 bg-base-100 shadow-sm h-full transition-all duration-150 hover:shadow-md hover:-translate-y-0.5 hover:border-l-4 hover:border-l-primary">
       <div className="card-body p-4 gap-3">
-        <Link href={`/projects/${project.id}`} className="block space-y-3">
+        <Link href={projectPath(project)} className="block space-y-3">
           <h3 className="card-title text-base font-bold text-primary leading-snug">
             {project.name}
           </h3>

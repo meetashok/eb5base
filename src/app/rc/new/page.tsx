@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import { useToast } from '@/components/Toast';
+import { allocateUniqueSlug, brandPath, slugify } from '@/lib/slugs';
 
 export default function NewRcBrandPage() {
   const router = useRouter();
@@ -51,14 +52,24 @@ export default function NewRcBrandPage() {
       return;
     }
 
+    const slug = await allocateUniqueSlug(slugify(name.trim()), async (candidate) => {
+      const { data } = await supabase
+        .from('rc_brands')
+        .select('id')
+        .eq('slug', candidate)
+        .maybeSingle();
+      return Boolean(data);
+    });
+
     const { data, error: insertError } = await supabase
       .from('rc_brands')
       .insert({
         name: name.trim(),
+        slug,
         website_url: website.trim() || null,
         description: description.trim() || null,
       })
-      .select('id')
+      .select('id, slug')
       .single();
 
     setSaving(false);
@@ -69,7 +80,7 @@ export default function NewRcBrandPage() {
     }
 
     toast('Regional center added', 'success');
-    router.push(`/rc/${data.id}`);
+    router.push(brandPath(data));
   }
 
   if (checkingAuth) {

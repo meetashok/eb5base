@@ -43,6 +43,7 @@ export interface Profile {
 export interface RcBrand {
   id: string;
   name: string;
+  slug: string | null;
   website_url: string | null;
   description: string | null;
   logo_url: string | null;
@@ -95,6 +96,7 @@ export interface RcMembership {
 export interface Project {
   id: string;
   name: string;
+  slug: string | null;
   project_type: string[] | null;
   location_city: string | null;
   location_state: string | null;
@@ -112,7 +114,7 @@ export interface Project {
   merged_into: string | null;
   created_at: string;
   updated_at: string;
-  rc_brands?: Pick<RcBrand, 'id' | 'name' | 'website_url'> | null;
+  rc_brands?: Pick<RcBrand, 'id' | 'name' | 'website_url' | 'slug'> | null;
   regional_centers?: Pick<
     RegionalCenter,
     'id' | 'name' | 'uscis_rc_id' | 'website_url'
@@ -162,7 +164,7 @@ export interface VoteWithProfile extends ProjectVote {
 
 /** Prefer brand join; keep regional_centers as fallback during migration */
 export const PROJECT_SELECT =
-  '*, rc_brands!brand_id(id, name, website_url), regional_centers(id, name, uscis_rc_id, website_url)';
+  '*, rc_brands!brand_id(id, name, website_url, slug), regional_centers(id, name, uscis_rc_id, website_url)';
 
 export function projectBrandName(project: Project): string | null {
   return project.rc_brands?.name || project.regional_centers?.name || null;
