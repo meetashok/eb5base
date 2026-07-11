@@ -14,7 +14,7 @@ export default function ContactPage() {
         subtitle={
           <>
             Feedback, corrections, or questions about{' '}
-            <BrandWordmark variant="on-dark" className="text-base inline-flex" /> — we read every
+            <BrandWordmark variant="on-light" className="text-base inline-flex" /> — we read every
             message.
           </>
         }

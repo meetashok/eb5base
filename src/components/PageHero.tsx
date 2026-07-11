@@ -13,7 +13,7 @@ export default function PageHero({ eyebrow, title, subtitle, children }: PageHer
       <div className="page-hero-inner">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
-            {eyebrow && <p className="hero-eyebrow text-accent mb-2">{eyebrow}</p>}
+            {eyebrow && <p className="page-hero-eyebrow mb-2">{eyebrow}</p>}
             <h1 className="page-hero-title">{title}</h1>
             {subtitle && <p className="page-hero-subtitle">{subtitle}</p>}
           </div>

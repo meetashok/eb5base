@@ -120,27 +120,27 @@ export default async function RCBrandDetailPage({ params }: { params: { slug: st
     <div>
       <section className="page-hero">
         <div className="page-hero-inner">
-          <div className="text-meta breadcrumbs mb-3 text-primary-content/60">
+          <div className="text-meta breadcrumbs mb-3 text-neutral/50 [&_a]:text-secondary [&_a:hover]:text-secondary/80">
             <ul>
               <li>
-                <Link href="/" className="hover:text-accent">Home</Link>
+                <Link href="/">Home</Link>
               </li>
               <li>
-                <Link href="/rc" className="hover:text-accent">Regional Centers</Link>
+                <Link href="/rc">Regional Centers</Link>
               </li>
               <li>{brand.name}</li>
             </ul>
           </div>
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div>
-              <p className="hero-eyebrow text-accent mb-2">Regional Center</p>
+              <p className="page-hero-eyebrow mb-2">Regional Center</p>
               <h1 className="page-hero-title">{brand.name}</h1>
               {brand.website_url && (
                 <a
                   href={brand.website_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-accent hover:underline mt-2 inline-block"
+                  className="text-sm text-secondary hover:underline mt-2 inline-block"
                 >
                   {brand.website_url}
                 </a>
@@ -152,7 +152,7 @@ export default async function RCBrandDetailPage({ params }: { params: { slug: st
             {user && (
               <Link
                 href={brandEditPath(brand)}
-                className="btn btn-outline btn-sm border-primary-content/40 text-primary-content hover:bg-primary-content/10 rounded-full shrink-0"
+                className="btn btn-outline btn-sm border-primary/30 text-primary hover:bg-primary/5 rounded-full shrink-0"
               >
                 Edit
               </Link>

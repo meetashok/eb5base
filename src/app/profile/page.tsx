@@ -233,7 +233,7 @@ export default function ProfilePage() {
               </div>
             )}
             <div className="flex-1 space-y-2 w-full">
-              <p className="hero-eyebrow text-accent">Your profile</p>
+              <p className="page-hero-eyebrow">Your profile</p>
               {editingName ? (
                 <input
                   className="input input-bordered input-sm bg-base-100 text-neutral max-w-xs"
@@ -253,7 +253,7 @@ export default function ProfilePage() {
               ) : (
                 <button
                   type="button"
-                  className="text-2xl font-bold text-primary-content text-left"
+                  className="text-2xl font-bold text-primary text-left"
                   onClick={() => setEditingName(true)}
                 >
                   {profile.display_name || 'Click to set display name'}
@@ -261,7 +261,7 @@ export default function ProfilePage() {
               )}
               <div className="flex flex-wrap items-center gap-2">
                 {roleLabel && (
-                  <span className="badge bg-secondary/20 text-primary-content border border-secondary/40 rounded-full">
+                  <span className="badge bg-secondary/15 text-secondary border border-secondary/30 rounded-full">
                     {roleLabel}
                   </span>
                 )}

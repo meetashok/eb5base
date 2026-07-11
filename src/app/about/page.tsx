@@ -47,7 +47,7 @@ export default function AboutPage() {
         eyebrow="Community-built · Investor-led"
         title={
           <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-1">
-            About <BrandWordmark variant="on-dark" className="text-[0.88em] sm:text-[0.95em]" />
+            About <BrandWordmark variant="on-light" className="text-[0.88em] sm:text-[0.95em]" />
           </span>
         }
         subtitle="A free directory helping EB-5 investors find projects, confirm subscription status, and share what they know."

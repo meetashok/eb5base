@@ -72,11 +72,19 @@ body {
   }
 
   .page-hero {
-    @apply bg-page-hero-gradient text-primary-content border-b border-white/10 shadow-nav;
+    background:
+      radial-gradient(ellipse 70% 55% at 100% 0%, rgba(45, 90, 71, 0.06), transparent 55%),
+      radial-gradient(ellipse 55% 45% at 0% 100%, rgba(212, 175, 55, 0.07), transparent 50%),
+      linear-gradient(180deg, #ebe4d8 0%, #f5f0e8 48%, #faf7f2 100%);
+    @apply border-b border-base-300/70;
   }
 
   .page-hero-inner {
-    @apply max-w-6xl mx-auto px-4 py-10 md:py-14;
+    @apply max-w-6xl mx-auto px-4 py-8 md:py-10;
+  }
+
+  .page-hero-eyebrow {
+    @apply text-xs uppercase tracking-[0.22em] font-semibold text-secondary;
   }
 
   .panel-copper {
@@ -99,11 +107,11 @@ body {
   }
 
   .page-hero-title {
-    @apply text-3xl md:text-4xl font-bold tracking-tight text-primary-content;
+    @apply text-3xl md:text-4xl font-bold tracking-tight text-primary;
   }
 
   .page-hero-subtitle {
-    @apply text-primary-content/75 mt-2 text-base md:text-lg max-w-2xl;
+    @apply text-neutral/70 mt-2 text-base md:text-lg max-w-2xl;
   }
 
   .alert-heritage-info {

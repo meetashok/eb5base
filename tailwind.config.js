@@ -28,6 +28,8 @@ module.exports = {
           'linear-gradient(160deg, #060f1a 0%, #0a1628 40%, #2d5a47 100%)',
         'page-hero-gradient':
           'linear-gradient(135deg, #060f1a 0%, #0a1628 30%, #1a3d32 65%, #0a1628 100%)',
+        'page-hero-surface':
+          'linear-gradient(180deg, #ebe4d8 0%, #f5f0e8 48%, #faf7f2 100%)',
         'btn-primary-gradient':
           'linear-gradient(135deg, #0a1628 0%, #1a3d32 50%, #0a1628 100%)',
         'surface-warm': 'linear-gradient(180deg, #f0ebe3 0%, #faf7f2 100%)',
