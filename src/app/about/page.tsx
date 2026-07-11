@@ -193,9 +193,18 @@ export default function AboutPage() {
           <h2 className="text-xl font-bold text-primary mb-4">Your data is safe</h2>
           <ul className="space-y-3 text-neutral/80">
             <CheckItem>Email used only for auth, never displayed or shared</CheckItem>
-            <CheckItem>Country of birth optional and never shown publicly</CheckItem>
             <CheckItem>No tracking cookies, no ads, no third-party data sharing</CheckItem>
-            <CheckItem>Analytics are privacy-focused and anonymized (GoatCounter)</CheckItem>
+            <CheckItem>
+              Privacy-focused, anonymized analytics via{' '}
+              <a
+                href="https://www.goatcounter.com/help/privacy"
+                className="link link-secondary"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                GoatCounter
+              </a>
+            </CheckItem>
           </ul>
         </section>
 
