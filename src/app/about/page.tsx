@@ -124,9 +124,6 @@ export default function AboutPage() {
                 <CheckItem>Verify that you represent your regional center</CheckItem>
                 <CheckItem>Claim project listings for your RC and edit them as needed</CheckItem>
               </ul>
-              <Link href="/login" className="btn btn-secondary btn-sm rounded-full w-fit">
-                Sign in as RC representative
-              </Link>
             </div>
           </div>
         </section>
@@ -142,10 +139,21 @@ export default function AboutPage() {
                 <span className="inline-flex w-8 h-8 rounded-full bg-accent text-accent-content text-sm font-bold items-center justify-center mb-3 shadow-soft">
                   {i + 1}
                 </span>
+                <p className="text-xs uppercase tracking-widest text-secondary font-semibold mb-1">
+                  For investors
+                </p>
                 <h3 className="font-bold text-primary mb-2">{step.title}</h3>
                 <p className="text-sm text-neutral/70 leading-relaxed">{step.body}</p>
               </div>
             ))}
+          </div>
+          <div className="flex flex-wrap gap-3 mt-6">
+            <Link href="/login" className="btn btn-accent text-accent-content btn-sm rounded-full shadow-soft">
+              Sign in as investor
+            </Link>
+            <Link href="/projects" className="btn btn-ghost btn-sm rounded-full">
+              Browse projects
+            </Link>
           </div>
         </section>
 
@@ -161,10 +169,21 @@ export default function AboutPage() {
                 <span className="inline-flex w-8 h-8 rounded-full bg-secondary text-secondary-content text-sm font-bold items-center justify-center mb-3 shadow-soft">
                   {i + 1}
                 </span>
+                <p className="text-xs uppercase tracking-widest text-copper font-semibold mb-1">
+                  For regional center representatives
+                </p>
                 <h3 className="font-bold text-primary mb-2">{step.title}</h3>
                 <p className="text-sm text-neutral/70 leading-relaxed">{step.body}</p>
               </div>
             ))}
+          </div>
+          <div className="flex flex-wrap gap-3 mt-6">
+            <Link href="/login" className="btn btn-secondary btn-sm rounded-full">
+              Sign in as RC representative
+            </Link>
+            <Link href="/rc" className="btn btn-ghost btn-sm rounded-full">
+              Browse regional centers
+            </Link>
           </div>
         </section>
 

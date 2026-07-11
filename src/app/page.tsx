@@ -45,6 +45,36 @@ const STEPS = [
   },
 ];
 
+const RC_STEPS = [
+  {
+    title: 'Sign in',
+    body: 'Create a free account with Google or email to access representative tools.',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Verify your RC',
+    body: 'Select your regional center and confirm you represent it — we review requests within 24–48 hours.',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Claim & edit projects',
+    body: 'Take ownership of your RC\u2019s project listings and keep details accurate. Verified edits go live right away.',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+      </svg>
+    ),
+  },
+];
+
 export default async function HomePage() {
   let stats = { projects: 0, regionalCenters: 0, investors: 0, confirmations: 0 };
   let recent: ProjectWithVotes[] = [];
@@ -165,7 +195,11 @@ export default async function HomePage() {
             Built for investors researching EB-5 and regional center representatives keeping
             listings up to date.
           </p>
-          <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+
+          <p className="text-sm text-neutral/60 text-center mb-6 max-w-xl mx-auto">
+            No account required to browse. Sign in when you want to confirm status or contribute.
+          </p>
+          <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div className="hidden md:block absolute top-12 left-[16%] right-[16%] border-t-2 border-dashed border-secondary/25 z-0" />
             {STEPS.map((step, i) => (
               <div key={step.title} className="step-card relative z-10 text-center md:text-left">
@@ -185,24 +219,46 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
+          <div className="flex flex-wrap gap-3 justify-center mb-14">
+            <Link href="/login" className="btn btn-accent text-accent-content btn-sm rounded-full shadow-soft">
+              Sign in as investor
+            </Link>
+            <Link href="/projects" className="btn btn-ghost btn-sm rounded-full">
+              Browse projects
+            </Link>
+          </div>
 
-          <div className="card-elevated max-w-3xl mx-auto p-6 md:p-8 text-center md:text-left">
-            <p className="text-xs uppercase tracking-widest text-copper font-semibold mb-1">
-              For regional center representatives
-            </p>
-            <h3 className="text-lg font-bold text-primary mb-2">Manage your project listings</h3>
-            <p className="text-sm text-neutral/70 mb-5 leading-relaxed">
-              Sign in, verify that you represent your regional center, then claim and edit your
-              RC&apos;s project listings to keep investors informed.
-            </p>
-            <div className="flex flex-wrap gap-3 justify-center md:justify-start">
-              <Link href="/login" className="btn btn-secondary btn-sm rounded-full">
-                Sign in as RC representative
-              </Link>
-              <Link href="/about" className="btn btn-ghost btn-sm rounded-full">
-                Learn more
-              </Link>
-            </div>
+          <p className="text-sm text-neutral/60 text-center mb-6 max-w-xl mx-auto">
+            Keep your regional center&apos;s listings accurate — verified representatives can edit
+            projects without waiting for admin review.
+          </p>
+          <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="hidden md:block absolute top-12 left-[16%] right-[16%] border-t-2 border-dashed border-secondary/25 z-0" />
+            {RC_STEPS.map((step, i) => (
+              <div key={step.title} className="step-card relative z-10 text-center md:text-left">
+                <div className="relative inline-block mb-4">
+                  <div className="w-16 h-16 rounded-full bg-icon-ring shadow-soft flex items-center justify-center">
+                    {step.icon}
+                  </div>
+                  <span className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-secondary text-secondary-content text-xs font-bold flex items-center justify-center shadow-soft">
+                    {i + 1}
+                  </span>
+                </div>
+                <p className="text-xs uppercase tracking-widest text-copper font-semibold mb-1">
+                  For regional center representatives
+                </p>
+                <h3 className="text-lg font-bold text-primary mb-2">{step.title}</h3>
+                <p className="text-sm text-neutral/70">{step.body}</p>
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-3 justify-center">
+            <Link href="/login" className="btn btn-secondary btn-sm rounded-full">
+              Sign in as RC representative
+            </Link>
+            <Link href="/about" className="btn btn-ghost btn-sm rounded-full">
+              Learn more
+            </Link>
           </div>
         </div>
       </section>
