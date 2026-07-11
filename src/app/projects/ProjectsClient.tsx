@@ -162,7 +162,7 @@ export default function ProjectsClient({
           {activeChips.map((chip) => (
             <span
               key={`${chip.key}-${chip.value}`}
-              className="badge badge-primary badge-outline gap-1 rounded-full"
+              className="badge bg-secondary/15 text-secondary border border-secondary/30 gap-1 rounded-full"
             >
               {chip.label}
               <button
@@ -211,11 +211,8 @@ export default function ProjectsClient({
       </div>
 
       {projects.length === 0 ? (
-        <div className="py-16 text-center">
-          <div className="text-4xl mb-3" aria-hidden>
-            📋
-          </div>
-          <h2 className="text-lg font-bold text-neutral/70">No projects match your filters</h2>
+        <div className="card-elevated py-16 text-center px-6">
+          <h2 className="text-lg font-bold text-neutral/80">No projects match your filters</h2>
           <p className="text-sm text-neutral/50 mt-2 mb-4">
             Try broadening your search, or add a project the community is missing.
           </p>
@@ -229,12 +226,9 @@ export default function ProjectsClient({
             <ProjectCard key={p.id} project={p} />
           ))}
           {projects.length < 3 && (
-            <div className="card card-bordered border-dashed shadow-sm bg-base-100/50">
-              <div className="card-body items-center text-center p-8">
-                <div className="text-3xl mb-2" aria-hidden>
-                  📋
-                </div>
-                <h3 className="font-bold text-neutral/70">Know a project not listed here?</h3>
+            <div className="card-elevated border-dashed border-2 border-copper/30">
+              <div className="p-8 items-center text-center flex flex-col">
+                <h3 className="font-bold text-neutral/80">Know a project not listed here?</h3>
                 <p className="text-sm text-neutral/50 mt-1">
                   Help the community by adding it to the directory
                 </p>

@@ -239,7 +239,7 @@ export default function ProfileSetupPage() {
       <ProgressDots step={step} total={totalSteps} />
 
       {step === 1 && (
-        <div className="card card-bordered shadow-sm bg-base-100">
+        <div className="card-elevated bg-base-100">
           <div className="card-body">
             <h2 className="text-lg font-bold text-primary mb-4">Tell us about yourself</h2>
 
@@ -284,7 +284,7 @@ export default function ProfileSetupPage() {
       )}
 
       {step === 2 && (
-        <div className="card card-bordered shadow-sm bg-base-100">
+        <div className="card-elevated bg-base-100">
           <div className="card-body">
             <h2 className="text-lg font-bold text-primary mb-2">What&apos;s your role?</h2>
             <p className="text-sm text-neutral/60 mb-6">This helps us tailor your experience</p>
@@ -295,7 +295,7 @@ export default function ProfileSetupPage() {
                   key={opt.value}
                   type="button"
                   onClick={() => setRole(opt.value)}
-                  className={`card card-bordered p-4 text-left transition-all duration-150 hover:shadow-md cursor-pointer ${
+                  className={`card-elevated p-4 text-left transition-all duration-150 hover:shadow-lift cursor-pointer ${
                     role === opt.value
                       ? 'border-primary border-2 bg-primary/5'
                       : 'hover:border-primary/30'
@@ -332,7 +332,7 @@ export default function ProfileSetupPage() {
       )}
 
       {step === 3 && role === 'investor' && (
-        <div className="card card-bordered shadow-sm bg-base-100">
+        <div className="card-elevated bg-base-100">
           <div className="card-body">
             <h2 className="text-lg font-bold text-primary mb-2">Where are you in your journey?</h2>
 
@@ -353,7 +353,7 @@ export default function ProfileSetupPage() {
               ).map((opt) => (
                 <label
                   key={opt.value}
-                  className={`card card-bordered p-4 cursor-pointer transition-all duration-150 ${
+                  className={`card-elevated p-4 cursor-pointer transition-all duration-150 ${
                     investorStage === opt.value
                       ? 'border-primary border-2 bg-primary/5'
                       : 'hover:border-primary/30'
@@ -400,7 +400,7 @@ export default function ProfileSetupPage() {
       )}
 
       {step === 3 && (role === 'attorney' || role === 'agent') && (
-        <div className="card card-bordered shadow-sm bg-base-100">
+        <div className="card-elevated bg-base-100">
           <div className="card-body">
             <h2 className="text-lg font-bold text-primary mb-2">
               {role === 'attorney' ? 'Attorney Profile' : 'Agent Profile'}
@@ -446,7 +446,7 @@ export default function ProfileSetupPage() {
       )}
 
       {step === 3 && role === 'rc_operator' && (
-        <div className="card card-bordered shadow-sm bg-base-100">
+        <div className="card-elevated bg-base-100">
           <div className="card-body">
             <h2 className="text-lg font-bold text-primary mb-4">Regional Center Verification</h2>
 

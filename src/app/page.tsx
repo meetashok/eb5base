@@ -58,8 +58,16 @@ export default async function HomePage() {
 
   return (
     <div>
-      <section className="hero-glow border-b border-base-300/80">
-        <div className="max-w-6xl mx-auto px-4 py-20 md:py-28 text-center">
+      <section className="hero-glow border-b border-base-300/80 relative overflow-hidden">
+        <div
+          className="absolute inset-0 pointer-events-none opacity-40"
+          aria-hidden
+          style={{
+            background:
+              'radial-gradient(ellipse 40% 50% at 90% 10%, rgba(184, 115, 51, 0.2), transparent 60%)',
+          }}
+        />
+        <div className="max-w-6xl mx-auto px-4 py-20 md:py-28 text-center relative">
           <p className="hero-eyebrow mb-4">Community-built · Investor-led</p>
           <h1 className="text-4xl md:text-5xl font-bold hero-headline tracking-tight text-balance">
             The EB-5 Project Directory
@@ -75,13 +83,13 @@ export default async function HomePage() {
             <Link href="/projects" className="btn btn-primary rounded-full">
               Browse Projects
             </Link>
-            <Link href="/projects/add" className="btn btn-outline btn-primary rounded-full">
+            <Link href="/projects/add" className="btn btn-accent text-accent-content rounded-full shadow-soft hover:shadow-glow">
               + Add a Project
             </Link>
           </div>
           {stats.projects >= 10 ? (
             <div className="mt-10 flex flex-wrap justify-center gap-4 md:gap-6">
-              <div className="stat-pill">
+              <div className="stat-pill border-copper/20">
                 <p className="text-4xl font-bold text-primary">{stats.projects}</p>
                 <p className="text-xs uppercase tracking-widest text-neutral/50 mt-1">Projects</p>
               </div>
@@ -116,7 +124,7 @@ export default async function HomePage() {
             <Link
               key={f.href}
               href={f.href}
-              className="btn btn-outline btn-sm rounded-full transition-all duration-150"
+              className="btn btn-outline btn-sm rounded-full border-secondary/40 text-secondary hover:bg-secondary hover:text-secondary-content transition-all duration-150"
             >
               {f.label}
             </Link>

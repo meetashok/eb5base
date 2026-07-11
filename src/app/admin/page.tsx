@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import { useToast } from '@/components/Toast';
+import PageHero from '@/components/PageHero';
 import { brandPath, projectPath } from '@/lib/slugs';
 import { statusBadgeClass, statusLabel } from '@/lib/approvals';
 import type { ContentSubmission, ModerationStatus } from '@/lib/types';
@@ -217,24 +218,23 @@ export default function AdminApprovalsPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold text-primary mb-2">Approval queue</h1>
-      <p className="text-sm text-neutral/60 mb-8">
-        Review community submissions for projects and regional centers.
-      </p>
+    <div>
+      <PageHero
+        eyebrow="Moderation"
+        title="Approval queue"
+        subtitle="Review community submissions for projects and regional centers."
+      />
 
+      <div className="max-w-4xl mx-auto px-4 py-10">
       {items.length === 0 ? (
-        <div className="text-center py-16 border border-dashed border-base-300 rounded-xl">
+        <div className="card-elevated text-center py-16 border-dashed border-2 border-base-300/60">
           <p className="text-neutral/60">No pending submissions</p>
         </div>
       ) : (
         <ul className="space-y-4">
           {items.map((item) => (
-            <li
-              key={item.id}
-              className="card card-bordered shadow-sm bg-base-100"
-            >
-              <div className="card-body p-5 gap-3">
+            <li key={item.id} className="card-elevated">
+              <div className="p-5 gap-3 flex flex-col">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
                     <h2 className="font-bold text-primary">{item.title}</h2>
@@ -269,7 +269,7 @@ export default function AdminApprovalsPage() {
                   )}
                   <button
                     type="button"
-                    className="btn btn-success btn-sm rounded-full"
+                    className="btn btn-primary btn-sm rounded-full"
                     disabled={acting}
                     onClick={() => approve(item)}
                   >
@@ -289,7 +289,7 @@ export default function AdminApprovalsPage() {
                 </div>
 
                 {rejectId === item.id && (
-                  <div className="mt-2 p-3 bg-base-200 rounded-lg space-y-2">
+                  <div className="mt-2 p-3 panel-copper space-y-2">
                     <label className="form-control">
                       <span className="label-text text-sm">Reason for rejection</span>
                       <textarea
@@ -324,6 +324,7 @@ export default function AdminApprovalsPage() {
           ))}
         </ul>
       )}
+      </div>
     </div>
   );
 }

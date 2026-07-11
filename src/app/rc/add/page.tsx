@@ -143,7 +143,7 @@ export default function NewRcBrandPage() {
         before adding to avoid duplicates.
       </p>
 
-      <form onSubmit={handleSubmit} className="card card-bordered shadow-sm bg-base-100">
+      <form onSubmit={handleSubmit} className="card-elevated bg-base-100 p-6">
         <div className="card-body gap-4">
           <div className="form-control">
             <label className="label">

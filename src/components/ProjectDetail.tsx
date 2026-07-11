@@ -40,7 +40,7 @@ export default function ProjectDetail({
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <div className="text-meta breadcrumbs mb-4">
+      <div className="text-meta breadcrumbs mb-4 text-neutral/60">
         <ul>
           <li>
             <Link href="/">Home</Link>
@@ -63,41 +63,46 @@ export default function ProjectDetail({
         </ul>
       </div>
 
-      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-primary">{p.name}</h1>
-          <div className="flex flex-wrap gap-1.5 mt-3">
-            {(p.tea_designations || []).map((tea) => (
-              <TEATag key={tea} designation={tea} />
-            ))}
-            {p.f956_status && (
-              <StatusBadge
-                label={`956F ${f956Label(p.f956_status)}`}
-                variant={f956Variant(p.f956_status)}
-              />
-            )}
-            {p.subscription_status && (
-              <StatusBadge
-                label={subscriptionLabel(p.subscription_status)}
-                variant={subscriptionVariant(p.subscription_status)}
-              />
-            )}
+      <section className="card-elevated overflow-hidden mb-8">
+        <div className="bg-page-hero-gradient text-primary-content px-6 py-8 md:px-8">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+            <div>
+              <p className="hero-eyebrow text-accent mb-2">Project</p>
+              <h1 className="text-3xl font-bold">{p.name}</h1>
+              <div className="flex flex-wrap gap-1.5 mt-4">
+                {(p.tea_designations || []).map((tea) => (
+                  <TEATag key={tea} designation={tea} />
+                ))}
+                {p.f956_status && (
+                  <StatusBadge
+                    label={`956F ${f956Label(p.f956_status)}`}
+                    variant={f956Variant(p.f956_status)}
+                  />
+                )}
+                {p.subscription_status && (
+                  <StatusBadge
+                    label={subscriptionLabel(p.subscription_status)}
+                    variant={subscriptionVariant(p.subscription_status)}
+                  />
+                )}
+              </div>
+            </div>
+            <div className="flex flex-col items-start md:items-end gap-2 shrink-0">
+              <ReportDuplicateButton projectId={p.id} userId={userId} />
+              {canEdit && (
+                <Link
+                  href={projectEditPath(p)}
+                  className="btn btn-outline btn-sm border-primary-content/40 text-primary-content hover:bg-primary-content/10 rounded-full"
+                >
+                  Edit Project
+                </Link>
+              )}
+            </div>
           </div>
         </div>
-        <div className="flex flex-col items-start md:items-end gap-2 shrink-0">
-          <ReportDuplicateButton projectId={p.id} userId={userId} />
-          {canEdit && (
-            <Link
-              href={projectEditPath(p)}
-              className="btn btn-outline btn-sm transition-all duration-150"
-            >
-              Edit Project
-            </Link>
-          )}
-        </div>
-      </div>
+      </section>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 mb-8 border border-base-300 rounded-lg overflow-hidden">
+      <section className="card-elevated overflow-hidden mb-8 grid grid-cols-1 md:grid-cols-2">
         <InfoRow label="Location" value={location || '—'} />
         <InfoRow
           label="Regional Center"
@@ -171,7 +176,7 @@ export default function ProjectDetail({
             {contacts.map((c) => (
               <li
                 key={c.id}
-                className="flex flex-wrap items-center gap-3 p-3 border border-base-300 rounded-lg"
+                className="card-elevated flex flex-wrap items-center gap-3 p-4"
               >
                 <span className="font-medium">{c.name}</span>
                 {c.role && (

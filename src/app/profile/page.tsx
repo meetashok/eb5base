@@ -216,56 +216,69 @@ export default function ProfilePage() {
   const roleLabel = profile.role ? ROLE_BADGE_LABELS[profile.role] : null;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="flex flex-col sm:flex-row gap-4 items-start mb-8">
-        {profile.avatar_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={profile.avatar_url}
-            alt=""
-            className="w-16 h-16 rounded-full object-cover"
-          />
-        ) : (
-          <div className="w-16 h-16 rounded-full bg-primary text-primary-content flex items-center justify-center text-xl font-bold">
-            {(profile.display_name || profile.email || 'U').charAt(0).toUpperCase()}
-          </div>
-        )}
-        <div className="flex-1 space-y-3 w-full">
-          <div className="flex flex-wrap items-center gap-2">
-            {editingName ? (
-              <input
-                className="input input-bordered input-sm"
-                value={nameDraft}
-                autoFocus
-                onChange={(e) => setNameDraft(e.target.value)}
-                onBlur={() => {
-                  setEditingName(false);
-                  if (nameDraft.trim() && nameDraft !== profile.display_name) {
-                    saveProfile({ display_name: nameDraft.trim() });
-                  }
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
-                }}
+    <div>
+      <section className="page-hero">
+        <div className="page-hero-inner">
+          <div className="flex flex-col sm:flex-row gap-4 items-start">
+            {profile.avatar_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={profile.avatar_url}
+                alt=""
+                className="w-16 h-16 rounded-full object-cover ring-2 ring-accent/50 shadow-soft"
               />
             ) : (
-              <button
-                type="button"
-                className="text-2xl font-bold text-primary text-left"
-                onClick={() => setEditingName(true)}
-              >
-                {profile.display_name || 'Click to set display name'}
-              </button>
+              <div className="w-16 h-16 rounded-full bg-accent text-accent-content flex items-center justify-center text-xl font-bold shadow-soft">
+                {(profile.display_name || profile.email || 'U').charAt(0).toUpperCase()}
+              </div>
             )}
-            {roleLabel && (
-              <span className="badge badge-primary badge-outline rounded-full">{roleLabel}</span>
-            )}
-            {profile.is_admin && (
-              <Link href="/admin" className="badge badge-secondary rounded-full">
-                Admin
-              </Link>
-            )}
+            <div className="flex-1 space-y-2 w-full">
+              <p className="hero-eyebrow text-accent">Your profile</p>
+              {editingName ? (
+                <input
+                  className="input input-bordered input-sm bg-base-100 text-neutral max-w-xs"
+                  value={nameDraft}
+                  autoFocus
+                  onChange={(e) => setNameDraft(e.target.value)}
+                  onBlur={() => {
+                    setEditingName(false);
+                    if (nameDraft.trim() && nameDraft !== profile.display_name) {
+                      saveProfile({ display_name: nameDraft.trim() });
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+                  }}
+                />
+              ) : (
+                <button
+                  type="button"
+                  className="text-2xl font-bold text-primary-content text-left"
+                  onClick={() => setEditingName(true)}
+                >
+                  {profile.display_name || 'Click to set display name'}
+                </button>
+              )}
+              <div className="flex flex-wrap items-center gap-2">
+                {roleLabel && (
+                  <span className="badge bg-secondary/20 text-primary-content border border-secondary/40 rounded-full">
+                    {roleLabel}
+                  </span>
+                )}
+                {profile.is_admin && (
+                  <Link href="/admin" className="badge bg-accent/20 text-accent border border-accent/40 rounded-full">
+                    Admin
+                  </Link>
+                )}
+              </div>
+            </div>
           </div>
+        </div>
+      </section>
+
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="card-elevated p-6 mb-8 -mt-6 relative z-10 shadow-lift">
+      <div className="space-y-4">
 
           {profile.role === 'rc_operator' && rcMembership && (
             <div className="flex flex-wrap items-center gap-2">
@@ -273,12 +286,12 @@ export default function ProfilePage() {
                 {rcMembership.regional_centers?.name || 'Regional center'}
               </span>
               {rcMembership.verified_at ? (
-                <span className="badge badge-success badge-sm gap-1 rounded-full">
+                <span className="badge bg-secondary text-secondary-content badge-sm gap-1 rounded-full">
                   <CheckIcon className="w-3 h-3" />
                   Verified
                 </span>
               ) : (
-                <span className="badge badge-warning badge-outline badge-sm gap-1 rounded-full">
+                <span className="badge bg-copper/15 text-copper border border-copper/30 badge-sm gap-1 rounded-full">
                   <ClockIcon className="w-3 h-3" />
                   Verification pending
                 </span>
@@ -355,7 +368,7 @@ export default function ProfilePage() {
 
       {message && <p className="text-sm text-success mb-4">{message}</p>}
 
-      <div className="tabs tabs-bordered mb-6 overflow-x-auto">
+      <div className="tabs tabs-bordered mb-6 overflow-x-auto [&_.tab-active]:text-secondary [&_.tab-active]:border-secondary">
         {tabs.map((t) => (
           <button
             key={t.id}
@@ -564,6 +577,7 @@ export default function ProfilePage() {
           </button>
         </div>
       )}
+    </div>
     </div>
   );
 }

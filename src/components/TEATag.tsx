@@ -5,9 +5,9 @@ interface TEATagProps {
 }
 
 const teaClass: Record<string, string> = {
-  rural: 'badge badge-info text-white',
-  hua: 'bg-purple-100 text-purple-700 border-0',
-  infra: 'bg-teal-100 text-teal-700 border-0',
+  rural: 'bg-secondary text-secondary-content border-0',
+  hua: 'bg-copper text-white border-0',
+  infra: 'bg-primary/90 text-primary-content border-0',
 };
 
 export default function TEATag({ designation }: TEATagProps) {
@@ -15,7 +15,7 @@ export default function TEATag({ designation }: TEATagProps) {
     <span
       className={cn(
         'badge rounded-full text-xs font-semibold px-3 py-1',
-        teaClass[designation] || 'badge badge-info text-white'
+        teaClass[designation] || 'bg-info text-white border-0'
       )}
     >
       {teaLabel(designation)}

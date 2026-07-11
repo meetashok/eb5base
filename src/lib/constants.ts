@@ -125,6 +125,12 @@ export const ROLE_BADGE_LABELS: Record<
   agent: 'Agent',
 };
 
+/**
+ * Naming convention for user-facing copy:
+ * - "EB5 Base" — product/brand (matches domain eb5base.com)
+ * - "EB-5" — USCIS visa program (investment, projects, regional centers)
+ * - Third-party RC names keep their spelling (e.g. "EB5 United")
+ */
 export const DISCLAIMER =
   'EB5 Base is a community-maintained directory of EB-5 projects for informational purposes only. It is not affiliated with USCIS, any regional center, or any immigration law firm. Listings are user-contributed and not independently verified. Nothing on this site constitutes legal, financial, or investment advice. Always consult a qualified immigration attorney before making investment decisions.';
 

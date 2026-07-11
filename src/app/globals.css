@@ -38,10 +38,11 @@ body {
 
   .hero-glow {
     background:
-      radial-gradient(ellipse 90% 55% at 50% -15%, rgba(201, 169, 98, 0.14), transparent 65%),
-      radial-gradient(ellipse 50% 40% at 100% 20%, rgba(47, 107, 102, 0.1), transparent 60%),
-      radial-gradient(ellipse 45% 35% at 0% 80%, rgba(47, 107, 102, 0.08), transparent 55%),
-      linear-gradient(180deg, #f0ebe3 0%, #faf7f2 45%, #faf7f2 100%);
+      radial-gradient(ellipse 95% 60% at 50% -20%, rgba(212, 175, 55, 0.2), transparent 60%),
+      radial-gradient(ellipse 55% 45% at 95% 15%, rgba(184, 115, 51, 0.14), transparent 55%),
+      radial-gradient(ellipse 50% 40% at 5% 75%, rgba(45, 90, 71, 0.14), transparent 55%),
+      radial-gradient(ellipse 40% 30% at 50% 100%, rgba(45, 90, 71, 0.08), transparent 50%),
+      linear-gradient(180deg, #ebe4d8 0%, #f5f0e8 40%, #faf7f2 100%);
   }
 
   .surface-muted {
@@ -59,30 +60,62 @@ body {
   }
 
   .card-elevated:hover {
-    @apply shadow-lift -translate-y-0.5 border-secondary/20;
+    @apply shadow-lift -translate-y-0.5 border-secondary/30;
   }
 
   .stat-pill {
-    @apply rounded-2xl bg-base-100/80 backdrop-blur-sm border border-base-300/60 shadow-soft px-6 py-4 min-w-[7rem];
+    @apply rounded-2xl bg-base-100/85 backdrop-blur-sm border border-base-300/60 shadow-soft px-6 py-4 min-w-[7rem];
   }
 
   .step-card {
-    @apply rounded-2xl bg-base-100/90 border border-base-300/50 shadow-soft p-6 h-full;
+    @apply rounded-2xl bg-base-100/95 border border-base-300/50 shadow-soft p-6 h-full;
+  }
+
+  .page-hero {
+    @apply bg-page-hero-gradient text-primary-content border-b border-white/10 shadow-nav;
+  }
+
+  .page-hero-inner {
+    @apply max-w-6xl mx-auto px-4 py-10 md:py-14;
+  }
+
+  .panel-copper {
+    @apply bg-panel-copper border border-copper/20 rounded-2xl;
   }
 
   .btn-primary:not(.btn-outline):not(.btn-ghost) {
-    background-image: linear-gradient(135deg, #0f1f33 0%, #1a3348 55%, #0f1f33 100%);
-    border: 1px solid rgba(201, 169, 98, 0.2);
+    background-image: linear-gradient(135deg, #0a1628 0%, #1a3d32 50%, #0a1628 100%);
+    border: 1px solid rgba(212, 175, 55, 0.35);
     @apply shadow-soft hover:shadow-glow transition-all duration-200;
   }
 
   .hero-eyebrow {
-    @apply text-xs uppercase tracking-[0.22em] font-semibold text-secondary;
+    @apply text-xs uppercase tracking-[0.22em] font-semibold text-accent;
   }
 
   .hero-headline {
     @apply text-primary;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  }
+
+  .page-hero-title {
+    @apply text-3xl md:text-4xl font-bold tracking-tight text-primary-content;
+  }
+
+  .page-hero-subtitle {
+    @apply text-primary-content/75 mt-2 text-base md:text-lg max-w-2xl;
+  }
+
+  .alert-heritage-info {
+    @apply rounded-xl border border-secondary/25 bg-secondary/10 text-neutral;
+  }
+
+  .alert-heritage-warning {
+    @apply rounded-xl border border-copper/30 bg-panel-copper text-neutral;
+  }
+
+  .widget-header {
+    @apply bg-page-hero-gradient text-primary-content rounded-t-2xl px-4 py-3;
   }
 }
 
@@ -91,6 +124,6 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid #2f6b66;
+  outline: 2px solid #2d5a47;
   outline-offset: 2px;
 }

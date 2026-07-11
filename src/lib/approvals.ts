@@ -98,9 +98,9 @@ export async function createSubmission(
 }
 
 export function statusBadgeClass(status: ModerationStatus | null | undefined): string {
-  if (status === 'approved') return 'badge-success';
-  if (status === 'rejected') return 'badge-error';
-  return 'badge-warning';
+  if (status === 'approved') return 'bg-secondary text-secondary-content border-0';
+  if (status === 'rejected') return 'bg-error text-white border-0';
+  return 'bg-copper text-white border-0';
 }
 
 export function statusLabel(status: ModerationStatus | null | undefined): string {

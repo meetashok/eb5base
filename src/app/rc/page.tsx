@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import PageHero from '@/components/PageHero';
 import BrandsClient from './BrandsClient';
 import { createClient } from '@/lib/supabase-server';
 import type { RcBrand } from '@/lib/types';
@@ -17,7 +18,6 @@ type BrandRow = RcBrand & {
 async function loadBrands(): Promise<{ brands: BrandRow[]; error: string | null }> {
   const supabase = createClient();
 
-  // Explicit FK hints avoid PostgREST ambiguity / schema-cache misses
   const withCounts = await supabase
     .from('rc_brands')
     .select('*, projects!brand_id(count), regional_centers!brand_id(count)')
@@ -30,7 +30,6 @@ async function loadBrands(): Promise<{ brands: BrandRow[]; error: string | null 
 
   if (withCounts.error) {
     console.error('rc_brands list (with counts) failed:', withCounts.error.message);
-    // Fallback if status column not migrated yet
     const retry = await supabase
       .from('rc_brands')
       .select('*, projects!brand_id(count), regional_centers!brand_id(count)')
@@ -63,7 +62,6 @@ export default async function RCBrandsPage() {
     entity_count: b.regional_centers?.[0]?.count ?? 0,
   }));
 
-  // Help diagnose empty list: brands table empty vs legacy entities still present
   let legacyEntityCount = 0;
   if (brands.length === 0 && !error) {
     const { count } = await supabase
@@ -73,39 +71,39 @@ export default async function RCBrandsPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto py-8 px-4">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-primary">Regional Centers</h1>
-          <p className="text-neutral/60 mt-1">
-            EB-5 regional center organizations and their projects
-          </p>
-        </div>
+    <div>
+      <PageHero
+        eyebrow="Organizations"
+        title="Regional Centers"
+        subtitle="EB-5 regional center organizations and their active projects."
+      >
         {user && (
-          <Link href="/rc/add" className="btn btn-primary rounded-full gap-2">
+          <Link href="/rc/add" className="btn btn-accent text-accent-content rounded-full shadow-soft hover:shadow-glow">
             + Add Regional Center
           </Link>
         )}
+      </PageHero>
+
+      <div className="max-w-6xl mx-auto py-8 px-4">
+        {error && (
+          <div className="alert alert-error mb-6 text-sm rounded-xl shadow-soft">
+            <span>Could not load regional centers: {error}</span>
+          </div>
+        )}
+
+        {!error && brands.length === 0 && legacyEntityCount > 0 && (
+          <div className="alert-heritage-warning mb-6 text-sm px-4 py-3">
+            <span>
+              Found {legacyEntityCount} USCIS entit
+              {legacyEntityCount === 1 ? 'y' : 'ies'} in <code>regional_centers</code>, but none
+              in <code>rc_brands</code>. Run your RC seed / brand migration SQL in Supabase so
+              brands appear here.
+            </span>
+          </div>
+        )}
+
+        <BrandsClient brands={brands} isLoggedIn={Boolean(user)} />
       </div>
-
-      {error && (
-        <div className="alert alert-error mb-6 text-sm">
-          <span>Could not load regional centers: {error}</span>
-        </div>
-      )}
-
-      {!error && brands.length === 0 && legacyEntityCount > 0 && (
-        <div className="alert alert-warning mb-6 text-sm">
-          <span>
-            Found {legacyEntityCount} USCIS entit
-            {legacyEntityCount === 1 ? 'y' : 'ies'} in <code>regional_centers</code>, but none
-            in <code>rc_brands</code>. Run your RC seed / brand migration SQL in Supabase so
-            brands appear here.
-          </span>
-        </div>
-      )}
-
-      <BrandsClient brands={brands} isLoggedIn={Boolean(user)} />
     </div>
   );
 }

@@ -176,8 +176,8 @@ export default function ConfirmStatusButtons({
           <div className={`flex ${size === 'md' ? 'gap-3' : 'gap-2'}`}>
             <button
               type="button"
-              className={`${btnSize} btn-outline btn-success flex-1 gap-1 rounded-full transition-all duration-150 ${
-                pendingStatus === 'open' ? 'btn-success text-white' : ''
+              className={`${btnSize} btn-outline border-secondary text-secondary hover:bg-secondary hover:text-secondary-content flex-1 gap-1 rounded-full transition-all duration-150 ${
+                pendingStatus === 'open' ? 'bg-secondary text-secondary-content border-secondary' : ''
               }`}
               onClick={() => chooseStatus('open')}
               disabled={saving}
@@ -189,8 +189,8 @@ export default function ConfirmStatusButtons({
             </button>
             <button
               type="button"
-              className={`${btnSize} btn-outline btn-error flex-1 gap-1 rounded-full transition-all duration-150 ${
-                pendingStatus === 'closed' ? 'btn-error text-white' : ''
+              className={`${btnSize} btn-outline border-error/60 text-error hover:bg-error hover:text-white flex-1 gap-1 rounded-full transition-all duration-150 ${
+                pendingStatus === 'closed' ? 'bg-error text-white border-error' : ''
               }`}
               onClick={() => chooseStatus('closed')}
               disabled={saving}

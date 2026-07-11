@@ -1,6 +1,8 @@
 import { Suspense } from 'react';
+import Link from 'next/link';
 import SearchBar from '@/components/SearchBar';
 import FilterPanel from '@/components/FilterPanel';
+import PageHero from '@/components/PageHero';
 import ProjectsClient from './ProjectsClient';
 import { getFilteredProjects, type ProjectFilters } from '@/lib/projects';
 import { PAGE_SIZE } from '@/lib/constants';
@@ -25,25 +27,36 @@ export default async function ProjectsPage({
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-primary mb-4">Browse Projects</h1>
-      <Suspense fallback={<div className="skeleton-shimmer h-12 w-full mb-6" />}>
-        <SearchBar initialQuery={searchParams.q || ''} className="mb-6" />
-      </Suspense>
+    <div>
+      <PageHero
+        eyebrow="Directory"
+        title="Browse Projects"
+        subtitle="Search EB-5 regional center projects by name, location, TEA designation, and status."
+      >
+        <Link href="/projects/add" className="btn btn-accent text-accent-content rounded-full shadow-soft hover:shadow-glow">
+          + Add Project
+        </Link>
+      </PageHero>
 
-      <div className="flex flex-col md:flex-row gap-6">
-        <Suspense fallback={<div className="hidden md:block w-60 skeleton-shimmer h-96" />}>
-          <FilterPanel />
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <Suspense fallback={<div className="skeleton-shimmer h-12 w-full mb-6" />}>
+          <SearchBar initialQuery={searchParams.q || ''} className="mb-6" large />
         </Suspense>
 
-        <div className="flex-1 min-w-0">
-          <ProjectsClient
-            projects={projects}
-            total={total}
-            page={page}
-            totalPages={totalPages}
-            filters={searchParams}
-          />
+        <div className="flex flex-col md:flex-row gap-6">
+          <Suspense fallback={<div className="hidden md:block w-60 skeleton-shimmer h-96" />}>
+            <FilterPanel />
+          </Suspense>
+
+          <div className="flex-1 min-w-0">
+            <ProjectsClient
+              projects={projects}
+              total={total}
+              page={page}
+              totalPages={totalPages}
+              filters={searchParams}
+            />
+          </div>
         </div>
       </div>
     </div>

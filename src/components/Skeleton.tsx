@@ -6,7 +6,7 @@ export function Skeleton({ className = '' }: { className?: string }) {
 
 export function ProjectCardSkeleton() {
   return (
-    <div className="card card-bordered border-base-300/50 shadow-sm animate-pulse">
+    <div className="card-elevated animate-pulse">
       <div className="card-body p-4">
         <div className="h-5 bg-base-300 rounded w-3/4 mb-3" />
         <div className="h-3 bg-base-300 rounded w-1/2 mb-2" />
@@ -22,7 +22,7 @@ export function ProjectCardSkeleton() {
 
 export function RCCardSkeleton() {
   return (
-    <div className="card card-bordered shadow-sm animate-pulse">
+    <div className="card-elevated animate-pulse">
       <div className="card-body p-5">
         <div className="h-5 bg-base-300 rounded w-2/3 mb-3" />
         <div className="h-4 bg-base-300 rounded-full w-24 mb-3" />

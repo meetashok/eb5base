@@ -354,7 +354,7 @@ export default function EditProjectPage() {
         regional center representative for this project.
       </p>
       {pendingNotice && (
-        <div className="alert alert-info mb-4 text-sm">
+        <div className="alert-heritage-info mb-4 text-sm px-4 py-3">
           <span>Your edits were submitted and are pending approval.</span>
         </div>
       )}

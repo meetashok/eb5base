@@ -2,11 +2,11 @@ import { cn } from '@/lib/utils';
 import type { BadgeVariant } from '@/lib/utils';
 
 const variantClass: Record<BadgeVariant, string> = {
-  success: 'badge-success text-white',
-  warning: 'badge-warning text-white',
-  error: 'badge-error text-white',
-  info: 'badge-info text-white',
-  muted: 'bg-base-200 text-neutral/60 border-0',
+  success: 'bg-secondary text-secondary-content border-0',
+  warning: 'bg-copper text-white border-0',
+  error: 'bg-error text-white border-0',
+  info: 'bg-info text-white border-0',
+  muted: 'bg-base-200 text-neutral/70 border border-base-300/60',
 };
 
 interface StatusBadgeProps {

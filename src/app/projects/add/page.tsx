@@ -311,7 +311,7 @@ export default function NewProjectForm() {
           This is how your project will appear. Confirm to submit.
         </p>
 
-        <div className="border border-base-300 rounded-lg p-6 space-y-4 mb-6">
+        <div className="card-elevated p-6 space-y-4 mb-6">
           <h2 className="text-2xl font-bold text-primary">{name}</h2>
           <div className="flex flex-wrap gap-1.5">
             {tea.map((t) => (
@@ -416,7 +416,7 @@ export default function NewProjectForm() {
             />
           </label>
           {similarWhileTyping.length > 0 && !dismissedSimilar && (
-            <div className="p-3 border border-warning/40 bg-warning/5 rounded-lg">
+            <div className="alert-heritage-warning p-3">
               <p className="text-sm font-medium mb-2">
                 These projects already exist under {brandName} — is yours one of these?
               </p>

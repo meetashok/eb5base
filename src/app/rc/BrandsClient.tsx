@@ -29,7 +29,7 @@ export default function BrandsClient({ brands, isLoggedIn }: BrandsClientProps) 
       <div className="mb-6">
         <input
           type="search"
-          className="input input-bordered w-full max-w-md"
+          className="input input-bordered w-full max-w-md bg-base-100 shadow-soft rounded-xl focus-ring"
           placeholder="Search by name..."
           value={q}
           onChange={(e) => setQ(e.target.value)}
@@ -42,11 +42,8 @@ export default function BrandsClient({ brands, isLoggedIn }: BrandsClientProps) 
       </p>
 
       {filtered.length === 0 ? (
-        <div className="text-center py-16">
-          <div className="text-4xl mb-3" aria-hidden>
-            🏢
-          </div>
-          <h2 className="text-lg font-bold text-neutral/70">No regional centers found</h2>
+        <div className="card-elevated py-16 text-center px-6">
+          <h2 className="text-lg font-bold text-neutral/80">No regional centers found</h2>
           <p className="text-sm text-neutral/50 mt-2">
             {q ? 'Try a different search term' : 'Be the first to add one'}
           </p>
@@ -59,23 +56,18 @@ export default function BrandsClient({ brands, isLoggedIn }: BrandsClientProps) 
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((brand) => (
-            <Link
-              key={brand.id}
-              href={brandPath(brand)}
-              className="card card-bordered shadow-sm bg-base-100 hover:shadow-md transition-all duration-150"
-            >
-              <div className="card-body p-5">
-                <h2 className="card-title text-base text-primary">{brand.name}</h2>
+            <Link key={brand.id} href={brandPath(brand)} className="card-elevated block">
+              <div className="p-5">
+                <h2 className="text-base font-bold text-primary">{brand.name}</h2>
                 {brand.website_url && (
-                  <p className="text-xs text-neutral/50 truncate">{brand.website_url}</p>
+                  <p className="text-xs text-neutral/50 truncate mt-1">{brand.website_url}</p>
                 )}
-                <div className="flex gap-3 mt-2 text-xs text-neutral/40">
-                  <span>
+                <div className="flex gap-3 mt-3 text-xs text-neutral/50">
+                  <span className="badge bg-secondary/10 text-secondary border-0 rounded-full">
                     {brand.project_count} project{brand.project_count !== 1 ? 's' : ''}
                   </span>
-                  <span>
-                    {brand.entity_count} USCIS entit
-                    {brand.entity_count !== 1 ? 'ies' : 'y'}
+                  <span className="badge bg-base-200 text-neutral/60 border-0 rounded-full">
+                    {brand.entity_count} USCIS entit{brand.entity_count !== 1 ? 'ies' : 'y'}
                   </span>
                 </div>
               </div>

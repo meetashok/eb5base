@@ -43,12 +43,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {items.map((t) => (
           <div
             key={t.id}
-            className={`alert shadow-lg ${
+            className={`alert shadow-lift rounded-xl border ${
               t.type === 'success'
-                ? 'alert-success'
+                ? 'alert-success border-secondary/30'
                 : t.type === 'error'
-                  ? 'alert-error'
-                  : 'alert-info'
+                  ? 'alert-error border-error/30'
+                  : 'alert-heritage-info'
             }`}
           >
             <span className="text-sm">{t.message}</span>

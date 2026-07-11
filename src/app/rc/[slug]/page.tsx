@@ -117,47 +117,53 @@ export default async function RCBrandDetailPage({ params }: { params: { slug: st
   } = await supabase.auth.getUser();
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
-      <div className="text-meta breadcrumbs mb-4">
-        <ul>
-          <li>
-            <Link href="/">Home</Link>
-          </li>
-          <li>
-            <Link href="/rc">Regional Centers</Link>
-          </li>
-          <li>{brand.name}</li>
-        </ul>
-      </div>
-
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-primary">{brand.name}</h1>
-          {brand.website_url && (
-            <a
-              href={brand.website_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-secondary hover:underline"
-            >
-              {brand.website_url}
-            </a>
-          )}
-          {brand.description && <p className="text-neutral/70 mt-3">{brand.description}</p>}
+    <div>
+      <section className="page-hero">
+        <div className="page-hero-inner">
+          <div className="text-meta breadcrumbs mb-3 text-primary-content/60">
+            <ul>
+              <li>
+                <Link href="/" className="hover:text-accent">Home</Link>
+              </li>
+              <li>
+                <Link href="/rc" className="hover:text-accent">Regional Centers</Link>
+              </li>
+              <li>{brand.name}</li>
+            </ul>
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+            <div>
+              <p className="hero-eyebrow text-accent mb-2">Regional Center</p>
+              <h1 className="page-hero-title">{brand.name}</h1>
+              {brand.website_url && (
+                <a
+                  href={brand.website_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-accent hover:underline mt-2 inline-block"
+                >
+                  {brand.website_url}
+                </a>
+              )}
+              {brand.description && (
+                <p className="page-hero-subtitle">{brand.description}</p>
+              )}
+            </div>
+            {user && (
+              <Link
+                href={brandEditPath(brand)}
+                className="btn btn-outline btn-sm border-primary-content/40 text-primary-content hover:bg-primary-content/10 rounded-full shrink-0"
+              >
+                Edit
+              </Link>
+            )}
+          </div>
         </div>
-        {user && (
-          <Link
-            href={brandEditPath(brand)}
-            className="btn btn-outline btn-sm rounded-full shrink-0"
-          >
-            Edit
-          </Link>
-        )}
-      </div>
+      </section>
 
+      <div className="max-w-4xl mx-auto py-8 px-4">
       {contactList.length > 0 && (
-        <div className="card card-bordered shadow-sm bg-base-100 mb-6">
-          <div className="card-body p-5">
+        <div className="card-elevated mb-6 p-5">
             <h2 className="font-bold text-primary mb-3">Contacts</h2>
             <div className="space-y-2">
               {contactList.map((c) => (
@@ -175,7 +181,6 @@ export default async function RCBrandDetailPage({ params }: { params: { slug: st
                 </div>
               ))}
             </div>
-          </div>
         </div>
       )}
 
@@ -198,7 +203,7 @@ export default async function RCBrandDetailPage({ params }: { params: { slug: st
       </div>
 
       {entityList.length > 0 && (
-        <details className="collapse collapse-arrow border border-base-300 rounded-xl bg-base-100">
+        <details className="collapse collapse-arrow card-elevated">
           <summary className="collapse-title font-bold text-primary">
             USCIS Entities ({entityList.length})
           </summary>
@@ -229,6 +234,7 @@ export default async function RCBrandDetailPage({ params }: { params: { slug: st
           </div>
         </details>
       )}
+    </div>
     </div>
   );
 }
