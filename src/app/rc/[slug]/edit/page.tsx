@@ -12,6 +12,10 @@ import {
   slugify,
 } from '@/lib/slugs';
 import type { RcBrand } from '@/lib/types';
+import {
+  createSubmission,
+  isVerifiedRcRepForBrand,
+} from '@/lib/approvals';
 
 export default function EditRcBrandPage() {
   const params = useParams();
@@ -20,6 +24,7 @@ export default function EditRcBrandPage() {
   const { toast } = useToast();
 
   const [brandId, setBrandId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [existingSlug, setExistingSlug] = useState<string | null>(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -38,6 +43,7 @@ export default function EditRcBrandPage() {
         router.replace(`/login?redirect=/rc/${param}/edit`);
         return;
       }
+      setUserId(auth.user.id);
 
       let query = supabase.from('rc_brands').select('*');
       query = isUuid(param) ? query.eq('id', param) : query.eq('slug', param);
@@ -61,7 +67,7 @@ export default function EditRcBrandPage() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!brandId || !name.trim()) {
+    if (!brandId || !name.trim() || !userId) {
       setError('Name is required.');
       return;
     }
@@ -90,7 +96,6 @@ export default function EditRcBrandPage() {
         .eq('slug', candidate)
         .neq('id', brandId)
         .maybeSingle();
-      // If slug column isn't migrated yet, treat as not taken
       if (slugErr && /slug/i.test(slugErr.message)) return false;
       return Boolean(data);
     });
@@ -102,29 +107,51 @@ export default function EditRcBrandPage() {
       updated_at: new Date().toISOString(),
     };
 
-    let updateError = (
-      await supabase
-        .from('rc_brands')
-        .update({ ...baseUpdate, slug })
-        .eq('id', brandId)
-    ).error;
+    const autoApprove = await isVerifiedRcRepForBrand(supabase, userId, brandId);
 
-    // Pre-migration DBs may not have slug yet — save without it
-    if (updateError && /slug/i.test(updateError.message)) {
-      updateError = (
-        await supabase.from('rc_brands').update(baseUpdate).eq('id', brandId)
+    if (autoApprove) {
+      let updateError = (
+        await supabase
+          .from('rc_brands')
+          .update({ ...baseUpdate, slug })
+          .eq('id', brandId)
       ).error;
-    }
 
-    setSaving(false);
-    if (updateError) {
-      setError(updateError.message);
-      toast(updateError.message, 'error');
+      if (updateError && /slug/i.test(updateError.message)) {
+        updateError = (
+          await supabase.from('rc_brands').update(baseUpdate).eq('id', brandId)
+        ).error;
+      }
+
+      setSaving(false);
+      if (updateError) {
+        setError(updateError.message);
+        toast(updateError.message, 'error');
+        return;
+      }
+
+      toast('Regional center updated', 'success');
+      router.push(brandPath({ id: brandId, slug: existingSlug || slug }));
       return;
     }
 
-    toast('Regional center updated', 'success');
-    router.push(brandPath({ id: brandId, slug: existingSlug || slug }));
+    const result = await createSubmission(supabase, {
+      entity_type: 'rc_brand',
+      entity_id: brandId,
+      action: 'update',
+      payload: { ...baseUpdate, slug },
+      submitted_by: userId,
+    });
+
+    setSaving(false);
+    if ('error' in result) {
+      setError(result.error);
+      toast(result.error, 'error');
+      return;
+    }
+
+    toast('Edits submitted for approval', 'success');
+    router.push('/profile?tab=submissions');
   }
 
   async function handleDelete() {
@@ -177,7 +204,11 @@ export default function EditRcBrandPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold text-primary mb-6">Edit Regional Center</h1>
+      <h1 className="text-3xl font-bold text-primary mb-2">Edit Regional Center</h1>
+      <p className="text-sm text-neutral/60 mb-6">
+        Changes are reviewed by an admin before going live, unless you are a verified
+        representative for this regional center.
+      </p>
 
       <form onSubmit={handleSubmit} className="card card-bordered shadow-sm bg-base-100">
         <div className="card-body gap-4">

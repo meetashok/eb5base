@@ -116,6 +116,11 @@ export default function Navbar() {
                 <li>
                   <Link href="/profile">Profile</Link>
                 </li>
+                {profile?.is_admin && (
+                  <li>
+                    <Link href="/admin">Approvals</Link>
+                  </li>
+                )}
                 <li>
                   <button type="button" onClick={handleSignOut}>
                     Sign Out

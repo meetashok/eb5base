@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import { useToast } from '@/components/Toast';
-import { allocateUniqueSlug, brandPath, slugify } from '@/lib/slugs';
+import { allocateUniqueSlug, slugify } from '@/lib/slugs';
+import { createSubmission } from '@/lib/approvals';
 
 export default function NewRcBrandPage() {
   const router = useRouter();
@@ -66,8 +67,14 @@ export default function NewRcBrandPage() {
       name: name.trim(),
       website_url: website.trim() || null,
       description: description.trim() || null,
-      status: 'approved' as const,
+      status: 'pending' as const,
+      added_by: null as string | null,
     };
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) baseInsert.added_by = user.id;
 
     let { data, error: insertError } = await supabase
       .from('rc_brands')
@@ -83,7 +90,7 @@ export default function NewRcBrandPage() {
         .single());
     }
 
-    if (insertError && /status/i.test(insertError.message)) {
+    if (insertError && /status|added_by/i.test(insertError.message)) {
       ({ data, error: insertError } = await supabase
         .from('rc_brands')
         .insert({
@@ -102,8 +109,18 @@ export default function NewRcBrandPage() {
       return;
     }
 
-    toast('Regional center added', 'success');
-    router.push(brandPath(data));
+    if (user) {
+      await createSubmission(supabase, {
+        entity_type: 'rc_brand',
+        entity_id: data.id,
+        action: 'create',
+        payload: baseInsert,
+        submitted_by: user.id,
+      });
+    }
+
+    toast('Submitted for approval. It will appear publicly once an admin reviews it.', 'success');
+    router.push('/profile?tab=submissions');
   }
 
   if (checkingAuth) {

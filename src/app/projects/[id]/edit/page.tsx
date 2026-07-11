@@ -20,6 +20,10 @@ import {
   slugify,
 } from '@/lib/slugs';
 import { useToast } from '@/components/Toast';
+import {
+  createSubmission,
+  isVerifiedRcRepForProject,
+} from '@/lib/approvals';
 
 export default function EditProjectPage() {
   const params = useParams();
@@ -27,11 +31,14 @@ export default function EditProjectPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [projectId, setProjectId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [existingRcId, setExistingRcId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pendingNotice, setPendingNotice] = useState(false);
 
   const [brandName, setBrandName] = useState('');
   const [brandSelection, setBrandSelection] = useState<BrandSelection | null>(null);
@@ -57,6 +64,7 @@ export default function EditProjectPage() {
         router.replace(`/login?redirect=/projects/${param}/edit`);
         return;
       }
+      setUserId(auth.user.id);
 
       const col = isUuid(param) ? 'id' : 'slug';
 
@@ -111,8 +119,9 @@ export default function EditProjectPage() {
 
       setProjectId(p.id);
       setExistingSlug(p.slug);
+      setExistingRcId(p.rc_id);
 
-      // Community directory: any signed-in user can edit
+      // Community directory: any signed-in user can propose edits
       setName(p.name);
       setBrandName(p.rc_brands?.name || p.regional_centers?.name || '');
       if (p.brand_id && p.rc_brands) {
@@ -168,7 +177,8 @@ export default function EditProjectPage() {
             .maybeSingle();
           return Boolean(data);
         }),
-        status: 'approved',
+        status: 'pending',
+        added_by: userId,
       })
       .select('id')
       .single();
@@ -176,14 +186,24 @@ export default function EditProjectPage() {
     if (createError || !created) {
       throw new Error(createError?.message || 'Failed to create regional center');
     }
+    if (userId) {
+      await createSubmission(supabase, {
+        entity_type: 'rc_brand',
+        entity_id: created.id,
+        action: 'create',
+        payload: { name: nameToCreate },
+        submitted_by: userId,
+      });
+    }
     return created.id;
   }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!projectId) return;
+    if (!projectId || !userId) return;
     setSaving(true);
     setError(null);
+    setPendingNotice(false);
     const supabase = createClient();
     try {
       const brandId = await resolveBrandId();
@@ -216,35 +236,65 @@ export default function EditProjectPage() {
         notes: notes.trim() || null,
       };
 
-      let err = (
-        await supabase
-          .from('projects')
-          .update({ ...baseUpdate, slug })
-          .eq('id', projectId)
-      ).error;
+      const autoApprove = await isVerifiedRcRepForProject(supabase, userId, {
+        brand_id: brandId,
+        rc_id: existingRcId,
+      });
 
-      if (err && /slug/i.test(err.message)) {
-        err = (await supabase.from('projects').update(baseUpdate).eq('id', projectId)).error;
-      }
+      if (autoApprove) {
+        let err = (
+          await supabase
+            .from('projects')
+            .update({ ...baseUpdate, slug })
+            .eq('id', projectId)
+        ).error;
 
-      setSaving(false);
-      if (err) {
-        setError(err.message);
+        if (err && /slug/i.test(err.message)) {
+          err = (await supabase.from('projects').update(baseUpdate).eq('id', projectId)).error;
+        }
+
+        setSaving(false);
+        if (err) {
+          setError(err.message);
+          toast(err.message, 'error');
+          return;
+        }
+
+        const { data: brandRow } = brandId
+          ? await supabase.from('rc_brands').select('id, slug').eq('id', brandId).maybeSingle()
+          : { data: null };
+
+        toast('Project updated', 'success');
+        router.push(
+          projectPath({
+            id: projectId,
+            slug: existingSlug || slug,
+            brand_id: brandId,
+            rc_brands: brandRow,
+          })
+        );
         return;
       }
 
-      const { data: brandRow } = brandId
-        ? await supabase.from('rc_brands').select('id, slug').eq('id', brandId).maybeSingle()
-        : { data: null };
+      // Queue edit for admin approval — live listing unchanged
+      const result = await createSubmission(supabase, {
+        entity_type: 'project',
+        entity_id: projectId,
+        action: 'update',
+        payload: { ...baseUpdate, slug },
+        submitted_by: userId,
+      });
 
-      router.push(
-        projectPath({
-          id: projectId,
-          slug: existingSlug || slug,
-          brand_id: brandId,
-          rc_brands: brandRow,
-        })
-      );
+      setSaving(false);
+      if ('error' in result) {
+        setError(result.error);
+        toast(result.error, 'error');
+        return;
+      }
+
+      setPendingNotice(true);
+      toast('Edits submitted for approval', 'success');
+      router.push('/profile?tab=submissions');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save');
       setSaving(false);
@@ -298,7 +348,16 @@ export default function EditProjectPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-primary mb-6">Edit Project</h1>
+      <h1 className="text-2xl font-bold text-primary mb-2">Edit Project</h1>
+      <p className="text-sm text-neutral/60 mb-6">
+        Changes are reviewed by an admin before going live, unless you are a verified
+        regional center representative for this project.
+      </p>
+      {pendingNotice && (
+        <div className="alert alert-info mb-4 text-sm">
+          <span>Your edits were submitted and are pending approval.</span>
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="space-y-6">
         <label className="form-control">
           <span className="label-text mb-1">Regional Center</span>

@@ -27,6 +27,7 @@ import {
 } from '@/lib/utils';
 import { allocateUniqueSlug, projectPath, slugify } from '@/lib/slugs';
 import { useToast } from '@/components/Toast';
+import { createSubmission } from '@/lib/approvals';
 
 interface ContactDraft {
   name: string;
@@ -143,7 +144,8 @@ export default function NewProjectForm() {
             .maybeSingle();
           return Boolean(data);
         }),
-        status: 'approved',
+        status: 'pending',
+        added_by: userId,
       })
       .select('id')
       .single();
@@ -151,6 +153,15 @@ export default function NewProjectForm() {
     if (createError || !created) {
       throw new Error(createError?.message || 'Failed to create regional center');
     }
+
+    await createSubmission(supabase, {
+      entity_type: 'rc_brand',
+      entity_id: created.id,
+      action: 'create',
+      payload: { name: nameToCreate },
+      submitted_by: userId!,
+    });
+
     return created.id;
   }
 
@@ -221,32 +232,28 @@ export default function NewProjectForm() {
         return Boolean(data);
       });
 
-      const { data: brandRow } = await supabase
-        .from('rc_brands')
-        .select('id, slug')
-        .eq('id', brandId)
-        .maybeSingle();
+      const payload = {
+        name: name.trim(),
+        slug: projectSlug,
+        project_type: projectTypes.length ? projectTypes : null,
+        location_city: city.trim() || null,
+        location_state: state || null,
+        brand_id: brandId,
+        tea_designations: tea.length ? tea : null,
+        f956_status: f956,
+        f956_approval_date: f956 === 'approved' && f956Date ? f956Date : null,
+        investment_amount: amount ? parseInt(amount, 10) : null,
+        total_slots: totalSlots ? parseInt(totalSlots, 10) : null,
+        subscription_status: subscription,
+        website_url: website.trim() || null,
+        notes: notes.trim() || null,
+        added_by: userId,
+        status: 'pending' as const,
+      };
 
       const { data: project, error: insertError } = await supabase
         .from('projects')
-        .insert({
-          name: name.trim(),
-          slug: projectSlug,
-          project_type: projectTypes.length ? projectTypes : null,
-          location_city: city.trim() || null,
-          location_state: state || null,
-          brand_id: brandId,
-          tea_designations: tea.length ? tea : null,
-          f956_status: f956,
-          f956_approval_date: f956 === 'approved' && f956Date ? f956Date : null,
-          investment_amount: amount ? parseInt(amount, 10) : null,
-          total_slots: totalSlots ? parseInt(totalSlots, 10) : null,
-          subscription_status: subscription,
-          website_url: website.trim() || null,
-          notes: notes.trim() || null,
-          added_by: userId,
-          status: 'approved',
-        })
+        .insert(payload)
         .select('id, slug, brand_id')
         .single();
 
@@ -270,13 +277,16 @@ export default function NewProjectForm() {
         );
       }
 
-      router.push(
-        projectPath({
-          ...project,
-          rc_brands: brandRow,
-        })
-      );
-      toast('Project added', 'success');
+      await createSubmission(supabase, {
+        entity_type: 'project',
+        entity_id: project.id,
+        action: 'create',
+        payload,
+        submitted_by: userId,
+      });
+
+      toast('Submitted for approval. It will appear publicly once an admin reviews it.', 'success');
+      router.push('/profile?tab=submissions');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to submit');
       toast(err instanceof Error ? err.message : 'Failed to submit', 'error');
