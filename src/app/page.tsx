@@ -74,7 +74,7 @@ export default async function HomePage() {
             <Link href="/projects" className="btn btn-primary rounded-full">
               Browse Projects
             </Link>
-            <Link href="/projects/new" className="btn btn-outline btn-primary rounded-full">
+            <Link href="/projects/add" className="btn btn-outline btn-primary rounded-full">
               + Add a Project
             </Link>
           </div>

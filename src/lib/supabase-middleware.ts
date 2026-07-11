@@ -26,7 +26,7 @@ function isPublicPath(pathname: string): boolean {
 
   // Brand browse/detail public; create requires auth
   if (pathname.startsWith('/rc/')) {
-    if (pathname === '/rc/new') return false;
+    if (pathname === '/rc/add' || pathname === '/rc/new') return false;
     return true;
   }
 
@@ -36,7 +36,7 @@ function isPublicPath(pathname: string): boolean {
   // Project list + detail are public; create/edit require auth + completed profile
   if (pathname === '/projects') return true;
   if (pathname.startsWith('/projects/')) {
-    if (pathname === '/projects/new') return false;
+    if (pathname === '/projects/add' || pathname === '/projects/new') return false;
     if (pathname.endsWith('/edit')) return false;
     return true;
   }

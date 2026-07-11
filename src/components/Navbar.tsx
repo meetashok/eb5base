@@ -84,7 +84,7 @@ export default function Navbar() {
         <div className="navbar-center hidden md:flex gap-1">
           {navLink('/projects', 'Browse')}
           {navLink('/rc', 'Regional Centers')}
-          {navLink('/projects/new', 'Add Project')}
+          {navLink('/projects/add', 'Add Project')}
           {navLink('/about', 'About')}
         </div>
 
@@ -146,7 +146,7 @@ export default function Navbar() {
         <div className="md:hidden border-t border-primary-content/20 px-4 pb-4 flex flex-col">
           {navLink('/projects', 'Browse')}
           {navLink('/rc', 'Regional Centers')}
-          {navLink('/projects/new', 'Add Project')}
+          {navLink('/projects/add', 'Add Project')}
           {navLink('/about', 'About')}
         </div>
       )}

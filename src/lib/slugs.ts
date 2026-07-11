@@ -1,6 +1,6 @@
 /** URL slug helpers for brands and projects */
 
-const RESERVED_SLUGS = new Set(['new', 'edit', 'projects', 'rc']);
+const RESERVED_SLUGS = new Set(['new', 'add', 'edit', 'projects', 'rc']);
 
 export function slugify(input: string): string {
   let base = input
