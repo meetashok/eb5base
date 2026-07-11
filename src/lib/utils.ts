@@ -89,3 +89,18 @@ export function subscriptionVariant(
 export function cn(...classes: Array<string | false | null | undefined>): string {
   return classes.filter(Boolean).join(' ');
 }
+
+export function consensus7dLabel(consensus: 'open' | 'closed' | null | undefined): string {
+  if (consensus === 'open') return 'Open';
+  if (consensus === 'closed') return 'Closed';
+  return '';
+}
+
+export function formatConfirmations7d(count: number): string {
+  return `${count} confirmation${count === 1 ? '' : 's'} in last 7 days`;
+}
+
+export function formatOpenPct7d(pct: number | null | undefined): string | null {
+  if (pct == null) return null;
+  return `${pct}% say open`;
+}

@@ -1,9 +1,11 @@
 import { createClient } from '@/lib/supabase-server';
 import type { Project } from '@/lib/types';
-import { isUuid } from '@/lib/slugs';
+import { PROJECT_SELECT, PROJECT_SELECT_LEGACY } from '@/lib/types';
+import { ensureBrandSlug, ensureProjectSlug } from '@/lib/ensure-slugs';
+import { isUuid, slugify } from '@/lib/slugs';
 
-const DETAIL_SELECT =
-  '*, rc_brands!brand_id(id, name, website_url, slug), regional_centers(id, name, uscis_rc_id, website_url), profiles!added_by(display_name, avatar_url)';
+const DETAIL_SELECT = `${PROJECT_SELECT}, profiles!added_by(display_name, avatar_url)`;
+const DETAIL_SELECT_LEGACY = `${PROJECT_SELECT_LEGACY}, profiles!added_by(display_name, avatar_url)`;
 
 async function hydrateProject(project: Project): Promise<Project> {
   const supabase = createClient();
@@ -38,33 +40,62 @@ async function hydrateProject(project: Project): Promise<Project> {
   return project;
 }
 
-/** Load a project by UUID or slug (with brand join when possible). */
-export async function loadProjectByParam(param: string): Promise<Project | null> {
+async function finalizeProject(project: Project): Promise<Project> {
+  if (project.brand_id && project.rc_brands?.name) {
+    project.rc_brands.slug = await ensureBrandSlug({
+      id: project.rc_brands.id || project.brand_id,
+      name: project.rc_brands.name,
+      slug: project.rc_brands.slug,
+    });
+  }
+  if (project.name) {
+    project.slug = await ensureProjectSlug({
+      id: project.id,
+      name: project.name,
+      slug: project.slug,
+      brand_id: project.brand_id,
+    });
+  }
+  return project;
+}
+
+async function selectProjectDetail(
+  filters: Array<{ column: string; value: string }>
+): Promise<Project | null> {
   const supabase = createClient();
-  const col = isUuid(param) ? 'id' : 'slug';
 
-  const joined = await supabase
-    .from('projects')
-    .select(DETAIL_SELECT)
-    .eq(col, param)
-    .maybeSingle();
-
-  if (!joined.error && joined.data) {
-    return joined.data as Project;
+  async function runSelect(select: string) {
+    let query = supabase.from('projects').select(select);
+    for (const f of filters) {
+      query = query.eq(f.column, f.value);
+    }
+    return query.maybeSingle();
   }
 
+  const joined = await runSelect(DETAIL_SELECT);
+  if (!joined.error && joined.data) {
+    return finalizeProject(joined.data as unknown as Project);
+  }
   if (joined.error) {
     console.error('Project detail joined select failed:', joined.error.message);
+    const legacy = await runSelect(DETAIL_SELECT_LEGACY);
+    if (!legacy.error && legacy.data) {
+      return finalizeProject(legacy.data as unknown as Project);
+    }
   }
 
-  const basic = await supabase.from('projects').select('*').eq(col, param).maybeSingle();
-
+  const basic = await runSelect('*');
   if (basic.error || !basic.data) {
     if (basic.error) console.error('Project detail basic select failed:', basic.error.message);
     return null;
   }
+  return finalizeProject(await hydrateProject(basic.data as unknown as Project));
+}
 
-  return hydrateProject(basic.data as Project);
+/** Load a project by UUID or slug (with brand join when possible). */
+export async function loadProjectByParam(param: string): Promise<Project | null> {
+  const col = isUuid(param) ? 'id' : 'slug';
+  return selectProjectDetail([{ column: col, value: param }]);
 }
 
 /** Load a project nested under a brand (by brand slug/id + project slug/id). */
@@ -77,36 +108,64 @@ export async function loadNestedProject(
 } | null> {
   const supabase = createClient();
   const brandCol = isUuid(brandParam) ? 'id' : 'slug';
-  const projectCol = isUuid(projectParam) ? 'id' : 'slug';
 
-  const { data: brand } = await supabase
+  const { data: initialBrand, error: brandError } = await supabase
     .from('rc_brands')
     .select('id, name, slug')
     .eq(brandCol, brandParam)
     .maybeSingle();
-  if (!brand) return null;
 
-  const joined = await supabase
-    .from('projects')
-    .select(DETAIL_SELECT)
-    .eq('brand_id', brand.id)
-    .eq(projectCol, projectParam)
-    .maybeSingle();
+  let brand = initialBrand;
 
-  if (!joined.error && joined.data) {
-    return { brand, project: joined.data as Project };
+  if (brandError && /column .*\.slug does not exist/i.test(brandError.message)) {
+    ({ data: brand } = await supabase
+      .from('rc_brands')
+      .select('id, name')
+      .eq(isUuid(brandParam) ? 'id' : 'name', brandParam)
+      .maybeSingle());
   }
 
-  const basic = await supabase
-    .from('projects')
-    .select('*')
-    .eq('brand_id', brand.id)
-    .eq(projectCol, projectParam)
-    .maybeSingle();
-  if (!basic.data) return null;
+  if (!brand && !isUuid(brandParam)) {
+    const { data: unsluggified } = await supabase
+      .from('rc_brands')
+      .select('id, name, slug')
+      .is('slug', null)
+      .limit(100);
+    brand =
+      unsluggified?.find((row) => slugify(row.name) === brandParam) ||
+      unsluggified?.find((row) => row.slug === brandParam) ||
+      null;
+  }
 
-  const project = await hydrateProject(basic.data as Project);
-  return { brand, project };
+  if (!brand) return null;
+
+  brand.slug = await ensureBrandSlug(brand);
+
+  const projectCol = isUuid(projectParam) ? 'id' : 'slug';
+  const project = await selectProjectDetail([
+    { column: 'brand_id', value: brand.id },
+    { column: projectCol, value: projectParam },
+  ]);
+
+  if (project) {
+    return { brand, project };
+  }
+
+  if (!isUuid(projectParam)) {
+    const { data: candidates } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('brand_id', brand.id)
+      .is('slug', null)
+      .limit(100);
+    const match = candidates?.find((row) => slugify(row.name) === projectParam);
+    if (match) {
+      const hydrated = await finalizeProject(await hydrateProject(match as Project));
+      return { brand, project: hydrated };
+    }
+  }
+
+  return null;
 }
 
 export async function canEditProject(

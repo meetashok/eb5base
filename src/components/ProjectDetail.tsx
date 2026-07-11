@@ -36,7 +36,11 @@ export default function ProjectDetail({
   const brandDisplayName = brand?.name || rc?.name;
   const brandHref =
     brand?.id || p.brand_id
-      ? brandPath({ id: brand?.id || p.brand_id!, slug: brand?.slug })
+      ? brandPath({
+          id: brand?.id || p.brand_id!,
+          slug: brand?.slug,
+          name: brand?.name,
+        })
       : null;
 
   return (

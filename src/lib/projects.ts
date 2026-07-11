@@ -1,25 +1,57 @@
 import { createClient } from '@/lib/supabase-server';
 import type { ProjectWithVotes } from '@/lib/types';
 import { PAGE_SIZE } from '@/lib/constants';
+import { ensureSlugsForProjects } from '@/lib/ensure-slugs';
 
 /** Prefer brand join; fall back to plain select if embed fails (pre-migration DB) */
 const LIST_SELECT =
   '*, rc_brands!brand_id(id, name, website_url, slug), regional_centers(id, name, uscis_rc_id, website_url)';
 const LIST_SELECT_LEGACY = '*, regional_centers(id, name, uscis_rc_id, website_url)';
 
+type VoteSummary = {
+  count: number;
+  last_status: string | null;
+  last_at: string | null;
+  open_7d: number;
+  closed_7d: number;
+};
+
+function emptyVoteSummary(): VoteSummary {
+  return { count: 0, last_status: null, last_at: null, open_7d: 0, closed_7d: 0 };
+}
+
+function finalizeVoteSummary(summary: VoteSummary) {
+  const confirmations_7d = summary.open_7d + summary.closed_7d;
+  const consensus_7d =
+    confirmations_7d === 0
+      ? null
+      : summary.open_7d >= summary.closed_7d
+        ? ('open' as const)
+        : ('closed' as const);
+  const open_pct_7d =
+    confirmations_7d === 0 ? null : Math.round((summary.open_7d / confirmations_7d) * 100);
+  return { ...summary, confirmations_7d, consensus_7d, open_pct_7d };
+}
+
 function withCounts(
   projects: ProjectWithVotes[],
-  voteMap?: Map<string, { count: number; last_status: string | null; last_at: string | null }>
+  voteMap?: Map<string, VoteSummary>
 ): ProjectWithVotes[] {
   return projects.map((p) => {
     const v = voteMap?.get(p.id);
     const count = v?.count ?? p.project_votes?.[0]?.count ?? 0;
+    const finalized = v ? finalizeVoteSummary(v) : finalizeVoteSummary(emptyVoteSummary());
     return {
       ...p,
       vote_count: count,
       confirmation_count: count,
       last_vote_status: v?.last_status || null,
       last_vote_at: v?.last_at || null,
+      confirmations_7d: finalized.confirmations_7d,
+      open_7d: finalized.open_7d,
+      closed_7d: finalized.closed_7d,
+      consensus_7d: finalized.consensus_7d,
+      open_pct_7d: finalized.open_pct_7d,
     };
   });
 }
@@ -28,26 +60,24 @@ async function attachVoteSummaries(projects: ProjectWithVotes[]) {
   if (!projects.length) return projects;
   const supabase = createClient();
   const ids = projects.map((p) => p.id);
+  const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
   const { data: votes } = await supabase
     .from('project_votes')
     .select('project_id, subscription_status, created_at')
     .in('project_id', ids)
     .order('created_at', { ascending: false });
 
-  const byProject = new Map<
-    string,
-    { count: number; last_status: string | null; last_at: string | null }
-  >();
+  const byProject = new Map<string, VoteSummary>();
   for (const v of votes || []) {
-    const cur = byProject.get(v.project_id) || {
-      count: 0,
-      last_status: null,
-      last_at: null,
-    };
+    const cur = byProject.get(v.project_id) || emptyVoteSummary();
     cur.count += 1;
     if (!cur.last_at) {
       cur.last_status = v.subscription_status;
       cur.last_at = v.created_at;
+    }
+    if (new Date(v.created_at).getTime() >= sevenDaysAgo) {
+      if (v.subscription_status === 'open') cur.open_7d += 1;
+      else if (v.subscription_status === 'closed') cur.closed_7d += 1;
     }
     byProject.set(v.project_id, cur);
   }
@@ -129,7 +159,7 @@ export async function getRecentProjects(limit = 6): Promise<ProjectWithVotes[]> 
     return [];
   }
 
-  return attachVoteSummaries((data as unknown as ProjectWithVotes[]) || []);
+  return ensureSlugsForProjects(await attachVoteSummaries((data as unknown as ProjectWithVotes[]) || []));
 }
 
 function parseList(value: string | undefined): string[] {
@@ -256,8 +286,8 @@ export async function getFilteredProjects(filters: ProjectFilters) {
     return { projects: [] as ProjectWithVotes[], total: 0, page };
   }
 
-  let projects = await attachVoteSummaries(
-    ((data as unknown as ProjectWithVotes[]) || [])
+  let projects = await ensureSlugsForProjects(
+    await attachVoteSummaries(((data as unknown as ProjectWithVotes[]) || []))
   );
 
   if (filters.sort === 'votes' || filters.sort === 'most_confirmed') {

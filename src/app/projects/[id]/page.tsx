@@ -7,6 +7,11 @@ import type { ProjectContact } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
+async function redirectToMergedTarget(mergedInto: string) {
+  const target = await loadProjectByParam(mergedInto);
+  redirect(target ? projectPath(target) : `/projects/${mergedInto}`);
+}
+
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const project = await loadProjectByParam(params.id);
   return { title: project?.name || 'Project' };
@@ -16,7 +21,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
   const project = await loadProjectByParam(params.id);
   if (!project) notFound();
 
-  if (project.merged_into) redirect(`/projects/${project.merged_into}`);
+  if (project.merged_into) await redirectToMergedTarget(project.merged_into);
 
   // Prefer nested readable URL when brand + project slugs exist
   const nested = projectPath(project);
