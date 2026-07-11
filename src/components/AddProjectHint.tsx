@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ADD_PROJECT_HINT_STORAGE_KEY } from '@/lib/constants';
 
-const HINT_DURATION_MS = 3000;
+const HINT_DURATION_MS = 4000;
 const FADE_MS = 500;
 const SCROLL_DISMISS_PX = 50;
 const ARROW_WIDTH = 150;
@@ -203,7 +203,7 @@ export default function AddProjectHint() {
           className="add-project-hint-arrow-img"
         />
       </div>
-      <p className="add-project-hint-label mt-1 whitespace-nowrap text-center">
+      <p className="add-project-hint-label mt-2 whitespace-nowrap text-center">
         Know a project? Add it here
       </p>
     </div>,
