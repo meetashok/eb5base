@@ -302,26 +302,22 @@ export default function AboutPage() {
         </section>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-          <section className="card-elevated p-6 md:p-8 space-y-4 h-full flex flex-col">
+          <section className="card-elevated p-6 md:p-8 space-y-4 h-full">
             <SectionHeading eyebrow="Access" title="Open to the community" titleClassName="text-xl" />
-            <p className="text-neutral/80 leading-relaxed">
-              EB5 Base is built for everyone in the EB-5 ecosystem. There is no paywall to browse,
-              and anyone can help keep the directory useful whether you are researching your first
-              investment or maintaining listings for a regional center.
-            </p>
-            <ul className="space-y-2 text-sm text-neutral/80 flex-1">
-              <CheckItem>Browse and search the full project directory without an account</CheckItem>
-              <CheckItem>Confirm subscription status and add projects as a community member</CheckItem>
-              <CheckItem>
-                Regional center representatives can verify affiliation and edit listings
-              </CheckItem>
-              <CheckItem>
-                Free for investors, attorneys, agents, and regional centers alike
-              </CheckItem>
-            </ul>
+            <div className="space-y-3 text-neutral/80 leading-relaxed">
+              <p>
+                EB5 Base is built for everyone in the EB-5 ecosystem. There is no paywall to
+                browse, and anyone can help keep the directory useful.
+              </p>
+              <p>
+                Investors can search projects and confirm subscription status without signing in.
+                Regional center representatives can verify their affiliation and keep listings
+                current. The directory is free for everyone participating in EB-5.
+              </p>
+            </div>
           </section>
 
-          <section className="card-elevated p-6 md:p-8 space-y-4 panel-copper h-full flex flex-col">
+          <section className="card-elevated p-6 md:p-8 space-y-4 panel-copper h-full">
             <SectionHeading
               eyebrow="The founder"
               title="Who's behind this"
@@ -339,7 +335,7 @@ export default function AboutPage() {
                 </a>
               }
             />
-            <div className="space-y-3 text-neutral/80 leading-relaxed flex-1">
+            <div className="space-y-3 text-neutral/80 leading-relaxed">
               <p>
                 Ashok Kumar is an EB-5 investor and data scientist based in the Seattle area. He has
                 lived in the U.S. since 2015 and received conditional permanent residency through
