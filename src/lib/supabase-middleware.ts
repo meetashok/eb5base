@@ -27,6 +27,7 @@ function isPublicPath(pathname: string): boolean {
   // Brand browse/detail public; create requires auth
   if (pathname.startsWith('/rc/')) {
     if (pathname === '/rc/add' || pathname === '/rc/new') return false;
+    if (pathname.endsWith('/edit')) return false;
     return true;
   }
 
