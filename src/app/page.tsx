@@ -176,7 +176,7 @@ export default async function HomePage() {
         <p className="text-neutral/70 mb-6 max-w-xl mx-auto">
           Browse USCIS-approved regional centers and see their active projects
         </p>
-        <Link href="/regional-centers" className="btn btn-primary transition-all duration-150">
+        <Link href="/rc" className="btn btn-primary transition-all duration-150">
           Browse Regional Centers
         </Link>
       </section>

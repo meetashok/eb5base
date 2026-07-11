@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
-import RCAutocomplete, { type RCSelection } from '@/components/RCAutocomplete';
+import BrandAutocomplete, { type BrandSelection } from '@/components/BrandAutocomplete';
 import {
   F956_OPTIONS,
   PROJECT_TYPES,
@@ -22,9 +22,8 @@ export default function EditProjectPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [rcName, setRcName] = useState('');
-  const [rcSelection, setRcSelection] = useState<RCSelection | null>(null);
-  const [uscisRcId, setUscisRcId] = useState('');
+  const [brandName, setBrandName] = useState('');
+  const [brandSelection, setBrandSelection] = useState<BrandSelection | null>(null);
   const [name, setName] = useState('');
   const [projectTypes, setProjectTypes] = useState<string[]>([]);
   const [city, setCity] = useState('');
@@ -37,8 +36,6 @@ export default function EditProjectPage() {
   const [amount, setAmount] = useState('');
   const [totalSlots, setTotalSlots] = useState('');
   const [notes, setNotes] = useState('');
-
-  const isExistingRc = Boolean(rcSelection && !rcSelection.isNew && rcSelection.id);
 
   useEffect(() => {
     const supabase = createClient();
@@ -85,13 +82,12 @@ export default function EditProjectPage() {
       }
 
       setName(p.name);
-      setRcName(p.regional_centers?.name || '');
-      setUscisRcId(p.regional_centers?.uscis_rc_id || '');
-      if (p.rc_id && p.regional_centers) {
-        setRcSelection({
-          id: p.rc_id,
-          name: p.regional_centers.name,
-          uscis_rc_id: p.regional_centers.uscis_rc_id,
+      setBrandName(p.rc_brands?.name || p.regional_centers?.name || '');
+      if (p.brand_id && p.rc_brands) {
+        setBrandSelection({
+          id: p.brand_id,
+          name: p.rc_brands.name,
+          website_url: p.rc_brands.website_url,
           isNew: false,
         });
       }
@@ -114,26 +110,23 @@ export default function EditProjectPage() {
     setter(list.includes(value) ? list.filter((x) => x !== value) : [...list, value]);
   }
 
-  async function resolveRcId(): Promise<string | null> {
+  async function resolveBrandId(): Promise<string | null> {
     const supabase = createClient();
-    if (rcSelection && !rcSelection.isNew && rcSelection.id) return rcSelection.id;
+    if (brandSelection && !brandSelection.isNew && brandSelection.id) return brandSelection.id;
 
-    const nameToCreate = (rcSelection?.name || rcName).trim();
+    const nameToCreate = (brandSelection?.name || brandName).trim();
     if (!nameToCreate) return null;
 
     const { data: existing } = await supabase
-      .from('regional_centers')
+      .from('rc_brands')
       .select('id')
       .ilike('name', nameToCreate)
       .maybeSingle();
     if (existing?.id) return existing.id;
 
     const { data: created, error: createError } = await supabase
-      .from('regional_centers')
-      .insert({
-        name: nameToCreate,
-        uscis_rc_id: uscisRcId.trim() || null,
-      })
+      .from('rc_brands')
+      .insert({ name: nameToCreate })
       .select('id')
       .single();
 
@@ -149,7 +142,7 @@ export default function EditProjectPage() {
     setError(null);
     const supabase = createClient();
     try {
-      const rcId = await resolveRcId();
+      const brandId = await resolveBrandId();
       const { error: err } = await supabase
         .from('projects')
         .update({
@@ -157,7 +150,7 @@ export default function EditProjectPage() {
           project_type: projectTypes.length ? projectTypes : null,
           location_city: city.trim() || null,
           location_state: state || null,
-          rc_id: rcId,
+          brand_id: brandId,
           tea_designations: tea.length ? tea : null,
           f956_status: f956,
           f956_approval_date: f956 === 'approved' && f956Date ? f956Date : null,
@@ -202,27 +195,14 @@ export default function EditProjectPage() {
       <h1 className="text-2xl font-bold text-primary mb-6">Edit Project</h1>
       <form onSubmit={handleSubmit} className="space-y-6">
         <label className="form-control">
-          <span className="label-text mb-1">RC Name</span>
-          <RCAutocomplete
-            value={rcName}
+          <span className="label-text mb-1">Regional Center</span>
+          <BrandAutocomplete
+            value={brandName}
             onChange={(v) => {
-              setRcName(v);
-              setRcSelection(null);
+              setBrandName(v);
+              setBrandSelection(null);
             }}
-            onSelect={(sel) => {
-              setRcSelection(sel);
-              if (!sel.isNew) setUscisRcId(sel.uscis_rc_id || '');
-            }}
-          />
-        </label>
-        <label className="form-control">
-          <span className="label-text mb-1">RC ID</span>
-          <input
-            className="input input-bordered"
-            value={uscisRcId}
-            onChange={(e) => setUscisRcId(e.target.value)}
-            readOnly={isExistingRc}
-            disabled={isExistingRc}
+            onSelect={(sel) => setBrandSelection(sel)}
           />
         </label>
         <label className="form-control">

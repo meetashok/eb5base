@@ -39,6 +39,30 @@ export interface Profile {
   updated_at: string;
 }
 
+/** User-facing regional center organization */
+export interface RcBrand {
+  id: string;
+  name: string;
+  website_url: string | null;
+  description: string | null;
+  logo_url: string | null;
+  created_at: string;
+  updated_at: string;
+  projects?: { count: number }[] | null;
+  regional_centers?: { count: number }[] | null;
+}
+
+export interface RcBrandContact {
+  id: string;
+  brand_id: string;
+  name: string | null;
+  role: string | null;
+  email: string | null;
+  phone: string | null;
+  created_at: string;
+}
+
+/** USCIS-registered entity (reference data under a brand) */
 export interface RegionalCenter {
   id: string;
   name: string;
@@ -50,6 +74,7 @@ export interface RegionalCenter {
   operating_states: string[] | null;
   contact_email: string | null;
   contact_phone: string | null;
+  brand_id: string | null;
   created_at: string;
   updated_at: string;
   projects?: { count: number }[] | null;
@@ -74,6 +99,7 @@ export interface Project {
   location_city: string | null;
   location_state: string | null;
   rc_id: string | null;
+  brand_id: string | null;
   tea_designations: string[] | null;
   f956_status: F956Status | null;
   f956_approval_date: string | null;
@@ -86,6 +112,7 @@ export interface Project {
   merged_into: string | null;
   created_at: string;
   updated_at: string;
+  rc_brands?: Pick<RcBrand, 'id' | 'name' | 'website_url'> | null;
   regional_centers?: Pick<
     RegionalCenter,
     'id' | 'name' | 'uscis_rc_id' | 'website_url'
@@ -133,5 +160,10 @@ export interface VoteWithProfile extends ProjectVote {
   profiles?: Pick<Profile, 'display_name' | 'avatar_url'> | null;
 }
 
+/** Prefer brand join; keep regional_centers as fallback during migration */
 export const PROJECT_SELECT =
-  '*, regional_centers(id, name, uscis_rc_id, website_url)';
+  '*, rc_brands!brand_id(id, name, website_url), regional_centers(id, name, uscis_rc_id, website_url)';
+
+export function projectBrandName(project: Project): string | null {
+  return project.rc_brands?.name || project.regional_centers?.name || null;
+}

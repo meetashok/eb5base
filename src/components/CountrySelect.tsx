@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { countries, type Country } from '@/data/countries';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { findCountry, getCountryList, type Country } from '@/lib/countries';
 
 interface CountrySelectProps {
   value: string | null;
@@ -14,11 +14,9 @@ export default function CountrySelect({ value, onChange, className }: CountrySel
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const countries = useMemo(() => getCountryList(), []);
 
-  const selectedCountry = value
-    ? countries.find((c) => c.code === value) ||
-      countries.find((c) => c.name.toLowerCase() === value.toLowerCase())
-    : null;
+  const selectedCountry = value ? findCountry(value) : null;
 
   const filtered = search
     ? countries.filter(
@@ -26,7 +24,7 @@ export default function CountrySelect({ value, onChange, className }: CountrySel
           c.name.toLowerCase().includes(search.toLowerCase()) ||
           c.code.toLowerCase().includes(search.toLowerCase())
       )
-    : [...countries];
+    : countries;
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -40,9 +38,7 @@ export default function CountrySelect({ value, onChange, className }: CountrySel
   }, []);
 
   useEffect(() => {
-    if (isOpen) {
-      inputRef.current?.focus();
-    }
+    if (isOpen) inputRef.current?.focus();
   }, [isOpen]);
 
   return (

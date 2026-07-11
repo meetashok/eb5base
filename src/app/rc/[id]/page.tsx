@@ -2,154 +2,202 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ProjectCard from '@/components/ProjectCard';
 import { createClient } from '@/lib/supabase-server';
-import type { ProjectWithVotes, RegionalCenter } from '@/lib/types';
+import type {
+  ProjectWithVotes,
+  RcBrand,
+  RcBrandContact,
+  RegionalCenter,
+} from '@/lib/types';
 import { PROJECT_SELECT } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const supabase = createClient();
-  const { data } = await supabase
-    .from('regional_centers')
+  const { data: brand } = await supabase
+    .from('rc_brands')
     .select('name')
     .eq('id', params.id)
     .maybeSingle();
-  return { title: data?.name || 'Regional Center' };
+  if (brand?.name) return { title: brand.name };
+
+  // Legacy: entity id may still be linked from old URLs
+  const { data: entity } = await supabase
+    .from('regional_centers')
+    .select('name, brand_id')
+    .eq('id', params.id)
+    .maybeSingle();
+  return { title: entity?.name || 'Regional Center' };
 }
 
-export default async function RCProfilePage({ params }: { params: { id: string } }) {
+export default async function RCBrandDetailPage({ params }: { params: { id: string } }) {
   const supabase = createClient();
 
-  const { data: rc, error } = await supabase
-    .from('regional_centers')
+  let brand: RcBrand | null = null;
+  const { data: brandRow } = await supabase
+    .from('rc_brands')
     .select('*')
     .eq('id', params.id)
     .maybeSingle();
 
-  if (error || !rc) notFound();
+  if (brandRow) {
+    brand = brandRow as RcBrand;
+  } else {
+    // Legacy entity URL → redirect conceptually by loading its brand
+    const { data: entity } = await supabase
+      .from('regional_centers')
+      .select('*, brand_id')
+      .eq('id', params.id)
+      .maybeSingle();
+    if (entity?.brand_id) {
+      const { data: parent } = await supabase
+        .from('rc_brands')
+        .select('*')
+        .eq('id', entity.brand_id)
+        .maybeSingle();
+      brand = (parent as RcBrand) || null;
+    }
+  }
 
-  const center = rc as RegionalCenter;
+  if (!brand) notFound();
 
-  const { data: projects } = await supabase
-    .from('projects')
-    .select(PROJECT_SELECT)
-    .eq('rc_id', params.id)
-    .is('merged_into', null)
-    .order('created_at', { ascending: false });
+  const brandId = brand.id;
 
-  const list = (projects as ProjectWithVotes[]) || [];
+  const [{ data: contacts }, { data: projects }, { data: entities }] = await Promise.all([
+    supabase.from('rc_brand_contacts').select('*').eq('brand_id', brandId),
+    supabase
+      .from('projects')
+      .select(PROJECT_SELECT)
+      .eq('brand_id', brandId)
+      .is('merged_into', null)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('regional_centers')
+      .select('*')
+      .eq('brand_id', brandId)
+      .order('name'),
+  ]);
+
+  let list = (projects as ProjectWithVotes[]) || [];
+
+  // Fallback: projects still on entity rc_id under this brand
+  if (!list.length && (entities || []).length) {
+    const entityIds = (entities as RegionalCenter[]).map((e) => e.id);
+    const { data: legacyProjects } = await supabase
+      .from('projects')
+      .select(PROJECT_SELECT)
+      .in('rc_id', entityIds)
+      .is('merged_into', null)
+      .order('created_at', { ascending: false });
+    list = (legacyProjects as ProjectWithVotes[]) || [];
+  }
+
+  const contactList = (contacts as RcBrandContact[]) || [];
+  const entityList = (entities as RegionalCenter[]) || [];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="max-w-4xl mx-auto py-8 px-4">
       <div className="text-meta breadcrumbs mb-4">
         <ul>
           <li>
             <Link href="/">Home</Link>
           </li>
           <li>
-            <Link href="/regional-centers">Regional Centers</Link>
+            <Link href="/rc">Regional Centers</Link>
           </li>
-          <li>{center.name}</li>
+          <li>{brand.name}</li>
         </ul>
       </div>
 
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-primary">{center.name}</h1>
-        <div className="flex flex-wrap items-center gap-3 mt-3">
-          {center.uscis_rc_id && (
-            <span className="badge bg-base-200 text-neutral/60 border-0 rounded-full text-xs font-semibold px-3 py-1">
-              {center.uscis_rc_id}
-            </span>
-          )}
-          {center.website_url && (
-            <a
-              href={center.website_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="link link-secondary text-sm"
-            >
-              Website
-            </a>
-          )}
-        </div>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-primary">{brand.name}</h1>
+        {brand.website_url && (
+          <a
+            href={brand.website_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-secondary hover:underline"
+          >
+            {brand.website_url}
+          </a>
+        )}
+        {brand.description && <p className="text-neutral/70 mt-3">{brand.description}</p>}
       </div>
 
-      <section className="border border-base-300 rounded-lg p-4 md:p-6 mb-10 space-y-4">
-        {center.description && (
-          <p className="text-sm text-neutral/80 leading-relaxed">{center.description}</p>
-        )}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <p className="text-xs uppercase tracking-wide text-neutral/50 mb-1">
-              Headquarters State
-            </p>
-            <p className="font-semibold">{center.headquarters_state || '—'}</p>
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-wide text-neutral/50 mb-1">
-              Operating States
-            </p>
-            {(center.operating_states || []).length ? (
-              <div className="flex flex-wrap gap-1">
-                {(center.operating_states || []).map((s) => (
-                  <span
-                    key={s}
-                    className="badge bg-base-200 text-neutral/70 border-0 rounded-full text-xs font-semibold px-3 py-1"
-                  >
-                    {s}
-                  </span>
-                ))}
-              </div>
-            ) : (
-              <p className="font-semibold">—</p>
-            )}
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-wide text-neutral/50 mb-1">Contact Email</p>
-            {center.contact_email ? (
-              <a href={`mailto:${center.contact_email}`} className="link link-secondary font-semibold">
-                {center.contact_email}
-              </a>
-            ) : (
-              <p className="font-semibold">—</p>
-            )}
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-wide text-neutral/50 mb-1">Contact Phone</p>
-            {center.contact_phone ? (
-              <a href={`tel:${center.contact_phone}`} className="link link-secondary font-semibold">
-                {center.contact_phone}
-              </a>
-            ) : (
-              <p className="font-semibold">—</p>
-            )}
+      {contactList.length > 0 && (
+        <div className="card card-bordered shadow-sm bg-base-100 mb-6">
+          <div className="card-body p-5">
+            <h2 className="font-bold text-primary mb-3">Contacts</h2>
+            <div className="space-y-2">
+              {contactList.map((c) => (
+                <div key={c.id} className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                  {c.name && <span className="font-medium">{c.name}</span>}
+                  {c.role && (
+                    <span className="badge badge-sm badge-outline rounded-full">{c.role}</span>
+                  )}
+                  {c.email && (
+                    <a href={`mailto:${c.email}`} className="text-secondary">
+                      {c.email}
+                    </a>
+                  )}
+                  {c.phone && <span className="text-neutral/50">{c.phone}</span>}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </section>
+      )}
 
-      <section>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-primary">Projects by {center.name}</h2>
-          <p className="text-sm text-neutral/60">
-            {list.length} project{list.length === 1 ? '' : 's'}
-          </p>
-        </div>
+      <div className="mb-8">
+        <h2 className="text-xl font-bold text-primary mb-4">Projects ({list.length})</h2>
         {list.length === 0 ? (
-          <p className="text-neutral/60 py-8">
-            No projects listed for this regional center yet. Know one?{' '}
+          <p className="text-neutral/50 text-sm">
+            No projects listed yet.{' '}
             <Link href="/projects/new" className="link link-secondary">
-              Add it
+              Add one
             </Link>
-            .
           </p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {list.map((p) => (
               <ProjectCard key={p.id} project={p} />
             ))}
           </div>
         )}
-      </section>
+      </div>
+
+      {entityList.length > 0 && (
+        <details className="collapse collapse-arrow border border-base-300 rounded-xl bg-base-100">
+          <summary className="collapse-title font-bold text-primary">
+            USCIS Entities ({entityList.length})
+          </summary>
+          <div className="collapse-content">
+            <p className="text-xs text-neutral/50 mb-3">
+              Official USCIS-registered regional center entities under this organization.
+            </p>
+            <div className="overflow-x-auto">
+              <table className="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Entity Name</th>
+                    <th>USCIS ID</th>
+                    <th>Operating States</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {entityList.map((e) => (
+                    <tr key={e.id}>
+                      <td className="text-sm">{e.name}</td>
+                      <td className="text-xs font-mono text-neutral/50">{e.uscis_rc_id}</td>
+                      <td className="text-xs">{(e.operating_states || []).join(', ')}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </details>
+      )}
     </div>
   );
 }
