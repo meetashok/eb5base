@@ -42,7 +42,7 @@ export default function EditRcBrandPage() {
       const { data, error: err } = await query.maybeSingle();
 
       if (err || !data) {
-        setError('Regional center not found');
+        setError(err?.message || 'Regional center not found');
         setCheckingAuth(false);
         return;
       }

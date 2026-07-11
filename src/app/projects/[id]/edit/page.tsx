@@ -54,17 +54,57 @@ export default function EditProjectPage() {
         return;
       }
 
-      let query = supabase.from('projects').select(PROJECT_SELECT);
-      query = isUuid(param) ? query.eq('id', param) : query.eq('slug', param);
-      const { data, error: err } = await query.maybeSingle();
+      const col = isUuid(param) ? 'id' : 'slug';
 
-      if (err || !data) {
-        setError('Project not found');
-        setLoading(false);
-        return;
+      // Prefer brand join; fall back if embed fails (permissions / pre-migration)
+      let p: Project | null = null;
+      const joined = await supabase
+        .from('projects')
+        .select(PROJECT_SELECT)
+        .eq(col, param)
+        .maybeSingle();
+
+      if (!joined.error && joined.data) {
+        p = joined.data as Project;
+      } else {
+        if (joined.error) {
+          console.error('Edit project joined select failed:', joined.error.message);
+        }
+        const basic = await supabase
+          .from('projects')
+          .select('*')
+          .eq(col, param)
+          .maybeSingle();
+
+        if (basic.error || !basic.data) {
+          setError(
+            basic.error?.message ||
+              joined.error?.message ||
+              'Project not found'
+          );
+          setLoading(false);
+          return;
+        }
+
+        p = basic.data as Project;
+        if (p.brand_id) {
+          const { data: brand } = await supabase
+            .from('rc_brands')
+            .select('id, name, website_url, slug')
+            .eq('id', p.brand_id)
+            .maybeSingle();
+          p.rc_brands = brand;
+        }
+        if (p.rc_id && !p.regional_centers) {
+          const { data: rc } = await supabase
+            .from('regional_centers')
+            .select('id, name, uscis_rc_id, website_url')
+            .eq('id', p.rc_id)
+            .maybeSingle();
+          p.regional_centers = rc;
+        }
       }
 
-      const p = data as Project;
       setProjectId(p.id);
       setExistingSlug(p.slug);
 
