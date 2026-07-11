@@ -9,7 +9,7 @@ export default function Footer() {
         <p className="text-meta text-neutral/60 leading-relaxed max-w-4xl mb-6">{DISCLAIMER}</p>
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex flex-col sm:flex-row items-center gap-3 text-sm text-neutral/50">
-            <Logo size={28} />
+            <Logo size={28} showWordmark wordmarkVariant="on-light" wordmarkClassName="text-base" />
             <span>© {new Date().getFullYear()} EB5 Base. Free for investors.</span>
           </div>
           <div className="flex gap-6">

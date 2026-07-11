@@ -78,7 +78,12 @@ export default function Navbar() {
       <div className="navbar max-w-6xl mx-auto px-4 min-h-16">
         <div className="navbar-start">
           <Link href="/" className="hover:opacity-90 transition-opacity">
-            <Logo size={36} showWordmark wordmarkClassName="text-xl text-primary-content" />
+            <Logo
+              size={36}
+              showWordmark
+              wordmarkVariant="on-dark"
+              wordmarkClassName="text-xl sm:text-[1.35rem]"
+            />
           </Link>
         </div>
 
