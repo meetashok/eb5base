@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { getSupabaseConfig, isSupabaseConfigured } from '@/lib/supabase-env';
 
 const AUTH_ONLY_PREFIXES = ['/profile/setup'];
 
@@ -58,9 +59,15 @@ export async function updateSession(request: NextRequest) {
     request,
   });
 
+  if (!isSupabaseConfigured()) {
+    return supabaseResponse;
+  }
+
+  const { url, key } = getSupabaseConfig();
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    url,
+    key,
     {
       cookies: {
         getAll() {

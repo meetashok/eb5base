@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { getSupabaseConfig, isSupabaseConfigured } from '@/lib/supabase-env';
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -9,8 +10,15 @@ export async function GET(request: Request) {
   let next = searchParams.get('next') ?? '/profile/setup';
   if (!next.startsWith('/')) next = '/profile/setup';
 
+  if (!isSupabaseConfigured()) {
+    return NextResponse.redirect(
+      `${origin}/login?error=${encodeURIComponent('Supabase is not configured. Add your project URL and anon key to .env.local.')}`
+    );
+  }
+
   if (code) {
     const cookieStore = cookies();
+    const { url, key } = getSupabaseConfig();
     const forwardedHost = request.headers.get('x-forwarded-host');
     const redirectUrl =
       process.env.NODE_ENV === 'development'
@@ -22,8 +30,8 @@ export async function GET(request: Request) {
     const redirectResponse = NextResponse.redirect(redirectUrl);
 
     const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      url,
+      key,
       {
         cookies: {
           getAll() {
