@@ -88,11 +88,22 @@ export async function getRecentProjects(limit = 6): Promise<ProjectWithVotes[]> 
     .from('projects')
     .select(LIST_SELECT)
     .is('merged_into', null)
+    .eq('status', 'approved')
     .order('created_at', { ascending: false })
     .limit(limit);
 
   if (error) {
     console.error('getRecentProjects brand select failed:', error.message);
+    ({ data, error } = await supabase
+      .from('projects')
+      .select(LIST_SELECT)
+      .is('merged_into', null)
+      .order('created_at', { ascending: false })
+      .limit(limit));
+  }
+
+  if (error) {
+    console.error('getRecentProjects retry without status failed:', error.message);
     ({ data, error } = await supabase
       .from('projects')
       .select(LIST_SELECT_LEGACY)
@@ -168,11 +179,15 @@ export async function getFilteredProjects(filters: ProjectFilters) {
     rcIdsFromSearch = (rcs || []).map((r) => r.id);
   }
 
-  function applyFilters(select: string) {
+  function applyFilters(select: string, requireApproved = true) {
     let query = supabase
       .from('projects')
       .select(select, { count: 'exact' })
       .is('merged_into', null);
+
+    if (requireApproved) {
+      query = query.eq('status', 'approved');
+    }
 
     // filters.rc may be a brand id (preferred) or legacy rc entity id
     if (filters.rc) {
@@ -228,6 +243,12 @@ export async function getFilteredProjects(filters: ProjectFilters) {
   if (error) {
     console.error('getFilteredProjects joined select failed:', error.message);
     ({ data, count, error } = await applyFilters('*'));
+  }
+
+  // Pre-migration DBs may not have status yet
+  if (error) {
+    console.error('getFilteredProjects approved filter failed:', error.message);
+    ({ data, count, error } = await applyFilters(LIST_SELECT, false));
   }
 
   if (error) {

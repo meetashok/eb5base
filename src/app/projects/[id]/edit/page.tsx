@@ -144,6 +144,7 @@ export default function EditProjectPage() {
             .maybeSingle();
           return Boolean(data);
         }),
+        status: 'approved',
       })
       .select('id')
       .single();

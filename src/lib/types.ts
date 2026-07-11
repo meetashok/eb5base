@@ -47,6 +47,7 @@ export interface RcBrand {
   website_url: string | null;
   description: string | null;
   logo_url: string | null;
+  status: 'pending' | 'approved' | 'rejected' | null;
   created_at: string;
   updated_at: string;
   projects?: { count: number }[] | null;
@@ -108,6 +109,7 @@ export interface Project {
   investment_amount: number | null;
   total_slots: number | null;
   subscription_status: SubscriptionStatus | null;
+  status: 'pending' | 'approved' | 'rejected' | null;
   website_url: string | null;
   notes: string | null;
   added_by: string | null;
