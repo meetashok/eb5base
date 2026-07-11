@@ -31,11 +31,11 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 async function loadProject(id: string): Promise<Project | null> {
   const supabase = createClient();
 
-  // Prefer joined select; fall back if embeds fail (RLS / FK naming)
+  // Prefer brand join; fall back if embeds fail (RLS / pre-migration DB)
   const joined = await supabase
     .from('projects')
     .select(
-      '*, regional_centers(id, name, uscis_rc_id, website_url), profiles!added_by(display_name, avatar_url)'
+      '*, rc_brands!brand_id(id, name, website_url), regional_centers(id, name, uscis_rc_id, website_url), profiles!added_by(display_name, avatar_url)'
     )
     .eq('id', id)
     .maybeSingle();
@@ -55,6 +55,15 @@ async function loadProject(id: string): Promise<Project | null> {
   }
 
   const project = basic.data as Project;
+
+  if (project.brand_id) {
+    const { data: brand } = await supabase
+      .from('rc_brands')
+      .select('id, name, website_url')
+      .eq('id', project.brand_id)
+      .maybeSingle();
+    project.rc_brands = brand;
+  }
 
   if (project.rc_id) {
     const { data: rc } = await supabase
@@ -113,7 +122,10 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
 
   const location = [p.location_city, p.location_state].filter(Boolean).join(', ');
   const adder = p.profiles as Pick<Profile, 'display_name'> | null | undefined;
+  const brand = p.rc_brands;
   const rc = p.regional_centers;
+  const brandId = p.brand_id || brand?.id;
+  const brandDisplayName = brand?.name || rc?.name;
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -168,15 +180,14 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
         <InfoRow
           label="Regional Center"
           value={
-            rc ? (
+            brandDisplayName ? (
               <>
-                <Link href={`/rc/${rc.id}`} className="link link-secondary">
-                  {rc.name}
-                </Link>
-                {rc.uscis_rc_id && (
-                  <span className="text-meta text-neutral/50 ml-2 font-normal">
-                    {rc.uscis_rc_id}
-                  </span>
+                {brandId ? (
+                  <Link href={`/rc/${brandId}`} className="link link-secondary">
+                    {brandDisplayName}
+                  </Link>
+                ) : (
+                  brandDisplayName
                 )}
               </>
             ) : (

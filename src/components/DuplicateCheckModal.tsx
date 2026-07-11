@@ -5,9 +5,10 @@ import Link from 'next/link';
 export interface SimilarProject {
   id: string;
   name: string;
+  rc_brands?: { name?: string | null } | null;
   regional_centers?: { name?: string | null } | null;
   location_state?: string | null;
-  /** @deprecated display helper — prefer regional_centers.name */
+  /** @deprecated display helper — prefer rc_brands.name */
   regional_center?: string | null;
 }
 
@@ -44,7 +45,7 @@ export default function DuplicateCheckModal({
               <div>
                 <p className="font-medium">{p.name}</p>
                 <p className="text-meta text-neutral/60">
-                  {[p.regional_centers?.name || p.regional_center, p.location_state]
+                  {[p.rc_brands?.name || p.regional_centers?.name || p.regional_center, p.location_state]
                     .filter(Boolean)
                     .join(' · ')}
                 </p>

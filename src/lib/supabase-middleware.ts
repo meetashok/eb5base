@@ -16,26 +16,22 @@ function isStaticOrApi(pathname: string): boolean {
 /** Browse + auth pages — no login required. */
 function isPublicPath(pathname: string): boolean {
   if (
-    [
-      '/',
-      '/about',
-      '/login',
-      '/signup',
-      '/privacy',
-      '/contact',
-      '/regional-centers',
-    ].includes(pathname)
+    ['/', '/about', '/login', '/signup', '/privacy', '/contact', '/rc', '/regional-centers'].includes(
+      pathname
+    )
   ) {
     return true;
   }
   if (pathname.startsWith('/auth')) return true;
-  if (pathname.startsWith('/rc/')) return true;
 
-  if (pathname === '/regional-centers') return true;
-  if (pathname.startsWith('/regional-centers/')) {
-    if (pathname === '/regional-centers/new') return false;
+  // Brand browse/detail public; create requires auth
+  if (pathname.startsWith('/rc/')) {
+    if (pathname === '/rc/new') return false;
     return true;
   }
+
+  // Legacy redirects stay public (they redirect to /rc)
+  if (pathname.startsWith('/regional-centers')) return true;
 
   // Project list + detail are public; create/edit require auth + completed profile
   if (pathname === '/projects') return true;

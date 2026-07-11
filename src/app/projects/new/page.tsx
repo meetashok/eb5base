@@ -4,7 +4,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
-import RCAutocomplete, { type RCSelection } from '@/components/RCAutocomplete';
+import BrandAutocomplete, { type BrandSelection } from '@/components/BrandAutocomplete';
 import DuplicateCheckModal, { type SimilarProject } from '@/components/DuplicateCheckModal';
 import TEATag from '@/components/TEATag';
 import StatusBadge from '@/components/StatusBadge';
@@ -45,9 +45,8 @@ export default function NewProjectForm() {
   const [userId, setUserId] = useState<string | null>(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
 
-  const [rcName, setRcName] = useState('');
-  const [rcSelection, setRcSelection] = useState<RCSelection | null>(null);
-  const [uscisRcId, setUscisRcId] = useState('');
+  const [brandName, setBrandName] = useState('');
+  const [brandSelection, setBrandSelection] = useState<BrandSelection | null>(null);
   const [name, setName] = useState('');
   const [projectTypes, setProjectTypes] = useState<string[]>([]);
   const [city, setCity] = useState('');
@@ -70,8 +69,7 @@ export default function NewProjectForm() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const selectedRcId = rcSelection && !rcSelection.isNew ? rcSelection.id : null;
-  const isExistingRc = Boolean(selectedRcId);
+  const selectedBrandId = brandSelection && !brandSelection.isNew ? brandSelection.id : null;
 
   useEffect(() => {
     const supabase = createClient();
@@ -86,7 +84,7 @@ export default function NewProjectForm() {
   }, [router]);
 
   useEffect(() => {
-    if (!selectedRcId || name.trim().length < 3 || dismissedSimilar) {
+    if (!selectedBrandId || name.trim().length < 3 || dismissedSimilar) {
       setSimilarWhileTyping([]);
       return;
     }
@@ -94,39 +92,36 @@ export default function NewProjectForm() {
       const supabase = createClient();
       const { data } = await supabase
         .from('projects')
-        .select('id, name, location_state, regional_centers(name)')
-        .eq('rc_id', selectedRcId)
+        .select('id, name, location_state, rc_brands!brand_id(name)')
+        .eq('brand_id', selectedBrandId)
         .ilike('name', `%${name.trim()}%`)
         .is('merged_into', null)
         .limit(5);
       setSimilarWhileTyping((data as SimilarProject[]) || []);
     }, 300);
     return () => clearTimeout(t);
-  }, [name, selectedRcId, dismissedSimilar]);
+  }, [name, selectedBrandId, dismissedSimilar]);
 
   function toggle(list: string[], value: string, setter: (v: string[]) => void) {
     setter(list.includes(value) ? list.filter((x) => x !== value) : [...list, value]);
   }
 
-  function handleRcSelect(selection: RCSelection) {
-    setRcSelection(selection);
+  function handleBrandSelect(selection: BrandSelection) {
+    setBrandSelection(selection);
     setDismissedSimilar(false);
-    if (!selection.isNew) {
-      setUscisRcId(selection.uscis_rc_id || '');
-    }
   }
 
-  async function resolveRcId(): Promise<string | null> {
+  async function resolveBrandId(): Promise<string | null> {
     const supabase = createClient();
-    if (rcSelection && !rcSelection.isNew && rcSelection.id) {
-      return rcSelection.id;
+    if (brandSelection && !brandSelection.isNew && brandSelection.id) {
+      return brandSelection.id;
     }
 
-    const nameToCreate = (rcSelection?.name || rcName).trim();
+    const nameToCreate = (brandSelection?.name || brandName).trim();
     if (!nameToCreate) return null;
 
     const { data: existing } = await supabase
-      .from('regional_centers')
+      .from('rc_brands')
       .select('id')
       .ilike('name', nameToCreate)
       .maybeSingle();
@@ -134,11 +129,8 @@ export default function NewProjectForm() {
     if (existing?.id) return existing.id;
 
     const { data: created, error: createError } = await supabase
-      .from('regional_centers')
-      .insert({
-        name: nameToCreate,
-        uscis_rc_id: uscisRcId.trim() || null,
-      })
+      .from('rc_brands')
+      .insert({ name: nameToCreate })
       .select('id')
       .single();
 
@@ -153,35 +145,35 @@ export default function NewProjectForm() {
     const queries = [
       supabase
         .from('projects')
-        .select('id, name, location_state, regional_centers(name)')
+        .select('id, name, location_state, rc_brands!brand_id(name)')
         .is('merged_into', null)
         .ilike('name', `%${name.trim()}%`)
         .limit(5),
     ];
-    if (selectedRcId) {
+    if (selectedBrandId) {
       queries.push(
         supabase
           .from('projects')
-          .select('id, name, location_state, regional_centers(name)')
+          .select('id, name, location_state, rc_brands!brand_id(name)')
+          .eq('brand_id', selectedBrandId)
           .is('merged_into', null)
-          .eq('rc_id', selectedRcId)
           .limit(5)
       );
     }
     const results = await Promise.all(queries);
     const map = new Map<string, SimilarProject>();
-    for (const res of results) {
-      for (const p of (res.data as SimilarProject[]) || []) {
+    for (const r of results) {
+      for (const p of (r.data as SimilarProject[]) || []) {
         map.set(p.id, p);
       }
     }
-    return Array.from(map.values()).slice(0, 5);
+    return Array.from(map.values()).slice(0, 8);
   }
 
   async function handlePreview(e: FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!name.trim() || !rcName.trim()) {
+    if (!name.trim() || !brandName.trim()) {
       setError('Project name and regional center are required.');
       return;
     }
@@ -201,8 +193,8 @@ export default function NewProjectForm() {
     const supabase = createClient();
 
     try {
-      const rcId = await resolveRcId();
-      if (!rcId) {
+      const brandId = await resolveBrandId();
+      if (!brandId) {
         setError('Regional center is required.');
         setSubmitting(false);
         return;
@@ -215,7 +207,7 @@ export default function NewProjectForm() {
           project_type: projectTypes.length ? projectTypes : null,
           location_city: city.trim() || null,
           location_state: state || null,
-          rc_id: rcId,
+          brand_id: brandId,
           tea_designations: tea.length ? tea : null,
           f956_status: f956,
           f956_approval_date: f956 === 'approved' && f956Date ? f956Date : null,
@@ -291,12 +283,7 @@ export default function NewProjectForm() {
             </div>
             <div>
               <dt className="text-meta text-neutral/50">Regional Center</dt>
-              <dd>
-                {rcName}
-                {uscisRcId && (
-                  <span className="text-meta text-neutral/50 ml-2">{uscisRcId}</span>
-                )}
-              </dd>
+              <dd>{brandName || '—'}</dd>
             </div>
             <div>
               <dt className="text-meta text-neutral/50">Investment</dt>
@@ -346,40 +333,23 @@ export default function NewProjectForm() {
         <section className="space-y-4">
           <h2 className="text-lg font-bold text-primary">Regional Center</h2>
           <label className="form-control">
-            <span className="label-text mb-1">RC Name *</span>
-            <RCAutocomplete
-              value={rcName}
+            <span className="label-text mb-1">Regional Center *</span>
+            <BrandAutocomplete
+              value={brandName}
               onChange={(v) => {
-                setRcName(v);
-                setRcSelection(null);
+                setBrandName(v);
+                setBrandSelection(null);
                 setDismissedSimilar(false);
               }}
-              onSelect={handleRcSelect}
+              onSelect={handleBrandSelect}
             />
             <span className="label-text-alt text-neutral/50 mt-1">
               Can&apos;t find it?{' '}
-              <Link href="/regional-centers/new" className="link link-secondary">
+              <Link href="/rc/new" className="link link-secondary">
                 Add a new regional center
               </Link>{' '}
               first, then come back here.
             </span>
-          </label>
-          <label className="form-control">
-            <span className="label-text mb-1">RC ID (optional)</span>
-            <input
-              type="text"
-              className="input input-bordered"
-              placeholder="e.g. ID1516152743"
-              value={uscisRcId}
-              onChange={(e) => setUscisRcId(e.target.value)}
-              readOnly={isExistingRc}
-              disabled={isExistingRc}
-            />
-            {isExistingRc && (
-              <span className="text-meta text-neutral/50 mt-1">
-                Auto-filled from the selected regional center
-              </span>
-            )}
           </label>
         </section>
 
@@ -401,7 +371,7 @@ export default function NewProjectForm() {
           {similarWhileTyping.length > 0 && !dismissedSimilar && (
             <div className="p-3 border border-warning/40 bg-warning/5 rounded-lg">
               <p className="text-sm font-medium mb-2">
-                These projects already exist under {rcName} — is yours one of these?
+                These projects already exist under {brandName} — is yours one of these?
               </p>
               <ul className="space-y-1 mb-2">
                 {similarWhileTyping.map((p) => (

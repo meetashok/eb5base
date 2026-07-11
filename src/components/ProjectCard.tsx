@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { ProjectWithVotes } from '@/lib/types';
+import { projectBrandName } from '@/lib/types';
 import StatusBadge from './StatusBadge';
 import TEATag from './TEATag';
 import ConfirmStatusButtons from './ConfirmStatusButtons';
@@ -21,7 +22,7 @@ export default function ProjectCard({
   showConfirmationSummary = true,
 }: ProjectCardProps) {
   const location = [project.location_city, project.location_state].filter(Boolean).join(', ');
-  const rcName = project.regional_centers?.name;
+  const brandName = projectBrandName(project);
   const confirmationCount =
     project.confirmation_count ??
     project.project_votes?.[0]?.count ??
@@ -38,7 +39,7 @@ export default function ProjectCard({
 
           {location && <p className="text-sm text-neutral/80">{location}</p>}
 
-          {rcName && <p className="text-meta text-neutral/60">{rcName}</p>}
+          {brandName && <p className="text-meta text-neutral/60">{brandName}</p>}
 
           {project.total_slots != null && project.total_slots > 0 && (
             <p className="text-sm text-neutral/60">

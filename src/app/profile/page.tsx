@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import CountrySelect from '@/components/CountrySelect';
 import { ROLE_BADGE_LABELS } from '@/lib/constants';
-import { findCountry } from '@/data/countries';
+import { findCountry } from '@/lib/countries';
 import type { Profile, Project, ProjectVote, RcMembership } from '@/lib/types';
 import { PROJECT_SELECT } from '@/lib/types';
 import { formatDate } from '@/lib/utils';

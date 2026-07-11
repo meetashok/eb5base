@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import CountrySelect from '@/components/CountrySelect';
 import { ROLE_OPTIONS } from '@/lib/constants';
-import { findCountry } from '@/data/countries';
+import { findCountry } from '@/lib/countries';
 import type { InvestorStage, RegionalCenter, UserRole } from '@/lib/types';
 
 type RcPick = Pick<RegionalCenter, 'id' | 'name' | 'uscis_rc_id'>;

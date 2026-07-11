@@ -2,8 +2,10 @@ import { createClient } from '@/lib/supabase-server';
 import type { ProjectWithVotes } from '@/lib/types';
 import { PAGE_SIZE } from '@/lib/constants';
 
-/** Safer list select — avoid fragile embeds that empty the whole result set */
-const LIST_SELECT = '*, regional_centers(id, name, uscis_rc_id, website_url)';
+/** Prefer brand join; fall back to plain select if embed fails (pre-migration DB) */
+const LIST_SELECT =
+  '*, rc_brands!brand_id(id, name, website_url), regional_centers(id, name, uscis_rc_id, website_url)';
+const LIST_SELECT_LEGACY = '*, regional_centers(id, name, uscis_rc_id, website_url)';
 
 function withCounts(
   projects: ProjectWithVotes[],
@@ -54,19 +56,26 @@ async function attachVoteSummaries(projects: ProjectWithVotes[]) {
 
 export async function getHomeStats() {
   const supabase = createClient();
-  const [{ count: projects }, { count: regionalCenters }, { count: investors }, { count: votes }] =
+  const [{ count: projects }, brandsRes, legacyRcRes, { count: investors }, { count: votes }] =
     await Promise.all([
       supabase
         .from('projects')
         .select('*', { count: 'exact', head: true })
         .is('merged_into', null),
+      supabase.from('rc_brands').select('*', { count: 'exact', head: true }),
       supabase.from('regional_centers').select('*', { count: 'exact', head: true }),
       supabase.from('profiles').select('*', { count: 'exact', head: true }),
       supabase.from('project_votes').select('*', { count: 'exact', head: true }),
     ]);
+
+  const regionalCenters =
+    brandsRes.error != null
+      ? legacyRcRes.count || 0
+      : brandsRes.count || 0;
+
   return {
     projects: projects || 0,
-    regionalCenters: regionalCenters || 0,
+    regionalCenters,
     investors: investors || 0,
     confirmations: votes || 0,
   };
@@ -81,6 +90,16 @@ export async function getRecentProjects(limit = 6): Promise<ProjectWithVotes[]> 
     .is('merged_into', null)
     .order('created_at', { ascending: false })
     .limit(limit);
+
+  if (error) {
+    console.error('getRecentProjects brand select failed:', error.message);
+    ({ data, error } = await supabase
+      .from('projects')
+      .select(LIST_SELECT_LEGACY)
+      .is('merged_into', null)
+      .order('created_at', { ascending: false })
+      .limit(limit));
+  }
 
   if (error) {
     console.error('getRecentProjects joined select failed:', error.message);
@@ -137,14 +156,16 @@ export async function getFilteredProjects(filters: ProjectFilters) {
     subscription = Array.from(new Set([...subscription, 'open']));
   if (filters.filter === 'approved') f956 = Array.from(new Set([...f956, 'approved']));
 
+  let brandIdsFromSearch: string[] = [];
   let rcIdsFromSearch: string[] = [];
   if (filters.q?.trim() && !filters.rc) {
-    const { data: matchingRcs } = await supabase
-      .from('regional_centers')
-      .select('id')
-      .ilike('name', `%${filters.q.trim()}%`)
-      .limit(50);
-    rcIdsFromSearch = (matchingRcs || []).map((r) => r.id);
+    const q = filters.q.trim();
+    const [{ data: brands }, { data: rcs }] = await Promise.all([
+      supabase.from('rc_brands').select('id').ilike('name', `%${q}%`).limit(50),
+      supabase.from('regional_centers').select('id').ilike('name', `%${q}%`).limit(50),
+    ]);
+    brandIdsFromSearch = (brands || []).map((r) => r.id);
+    rcIdsFromSearch = (rcs || []).map((r) => r.id);
   }
 
   function applyFilters(select: string) {
@@ -153,19 +174,25 @@ export async function getFilteredProjects(filters: ProjectFilters) {
       .select(select, { count: 'exact' })
       .is('merged_into', null);
 
-    if (filters.rc) query = query.eq('rc_id', filters.rc);
+    // filters.rc may be a brand id (preferred) or legacy rc entity id
+    if (filters.rc) {
+      query = query.or(`brand_id.eq.${filters.rc},rc_id.eq.${filters.rc}`);
+    }
 
     if (filters.q?.trim()) {
       const q = filters.q.trim();
-      if (rcIdsFromSearch.length) {
-        query = query.or(
-          `name.ilike.%${q}%,location_city.ilike.%${q}%,location_state.ilike.%${q}%,rc_id.in.(${rcIdsFromSearch.join(',')})`
-        );
-      } else {
-        query = query.or(
-          `name.ilike.%${q}%,location_city.ilike.%${q}%,location_state.ilike.%${q}%`
-        );
+      const parts = [
+        `name.ilike.%${q}%`,
+        `location_city.ilike.%${q}%`,
+        `location_state.ilike.%${q}%`,
+      ];
+      if (brandIdsFromSearch.length) {
+        parts.push(`brand_id.in.(${brandIdsFromSearch.join(',')})`);
       }
+      if (rcIdsFromSearch.length) {
+        parts.push(`rc_id.in.(${rcIdsFromSearch.join(',')})`);
+      }
+      query = query.or(parts.join(','));
     }
 
     for (const t of tea) query = query.contains('tea_designations', [t]);
@@ -192,6 +219,11 @@ export async function getFilteredProjects(filters: ProjectFilters) {
   }
 
   let { data, count, error } = await applyFilters(LIST_SELECT);
+
+  if (error) {
+    console.error('getFilteredProjects brand select failed:', error.message);
+    ({ data, count, error } = await applyFilters(LIST_SELECT_LEGACY));
+  }
 
   if (error) {
     console.error('getFilteredProjects joined select failed:', error.message);

@@ -146,7 +146,7 @@ function RCCombobox({
     const term = open ? search : '';
     const t = setTimeout(async () => {
       const supabase = createClient();
-      let q = supabase.from('regional_centers').select('id, name').order('name').limit(20);
+      let q = supabase.from('rc_brands').select('id, name').order('name').limit(20);
       if (term.trim()) q = q.ilike('name', `%${term.trim()}%`);
       const { data } = await q;
       setOptions(data || []);
