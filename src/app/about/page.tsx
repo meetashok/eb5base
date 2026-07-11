@@ -14,6 +14,7 @@ function SectionHeading({
   eyebrowClassName = 'text-secondary',
   titleClassName = 'text-xl md:text-2xl',
   className = '',
+  titleAction,
 }: {
   eyebrow: string;
   title: string;
@@ -21,17 +22,29 @@ function SectionHeading({
   eyebrowClassName?: string;
   titleClassName?: string;
   className?: string;
+  titleAction?: React.ReactNode;
 }) {
   return (
     <div className={className}>
       <p className={`text-xs uppercase tracking-widest font-semibold mb-2 ${eyebrowClassName}`}>
         {eyebrow}
       </p>
-      <h2 className={`font-bold text-primary ${titleClassName}`}>{title}</h2>
+      <div className="flex items-center gap-2">
+        <h2 className={`font-bold text-primary ${titleClassName}`}>{title}</h2>
+        {titleAction}
+      </div>
       {subtitle && (
         <p className="text-sm text-neutral/60 mt-2 leading-relaxed max-w-2xl">{subtitle}</p>
       )}
     </div>
+  );
+}
+
+function LinkedInIcon({ className = 'w-5 h-5' }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 114.126 0 2.063 2.063 0 01-2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+    </svg>
   );
 }
 
@@ -164,7 +177,7 @@ export default function AboutPage() {
 
         <section className="card-elevated p-6 md:p-8 space-y-6">
           <SectionHeading
-            eyebrow="Two audiences"
+            eyebrow="All audiences"
             title="Who it's for"
             subtitle="EB5 Base serves investors researching opportunities and regional center representatives keeping listings accurate."
           />
@@ -288,24 +301,45 @@ export default function AboutPage() {
           </ul>
         </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <section className="card-elevated p-6 md:p-8 space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+          <section className="card-elevated p-6 md:p-8 space-y-4 h-full flex flex-col">
             <SectionHeading eyebrow="Access" title="Open to the community" titleClassName="text-xl" />
             <p className="text-neutral/80 leading-relaxed">
-              EB5 Base is built for everyone in the EB-5 ecosystem. Browse, confirm status, add
-              projects, and use representative tools whether you are researching opportunities or
-              keeping your regional center&apos;s listings current.
+              EB5 Base is built for everyone in the EB-5 ecosystem. There is no paywall to browse,
+              and anyone can help keep the directory useful whether you are researching your first
+              investment or maintaining listings for a regional center.
             </p>
+            <ul className="space-y-2 text-sm text-neutral/80 flex-1">
+              <CheckItem>Browse and search the full project directory without an account</CheckItem>
+              <CheckItem>Confirm subscription status and add projects as a community member</CheckItem>
+              <CheckItem>
+                Regional center representatives can verify affiliation and edit listings
+              </CheckItem>
+              <CheckItem>
+                Free for investors, attorneys, agents, and regional centers alike
+              </CheckItem>
+            </ul>
           </section>
 
-          <section className="card-elevated p-6 md:p-8 space-y-3 panel-copper">
+          <section className="card-elevated p-6 md:p-8 space-y-4 panel-copper h-full flex flex-col">
             <SectionHeading
               eyebrow="The founder"
               title="Who's behind this"
               eyebrowClassName="text-copper"
               titleClassName="text-xl"
+              titleAction={
+                <a
+                  href="https://www.linkedin.com/in/ashokkumar42/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Ashok Kumar on LinkedIn"
+                  className="text-copper hover:text-copper-dark transition-colors shrink-0"
+                >
+                  <LinkedInIcon />
+                </a>
+              }
             />
-            <div className="space-y-3 text-neutral/80 leading-relaxed">
+            <div className="space-y-3 text-neutral/80 leading-relaxed flex-1">
               <p>
                 Ashok Kumar is an EB-5 investor and data scientist based in the Seattle area. He has
                 lived in the U.S. since 2015 and received conditional permanent residency through
@@ -318,14 +352,6 @@ export default function AboutPage() {
                 conversation moves on.
               </p>
             </div>
-            <a
-              href="https://www.linkedin.com/in/ashokkumar42/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="link link-secondary text-sm font-medium"
-            >
-              LinkedIn profile →
-            </a>
           </section>
         </div>
 
