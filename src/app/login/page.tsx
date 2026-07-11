@@ -168,9 +168,14 @@ function LoginForm() {
 
           <p className="text-center text-xs text-neutral/40 mt-6">
             By signing in, you agree to our{' '}
-            <a href="/privacy" className="link link-hover">
+            <a href="/terms" className="link link-hover">
               Terms of Service
+            </a>{' '}
+            and{' '}
+            <a href="/privacy" className="link link-hover">
+              Privacy Policy
             </a>
+            .
           </p>
         </div>
       </div>

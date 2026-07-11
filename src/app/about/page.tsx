@@ -101,8 +101,19 @@ export default function AboutPage() {
 
       <section className="mb-8">
         <h2 className="text-xl font-bold text-primary mb-4">Legal</h2>
-        <div className="bg-base-200 rounded-xl p-6">
+        <div className="bg-base-200 rounded-xl p-6 space-y-4">
           <p className="text-sm text-neutral/80 leading-relaxed">{DISCLAIMER}</p>
+          <p className="text-sm text-neutral/80">
+            Read our full{' '}
+            <a href="/terms" className="link link-secondary">
+              Terms of Service
+            </a>{' '}
+            and{' '}
+            <a href="/privacy" className="link link-secondary">
+              Privacy Policy
+            </a>
+            .
+          </p>
         </div>
       </section>
     </div>

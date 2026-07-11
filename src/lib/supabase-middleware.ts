@@ -16,7 +16,7 @@ function isStaticOrApi(pathname: string): boolean {
 /** Browse + auth pages — no login required. */
 function isPublicPath(pathname: string): boolean {
   if (
-    ['/', '/about', '/login', '/signup', '/privacy', '/contact', '/rc', '/regional-centers'].includes(
+    ['/', '/about', '/login', '/signup', '/privacy', '/terms', '/contact', '/rc', '/regional-centers'].includes(
       pathname
     )
   ) {
