@@ -7,6 +7,17 @@ export const metadata = {
   title: 'About',
 };
 
+function PainItem({ children }: { children: React.ReactNode }) {
+  return (
+    <li className="flex gap-3 items-start">
+      <span className="w-5 h-5 shrink-0 mt-0.5 rounded-full bg-neutral/10 text-neutral/50 text-xs font-bold flex items-center justify-center">
+        ·
+      </span>
+      <span>{children}</span>
+    </li>
+  );
+}
+
 function CheckItem({ children }: { children: React.ReactNode }) {
   return (
     <li className="flex gap-3 items-start">
@@ -69,13 +80,51 @@ export default function AboutPage() {
       />
 
       <div className="max-w-4xl mx-auto px-4 py-10 space-y-6">
-        <section className="card-elevated p-6 md:p-8 space-y-4">
-          <h2 className="text-xl font-bold text-primary">Why this exists</h2>
-          <p className="text-neutral/80 leading-relaxed">
-            The EB-5 community deserves better access to information. Finding which projects are
-            open, which have I-956F approval, or what other investors think often means digging
-            through WhatsApp groups and scattered websites. EB5 Base brings this together in one
-            place.
+        <section className="rounded-2xl border-2 border-secondary/20 shadow-soft p-6 md:p-10 space-y-6 bg-[linear-gradient(135deg,rgba(45,90,71,0.07)_0%,#faf7f2_58%)]">
+          <div>
+            <p className="text-xs uppercase tracking-widest text-secondary font-semibold mb-2">
+              The challenge
+            </p>
+            <h2 className="text-2xl md:text-3xl font-bold text-primary">Why this exists</h2>
+          </div>
+
+          <p className="text-neutral/80 leading-relaxed text-base md:text-lg max-w-3xl">
+            When someone is ready to invest in EB-5, there is a general lack of reliable public
+            information. Investors often cannot tell which projects are open for subscription,
+            which have I-956F approval, or what others in the community have learned — and there is
+            no single place to search for answers.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+            <div className="rounded-xl border border-base-300/60 bg-base-100/80 p-5 space-y-3">
+              <h3 className="font-bold text-primary">What investors rely on today</h3>
+              <ul className="space-y-2.5 text-sm text-neutral/80">
+                <PainItem>Word-of-mouth from friends, attorneys, and agents</PainItem>
+                <PainItem>Community groups where tips are shared informally</PainItem>
+                <PainItem>
+                  Information that is transient, non-searchable, and hard to verify
+                </PainItem>
+              </ul>
+            </div>
+
+            <div className="rounded-xl border border-secondary/25 bg-secondary/[0.06] p-5 space-y-3">
+              <h3 className="font-bold text-primary">How EB5 Base helps</h3>
+              <ul className="space-y-2.5 text-sm text-neutral/80">
+                <CheckItem>A searchable directory of EB-5 projects in one place</CheckItem>
+                <CheckItem>
+                  Community confirmations on whether subscriptions are still open
+                </CheckItem>
+                <CheckItem>
+                  Persistent listings anyone can browse, filter, and contribute to
+                </CheckItem>
+              </ul>
+            </div>
+          </div>
+
+          <p className="text-sm text-neutral/70 leading-relaxed max-w-3xl border-t border-base-300/50 pt-5">
+            EB5 Base brings scattered, word-of-mouth knowledge into a shared directory — so
+            investors can find projects, see what the community knows, and keep listings current
+            together.
           </p>
         </section>
 
