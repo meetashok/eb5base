@@ -7,6 +7,9 @@ import { ADD_PROJECT_HINT_STORAGE_KEY } from '@/lib/constants';
 const HINT_DURATION_MS = 3000;
 const FADE_MS = 500;
 const SCROLL_DISMISS_PX = 50;
+const ARROW_WIDTH = 150;
+const ARROW_HEIGHT = 120;
+const GAP_BELOW_PX = 12;
 
 type HintPhase = 'hidden' | 'visible' | 'fading';
 
@@ -89,15 +92,17 @@ export default function AddProjectHint() {
     if (!target) return;
     const rect = target.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
 
-    const arrowLeft = centerX - 100;
-    const arrowTop = centerY - 95;
-    const dx = centerX - (arrowLeft + 95);
-    const dy = centerY - (arrowTop + 85);
-    const rotation = (Math.atan2(dy, dx) * 180) / Math.PI;
+    const overlayWidth = ARROW_WIDTH;
+    let left = centerX - overlayWidth / 2;
+    const padding = 8;
+    left = Math.max(padding, Math.min(left, window.innerWidth - overlayWidth - padding));
 
-    setPosition({ top: arrowTop, left: arrowLeft, rotation });
+    const top = rect.bottom + GAP_BELOW_PX;
+    const offsetFromCenter = centerX - (left + overlayWidth / 2);
+    const rotation = Math.max(-8, Math.min(8, offsetFromCenter * 0.08));
+
+    setPosition({ top, left, rotation });
   }, []);
 
   useEffect(() => {
@@ -176,39 +181,31 @@ export default function AddProjectHint() {
 
   return createPortal(
     <div
-      className={`add-project-hint-overlay pointer-events-none fixed z-40 ${
+      className={`add-project-hint-overlay pointer-events-none fixed z-40 flex flex-col items-center ${
         phase === 'fading' ? 'add-project-hint-fade' : ''
       }`}
-      style={{ top: position.top, left: position.left }}
+      style={{
+        top: position.top,
+        left: position.left,
+        width: ARROW_WIDTH,
+      }}
       aria-hidden
     >
-      <p className="add-project-hint-label mb-1 whitespace-nowrap">Know a project? Add it here</p>
-      <svg
-        className="add-project-hint-arrow"
-        width="110"
-        height="90"
-        viewBox="0 0 110 90"
-        fill="none"
-        style={{ transform: `rotate(${position.rotation - 18}deg)` }}
+      <div
+        className="add-project-hint-arrow-wrap"
+        style={{ ['--hint-rotation' as string]: `${position.rotation}deg` }}
       >
-        <path
-          className="add-project-hint-arrow-path"
-          d="M8 12 C 28 8, 52 6, 72 18 S 98 42, 92 68 L 88 62 M 92 68 L 98 72 L 86 76"
-          stroke="#d4af37"
-          strokeWidth="3.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+        <img
+          src="/hints/brush-arrow-red.png"
+          alt=""
+          width={ARROW_WIDTH}
+          height={ARROW_HEIGHT}
+          className="add-project-hint-arrow-img"
         />
-        <path
-          className="add-project-hint-arrow-shadow"
-          d="M8 12 C 28 8, 52 6, 72 18 S 98 42, 92 68 L 88 62 M 92 68 L 98 72 L 86 76"
-          stroke="#b87333"
-          strokeWidth="5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          opacity="0.25"
-        />
-      </svg>
+      </div>
+      <p className="add-project-hint-label mt-1 whitespace-nowrap text-center">
+        Know a project? Add it here
+      </p>
     </div>,
     document.body
   );
