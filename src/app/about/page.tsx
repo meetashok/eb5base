@@ -74,8 +74,7 @@ export default function AboutPage() {
           <p className="text-neutral/80 leading-relaxed">
             The EB-5 community deserves better access to information. Finding which projects are
             open, which have I-956F approval, or what other investors think often means digging
-            through WhatsApp groups and scattered websites.{' '}
-            <BrandWordmark variant="on-light" className="text-base" /> brings this together in one
+            through WhatsApp groups and scattered websites. EB5 Base brings this together in one
             place.
           </p>
         </section>
@@ -84,9 +83,9 @@ export default function AboutPage() {
           <div>
             <h2 className="text-xl font-bold text-primary mb-2">Who it&apos;s for</h2>
             <p className="text-neutral/70 text-sm leading-relaxed max-w-2xl">
-              <BrandWordmark variant="on-light" className="text-sm" /> serves two kinds of
-              participants in the EB-5 community — investors researching opportunities and regional
-              center representatives keeping listings accurate.
+              EB5 Base serves two kinds of participants in the EB-5 community — investors
+              researching opportunities and regional center representatives keeping listings
+              accurate.
             </p>
           </div>
 
@@ -184,8 +183,8 @@ export default function AboutPage() {
           <section className="card-elevated p-6 md:p-8 space-y-3">
             <h2 className="text-xl font-bold text-primary">Free for investors</h2>
             <p className="text-neutral/80 leading-relaxed">
-              <BrandWordmark variant="on-light" className="text-base" /> is free to use. Browse,
-              confirm, add projects, and access all features at no cost.
+              EB5 Base is free to use. Browse, confirm, add projects, and access all features at no
+              cost.
             </p>
           </section>
 
