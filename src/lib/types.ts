@@ -35,9 +35,12 @@ export interface Profile {
   show_profile_public: boolean;
   email_notifications: boolean;
   profile_completed: boolean;
+  is_admin: boolean;
   created_at: string;
   updated_at: string;
 }
+
+export type ModerationStatus = 'pending' | 'approved' | 'rejected';
 
 /** User-facing regional center organization */
 export interface RcBrand {
@@ -47,7 +50,9 @@ export interface RcBrand {
   website_url: string | null;
   description: string | null;
   logo_url: string | null;
-  status: 'pending' | 'approved' | 'rejected' | null;
+  status: ModerationStatus | null;
+  rejection_reason: string | null;
+  added_by: string | null;
   created_at: string;
   updated_at: string;
   projects?: { count: number }[] | null;
@@ -109,7 +114,8 @@ export interface Project {
   investment_amount: number | null;
   total_slots: number | null;
   subscription_status: SubscriptionStatus | null;
-  status: 'pending' | 'approved' | 'rejected' | null;
+  status: ModerationStatus | null;
+  rejection_reason: string | null;
   website_url: string | null;
   notes: string | null;
   added_by: string | null;
@@ -162,6 +168,23 @@ export interface ProjectWithVotes extends Project {
 
 export interface VoteWithProfile extends ProjectVote {
   profiles?: Pick<Profile, 'display_name' | 'avatar_url'> | null;
+}
+
+export interface ContentSubmission {
+  id: string;
+  entity_type: 'project' | 'rc_brand';
+  entity_id: string;
+  action: 'create' | 'update';
+  payload: Record<string, unknown>;
+  status: ModerationStatus;
+  rejection_reason: string | null;
+  submitted_by: string;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+  updated_at: string;
+  /** Joined for display */
+  entity_name?: string | null;
 }
 
 /** Prefer brand join; keep regional_centers as fallback during migration */

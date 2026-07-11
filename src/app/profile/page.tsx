@@ -7,12 +7,20 @@ import { createClient } from '@/lib/supabase';
 import CountrySelect from '@/components/CountrySelect';
 import { ROLE_BADGE_LABELS } from '@/lib/constants';
 import { findCountry } from '@/lib/countries';
-import type { Profile, Project, ProjectVote, RcMembership } from '@/lib/types';
+import type {
+  ContentSubmission,
+  Profile,
+  Project,
+  ProjectVote,
+  RcBrand,
+  RcMembership,
+} from '@/lib/types';
 import { PROJECT_SELECT } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
-import { projectEditPath, projectPath } from '@/lib/slugs';
+import { brandPath, projectEditPath, projectPath } from '@/lib/slugs';
+import { statusBadgeClass, statusLabel } from '@/lib/approvals';
 
-type Tab = 'confirmations' | 'projects' | 'investments' | 'settings';
+type Tab = 'confirmations' | 'projects' | 'submissions' | 'investments' | 'settings';
 
 interface ConfirmationRow extends ProjectVote {
   projects?: {
@@ -22,6 +30,10 @@ interface ConfirmationRow extends ProjectVote {
     brand_id?: string | null;
     rc_brands?: { id: string; slug?: string | null } | null;
   } | null;
+}
+
+interface SubmissionRow extends ContentSubmission {
+  title: string;
 }
 
 function CheckIcon({ className }: { className?: string }) {
@@ -48,10 +60,26 @@ export default function ProfilePage() {
   const [rcMembership, setRcMembership] = useState<RcMembership | null>(null);
   const [confirmations, setConfirmations] = useState<ConfirmationRow[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [brands, setBrands] = useState<RcBrand[]>([]);
+  const [submissions, setSubmissions] = useState<SubmissionRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingName, setEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState('');
   const [message, setMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const t = new URLSearchParams(window.location.search).get('tab');
+    if (
+      t === 'confirmations' ||
+      t === 'projects' ||
+      t === 'submissions' ||
+      t === 'investments' ||
+      t === 'settings'
+    ) {
+      setTab(t);
+    }
+  }, []);
 
   useEffect(() => {
     const supabase = createClient();
@@ -61,32 +89,67 @@ export default function ProfilePage() {
         router.replace('/login?redirect=/profile');
         return;
       }
-      const [{ data: p }, { data: v }, { data: myProjects }, { data: membership }] =
-        await Promise.all([
-          supabase.from('profiles').select('*').eq('id', auth.user.id).single(),
-          supabase
-            .from('project_votes')
-            .select('*, projects:project_id(id, name, slug, brand_id, rc_brands!brand_id(id, slug))')
-            .eq('user_id', auth.user.id)
-            .order('created_at', { ascending: false }),
-          supabase
-            .from('projects')
-            .select(PROJECT_SELECT)
-            .eq('added_by', auth.user.id)
-            .is('merged_into', null)
-            .order('created_at', { ascending: false }),
-          supabase
-            .from('rc_memberships')
-            .select('*, regional_centers(id, name)')
-            .eq('user_id', auth.user.id)
-            .eq('active', true)
-            .maybeSingle(),
-        ]);
+      const [
+        { data: p },
+        { data: v },
+        { data: myProjects },
+        { data: membership },
+        brandsRes,
+        subsRes,
+      ] = await Promise.all([
+        supabase.from('profiles').select('*').eq('id', auth.user.id).single(),
+        supabase
+          .from('project_votes')
+          .select('*, projects:project_id(id, name, slug, brand_id, rc_brands!brand_id(id, slug))')
+          .eq('user_id', auth.user.id)
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('projects')
+          .select(PROJECT_SELECT)
+          .eq('added_by', auth.user.id)
+          .is('merged_into', null)
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('rc_memberships')
+          .select('*, regional_centers(id, name)')
+          .eq('user_id', auth.user.id)
+          .eq('active', true)
+          .maybeSingle(),
+        supabase
+          .from('rc_brands')
+          .select('*')
+          .eq('added_by', auth.user.id)
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('content_submissions')
+          .select('*')
+          .eq('submitted_by', auth.user.id)
+          .order('created_at', { ascending: false }),
+      ]);
       setProfile(p);
       setNameDraft(p?.display_name || '');
       setConfirmations((v as ConfirmationRow[]) || []);
       setProjects((myProjects as Project[]) || []);
       setRcMembership((membership as RcMembership) || null);
+      setBrands(brandsRes.error ? [] : ((brandsRes.data as RcBrand[]) || []));
+
+      const subRows = subsRes.error ? [] : ((subsRes.data as ContentSubmission[]) || []);
+      const enriched: SubmissionRow[] = [];
+      for (const s of subRows) {
+        let title =
+          typeof s.payload?.name === 'string'
+            ? s.payload.name
+            : `${s.entity_type} ${s.entity_id.slice(0, 8)}`;
+        if (s.entity_type === 'project') {
+          const match = (myProjects as Project[] | null)?.find((x) => x.id === s.entity_id);
+          if (match?.name) title = match.name;
+        } else {
+          const match = (brandsRes.data as RcBrand[] | null)?.find((x) => x.id === s.entity_id);
+          if (match?.name) title = match.name;
+        }
+        enriched.push({ ...s, title });
+      }
+      setSubmissions(enriched);
       setLoading(false);
     })();
   }, [router]);
@@ -145,6 +208,7 @@ export default function ProfilePage() {
   const tabs: { id: Tab; label: string }[] = [
     { id: 'confirmations', label: 'My Confirmations' },
     { id: 'projects', label: 'My Projects' },
+    { id: 'submissions', label: 'My Submissions' },
     { id: 'investments', label: 'My Investments' },
     { id: 'settings', label: 'Settings' },
   ];
@@ -195,6 +259,11 @@ export default function ProfilePage() {
             )}
             {roleLabel && (
               <span className="badge badge-primary badge-outline rounded-full">{roleLabel}</span>
+            )}
+            {profile.is_admin && (
+              <Link href="/admin" className="badge badge-secondary rounded-full">
+                Admin
+              </Link>
             )}
           </div>
 
@@ -356,7 +425,15 @@ export default function ProfilePage() {
                   <Link href={projectPath(p)} className="link link-secondary font-medium">
                     {p.name}
                   </Link>
-                  <p className="text-meta text-neutral/50">Added {formatDate(p.created_at)}</p>
+                  <div className="flex flex-wrap items-center gap-2 mt-1">
+                    <span className={`badge badge-sm rounded-full ${statusBadgeClass(p.status)}`}>
+                      {statusLabel(p.status)}
+                    </span>
+                    <p className="text-meta text-neutral/50">Added {formatDate(p.created_at)}</p>
+                  </div>
+                  {p.status === 'rejected' && p.rejection_reason && (
+                    <p className="text-sm text-error mt-1">Reason: {p.rejection_reason}</p>
+                  )}
                 </div>
                 <Link
                   href={projectEditPath(p)}
@@ -366,6 +443,72 @@ export default function ProfilePage() {
                 </Link>
               </li>
             ))
+          )}
+        </ul>
+      )}
+
+      {tab === 'submissions' && (
+        <ul className="space-y-2">
+          {submissions.length === 0 && brands.length === 0 ? (
+            <p className="text-neutral/60">
+              No submissions yet. When you add or edit a project or regional center, it will
+              show up here for review.
+            </p>
+          ) : (
+            <>
+              {submissions.map((s) => (
+                <li
+                  key={s.id}
+                  className="border-b border-base-300 py-3 space-y-1"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <p className="font-medium text-primary">{s.title}</p>
+                      <p className="text-meta text-neutral/50">
+                        {s.action === 'create' ? 'Created' : 'Edited'}{' '}
+                        {s.entity_type === 'project' ? 'project' : 'regional center'}
+                        {' · '}
+                        {formatDate(s.created_at)}
+                      </p>
+                    </div>
+                    <span className={`badge badge-sm rounded-full ${statusBadgeClass(s.status)}`}>
+                      {statusLabel(s.status)}
+                    </span>
+                  </div>
+                  {s.status === 'rejected' && s.rejection_reason && (
+                    <p className="text-sm text-error">Reason: {s.rejection_reason}</p>
+                  )}
+                  {s.status === 'pending' && (
+                    <p className="text-sm text-neutral/50">
+                      Waiting for an admin to review your submission.
+                    </p>
+                  )}
+                </li>
+              ))}
+              {brands.map((b) => (
+                <li
+                  key={`brand-${b.id}`}
+                  className="border-b border-base-300 py-3 space-y-1"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <Link href={brandPath(b)} className="font-medium link link-secondary">
+                        {b.name}
+                      </Link>
+                      <p className="text-meta text-neutral/50">
+                        Regional center · {formatDate(b.created_at)}
+                      </p>
+                    </div>
+                    <span className={`badge badge-sm rounded-full ${statusBadgeClass(b.status)}`}>
+                      {statusLabel(b.status)}
+                    </span>
+                  </div>
+                  {b.status === 'rejected' && b.rejection_reason && (
+                    <p className="text-sm text-error">Reason: {b.rejection_reason}</p>
+                  )}
+                </li>
+              ))}
+            </>
           )}
         </ul>
       )}

@@ -24,12 +24,14 @@ function isPublicPath(pathname: string): boolean {
   }
   if (pathname.startsWith('/auth')) return true;
 
-  // Brand browse/detail public; create requires auth
+  // Brand browse/detail public; create/edit/admin require auth
   if (pathname.startsWith('/rc/')) {
     if (pathname === '/rc/add' || pathname === '/rc/new') return false;
     if (pathname.endsWith('/edit')) return false;
     return true;
   }
+
+  if (pathname.startsWith('/admin')) return false;
 
   // Legacy redirects stay public (they redirect to /rc)
   if (pathname.startsWith('/regional-centers')) return true;
