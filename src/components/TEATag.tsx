@@ -2,6 +2,7 @@ import { cn, teaLabel } from '@/lib/utils';
 
 interface TEATagProps {
   designation: string;
+  className?: string;
 }
 
 const teaClass: Record<string, string> = {
@@ -10,12 +11,13 @@ const teaClass: Record<string, string> = {
   infra: 'bg-primary/90 text-primary-content border-0',
 };
 
-export default function TEATag({ designation }: TEATagProps) {
+export default function TEATag({ designation, className }: TEATagProps) {
   return (
     <span
       className={cn(
         'badge rounded-full text-xs font-semibold px-3 py-1',
-        teaClass[designation] || 'bg-info text-white border-0'
+        teaClass[designation] || 'bg-info text-white border-0',
+        className
       )}
     >
       {teaLabel(designation)}

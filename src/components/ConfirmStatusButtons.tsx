@@ -9,6 +9,7 @@ interface ConfirmStatusButtonsProps {
   projectId: string;
   confirmationCount?: number;
   size?: 'sm' | 'md';
+  compact?: boolean;
   showCount?: boolean;
   onConfirmed?: () => void;
 }
@@ -17,6 +18,7 @@ export default function ConfirmStatusButtons({
   projectId,
   confirmationCount = 0,
   size = 'sm',
+  compact = false,
   showCount = true,
   onConfirmed,
 }: ConfirmStatusButtonsProps) {
@@ -35,6 +37,7 @@ export default function ConfirmStatusButtons({
   const [thanks, setThanks] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [localCount, setLocalCount] = useState(confirmationCount);
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
 
   useEffect(() => {
     setLocalCount(confirmationCount);
@@ -83,15 +86,20 @@ export default function ConfirmStatusButtons({
     refreshUserState();
   }, [refreshUserState]);
 
-  function requireAuth() {
+  function goToLogin() {
     const redirect = pathname || '/projects';
     router.push(`/login?redirect=${encodeURIComponent(redirect)}`);
+  }
+
+  function promptSignIn() {
+    setShowAuthPrompt(true);
   }
 
   function chooseStatus(status: 'open' | 'closed') {
     setError(null);
     if (!userId) {
-      requireAuth();
+      setPendingStatus(status);
+      promptSignIn();
       return;
     }
     if (rateLimited) return;
@@ -151,157 +159,230 @@ export default function ConfirmStatusButtons({
     onConfirmed?.();
   }
 
-  const btnSize = size === 'md' ? 'btn' : 'btn-sm';
-  const iconSize = size === 'md' ? 'w-5 h-5' : 'w-4 h-4';
+  const effectiveSize = compact ? 'sm' : size;
+  const btnSize = effectiveSize === 'md' ? 'btn btn-sm' : 'btn btn-xs';
+  const iconBox = effectiveSize === 'md' ? 'w-4 h-4' : 'w-3.5 h-3.5';
 
   if (loading) {
-    return <div className="skeleton-shimmer h-16 w-full mt-3" />;
+    return (
+      <div
+        className={
+          compact ? 'skeleton-shimmer h-14 w-full rounded-xl' : 'skeleton-shimmer h-16 w-full mt-3'
+        }
+      />
+    );
   }
 
+  const stripClass = compact
+    ? 'rounded-xl bg-panel-copper border border-copper/25 px-2.5 py-2'
+    : 'rounded-xl bg-panel-copper border border-copper/25 px-3 py-2.5';
+
   return (
-    <div
-      className="border-t border-base-200 pt-3 mt-3"
-      onClick={(e) => e.preventDefault()}
-      onKeyDown={(e) => e.stopPropagation()}
-    >
-      {rateLimited ? (
-        <p className="text-xs text-neutral/50">
-          You&apos;ve confirmed this project&apos;s status today. Come back tomorrow.
-        </p>
-      ) : (
-        <>
-          <p className={`text-neutral/50 mb-2 ${size === 'md' ? 'text-sm text-neutral/60 mb-3' : 'text-xs'}`}>
-            Is this project open for subscriptions?
+    <>
+      <div
+        className={compact ? 'mt-1' : 'border-t border-base-200 pt-3 mt-3'}
+        onClick={(e) => e.preventDefault()}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        {rateLimited ? (
+          <p className="text-[11px] text-neutral/50">
+            You&apos;ve confirmed this project&apos;s status today. Come back tomorrow.
           </p>
-          <div className={`flex ${size === 'md' ? 'gap-3' : 'gap-2'}`}>
-            <button
-              type="button"
-              className={`${btnSize} btn-outline border-secondary text-secondary hover:bg-secondary hover:text-secondary-content flex-1 gap-1 rounded-full transition-all duration-150 ${
-                pendingStatus === 'open' ? 'bg-secondary text-secondary-content border-secondary' : ''
+        ) : (
+          <div className={stripClass}>
+            <p
+              className={`font-medium text-neutral/80 mb-1.5 ${
+                compact ? 'text-[11px] leading-tight' : 'text-sm'
               }`}
-              onClick={() => chooseStatus('open')}
-              disabled={saving}
             >
-              <svg className={iconSize} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              Open
-            </button>
-            <button
-              type="button"
-              className={`${btnSize} btn-outline border-error/60 text-error hover:bg-error hover:text-white flex-1 gap-1 rounded-full transition-all duration-150 ${
-                pendingStatus === 'closed' ? 'bg-error text-white border-error' : ''
-              }`}
-              onClick={() => chooseStatus('closed')}
-              disabled={saving}
-            >
-              <svg className={iconSize} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-              Closed
-            </button>
-          </div>
-        </>
-      )}
-
-      {!userId && !rateLimited && (
-        <p className="text-xs text-neutral/40 mt-2 text-center">
-          <button type="button" className="link link-secondary" onClick={requireAuth}>
-            Sign in to confirm status
-          </button>
-        </p>
-      )}
-
-      {askInvested && (
-        <div className="mt-2 p-2 bg-base-200 rounded-lg text-sm">
-          {!showDate ? (
-            <>
-              <p className="text-neutral/70">Did you invest in this project?</p>
-              <div className="flex gap-2 mt-1">
-                <button
-                  type="button"
-                  className="btn btn-xs btn-ghost"
-                  disabled={saving}
-                  onClick={() => setShowDate(true)}
-                >
-                  Yes
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-xs btn-ghost"
-                  disabled={saving}
-                  onClick={() => insertConfirmation(false)}
-                >
-                  No
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-xs btn-ghost ml-auto"
-                  onClick={() => {
-                    setAskInvested(false);
-                    setPendingStatus(null);
-                  }}
-                >
-                  Cancel
-                </button>
-              </div>
-            </>
-          ) : (
-            <div className="space-y-2">
-              <label className="form-control">
-                <span className="label-text text-xs mb-1">Investment date</span>
-                <input
-                  type="date"
-                  className="input input-bordered input-sm"
-                  value={investmentDate}
-                  onChange={(e) => setInvestmentDate(e.target.value)}
-                />
-              </label>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  className="btn btn-xs btn-primary"
-                  disabled={saving || !investmentDate}
-                  onClick={() => insertConfirmation(true, investmentDate)}
-                >
-                  {saving ? 'Saving…' : 'Confirm'}
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-xs btn-ghost"
-                  onClick={() => setShowDate(false)}
-                >
-                  Back
-                </button>
-              </div>
+              Is this project open for subscriptions?
+            </p>
+            <div className={`flex ${compact ? 'gap-1.5' : 'gap-2'}`}>
+              <button
+                type="button"
+                className={`${btnSize} btn-outline border-secondary text-secondary hover:bg-secondary hover:text-secondary-content flex-1 min-h-0 h-8 gap-1.5 rounded-lg transition-all duration-150 inline-flex items-center justify-center ${
+                  pendingStatus === 'open' && userId
+                    ? 'bg-secondary text-secondary-content border-secondary'
+                    : ''
+                }`}
+                onClick={() => chooseStatus('open')}
+                disabled={saving}
+              >
+                <span className={`${iconBox} inline-flex items-center justify-center shrink-0`}>
+                  <svg className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2.5}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </span>
+                <span>Open</span>
+              </button>
+              <button
+                type="button"
+                className={`${btnSize} btn-outline border-error/60 text-error hover:bg-error hover:text-white flex-1 min-h-0 h-8 gap-1.5 rounded-lg transition-all duration-150 inline-flex items-center justify-center ${
+                  pendingStatus === 'closed' && userId
+                    ? 'bg-error text-white border-error'
+                    : ''
+                }`}
+                onClick={() => chooseStatus('closed')}
+                disabled={saving}
+              >
+                <span className={`${iconBox} inline-flex items-center justify-center shrink-0`}>
+                  <svg className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2.5}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </span>
+                <span>Closed</span>
+              </button>
             </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
 
-      {thanks && (
-        <div className="text-center mt-2">
-          <p className="text-xs text-success font-medium">Thanks!</p>
-          <p className="text-xs text-neutral/50 mt-1">
-            <a href="/projects/add" className="link link-primary">
-              Know another project?
-            </a>
+        {!userId && !rateLimited && !compact && (
+          <p className="text-xs text-neutral/50 mt-2 text-center">
+            <button type="button" className="link link-secondary" onClick={promptSignIn}>
+              Sign in to confirm status
+            </button>
           </p>
-        </div>
-      )}
-      {error && <p className="text-xs text-error mt-2">{error}</p>}
+        )}
 
-      {showCount && localCount > 0 && (
-        <p className="text-xs text-neutral/40 mt-2 text-center">
-          {localCount} confirmation{localCount !== 1 ? 's' : ''}
-        </p>
-      )}
+        {askInvested && (
+          <div className="mt-2 p-2 bg-base-200 rounded-lg text-sm">
+            {!showDate ? (
+              <>
+                <p className="text-neutral/70">Did you invest in this project?</p>
+                <div className="flex gap-2 mt-1">
+                  <button
+                    type="button"
+                    className="btn btn-xs btn-ghost"
+                    disabled={saving}
+                    onClick={() => setShowDate(true)}
+                  >
+                    Yes
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-xs btn-ghost"
+                    disabled={saving}
+                    onClick={() => insertConfirmation(false)}
+                  >
+                    No
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-xs btn-ghost ml-auto"
+                    onClick={() => {
+                      setAskInvested(false);
+                      setPendingStatus(null);
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="space-y-2">
+                <label className="form-control">
+                  <span className="label-text text-xs mb-1">Investment date</span>
+                  <input
+                    type="date"
+                    className="input input-bordered input-sm"
+                    value={investmentDate}
+                    onChange={(e) => setInvestmentDate(e.target.value)}
+                  />
+                </label>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    className="btn btn-xs btn-primary"
+                    disabled={saving || !investmentDate}
+                    onClick={() => insertConfirmation(true, investmentDate)}
+                  >
+                    {saving ? 'Saving…' : 'Confirm'}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-xs btn-ghost"
+                    onClick={() => setShowDate(false)}
+                  >
+                    Back
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
-      {lastStatus && lastAt && (
-        <p className="text-xs text-neutral/40 mt-1 text-center">
-          You last confirmed: {lastStatus === 'open' ? 'Open' : 'Closed'}, {timeAgo(lastAt)}
-        </p>
+        {thanks && (
+          <div className="text-center mt-2">
+            <p className="text-xs text-success font-medium">Thanks!</p>
+            <p className="text-xs text-neutral/50 mt-1">
+              <a href="/projects/add" className="link link-primary">
+                Know another project?
+              </a>
+            </p>
+          </div>
+        )}
+        {error && <p className="text-xs text-error mt-2">{error}</p>}
+
+        {showCount && localCount > 0 && (
+          <p className="text-xs text-neutral/40 mt-2 text-center">
+            {localCount} confirmation{localCount !== 1 ? 's' : ''}
+          </p>
+        )}
+
+        {lastStatus && lastAt && (
+          <p className="text-[10px] text-neutral/40 mt-1 text-center">
+            You last confirmed: {lastStatus === 'open' ? 'Open' : 'Closed'}, {timeAgo(lastAt)}
+          </p>
+        )}
+      </div>
+
+      {showAuthPrompt && (
+        <dialog className="modal modal-open">
+          <div className="modal-box max-w-sm">
+            <h3 className="font-bold text-lg text-primary">Sign in to confirm?</h3>
+            <p className="py-2 text-sm text-neutral/70">
+              Help fellow investors by confirming whether this project is open for subscriptions.
+              Sign in takes just a moment.
+            </p>
+            <div className="modal-action mt-2">
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                onClick={() => {
+                  setShowAuthPrompt(false);
+                  setPendingStatus(null);
+                }}
+              >
+                Not now
+              </button>
+              <button type="button" className="btn btn-primary btn-sm" onClick={goToLogin}>
+                Sign in
+              </button>
+            </div>
+          </div>
+          <form method="dialog" className="modal-backdrop">
+            <button
+              type="button"
+              onClick={() => {
+                setShowAuthPrompt(false);
+                setPendingStatus(null);
+              }}
+            >
+              close
+            </button>
+          </form>
+        </dialog>
       )}
-    </div>
+    </>
   );
 }
