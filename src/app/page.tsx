@@ -49,7 +49,7 @@ const STEPS = [
 const RC_STEPS = [
   {
     title: 'Sign in',
-    body: 'Create a free account with Google or email to access representative tools.',
+    body: 'Create an account with Google or email to access representative tools.',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />

@@ -42,7 +42,7 @@ export default function TermsPage() {
 
         <Section title="What EB5 Base is">
           <p>
-            EB5 Base is a free, community-maintained directory of EB-5 regional center projects. The
+            EB5 Base is a community-maintained directory of EB-5 regional center projects. The
             site helps investors browse projects, confirm subscription status, and share factual
             information with the community.
           </p>
@@ -165,9 +165,7 @@ export default function TermsPage() {
             site or reliance on User Content.
           </p>
           <p>
-            Our total liability for any claim relating to EB5 Base will not exceed the greater of
-            USD $100 or the amount you paid us to use the service in the twelve months before the
-            claim. EB5 Base is free for investors, so this amount will often be USD $100.
+            Our total liability for any claim relating to EB5 Base will not exceed USD $100.
           </p>
         </Section>
 

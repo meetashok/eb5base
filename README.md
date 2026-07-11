@@ -1,6 +1,6 @@
 # EB5 Base
 
-Free, public, crowdsourced directory of EB-5 immigration investment projects.
+Public, crowdsourced directory of EB-5 immigration investment projects.
 
 **Stack:** Next.js 14 (App Router) · Tailwind CSS · DaisyUI · Supabase
 

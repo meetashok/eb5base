@@ -43,7 +43,7 @@ const INVESTOR_STEPS = [
 const RC_REP_STEPS = [
   {
     title: 'Sign in',
-    body: 'Create a free account with Google or email to access representative tools.',
+    body: 'Create an account with Google or email to access representative tools.',
   },
   {
     title: 'Verify your RC',
@@ -65,7 +65,7 @@ export default function AboutPage() {
             About <BrandWordmark variant="on-light" className="text-[0.88em] sm:text-[0.95em]" />
           </span>
         }
-        subtitle="A free directory helping EB-5 investors find projects, confirm subscription status, and share what they know."
+        subtitle="A community directory for EB-5 investors and regional centers to find projects, confirm subscription status, and share what they know."
       />
 
       <div className="max-w-4xl mx-auto px-4 py-10 space-y-6">
@@ -201,10 +201,11 @@ export default function AboutPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <section className="card-elevated p-6 md:p-8 space-y-3">
-            <h2 className="text-xl font-bold text-primary">Free for investors</h2>
+            <h2 className="text-xl font-bold text-primary">Open to the community</h2>
             <p className="text-neutral/80 leading-relaxed">
-              EB5 Base is free to use. Browse, confirm, add projects, and access all features at no
-              cost.
+              EB5 Base is built for everyone in the EB-5 ecosystem. Browse, confirm status, add
+              projects, and use representative tools whether you are researching opportunities or
+              keeping your regional center&apos;s listings current.
             </p>
           </section>
 
