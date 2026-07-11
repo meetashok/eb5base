@@ -280,7 +280,14 @@ export default function ConfirmStatusButtons({
       )}
 
       {thanks && (
-        <p className="text-xs text-success text-center mt-2 font-medium">Thanks!</p>
+        <div className="text-center mt-2">
+          <p className="text-xs text-success font-medium">Thanks!</p>
+          <p className="text-xs text-neutral/50 mt-1">
+            <a href="/projects/new" className="link link-primary">
+              Know another project?
+            </a>
+          </p>
+        </div>
       )}
       {error && <p className="text-xs text-error mt-2">{error}</p>}
 

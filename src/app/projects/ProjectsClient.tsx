@@ -202,22 +202,48 @@ export default function ProjectsClient({
             }}
           >
             <option value="newest">Newest first</option>
-            <option value="votes">Most confirmed</option>
-            <option value="az">A–Z</option>
-            <option value="amount">Investment amount</option>
+            <option value="most_confirmed">Most confirmed status</option>
+            <option value="amount_low">Investment: low to high</option>
+            <option value="amount_high">Investment: high to low</option>
+            <option value="alpha">Alphabetical</option>
           </select>
         </label>
       </div>
 
       {projects.length === 0 ? (
-        <div className="py-16 text-center text-neutral/60">
-          <p>No projects match your filters. Try broadening your search.</p>
+        <div className="py-16 text-center">
+          <div className="text-4xl mb-3" aria-hidden>
+            📋
+          </div>
+          <h2 className="text-lg font-bold text-neutral/70">No projects match your filters</h2>
+          <p className="text-sm text-neutral/50 mt-2 mb-4">
+            Try broadening your search, or add a project the community is missing.
+          </p>
+          <Link href="/projects/new" className="btn btn-primary btn-sm rounded-full">
+            + Add Project
+          </Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {projects.map((p) => (
             <ProjectCard key={p.id} project={p} />
           ))}
+          {projects.length < 3 && (
+            <div className="card card-bordered border-dashed shadow-sm bg-base-100/50">
+              <div className="card-body items-center text-center p-8">
+                <div className="text-3xl mb-2" aria-hidden>
+                  📋
+                </div>
+                <h3 className="font-bold text-neutral/70">Know a project not listed here?</h3>
+                <p className="text-sm text-neutral/50 mt-1">
+                  Help the community by adding it to the directory
+                </p>
+                <Link href="/projects/new" className="btn btn-primary btn-sm rounded-full mt-3">
+                  + Add Project
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

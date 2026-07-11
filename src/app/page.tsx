@@ -61,13 +61,22 @@ export default async function HomePage() {
       <section className="hero-glow border-b border-base-300">
         <div className="max-w-6xl mx-auto px-4 py-20 md:py-28 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-primary tracking-tight text-balance">
-            The open directory of EB-5 projects
+            The EB-5 Project Directory
           </h1>
           <p className="mt-4 text-base md:text-lg text-neutral/70 max-w-2xl mx-auto">
-            Search, compare, and contribute to a free, community-driven project directory
+            Built by investors, for investors. Browse regional center projects, confirm
+            subscription status, and help keep the community informed.
           </p>
           <div className="mt-8">
             <SearchBar large />
+          </div>
+          <div className="flex flex-wrap gap-3 justify-center mt-6">
+            <Link href="/projects" className="btn btn-primary rounded-full">
+              Browse Projects
+            </Link>
+            <Link href="/projects/new" className="btn btn-outline btn-primary rounded-full">
+              + Add a Project
+            </Link>
           </div>
           {stats.projects >= 10 ? (
             <div className="mt-10 flex flex-wrap justify-center gap-6 md:gap-12">

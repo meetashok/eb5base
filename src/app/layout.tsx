@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { ToastProvider } from '@/components/Toast';
 import './globals.css';
 
 const jakarta = Plus_Jakarta_Sans({
@@ -13,11 +15,28 @@ const jakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: 'EB5 Base — Open Directory of EB-5 Projects',
+    default: 'EB5 Base - EB-5 Project Directory',
     template: '%s | EB5 Base',
   },
   description:
-    'Search, compare, and contribute to a free, community-driven directory of EB-5 immigration investment projects.',
+    'Free, community-driven directory of EB-5 regional center projects. Browse projects, confirm subscription status, and make informed investment decisions.',
+  metadataBase: new URL('https://eb5base.com'),
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://eb5base.com',
+    siteName: 'EB5 Base',
+    title: 'EB5 Base - EB-5 Project Directory',
+    description:
+      'Free, community-driven directory of EB-5 regional center projects.',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'EB5 Base' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'EB5 Base - EB-5 Project Directory',
+    images: ['/og-image.png'],
+  },
+  robots: { index: false, follow: false },
 };
 
 export default function RootLayout({
@@ -28,9 +47,16 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="eb5base">
       <body className={`${jakarta.variable} font-sans antialiased min-h-screen flex flex-col`}>
-        <Navbar />
-        <main className="flex-1 page-enter">{children}</main>
-        <Footer />
+        <ToastProvider>
+          <Navbar />
+          <main className="flex-1 page-enter">{children}</main>
+          <Footer />
+        </ToastProvider>
+        <Script
+          data-goatcounter="https://eb5base.goatcounter.com/count"
+          src="https://gc.zgo.at/count.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
