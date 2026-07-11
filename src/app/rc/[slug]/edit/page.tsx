@@ -23,6 +23,8 @@ export default function EditRcBrandPage() {
   const [existingSlug, setExistingSlug] = useState<string | null>(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [website, setWebsite] = useState('');
@@ -82,25 +84,37 @@ export default function EditRcBrandPage() {
 
     const slug = await allocateUniqueSlug(slugify(name.trim()), async (candidate) => {
       if (candidate === existingSlug) return false;
-      const { data } = await supabase
+      const { data, error: slugErr } = await supabase
         .from('rc_brands')
         .select('id')
         .eq('slug', candidate)
         .neq('id', brandId)
         .maybeSingle();
+      // If slug column isn't migrated yet, treat as not taken
+      if (slugErr && /slug/i.test(slugErr.message)) return false;
       return Boolean(data);
     });
 
-    const { error: updateError } = await supabase
-      .from('rc_brands')
-      .update({
-        name: name.trim(),
-        slug,
-        website_url: website.trim() || null,
-        description: description.trim() || null,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', brandId);
+    const baseUpdate = {
+      name: name.trim(),
+      website_url: website.trim() || null,
+      description: description.trim() || null,
+      updated_at: new Date().toISOString(),
+    };
+
+    let updateError = (
+      await supabase
+        .from('rc_brands')
+        .update({ ...baseUpdate, slug })
+        .eq('id', brandId)
+    ).error;
+
+    // Pre-migration DBs may not have slug yet — save without it
+    if (updateError && /slug/i.test(updateError.message)) {
+      updateError = (
+        await supabase.from('rc_brands').update(baseUpdate).eq('id', brandId)
+      ).error;
+    }
 
     setSaving(false);
     if (updateError) {
@@ -110,7 +124,35 @@ export default function EditRcBrandPage() {
     }
 
     toast('Regional center updated', 'success');
-    router.push(brandPath({ id: brandId, slug }));
+    router.push(brandPath({ id: brandId, slug: existingSlug || slug }));
+  }
+
+  async function handleDelete() {
+    if (!brandId) return;
+    setDeleting(true);
+    setError(null);
+    const supabase = createClient();
+
+    // Unlink related rows so FK constraints don't block delete
+    await supabase.from('projects').update({ brand_id: null }).eq('brand_id', brandId);
+    await supabase
+      .from('regional_centers')
+      .update({ brand_id: null })
+      .eq('brand_id', brandId);
+    await supabase.from('rc_brand_contacts').delete().eq('brand_id', brandId);
+
+    const { error: delErr } = await supabase.from('rc_brands').delete().eq('id', brandId);
+
+    setDeleting(false);
+    if (delErr) {
+      setError(delErr.message);
+      setConfirmDelete(false);
+      toast(delErr.message, 'error');
+      return;
+    }
+
+    toast('Regional center deleted', 'success');
+    router.push('/rc');
   }
 
   if (checkingAuth) {
@@ -179,7 +221,7 @@ export default function EditRcBrandPage() {
 
           {error && <p className="text-error text-sm">{error}</p>}
 
-          <div className="flex gap-3 mt-2">
+          <div className="flex flex-wrap gap-3 mt-2">
             <button
               type="button"
               className="btn btn-ghost rounded-full flex-1"
@@ -196,7 +238,7 @@ export default function EditRcBrandPage() {
             <button
               type="submit"
               className="btn btn-primary rounded-full flex-1"
-              disabled={saving}
+              disabled={saving || deleting}
             >
               {saving ? (
                 <span className="loading loading-spinner loading-sm" />
@@ -205,8 +247,56 @@ export default function EditRcBrandPage() {
               )}
             </button>
           </div>
+
+          <button
+            type="button"
+            className="btn btn-outline btn-error rounded-full w-full mt-2"
+            disabled={saving || deleting}
+            onClick={() => setConfirmDelete(true)}
+          >
+            Delete Regional Center
+          </button>
         </div>
       </form>
+
+      {confirmDelete && (
+        <dialog className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg text-primary">Delete this regional center?</h3>
+            <p className="py-3 text-sm text-neutral/70">
+              This permanently removes <span className="font-medium">{name}</span>. Linked
+              projects stay in the directory but will no longer point to this brand.
+            </p>
+            <div className="modal-action">
+              <button
+                type="button"
+                className="btn btn-ghost rounded-full"
+                disabled={deleting}
+                onClick={() => setConfirmDelete(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn btn-error rounded-full"
+                disabled={deleting}
+                onClick={handleDelete}
+              >
+                {deleting ? (
+                  <span className="loading loading-spinner loading-sm" />
+                ) : (
+                  'Delete permanently'
+                )}
+              </button>
+            </div>
+          </div>
+          <form method="dialog" className="modal-backdrop">
+            <button type="button" onClick={() => !deleting && setConfirmDelete(false)}>
+              close
+            </button>
+          </form>
+        </dialog>
+      )}
     </div>
   );
 }
