@@ -68,27 +68,7 @@ export default function EditProjectPage() {
       setProjectId(p.id);
       setExistingSlug(p.slug);
 
-      // Allow edit if user added the project OR is an active verified RC member
-      let canEdit = p.added_by === auth.user.id;
-      if (!canEdit && p.rc_id) {
-        const { data: membership } = await supabase
-          .from('rc_memberships')
-          .select('id')
-          .eq('rc_id', p.rc_id)
-          .eq('user_id', auth.user.id)
-          .eq('active', true)
-          .not('verified_at', 'is', null)
-          .is('revoked_at', null)
-          .maybeSingle();
-        canEdit = Boolean(membership);
-      }
-
-      if (!canEdit) {
-        setError('You can only edit projects you added or that belong to your regional center.');
-        setLoading(false);
-        return;
-      }
-
+      // Community directory: any signed-in user can edit
       setName(p.name);
       setBrandName(p.rc_brands?.name || p.regional_centers?.name || '');
       if (p.brand_id && p.rc_brands) {

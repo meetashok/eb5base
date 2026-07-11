@@ -113,20 +113,7 @@ export async function canEditProject(
   project: Project,
   userId: string | null
 ): Promise<boolean> {
-  if (!userId) return false;
-  if (project.added_by === userId) return true;
-  if (!project.rc_id) return false;
-
-  const supabase = createClient();
-  const { data: membership } = await supabase
-    .from('rc_memberships')
-    .select('id')
-    .eq('rc_id', project.rc_id)
-    .eq('user_id', userId)
-    .eq('active', true)
-    .not('verified_at', 'is', null)
-    .is('revoked_at', null)
-    .maybeSingle();
-
-  return Boolean(membership);
+  // Community directory: any signed-in user can edit (matches brands UPDATE policy).
+  // Seeded rows often have added_by = null, so owner-only checks hid the button.
+  return Boolean(userId);
 }

@@ -41,6 +41,10 @@ export function brandPath(brand: { slug?: string | null; id: string }): string {
   return `/rc/${brand.slug || brand.id}`;
 }
 
+export function brandEditPath(brand: { slug?: string | null; id: string }): string {
+  return `/rc/${brand.slug || brand.id}/edit`;
+}
+
 export function projectPath(project: {
   slug?: string | null;
   id: string;

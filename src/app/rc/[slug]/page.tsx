@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import ProjectCard from '@/components/ProjectCard';
 import { createClient } from '@/lib/supabase-server';
-import { brandPath, isUuid } from '@/lib/slugs';
+import { brandEditPath, brandPath, isUuid } from '@/lib/slugs';
 import type {
   ProjectWithVotes,
   RcBrand,
@@ -112,6 +112,10 @@ export default async function RCBrandDetailPage({ params }: { params: { slug: st
   const contactList = (contacts as RcBrandContact[]) || [];
   const entityList = (entities as RegionalCenter[]) || [];
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
       <div className="text-meta breadcrumbs mb-4">
@@ -126,19 +130,29 @@ export default async function RCBrandDetailPage({ params }: { params: { slug: st
         </ul>
       </div>
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-primary">{brand.name}</h1>
-        {brand.website_url && (
-          <a
-            href={brand.website_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-secondary hover:underline"
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-primary">{brand.name}</h1>
+          {brand.website_url && (
+            <a
+              href={brand.website_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-secondary hover:underline"
+            >
+              {brand.website_url}
+            </a>
+          )}
+          {brand.description && <p className="text-neutral/70 mt-3">{brand.description}</p>}
+        </div>
+        {user && (
+          <Link
+            href={brandEditPath(brand)}
+            className="btn btn-outline btn-sm rounded-full shrink-0"
           >
-            {brand.website_url}
-          </a>
+            Edit
+          </Link>
         )}
-        {brand.description && <p className="text-neutral/70 mt-3">{brand.description}</p>}
       </div>
 
       {contactList.length > 0 && (
