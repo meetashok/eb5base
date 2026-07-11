@@ -161,7 +161,8 @@ body {
   }
 
   .panel-investor {
-    @apply rounded-2xl border border-secondary/15 bg-secondary/[0.04];
+    @apply rounded-2xl border border-secondary/15;
+    background-color: rgba(45, 90, 71, 0.04);
   }
 
   .icon-ring-copper {
