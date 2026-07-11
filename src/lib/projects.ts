@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase-server';
 import type { ProjectWithVotes } from '@/lib/types';
 import { PAGE_SIZE } from '@/lib/constants';
+import { ensureSlugsForProjects } from '@/lib/ensure-slugs';
 
 /** Prefer brand join; fall back to plain select if embed fails (pre-migration DB) */
 const LIST_SELECT =
@@ -158,7 +159,7 @@ export async function getRecentProjects(limit = 6): Promise<ProjectWithVotes[]> 
     return [];
   }
 
-  return attachVoteSummaries((data as unknown as ProjectWithVotes[]) || []);
+  return ensureSlugsForProjects(await attachVoteSummaries((data as unknown as ProjectWithVotes[]) || []));
 }
 
 function parseList(value: string | undefined): string[] {
@@ -285,8 +286,8 @@ export async function getFilteredProjects(filters: ProjectFilters) {
     return { projects: [] as ProjectWithVotes[], total: 0, page };
   }
 
-  let projects = await attachVoteSummaries(
-    ((data as unknown as ProjectWithVotes[]) || [])
+  let projects = await ensureSlugsForProjects(
+    await attachVoteSummaries(((data as unknown as ProjectWithVotes[]) || []))
   );
 
   if (filters.sort === 'votes' || filters.sort === 'most_confirmed') {

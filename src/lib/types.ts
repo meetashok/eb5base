@@ -195,6 +195,8 @@ export interface ContentSubmission {
 /** Prefer brand join; keep regional_centers as fallback during migration */
 export const PROJECT_SELECT =
   '*, rc_brands!brand_id(id, name, website_url, slug), regional_centers(id, name, uscis_rc_id, website_url)';
+export const PROJECT_SELECT_LEGACY =
+  '*, rc_brands!brand_id(id, name, website_url), regional_centers(id, name, uscis_rc_id, website_url)';
 
 export function projectBrandName(project: Project): string | null {
   return project.rc_brands?.name || project.regional_centers?.name || null;

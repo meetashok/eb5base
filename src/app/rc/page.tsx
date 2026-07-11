@@ -3,6 +3,7 @@ import PageHero from '@/components/PageHero';
 import BrandsClient from './BrandsClient';
 import { createClient } from '@/lib/supabase-server';
 import type { RcBrand } from '@/lib/types';
+import { ensureSlugsForBrands } from '@/lib/ensure-slugs';
 
 export const dynamic = 'force-dynamic';
 
@@ -52,7 +53,7 @@ export default async function RCBrandsPage() {
   const supabase = createClient();
   const { brands: rows, error } = await loadBrands();
 
-  const brands = rows.map((b) => ({
+  const brands = (await ensureSlugsForBrands(rows)).map((b) => ({
     ...b,
     project_count: b.projects?.[0]?.count ?? 0,
     entity_count: b.regional_centers?.[0]?.count ?? 0,

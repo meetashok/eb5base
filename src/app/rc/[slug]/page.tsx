@@ -3,53 +3,72 @@ import { AddProjectLink } from '@/components/AuthGatedLinks';
 import { notFound, redirect } from 'next/navigation';
 import ProjectCard from '@/components/ProjectCard';
 import { createClient } from '@/lib/supabase-server';
-import { brandEditPath, brandPath, isUuid } from '@/lib/slugs';
+import { brandEditPath, brandPath, isUuid, slugify } from '@/lib/slugs';
+import { ensureBrandSlug, ensureSlugsForProjects } from '@/lib/ensure-slugs';
 import type {
   ProjectWithVotes,
   RcBrand,
   RcBrandContact,
   RegionalCenter,
 } from '@/lib/types';
-import { PROJECT_SELECT } from '@/lib/types';
+import { PROJECT_SELECT, PROJECT_SELECT_LEGACY } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
 async function resolveBrand(param: string): Promise<RcBrand | null> {
   const supabase = createClient();
 
-  // Prefer slug
-  const { data: bySlug } = await supabase
+  let brand: RcBrand | null = null;
+
+  const { data: bySlug, error: slugError } = await supabase
     .from('rc_brands')
     .select('*')
     .eq('slug', param)
     .maybeSingle();
-  if (bySlug) return bySlug as RcBrand;
 
-  if (isUuid(param)) {
+  if (!slugError && bySlug) {
+    brand = bySlug as RcBrand;
+  } else if (slugError && /column .*\.slug does not exist/i.test(slugError.message)) {
+    // slug column not migrated yet
+  } else if (!bySlug && !isUuid(param)) {
+    const { data: unsluggified } = await supabase
+      .from('rc_brands')
+      .select('*')
+      .is('slug', null)
+      .limit(100);
+    brand =
+      (unsluggified?.find((row) => slugify(row.name) === param) as RcBrand | undefined) || null;
+  }
+
+  if (!brand && isUuid(param)) {
     const { data: byId } = await supabase
       .from('rc_brands')
       .select('*')
       .eq('id', param)
       .maybeSingle();
-    if (byId) return byId as RcBrand;
+    if (byId) brand = byId as RcBrand;
 
-    // Legacy entity UUID → parent brand
-    const { data: entity } = await supabase
-      .from('regional_centers')
-      .select('brand_id')
-      .eq('id', param)
-      .maybeSingle();
-    if (entity?.brand_id) {
-      const { data: parent } = await supabase
-        .from('rc_brands')
-        .select('*')
-        .eq('id', entity.brand_id)
+    if (!brand) {
+      const { data: entity } = await supabase
+        .from('regional_centers')
+        .select('brand_id')
+        .eq('id', param)
         .maybeSingle();
-      return (parent as RcBrand) || null;
+      if (entity?.brand_id) {
+        const { data: parent } = await supabase
+          .from('rc_brands')
+          .select('*')
+          .eq('id', entity.brand_id)
+          .maybeSingle();
+        brand = (parent as RcBrand) || null;
+      }
     }
   }
 
-  return null;
+  if (!brand) return null;
+
+  brand.slug = await ensureBrandSlug(brand);
+  return brand;
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
@@ -90,14 +109,24 @@ export default async function RCBrandDetailPage({ params }: { params: { slug: st
     console.error('Brand projects (approved) failed:', projectsRes.error.message);
     const retry = await supabase
       .from('projects')
-      .select(PROJECT_SELECT)
+      .select(PROJECT_SELECT_LEGACY)
       .eq('brand_id', brandId)
       .is('merged_into', null)
+      .eq('status', 'approved')
       .order('created_at', { ascending: false });
     projects = retry.data;
+    if (retry.error) {
+      const fallback = await supabase
+        .from('projects')
+        .select(PROJECT_SELECT)
+        .eq('brand_id', brandId)
+        .is('merged_into', null)
+        .order('created_at', { ascending: false });
+      projects = fallback.data;
+    }
   }
 
-  let list = (projects as ProjectWithVotes[]) || [];
+  let list = await ensureSlugsForProjects((projects as ProjectWithVotes[]) || []);
 
   if (!list.length && (entities || []).length) {
     const entityIds = (entities as RegionalCenter[]).map((e) => e.id);
@@ -107,7 +136,7 @@ export default async function RCBrandDetailPage({ params }: { params: { slug: st
       .in('rc_id', entityIds)
       .is('merged_into', null)
       .order('created_at', { ascending: false });
-    list = (legacyProjects as ProjectWithVotes[]) || [];
+    list = await ensureSlugsForProjects((legacyProjects as ProjectWithVotes[]) || []);
   }
 
   const contactList = (contacts as RcBrandContact[]) || [];

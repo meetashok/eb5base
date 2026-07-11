@@ -37,26 +37,64 @@ export function isUuid(value: string): boolean {
   );
 }
 
-export function brandPath(brand: { slug?: string | null; id: string }): string {
-  return `/rc/${brand.slug || brand.id}`;
+export function displayBrandSlug(brand: {
+  slug?: string | null;
+  name?: string | null;
+  id: string;
+}): string {
+  if (brand.slug) return brand.slug;
+  if (brand.name?.trim()) return slugify(brand.name);
+  return brand.id;
 }
 
-export function brandEditPath(brand: { slug?: string | null; id: string }): string {
-  return `/rc/${brand.slug || brand.id}/edit`;
+export function displayProjectSlug(project: {
+  slug?: string | null;
+  name?: string | null;
+  id: string;
+}): string {
+  if (project.slug) return project.slug;
+  if (project.name?.trim()) return slugify(project.name);
+  return project.id;
+}
+
+export function brandPath(brand: {
+  slug?: string | null;
+  name?: string | null;
+  id: string;
+}): string {
+  return `/rc/${displayBrandSlug(brand)}`;
+}
+
+export function brandEditPath(brand: {
+  slug?: string | null;
+  name?: string | null;
+  id: string;
+}): string {
+  return `/rc/${displayBrandSlug(brand)}/edit`;
 }
 
 export function projectPath(project: {
   slug?: string | null;
+  name?: string | null;
   id: string;
   brand_id?: string | null;
-  rc_brands?: { slug?: string | null; id?: string } | null;
+  rc_brands?: { slug?: string | null; name?: string | null; id?: string } | null;
 }): string {
-  const brandSlug = project.rc_brands?.slug;
-  const projectSlug = project.slug;
-  if (brandSlug && projectSlug) {
+  const brandSlug = project.brand_id
+    ? project.rc_brands
+      ? displayBrandSlug({
+          id: project.rc_brands.id || project.brand_id,
+          slug: project.rc_brands.slug,
+          name: project.rc_brands.name,
+        })
+      : null
+    : null;
+  const projectSlug = displayProjectSlug(project);
+
+  if (brandSlug && projectSlug && project.brand_id && !isUuid(projectSlug)) {
     return `/rc/${brandSlug}/${projectSlug}`;
   }
-  return `/projects/${projectSlug || project.id}`;
+  return `/projects/${projectSlug}`;
 }
 
 export function projectEditPath(project: {

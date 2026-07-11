@@ -1,13 +1,18 @@
 import { notFound, redirect } from 'next/navigation';
 import ProjectDetail from '@/components/ProjectDetail';
 import { createClient } from '@/lib/supabase-server';
-import { canEditProject, loadNestedProject } from '@/lib/project-loader';
+import { canEditProject, loadNestedProject, loadProjectByParam } from '@/lib/project-loader';
 import { projectPath } from '@/lib/slugs';
 import type { ProjectContact } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
 type Props = { params: { slug: string; projectSlug: string } };
+
+async function redirectToMergedTarget(mergedInto: string) {
+  const target = await loadProjectByParam(mergedInto);
+  redirect(target ? projectPath(target) : `/projects/${mergedInto}`);
+}
 
 export async function generateMetadata({ params }: Props) {
   const resolved = await loadNestedProject(params.slug, params.projectSlug);
@@ -20,7 +25,7 @@ export default async function NestedProjectPage({ params }: Props) {
 
   const { brand, project } = resolved;
   if (project.merged_into) {
-    redirect(`/projects/${project.merged_into}`);
+    await redirectToMergedTarget(project.merged_into);
   }
 
   // Canonicalize UUID / mismatched params to readable nested URL
