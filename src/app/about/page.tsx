@@ -25,7 +25,7 @@ function CheckItem({ children }: { children: React.ReactNode }) {
   );
 }
 
-const STEPS = [
+const INVESTOR_STEPS = [
   {
     title: 'Browse projects',
     body: 'Search by name, regional center, location, TEA designation, and status.',
@@ -37,6 +37,21 @@ const STEPS = [
   {
     title: 'Contribute',
     body: 'Add projects and update details so fellow investors benefit.',
+  },
+];
+
+const RC_REP_STEPS = [
+  {
+    title: 'Sign in',
+    body: 'Create a free account with Google or email to access representative tools.',
+  },
+  {
+    title: 'Verify your RC',
+    body: 'Select your regional center and confirm you represent it — we review requests within 24–48 hours.',
+  },
+  {
+    title: 'Claim & edit projects',
+    body: 'Take ownership of your RC\u2019s project listings and keep details accurate. Verified edits go live right away.',
   },
 ];
 
@@ -65,12 +80,86 @@ export default function AboutPage() {
           </p>
         </section>
 
+        <section className="card-elevated p-6 md:p-8 space-y-6">
+          <div>
+            <h2 className="text-xl font-bold text-primary mb-2">Who it&apos;s for</h2>
+            <p className="text-neutral/70 text-sm leading-relaxed max-w-2xl">
+              <BrandWordmark variant="on-light" className="text-sm" /> serves two kinds of
+              participants in the EB-5 community — investors researching opportunities and regional
+              center representatives keeping listings accurate.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="step-card p-5 space-y-4">
+              <div>
+                <p className="text-xs uppercase tracking-widest text-secondary font-semibold mb-1">
+                  For investors
+                </p>
+                <h3 className="font-bold text-primary">Potential &amp; existing investors</h3>
+                <p className="text-sm text-neutral/70 mt-2 leading-relaxed">
+                  Whether you are exploring EB-5 for the first time or already in a project, use the
+                  directory to find opportunities and see what the community knows.
+                </p>
+              </div>
+              <ul className="space-y-2 text-sm text-neutral/80">
+                <CheckItem>Browse and filter projects by regional center, location, and status</CheckItem>
+                <CheckItem>Confirm whether subscriptions are still open</CheckItem>
+                <CheckItem>Add projects and share factual details with fellow investors</CheckItem>
+              </ul>
+            </div>
+
+            <div className="step-card p-5 space-y-4 panel-copper">
+              <div>
+                <p className="text-xs uppercase tracking-widest text-copper font-semibold mb-1">
+                  For regional centers
+                </p>
+                <h3 className="font-bold text-primary">RC representatives</h3>
+                <p className="text-sm text-neutral/70 mt-2 leading-relaxed">
+                  If you work at a regional center, sign in to verify your affiliation and manage
+                  your project listings directly.
+                </p>
+              </div>
+              <ul className="space-y-2 text-sm text-neutral/80">
+                <CheckItem>Sign in and complete your profile as an RC representative</CheckItem>
+                <CheckItem>Verify that you represent your regional center</CheckItem>
+                <CheckItem>Claim project listings for your RC and edit them as needed</CheckItem>
+              </ul>
+              <Link href="/login" className="btn btn-secondary btn-sm rounded-full w-fit">
+                Sign in as RC representative
+              </Link>
+            </div>
+          </div>
+        </section>
+
         <section className="card-elevated p-6 md:p-8">
-          <h2 className="text-xl font-bold text-primary mb-5">How it works</h2>
+          <h2 className="text-xl font-bold text-primary mb-2">How it works for investors</h2>
+          <p className="text-sm text-neutral/60 mb-5">
+            No account required to browse. Sign in when you want to confirm status or contribute.
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {STEPS.map((step, i) => (
+            {INVESTOR_STEPS.map((step, i) => (
               <div key={step.title} className="step-card p-5">
                 <span className="inline-flex w-8 h-8 rounded-full bg-accent text-accent-content text-sm font-bold items-center justify-center mb-3 shadow-soft">
+                  {i + 1}
+                </span>
+                <h3 className="font-bold text-primary mb-2">{step.title}</h3>
+                <p className="text-sm text-neutral/70 leading-relaxed">{step.body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="card-elevated p-6 md:p-8">
+          <h2 className="text-xl font-bold text-primary mb-2">How it works for RC representatives</h2>
+          <p className="text-sm text-neutral/60 mb-5">
+            Keep your regional center&apos;s listings accurate — verified representatives can edit
+            projects without waiting for admin review.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {RC_REP_STEPS.map((step, i) => (
+              <div key={step.title} className="step-card p-5">
+                <span className="inline-flex w-8 h-8 rounded-full bg-secondary text-secondary-content text-sm font-bold items-center justify-center mb-3 shadow-soft">
                   {i + 1}
                 </span>
                 <h3 className="font-bold text-primary mb-2">{step.title}</h3>

@@ -160,8 +160,12 @@ export default async function HomePage() {
 
       <section className="surface-muted mt-6 border-y border-base-300/60">
         <div className="max-w-6xl mx-auto px-4 py-14">
-          <h2 className="text-2xl font-bold text-primary text-center mb-10">How it works</h2>
-          <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6">
+          <h2 className="text-2xl font-bold text-primary text-center mb-3">How it works</h2>
+          <p className="text-sm text-neutral/60 text-center mb-10 max-w-xl mx-auto">
+            Built for investors researching EB-5 and regional center representatives keeping
+            listings up to date.
+          </p>
+          <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             <div className="hidden md:block absolute top-12 left-[16%] right-[16%] border-t-2 border-dashed border-secondary/25 z-0" />
             {STEPS.map((step, i) => (
               <div key={step.title} className="step-card relative z-10 text-center md:text-left">
@@ -173,10 +177,32 @@ export default async function HomePage() {
                     {i + 1}
                   </span>
                 </div>
+                <p className="text-xs uppercase tracking-widest text-secondary font-semibold mb-1">
+                  For investors
+                </p>
                 <h3 className="text-lg font-bold text-primary mb-2">{step.title}</h3>
                 <p className="text-sm text-neutral/70">{step.body}</p>
               </div>
             ))}
+          </div>
+
+          <div className="card-elevated max-w-3xl mx-auto p-6 md:p-8 text-center md:text-left">
+            <p className="text-xs uppercase tracking-widest text-copper font-semibold mb-1">
+              For regional center representatives
+            </p>
+            <h3 className="text-lg font-bold text-primary mb-2">Manage your project listings</h3>
+            <p className="text-sm text-neutral/70 mb-5 leading-relaxed">
+              Sign in, verify that you represent your regional center, then claim and edit your
+              RC&apos;s project listings to keep investors informed.
+            </p>
+            <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+              <Link href="/login" className="btn btn-secondary btn-sm rounded-full">
+                Sign in as RC representative
+              </Link>
+              <Link href="/about" className="btn btn-ghost btn-sm rounded-full">
+                Learn more
+              </Link>
+            </div>
           </div>
         </div>
       </section>
