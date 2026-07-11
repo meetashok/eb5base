@@ -160,51 +160,60 @@ export default function ConfirmStatusButtons({
   }
 
   const effectiveSize = compact ? 'sm' : size;
-  const btnSize = effectiveSize === 'md' ? 'btn btn-sm' : 'btn btn-xs';
-  const iconBox = effectiveSize === 'md' ? 'w-4 h-4' : 'w-3.5 h-3.5';
+  const iconBox = compact ? 'w-2.5 h-2.5' : effectiveSize === 'md' ? 'w-3.5 h-3.5' : 'w-3 h-3';
 
   if (loading) {
     return (
       <div
         className={
-          compact ? 'skeleton-shimmer h-14 w-full rounded-xl' : 'skeleton-shimmer h-16 w-full mt-3'
+          compact ? 'skeleton-shimmer h-8 w-full mt-1' : 'skeleton-shimmer h-16 w-full mt-3'
         }
       />
     );
   }
 
-  const stripClass = compact
-    ? 'rounded-xl bg-panel-copper border border-copper/25 px-2.5 py-2'
-    : 'rounded-xl bg-panel-copper border border-copper/25 px-3 py-2.5';
+  const openBtnClass = compact
+    ? `h-6 min-h-0 px-2 text-[10px] font-medium gap-1 rounded-md border border-secondary/40 text-secondary hover:bg-secondary/10 inline-flex items-center justify-center transition-colors ${
+        pendingStatus === 'open' && userId ? 'bg-secondary/15 border-secondary' : ''
+      }`
+    : `btn btn-sm btn-outline border-secondary text-secondary hover:bg-secondary hover:text-secondary-content gap-1.5 rounded-lg inline-flex items-center justify-center ${
+        pendingStatus === 'open' && userId ? 'bg-secondary text-secondary-content border-secondary' : ''
+      }`;
+
+  const closedBtnClass = compact
+    ? `h-6 min-h-0 px-2 text-[10px] font-medium gap-1 rounded-md border border-error/40 text-error hover:bg-error/10 inline-flex items-center justify-center transition-colors ${
+        pendingStatus === 'closed' && userId ? 'bg-error/15 border-error' : ''
+      }`
+    : `btn btn-sm btn-outline border-error/60 text-error hover:bg-error hover:text-white gap-1.5 rounded-lg inline-flex items-center justify-center ${
+        pendingStatus === 'closed' && userId ? 'bg-error text-white border-error' : ''
+      }`;
 
   return (
     <>
       <div
-        className={compact ? 'mt-1' : 'border-t border-base-200 pt-3 mt-3'}
+        className={compact ? 'border-t border-base-200/70 pt-2 mt-1' : 'border-t border-base-200 pt-3 mt-3'}
         onClick={(e) => e.preventDefault()}
         onKeyDown={(e) => e.stopPropagation()}
       >
         {rateLimited ? (
-          <p className="text-[11px] text-neutral/50">
+          <p className="text-[10px] text-neutral/50">
             You&apos;ve confirmed this project&apos;s status today. Come back tomorrow.
           </p>
         ) : (
-          <div className={stripClass}>
+          <div className={compact ? 'space-y-1' : 'space-y-2'}>
             <p
-              className={`font-medium text-neutral/80 mb-1.5 ${
-                compact ? 'text-[11px] leading-tight' : 'text-sm'
-              }`}
+              className={
+                compact
+                  ? 'text-[10px] text-neutral/50 leading-tight'
+                  : 'text-sm text-neutral/60'
+              }
             >
-              Is this project open for subscriptions?
+              {compact ? 'Open for subscriptions?' : 'Is this project open for subscriptions?'}
             </p>
-            <div className={`flex ${compact ? 'gap-1.5' : 'gap-2'}`}>
+            <div className={`flex ${compact ? 'gap-1' : 'gap-2'}`}>
               <button
                 type="button"
-                className={`${btnSize} btn-outline border-secondary text-secondary hover:bg-secondary hover:text-secondary-content flex-1 min-h-0 h-8 gap-1.5 rounded-lg transition-all duration-150 inline-flex items-center justify-center ${
-                  pendingStatus === 'open' && userId
-                    ? 'bg-secondary text-secondary-content border-secondary'
-                    : ''
-                }`}
+                className={openBtnClass}
                 onClick={() => chooseStatus('open')}
                 disabled={saving}
               >
@@ -222,11 +231,7 @@ export default function ConfirmStatusButtons({
               </button>
               <button
                 type="button"
-                className={`${btnSize} btn-outline border-error/60 text-error hover:bg-error hover:text-white flex-1 min-h-0 h-8 gap-1.5 rounded-lg transition-all duration-150 inline-flex items-center justify-center ${
-                  pendingStatus === 'closed' && userId
-                    ? 'bg-error text-white border-error'
-                    : ''
-                }`}
+                className={closedBtnClass}
                 onClick={() => chooseStatus('closed')}
                 disabled={saving}
               >

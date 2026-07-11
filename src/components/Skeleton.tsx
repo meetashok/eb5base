@@ -17,7 +17,7 @@ export function ProjectCardSkeleton() {
           <div className="h-5 bg-base-300 rounded-full w-12" />
           <div className="h-5 bg-base-300 rounded-full w-16" />
         </div>
-        <div className="h-14 bg-base-300 rounded-xl w-full mt-1" />
+        <div className="h-8 bg-base-300 rounded w-full mt-1" />
       </div>
     </div>
   );
