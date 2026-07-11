@@ -10,11 +10,18 @@ import { findCountry } from '@/lib/countries';
 import type { Profile, Project, ProjectVote, RcMembership } from '@/lib/types';
 import { PROJECT_SELECT } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
+import { projectEditPath, projectPath } from '@/lib/slugs';
 
 type Tab = 'confirmations' | 'projects' | 'investments' | 'settings';
 
 interface ConfirmationRow extends ProjectVote {
-  projects?: Pick<Project, 'id' | 'name'> | null;
+  projects?: {
+    id: string;
+    name: string;
+    slug?: string | null;
+    brand_id?: string | null;
+    rc_brands?: { id: string; slug?: string | null } | null;
+  } | null;
 }
 
 function CheckIcon({ className }: { className?: string }) {
@@ -59,7 +66,7 @@ export default function ProfilePage() {
           supabase.from('profiles').select('*').eq('id', auth.user.id).single(),
           supabase
             .from('project_votes')
-            .select('*, projects:project_id(id, name)')
+            .select('*, projects:project_id(id, name, slug, brand_id, rc_brands!brand_id(id, slug))')
             .eq('user_id', auth.user.id)
             .order('created_at', { ascending: false }),
           supabase
@@ -307,7 +314,11 @@ export default function ProfilePage() {
                       className="flex flex-wrap gap-2 justify-between text-sm border-b border-base-300 py-2"
                     >
                       <Link
-                        href={`/projects/${v.projects?.id || v.project_id}`}
+                        href={
+                          v.projects
+                            ? projectPath(v.projects)
+                            : `/projects/${v.project_id}`
+                        }
                         className="link link-secondary font-medium"
                       >
                         {v.projects?.name || 'Project'}
@@ -342,13 +353,13 @@ export default function ProfilePage() {
                 className="flex flex-wrap items-center justify-between gap-2 border-b border-base-300 py-3"
               >
                 <div>
-                  <Link href={`/projects/${p.id}`} className="link link-secondary font-medium">
+                  <Link href={projectPath(p)} className="link link-secondary font-medium">
                     {p.name}
                   </Link>
                   <p className="text-meta text-neutral/50">Added {formatDate(p.created_at)}</p>
                 </div>
                 <Link
-                  href={`/projects/${p.id}/edit`}
+                  href={projectEditPath(p)}
                   className="btn btn-outline btn-sm transition-all duration-150"
                 >
                   Edit
@@ -370,7 +381,9 @@ export default function ProfilePage() {
                 className="flex flex-wrap justify-between gap-2 border-b border-base-300 py-3 text-sm"
               >
                 <Link
-                  href={`/projects/${v.projects?.id || v.project_id}`}
+                  href={
+                    v.projects ? projectPath(v.projects) : `/projects/${v.project_id}`
+                  }
                   className="link link-secondary font-medium"
                 >
                   {v.projects?.name || 'Project'}

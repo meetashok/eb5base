@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import type { RcBrand } from '@/lib/types';
+import { brandPath } from '@/lib/slugs';
 
 interface BrandListItem extends RcBrand {
   project_count: number;
@@ -60,7 +61,7 @@ export default function BrandsClient({ brands, isLoggedIn }: BrandsClientProps) 
           {filtered.map((brand) => (
             <Link
               key={brand.id}
-              href={`/rc/${brand.id}`}
+              href={brandPath(brand)}
               className="card card-bordered shadow-sm bg-base-100 hover:shadow-md transition-all duration-150"
             >
               <div className="card-body p-5">

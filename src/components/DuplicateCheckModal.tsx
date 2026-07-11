@@ -1,11 +1,14 @@
 'use client';
 
 import Link from 'next/link';
+import { projectPath } from '@/lib/slugs';
 
 export interface SimilarProject {
   id: string;
   name: string;
-  rc_brands?: { name?: string | null } | null;
+  slug?: string | null;
+  brand_id?: string | null;
+  rc_brands?: { id?: string; name?: string | null; slug?: string | null } | null;
   regional_centers?: { name?: string | null } | null;
   location_state?: string | null;
   /** @deprecated display helper — prefer rc_brands.name */
@@ -51,10 +54,10 @@ export default function DuplicateCheckModal({
                 </p>
               </div>
               <div className="flex gap-2 shrink-0">
-                <Link href={`/projects/${p.id}`} className="btn btn-ghost btn-sm">
+                <Link href={projectPath(p)} className="btn btn-ghost btn-sm">
                   View
                 </Link>
-                <Link href={`/projects/${p.id}`} className="btn btn-outline btn-sm">
+                <Link href={projectPath(p)} className="btn btn-outline btn-sm">
                   This is a duplicate
                 </Link>
               </div>

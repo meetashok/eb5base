@@ -13,11 +13,18 @@ import {
 } from '@/lib/constants';
 import type { F956Status, Project, SubscriptionStatus } from '@/lib/types';
 import { PROJECT_SELECT } from '@/lib/types';
+import {
+  allocateUniqueSlug,
+  isUuid,
+  projectPath,
+  slugify,
+} from '@/lib/slugs';
 
 export default function EditProjectPage() {
   const params = useParams();
-  const id = params.id as string;
+  const param = params.id as string;
   const router = useRouter();
+  const [projectId, setProjectId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,21 +43,20 @@ export default function EditProjectPage() {
   const [amount, setAmount] = useState('');
   const [totalSlots, setTotalSlots] = useState('');
   const [notes, setNotes] = useState('');
+  const [existingSlug, setExistingSlug] = useState<string | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
     (async () => {
       const { data: auth } = await supabase.auth.getUser();
       if (!auth.user) {
-        router.replace(`/login?redirect=/projects/${id}/edit`);
+        router.replace(`/login?redirect=/projects/${param}/edit`);
         return;
       }
 
-      const { data, error: err } = await supabase
-        .from('projects')
-        .select(PROJECT_SELECT)
-        .eq('id', id)
-        .single();
+      let query = supabase.from('projects').select(PROJECT_SELECT);
+      query = isUuid(param) ? query.eq('id', param) : query.eq('slug', param);
+      const { data, error: err } = await query.maybeSingle();
 
       if (err || !data) {
         setError('Project not found');
@@ -59,6 +65,8 @@ export default function EditProjectPage() {
       }
 
       const p = data as Project;
+      setProjectId(p.id);
+      setExistingSlug(p.slug);
 
       // Allow edit if user added the project OR is an active verified RC member
       let canEdit = p.added_by === auth.user.id;
@@ -104,7 +112,7 @@ export default function EditProjectPage() {
       setNotes(p.notes || '');
       setLoading(false);
     })();
-  }, [id, router]);
+  }, [param, router]);
 
   function toggle(list: string[], value: string, setter: (v: string[]) => void) {
     setter(list.includes(value) ? list.filter((x) => x !== value) : [...list, value]);
@@ -126,7 +134,17 @@ export default function EditProjectPage() {
 
     const { data: created, error: createError } = await supabase
       .from('rc_brands')
-      .insert({ name: nameToCreate })
+      .insert({
+        name: nameToCreate,
+        slug: await allocateUniqueSlug(slugify(nameToCreate), async (candidate) => {
+          const { data } = await supabase
+            .from('rc_brands')
+            .select('id')
+            .eq('slug', candidate)
+            .maybeSingle();
+          return Boolean(data);
+        }),
+      })
       .select('id')
       .single();
 
@@ -138,15 +156,30 @@ export default function EditProjectPage() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    if (!projectId) return;
     setSaving(true);
     setError(null);
     const supabase = createClient();
     try {
       const brandId = await resolveBrandId();
+      const nextSlugBase = slugify(name.trim());
+      const slug = await allocateUniqueSlug(nextSlugBase, async (candidate) => {
+        if (candidate === existingSlug) return false;
+        let q = supabase
+          .from('projects')
+          .select('id')
+          .eq('slug', candidate)
+          .neq('id', projectId);
+        q = brandId ? q.eq('brand_id', brandId) : q.is('brand_id', null);
+        const { data } = await q.maybeSingle();
+        return Boolean(data);
+      });
+
       const { error: err } = await supabase
         .from('projects')
         .update({
           name: name.trim(),
+          slug,
           project_type: projectTypes.length ? projectTypes : null,
           location_city: city.trim() || null,
           location_state: state || null,
@@ -160,13 +193,25 @@ export default function EditProjectPage() {
           website_url: website.trim() || null,
           notes: notes.trim() || null,
         })
-        .eq('id', id);
+        .eq('id', projectId);
       setSaving(false);
       if (err) {
         setError(err.message);
         return;
       }
-      router.push(`/projects/${id}`);
+
+      const { data: brandRow } = brandId
+        ? await supabase.from('rc_brands').select('id, slug').eq('id', brandId).maybeSingle()
+        : { data: null };
+
+      router.push(
+        projectPath({
+          id: projectId,
+          slug,
+          brand_id: brandId,
+          rc_brands: brandRow,
+        })
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save');
       setSaving(false);
@@ -366,7 +411,9 @@ export default function EditProjectPage() {
           <button
             type="button"
             className="btn btn-ghost"
-            onClick={() => router.push(`/projects/${id}`)}
+            onClick={() =>
+              router.push(projectId ? `/projects/${existingSlug || projectId}` : '/projects')
+            }
           >
             Cancel
           </button>

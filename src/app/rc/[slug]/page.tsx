@@ -1,7 +1,8 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import ProjectCard from '@/components/ProjectCard';
 import { createClient } from '@/lib/supabase-server';
+import { brandPath, isUuid } from '@/lib/slugs';
 import type {
   ProjectWithVotes,
   RcBrand,
@@ -12,42 +13,30 @@ import { PROJECT_SELECT } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
-  const supabase = createClient();
-  const { data: brand } = await supabase
-    .from('rc_brands')
-    .select('name')
-    .eq('id', params.id)
-    .maybeSingle();
-  if (brand?.name) return { title: brand.name };
-
-  // Legacy: entity id may still be linked from old URLs
-  const { data: entity } = await supabase
-    .from('regional_centers')
-    .select('name, brand_id')
-    .eq('id', params.id)
-    .maybeSingle();
-  return { title: entity?.name || 'Regional Center' };
-}
-
-export default async function RCBrandDetailPage({ params }: { params: { id: string } }) {
+async function resolveBrand(param: string): Promise<RcBrand | null> {
   const supabase = createClient();
 
-  let brand: RcBrand | null = null;
-  const { data: brandRow } = await supabase
+  // Prefer slug
+  const { data: bySlug } = await supabase
     .from('rc_brands')
     .select('*')
-    .eq('id', params.id)
+    .eq('slug', param)
     .maybeSingle();
+  if (bySlug) return bySlug as RcBrand;
 
-  if (brandRow) {
-    brand = brandRow as RcBrand;
-  } else {
-    // Legacy entity URL → redirect conceptually by loading its brand
+  if (isUuid(param)) {
+    const { data: byId } = await supabase
+      .from('rc_brands')
+      .select('*')
+      .eq('id', param)
+      .maybeSingle();
+    if (byId) return byId as RcBrand;
+
+    // Legacy entity UUID → parent brand
     const { data: entity } = await supabase
       .from('regional_centers')
-      .select('*, brand_id')
-      .eq('id', params.id)
+      .select('brand_id')
+      .eq('id', param)
       .maybeSingle();
     if (entity?.brand_id) {
       const { data: parent } = await supabase
@@ -55,12 +44,28 @@ export default async function RCBrandDetailPage({ params }: { params: { id: stri
         .select('*')
         .eq('id', entity.brand_id)
         .maybeSingle();
-      brand = (parent as RcBrand) || null;
+      return (parent as RcBrand) || null;
     }
   }
 
+  return null;
+}
+
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const brand = await resolveBrand(params.slug);
+  return { title: brand?.name || 'Regional Center' };
+}
+
+export default async function RCBrandDetailPage({ params }: { params: { slug: string } }) {
+  const brand = await resolveBrand(params.slug);
   if (!brand) notFound();
 
+  // Canonicalize UUID / legacy URLs to slug when available
+  if (brand.slug && params.slug !== brand.slug) {
+    redirect(brandPath(brand));
+  }
+
+  const supabase = createClient();
   const brandId = brand.id;
 
   const [{ data: contacts }, { data: projects }, { data: entities }] = await Promise.all([
@@ -80,7 +85,6 @@ export default async function RCBrandDetailPage({ params }: { params: { id: stri
 
   let list = (projects as ProjectWithVotes[]) || [];
 
-  // Fallback: projects still on entity rc_id under this brand
   if (!list.length && (entities || []).length) {
     const entityIds = (entities as RegionalCenter[]).map((e) => e.id);
     const { data: legacyProjects } = await supabase

@@ -4,7 +4,7 @@ import { PAGE_SIZE } from '@/lib/constants';
 
 /** Prefer brand join; fall back to plain select if embed fails (pre-migration DB) */
 const LIST_SELECT =
-  '*, rc_brands!brand_id(id, name, website_url), regional_centers(id, name, uscis_rc_id, website_url)';
+  '*, rc_brands!brand_id(id, name, website_url, slug), regional_centers(id, name, uscis_rc_id, website_url)';
 const LIST_SELECT_LEGACY = '*, regional_centers(id, name, uscis_rc_id, website_url)';
 
 function withCounts(

@@ -25,6 +25,7 @@ import {
   subscriptionLabel,
   subscriptionVariant,
 } from '@/lib/utils';
+import { allocateUniqueSlug, projectPath, slugify } from '@/lib/slugs';
 
 interface ContactDraft {
   name: string;
@@ -92,7 +93,7 @@ export default function NewProjectForm() {
       const supabase = createClient();
       const { data } = await supabase
         .from('projects')
-        .select('id, name, location_state, rc_brands!brand_id(name)')
+        .select('id, name, slug, brand_id, location_state, rc_brands!brand_id(id, name, slug)')
         .eq('brand_id', selectedBrandId)
         .ilike('name', `%${name.trim()}%`)
         .is('merged_into', null)
@@ -130,7 +131,17 @@ export default function NewProjectForm() {
 
     const { data: created, error: createError } = await supabase
       .from('rc_brands')
-      .insert({ name: nameToCreate })
+      .insert({
+        name: nameToCreate,
+        slug: await allocateUniqueSlug(slugify(nameToCreate), async (candidate) => {
+          const { data } = await supabase
+            .from('rc_brands')
+            .select('id')
+            .eq('slug', candidate)
+            .maybeSingle();
+          return Boolean(data);
+        }),
+      })
       .select('id')
       .single();
 
@@ -145,7 +156,7 @@ export default function NewProjectForm() {
     const queries = [
       supabase
         .from('projects')
-        .select('id, name, location_state, rc_brands!brand_id(name)')
+        .select('id, name, slug, brand_id, location_state, rc_brands!brand_id(id, name, slug)')
         .is('merged_into', null)
         .ilike('name', `%${name.trim()}%`)
         .limit(5),
@@ -154,7 +165,7 @@ export default function NewProjectForm() {
       queries.push(
         supabase
           .from('projects')
-          .select('id, name, location_state, rc_brands!brand_id(name)')
+          .select('id, name, slug, brand_id, location_state, rc_brands!brand_id(id, name, slug)')
           .eq('brand_id', selectedBrandId)
           .is('merged_into', null)
           .limit(5)
@@ -200,10 +211,24 @@ export default function NewProjectForm() {
         return;
       }
 
+      const projectSlug = await allocateUniqueSlug(slugify(name.trim()), async (candidate) => {
+        let q = supabase.from('projects').select('id').eq('slug', candidate);
+        q = brandId ? q.eq('brand_id', brandId) : q.is('brand_id', null);
+        const { data } = await q.maybeSingle();
+        return Boolean(data);
+      });
+
+      const { data: brandRow } = await supabase
+        .from('rc_brands')
+        .select('id, slug')
+        .eq('id', brandId)
+        .maybeSingle();
+
       const { data: project, error: insertError } = await supabase
         .from('projects')
         .insert({
           name: name.trim(),
+          slug: projectSlug,
           project_type: projectTypes.length ? projectTypes : null,
           location_city: city.trim() || null,
           location_state: state || null,
@@ -218,7 +243,7 @@ export default function NewProjectForm() {
           notes: notes.trim() || null,
           added_by: userId,
         })
-        .select('id')
+        .select('id, slug, brand_id')
         .single();
 
       if (insertError || !project) {
@@ -240,7 +265,12 @@ export default function NewProjectForm() {
         );
       }
 
-      router.push(`/projects/${project.id}`);
+      router.push(
+        projectPath({
+          ...project,
+          rc_brands: brandRow,
+        })
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to submit');
       setSubmitting(false);
@@ -376,7 +406,7 @@ export default function NewProjectForm() {
               <ul className="space-y-1 mb-2">
                 {similarWhileTyping.map((p) => (
                   <li key={p.id}>
-                    <Link href={`/projects/${p.id}`} className="link link-secondary text-sm">
+                    <Link href={projectPath(p)} className="link link-secondary text-sm">
                       {p.name}
                       {p.location_state ? ` (${p.location_state})` : ''}
                     </Link>
