@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, Suspense, useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import AuthBrandPanel from '@/components/AuthBrandPanel';
@@ -28,57 +28,26 @@ function GoogleIcon() {
   );
 }
 
-function MailIcon() {
-  return (
-    <svg
-      className="w-10 h-10 text-secondary mx-auto"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      aria-hidden
-    >
-      <rect x="3" y="5" width="18" height="14" rx="2" />
-      <path d="M3 7l9 6 9-6" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
 function LoginForm() {
   const searchParams = useSearchParams();
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [magicLinkSent, setMagicLinkSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleGoogleSignIn() {
+    setLoading(true);
+    setError(null);
     const supabase = createClient();
     const origin = window.location.origin;
-    await supabase.auth.signInWithOAuth({
+    const { error: err } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${origin}/auth/callback?next=${encodeURIComponent('/profile/setup')}`,
       },
     });
-  }
-
-  async function handleMagicLink(e: FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    const supabase = createClient();
-    const { error: err } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent('/profile/setup')}`,
-      },
-    });
-    setLoading(false);
     if (err) {
+      setLoading(false);
       setError(err.message);
-      return;
     }
-    setMagicLinkSent(true);
   }
 
   const urlError = searchParams.get('error');
@@ -97,80 +66,37 @@ function LoginForm() {
 
           <div className="card card-bordered shadow-sm bg-base-100">
             <div className="card-body gap-4">
+              {(error || urlError) && (
+                <p className="text-error text-sm">{error || urlError}</p>
+              )}
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
                 className="btn btn-outline w-full gap-2 rounded-full transition-all duration-150"
+                disabled={loading}
               >
-                <GoogleIcon />
-                Continue with Google
+                {loading ? (
+                  <span className="loading loading-spinner loading-sm" />
+                ) : (
+                  <>
+                    <GoogleIcon />
+                    Continue with Google
+                  </>
+                )}
               </button>
 
-              <div className="divider text-xs text-neutral/40">OR</div>
-
-              {!magicLinkSent ? (
-                <form onSubmit={handleMagicLink}>
-                  <div className="form-control mb-3">
-                    <label className="label">
-                      <span className="label-text font-medium">Email address</span>
-                    </label>
-                    <input
-                      type="email"
-                      className="input input-bordered"
-                      placeholder="you@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      autoComplete="email"
-                    />
-                  </div>
-                  {(error || urlError) && (
-                    <p className="text-error text-sm mb-3">{error || urlError}</p>
-                  )}
-                  <button
-                    type="submit"
-                    className="btn btn-primary w-full rounded-full"
-                    disabled={loading || !email.trim()}
-                  >
-                    {loading ? (
-                      <span className="loading loading-spinner loading-sm" />
-                    ) : (
-                      'Send login link'
-                    )}
-                  </button>
-                </form>
-              ) : (
-                <div className="text-center py-4">
-                  <div className="mb-3">
-                    <MailIcon />
-                  </div>
-                  <h3 className="font-bold text-lg">Check your inbox</h3>
-                  <p className="text-sm text-neutral/60 mt-2">
-                    We sent a login link to <strong>{email}</strong>
-                  </p>
-                  <p className="text-xs text-neutral/40 mt-3">
-                    Didn&apos;t get it? Check your spam folder or{' '}
-                    <button
-                      type="button"
-                      className="link link-primary"
-                      onClick={() => {
-                        setMagicLinkSent(false);
-                        setError(null);
-                      }}
-                    >
-                      try again
-                    </button>
-                  </p>
-                </div>
-              )}
+              <p className="text-center text-sm text-neutral/50">
+                Email sign-in coming soon
+              </p>
             </div>
           </div>
 
           <p className="text-center text-xs text-neutral/40 mt-6">
             By signing in, you agree to our{' '}
             <a href="/privacy" className="link link-hover">
-              Terms of Service
+              Privacy Policy
             </a>
+            .
           </p>
         </div>
       </div>
