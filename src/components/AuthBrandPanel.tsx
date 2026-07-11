@@ -1,4 +1,5 @@
-import Logo from '@/components/Logo';
+import Logo, { BrandWordmark } from '@/components/Logo';
+import type { ReactNode } from 'react';
 
 function CheckIcon() {
   return (
@@ -9,10 +10,16 @@ function CheckIcon() {
 }
 
 export default function AuthBrandPanel({
-  title = 'Join the EB-5 community',
+  title,
 }: {
-  title?: string;
+  title?: ReactNode;
 }) {
+  const heading = title ?? (
+    <>
+      Welcome to <BrandWordmark variant="on-dark" className="text-[0.85em]" />
+    </>
+  );
+
   return (
     <div className="hidden lg:flex lg:w-1/2 bg-panel-gradient text-primary-content flex-col justify-center px-12 xl:px-16 relative overflow-hidden">
       <div
@@ -25,7 +32,7 @@ export default function AuthBrandPanel({
       />
       <div className="relative">
       <Logo size={72} className="mb-6 drop-shadow-lg" />
-      <h1 className="text-4xl font-bold mb-4">{title}</h1>
+      <h1 className="text-4xl font-bold mb-4 flex flex-wrap items-center gap-x-2 gap-y-1">{heading}</h1>
       <p className="text-lg text-primary-content/70 mb-8">
         Help build the most comprehensive directory of EB-5 projects
       </p>

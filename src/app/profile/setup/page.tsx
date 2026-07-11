@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { BrandWordmark } from '@/components/Logo';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import CountrySelect from '@/components/CountrySelect';
@@ -232,7 +233,9 @@ export default function ProfileSetupPage() {
   return (
     <div className="max-w-lg mx-auto px-4 py-16">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-primary">Welcome to EB5 Base</h1>
+        <h1 className="text-3xl font-bold text-primary flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+          Welcome to <BrandWordmark variant="on-light" className="text-[1.05em]" />
+        </h1>
         <p className="text-neutral/60 mt-2">Let&apos;s set up your profile</p>
       </div>
 

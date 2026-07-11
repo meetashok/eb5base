@@ -55,7 +55,7 @@ function LoginForm() {
 
   return (
     <div className="flex min-h-[calc(100vh-8rem)]">
-      <AuthBrandPanel title="Welcome to EB5 Base" />
+      <AuthBrandPanel />
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">

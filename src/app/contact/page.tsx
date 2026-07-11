@@ -1,17 +1,35 @@
+import PageHero from '@/components/PageHero';
+import { BrandWordmark } from '@/components/Logo';
+
 export const metadata = {
   title: 'Contact',
 };
 
 export default function ContactPage() {
   return (
-    <div className="max-w-3xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold text-primary mb-6">Contact</h1>
-      <p className="text-sm text-neutral/80 mb-4">
-        For feedback, corrections, or questions about EB5 Base, email us at:
-      </p>
-      <a href="mailto:hello@eb5base.com" className="link link-secondary text-lg font-medium">
-        hello@eb5base.com
-      </a>
+    <div>
+      <PageHero
+        eyebrow="Get in touch"
+        title="Contact"
+        subtitle={
+          <>
+            Feedback, corrections, or questions about{' '}
+            <BrandWordmark variant="on-dark" className="text-base inline-flex" /> — we read every
+            message.
+          </>
+        }
+      />
+
+      <div className="max-w-2xl mx-auto px-4 py-10">
+        <section className="card-elevated p-8 text-center">
+          <p className="text-neutral/70 mb-6">
+            Email us directly and we&apos;ll get back to you as soon as we can.
+          </p>
+          <a href="mailto:hello@eb5base.com" className="btn btn-primary rounded-full">
+            hello@eb5base.com
+          </a>
+        </section>
+      </div>
     </div>
   );
 }
