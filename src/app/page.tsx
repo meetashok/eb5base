@@ -143,7 +143,7 @@ export default async function HomePage() {
             </div>
           ) : (
             <p className="mt-10 text-sm text-neutral/50 italic">
-              A growing, community-built directory
+              A growing, community-built directory of EB-5 projects
             </p>
           )}
         </div>
