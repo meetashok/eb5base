@@ -25,9 +25,9 @@ function isPublicPath(pathname: string): boolean {
   }
   if (pathname.startsWith('/auth')) return true;
 
-  // Brand browse/detail public; create/edit/admin require auth
+  // Brand browse/detail public; add form is public (auth gated client-side)
   if (pathname.startsWith('/rc/')) {
-    if (pathname === '/rc/add' || pathname === '/rc/new') return false;
+    if (pathname === '/rc/add' || pathname === '/rc/new') return true;
     if (pathname.endsWith('/edit')) return false;
     return true;
   }
@@ -37,10 +37,10 @@ function isPublicPath(pathname: string): boolean {
   // Legacy redirects stay public (they redirect to /rc)
   if (pathname.startsWith('/regional-centers')) return true;
 
-  // Project list + detail are public; create/edit require auth + completed profile
+  // Project list + detail are public; add form is public (auth gated client-side)
   if (pathname === '/projects') return true;
   if (pathname.startsWith('/projects/')) {
-    if (pathname === '/projects/add' || pathname === '/projects/new') return false;
+    if (pathname === '/projects/add' || pathname === '/projects/new') return true;
     if (pathname.endsWith('/edit')) return false;
     return true;
   }

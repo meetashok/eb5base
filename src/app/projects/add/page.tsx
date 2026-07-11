@@ -4,6 +4,8 @@ import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
+import { useAuthPrompt } from '@/components/AuthPromptProvider';
+import { AddRcLink } from '@/components/AuthGatedLinks';
 import BrandAutocomplete, { type BrandSelection } from '@/components/BrandAutocomplete';
 import DuplicateCheckModal, { type SimilarProject } from '@/components/DuplicateCheckModal';
 import TEATag from '@/components/TEATag';
@@ -46,8 +48,10 @@ const emptyContact = (): ContactDraft => ({
 export default function NewProjectForm() {
   const router = useRouter();
   const { toast } = useToast();
+  const { user, authLoading, promptSignIn } = useAuthPrompt();
   const [userId, setUserId] = useState<string | null>(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
+  const [authPrompted, setAuthPrompted] = useState(false);
 
   const [brandName, setBrandName] = useState('');
   const [brandSelection, setBrandSelection] = useState<BrandSelection | null>(null);
@@ -76,16 +80,18 @@ export default function NewProjectForm() {
   const selectedBrandId = brandSelection && !brandSelection.isNew ? brandSelection.id : null;
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) {
-        router.replace('/login?redirect=/projects/add');
-        return;
-      }
-      setUserId(data.user.id);
+    if (authLoading) return;
+    if (user) {
+      setUserId(user.id);
       setCheckingAuth(false);
-    });
-  }, [router]);
+      return;
+    }
+    if (!authPrompted) {
+      promptSignIn('/projects/add');
+      setAuthPrompted(true);
+    }
+    setCheckingAuth(false);
+  }, [authLoading, user, authPrompted, promptSignIn]);
 
   useEffect(() => {
     if (!selectedBrandId || name.trim().length < 3 || dismissedSimilar) {
@@ -303,6 +309,18 @@ export default function NewProjectForm() {
     );
   }
 
+  if (!userId) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-16 text-center">
+        <h1 className="text-2xl font-bold text-primary mb-2">Add Project</h1>
+        <p className="text-neutral/70 mb-4">Sign in to add a project to the directory.</p>
+        <Link href="/projects" className="btn btn-ghost btn-sm rounded-full">
+          Back to browse
+        </Link>
+      </div>
+    );
+  }
+
   if (previewMode) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-8">
@@ -392,9 +410,9 @@ export default function NewProjectForm() {
             />
             <span className="label-text-alt text-neutral/50 mt-1">
               Can&apos;t find it?{' '}
-              <Link href="/rc/add" className="link link-secondary">
+              <AddRcLink className="link link-secondary">
                 Add a new regional center
-              </Link>{' '}
+              </AddRcLink>{' '}
               first, then come back here.
             </span>
           </label>

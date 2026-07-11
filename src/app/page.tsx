@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { AddProjectLink } from '@/components/AuthGatedLinks';
 import SearchBar from '@/components/SearchBar';
 import ProjectCard from '@/components/ProjectCard';
 import { AddProjectCTACard } from '@/components/Skeleton';
@@ -83,9 +84,9 @@ export default async function HomePage() {
             <Link href="/projects" className="btn btn-primary rounded-full">
               Browse Projects
             </Link>
-            <Link href="/projects/add" className="btn btn-accent text-accent-content rounded-full shadow-soft hover:shadow-glow" data-add-project-hint="primary">
+            <AddProjectLink className="btn btn-accent text-accent-content rounded-full shadow-soft hover:shadow-glow" data-add-project-hint="primary">
               + Add a Project
-            </Link>
+            </AddProjectLink>
           </div>
           {stats.projects >= 10 ? (
             <div className="mt-10 flex flex-wrap justify-center gap-4 md:gap-6">

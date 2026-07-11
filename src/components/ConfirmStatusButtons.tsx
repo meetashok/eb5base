@@ -1,10 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import { timeAgo } from '@/lib/utils';
-import SignInPromptModal from './SignInPromptModal';
+import { AddProjectLink } from './AuthGatedLinks';
+import { useAuthPrompt } from './AuthPromptProvider';
 
 interface ConfirmStatusButtonsProps {
   projectId: string;
@@ -23,8 +23,7 @@ export default function ConfirmStatusButtons({
   showCount = true,
   onConfirmed,
 }: ConfirmStatusButtonsProps) {
-  const router = useRouter();
-  const pathname = usePathname();
+  const { promptSignIn } = useAuthPrompt();
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [rateLimited, setRateLimited] = useState(false);
@@ -38,7 +37,6 @@ export default function ConfirmStatusButtons({
   const [thanks, setThanks] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [localCount, setLocalCount] = useState(confirmationCount);
-  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
 
   useEffect(() => {
     setLocalCount(confirmationCount);
@@ -86,15 +84,6 @@ export default function ConfirmStatusButtons({
   useEffect(() => {
     refreshUserState();
   }, [refreshUserState]);
-
-  function goToLogin() {
-    const redirect = pathname || '/projects';
-    router.push(`/login?redirect=${encodeURIComponent(redirect)}`);
-  }
-
-  function promptSignIn() {
-    setShowAuthPrompt(true);
-  }
 
   function chooseStatus(status: 'open' | 'closed') {
     setError(null);
@@ -254,8 +243,8 @@ export default function ConfirmStatusButtons({
 
         {!userId && !rateLimited && !compact && (
           <p className="text-xs text-neutral/50 mt-2 text-center">
-            <button type="button" className="link link-secondary" onClick={promptSignIn}>
-              Sign in to confirm status
+            <button type="button" className="link link-secondary" onClick={() => promptSignIn()}>
+              Sign in to continue
             </button>
           </p>
         )}
@@ -331,9 +320,9 @@ export default function ConfirmStatusButtons({
           <div className="text-center mt-2">
             <p className="text-xs text-success font-medium">Thanks!</p>
             <p className="text-xs text-neutral/50 mt-1">
-              <a href="/projects/add" className="link link-primary">
+              <AddProjectLink className="link link-primary">
                 Know another project?
-              </a>
+              </AddProjectLink>
             </p>
           </div>
         )}
@@ -351,15 +340,6 @@ export default function ConfirmStatusButtons({
           </p>
         )}
       </div>
-
-      <SignInPromptModal
-        open={showAuthPrompt}
-        onDismiss={() => {
-          setShowAuthPrompt(false);
-          setPendingStatus(null);
-        }}
-        onSignIn={goToLogin}
-      />
     </>
   );
 }

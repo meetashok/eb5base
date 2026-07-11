@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { AddProjectLink } from '@/components/AuthGatedLinks';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
@@ -423,9 +424,9 @@ export default function ProfilePage() {
           {projects.length === 0 ? (
             <p className="text-neutral/60">
               No projects yet.{' '}
-              <Link href="/projects/add" className="link link-secondary">
+              <AddProjectLink className="link link-secondary">
                 Add one
-              </Link>
+              </AddProjectLink>
               .
             </p>
           ) : (

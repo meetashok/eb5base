@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { AddProjectLink } from '@/components/AuthGatedLinks';
 import { notFound, redirect } from 'next/navigation';
 import ProjectCard from '@/components/ProjectCard';
 import { createClient } from '@/lib/supabase-server';
@@ -189,9 +190,9 @@ export default async function RCBrandDetailPage({ params }: { params: { slug: st
         {list.length === 0 ? (
           <p className="text-neutral/50 text-sm">
             No projects listed yet.{' '}
-            <Link href="/projects/add" className="link link-secondary">
+            <AddProjectLink className="link link-secondary">
               Add one
-            </Link>
+            </AddProjectLink>
           </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">

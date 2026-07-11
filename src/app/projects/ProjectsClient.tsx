@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { AddProjectLink } from '@/components/AuthGatedLinks';
 import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import ProjectCard from '@/components/ProjectCard';
@@ -216,9 +217,9 @@ export default function ProjectsClient({
           <p className="text-sm text-neutral/50 mt-2 mb-4">
             Try broadening your search, or add a project the community is missing.
           </p>
-          <Link href="/projects/add" className="btn btn-primary btn-sm rounded-full">
+          <AddProjectLink className="btn btn-primary btn-sm rounded-full">
             + Add Project
-          </Link>
+          </AddProjectLink>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -232,9 +233,9 @@ export default function ProjectsClient({
                 <p className="text-sm text-neutral/50 mt-1">
                   Help the community by adding it to the directory
                 </p>
-                <Link href="/projects/add" className="btn btn-primary btn-sm rounded-full mt-3">
+                <AddProjectLink className="btn btn-primary btn-sm rounded-full mt-3">
                   + Add Project
-                </Link>
+                </AddProjectLink>
               </div>
             </div>
           )}

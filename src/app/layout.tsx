@@ -4,6 +4,7 @@ import { Plus_Jakarta_Sans } from 'next/font/google';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import AddProjectHint from '@/components/AddProjectHint';
+import { AuthPromptProvider } from '@/components/AuthPromptProvider';
 import { ToastProvider } from '@/components/Toast';
 import './globals.css';
 
@@ -53,10 +54,12 @@ export default function RootLayout({
     <html lang="en" data-theme="eb5base">
       <body className={`${jakarta.variable} font-sans antialiased min-h-screen flex flex-col`}>
         <ToastProvider>
-          <Navbar />
-          <main className="flex-1 page-enter">{children}</main>
-          <Footer />
-          <AddProjectHint />
+          <AuthPromptProvider>
+            <Navbar />
+            <main className="flex-1 page-enter">{children}</main>
+            <Footer />
+            <AddProjectHint />
+          </AuthPromptProvider>
         </ToastProvider>
         <Script
           data-goatcounter="https://eb5base.goatcounter.com/count"

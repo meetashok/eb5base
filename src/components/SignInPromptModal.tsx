@@ -7,12 +7,16 @@ interface SignInPromptModalProps {
   open: boolean;
   onDismiss: () => void;
   onSignIn: () => void;
+  title?: string;
+  description?: string;
 }
 
 export default function SignInPromptModal({
   open,
   onDismiss,
   onSignIn,
+  title = 'Sign in to continue',
+  description = 'Sign in to add projects, confirm subscription status, and access community features. It only takes a moment.',
 }: SignInPromptModalProps) {
   const [mounted, setMounted] = useState(false);
 
@@ -34,11 +38,8 @@ export default function SignInPromptModal({
   return createPortal(
     <dialog className="modal modal-open z-[100]">
       <div className="modal-box max-w-sm">
-        <h3 className="font-bold text-lg text-primary">Sign in to confirm?</h3>
-        <p className="py-2 text-sm text-neutral/70">
-          Help fellow investors by confirming whether this project is open for subscriptions. Sign in
-          takes just a moment.
-        </p>
+        <h3 className="font-bold text-lg text-primary">{title}</h3>
+        <p className="py-2 text-sm text-neutral/70">{description}</p>
         <div className="modal-action mt-2">
           <button type="button" className="btn btn-ghost btn-sm" onClick={onDismiss}>
             Not now

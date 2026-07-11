@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { AddRcLink } from '@/components/AuthGatedLinks';
 import { useMemo, useState } from 'react';
 import type { RcBrand } from '@/lib/types';
 import { brandPath } from '@/lib/slugs';
@@ -12,10 +13,9 @@ interface BrandListItem extends RcBrand {
 
 interface BrandsClientProps {
   brands: BrandListItem[];
-  isLoggedIn: boolean;
 }
 
-export default function BrandsClient({ brands, isLoggedIn }: BrandsClientProps) {
+export default function BrandsClient({ brands }: BrandsClientProps) {
   const [q, setQ] = useState('');
 
   const filtered = useMemo(() => {
@@ -47,11 +47,9 @@ export default function BrandsClient({ brands, isLoggedIn }: BrandsClientProps) 
           <p className="text-sm text-neutral/50 mt-2">
             {q ? 'Try a different search term' : 'Be the first to add one'}
           </p>
-          {isLoggedIn && (
-            <Link href="/rc/add" className="btn btn-primary btn-sm rounded-full mt-4">
-              + Add Regional Center
-            </Link>
-          )}
+          <AddRcLink className="btn btn-primary btn-sm rounded-full mt-4">
+            + Add Regional Center
+          </AddRcLink>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

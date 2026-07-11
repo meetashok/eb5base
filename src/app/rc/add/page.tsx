@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
+import { useAuthPrompt } from '@/components/AuthPromptProvider';
 import { useToast } from '@/components/Toast';
 import { allocateUniqueSlug, slugify } from '@/lib/slugs';
 import { createSubmission } from '@/lib/approvals';
@@ -11,7 +12,9 @@ import { createSubmission } from '@/lib/approvals';
 export default function NewRcBrandPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { user, authLoading, promptSignIn } = useAuthPrompt();
   const [checkingAuth, setCheckingAuth] = useState(true);
+  const [authPrompted, setAuthPrompted] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState('');
@@ -19,15 +22,17 @@ export default function NewRcBrandPage() {
   const [description, setDescription] = useState('');
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) {
-        router.replace('/login?redirect=/rc/add');
-        return;
-      }
+    if (authLoading) return;
+    if (user) {
       setCheckingAuth(false);
-    });
-  }, [router]);
+      return;
+    }
+    if (!authPrompted) {
+      promptSignIn('/rc/add');
+      setAuthPrompted(true);
+    }
+    setCheckingAuth(false);
+  }, [authLoading, user, authPrompted, promptSignIn]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -128,6 +133,18 @@ export default function NewRcBrandPage() {
       <div className="max-w-2xl mx-auto px-4 py-12">
         <div className="skeleton-shimmer h-8 w-64 mb-4" />
         <div className="skeleton-shimmer h-64 w-full" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-16 text-center">
+        <h1 className="text-2xl font-bold text-primary mb-2">Add Regional Center</h1>
+        <p className="text-neutral/70 mb-4">Sign in to add a regional center to the directory.</p>
+        <Link href="/rc" className="btn btn-ghost btn-sm rounded-full">
+          Back to regional centers
+        </Link>
       </div>
     );
   }

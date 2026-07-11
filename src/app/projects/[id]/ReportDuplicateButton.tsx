@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase';
+import { useAuthPrompt } from '@/components/AuthPromptProvider';
 import type { Project } from '@/lib/types';
 import { PROJECT_SELECT } from '@/lib/types';
 
@@ -14,6 +15,7 @@ export default function ReportDuplicateButton({
   projectId,
   userId,
 }: ReportDuplicateButtonProps) {
+  const { promptSignIn } = useAuthPrompt();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Project[]>([]);
@@ -42,7 +44,7 @@ export default function ReportDuplicateButton({
 
   async function submit() {
     if (!userId) {
-      window.location.href = `/login?redirect=/projects/${projectId}`;
+      promptSignIn(`/projects/${projectId}`);
       return;
     }
     if (!selected) return;
@@ -71,7 +73,7 @@ export default function ReportDuplicateButton({
         className="text-meta text-neutral/50 hover:text-secondary transition-all duration-150"
         onClick={() => {
           if (!userId) {
-            window.location.href = `/login?redirect=/projects/${projectId}`;
+            promptSignIn(`/projects/${projectId}`);
             return;
           }
           setOpen(true);

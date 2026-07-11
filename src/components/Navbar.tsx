@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import Logo from '@/components/Logo';
+import AuthGateLink from '@/components/AuthGateLink';
 import type { User } from '@supabase/supabase-js';
 import type { Profile } from '@/lib/types';
 
@@ -74,6 +75,20 @@ export default function Navbar() {
     </Link>
   );
 
+  const authNavLink = (href: string, label: string, hint?: string) => (
+    <AuthGateLink
+      href={href}
+      data-add-project-hint={hint}
+      className={`px-3 py-2 text-sm font-medium transition-all duration-150 hover:text-accent ${
+        pathname === href || (href !== '/' && pathname.startsWith(href))
+          ? 'text-accent'
+          : 'text-primary-content/90'
+      }`}
+    >
+      {label}
+    </AuthGateLink>
+  );
+
   return (
     <header className="sticky top-0 z-50 bg-nav-gradient text-primary-content shadow-nav">
       <div className="navbar max-w-6xl mx-auto px-4 min-h-16">
@@ -91,7 +106,7 @@ export default function Navbar() {
         <div className="navbar-center hidden md:flex gap-1">
           {navLink('/projects', 'Browse')}
           {navLink('/rc', 'Regional Centers')}
-          {navLink('/projects/add', 'Add Project', 'nav')}
+          {authNavLink('/projects/add', 'Add Project', 'nav')}
           {navLink('/about', 'About')}
         </div>
 
@@ -158,7 +173,7 @@ export default function Navbar() {
         <div className="md:hidden border-t border-primary-content/20 px-4 pb-4 flex flex-col">
           {navLink('/projects', 'Browse')}
           {navLink('/rc', 'Regional Centers')}
-          {navLink('/projects/add', 'Add Project', 'nav')}
+          {authNavLink('/projects/add', 'Add Project', 'nav')}
           {navLink('/about', 'About')}
         </div>
       )}

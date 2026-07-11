@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { AddProjectLink } from '@/components/AuthGatedLinks';
 
 export function Skeleton({ className = '' }: { className?: string }) {
   return <div className={`skeleton-shimmer ${className}`} />;
@@ -62,9 +62,9 @@ export function AddProjectCTACard() {
         <p className="text-xs text-neutral/50 mt-0.5">
           Help fellow investors by adding it to the directory
         </p>
-        <Link href="/projects/add" className="btn btn-outline btn-secondary btn-xs mt-2">
+        <AddProjectLink className="btn btn-outline btn-secondary btn-xs mt-2">
           Add a Project
-        </Link>
+        </AddProjectLink>
       </div>
     </div>
   );

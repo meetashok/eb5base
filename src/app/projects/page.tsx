@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import Link from 'next/link';
+import { AddProjectLink } from '@/components/AuthGatedLinks';
 import SearchBar from '@/components/SearchBar';
 import FilterPanel from '@/components/FilterPanel';
 import PageHero from '@/components/PageHero';
@@ -33,9 +33,9 @@ export default async function ProjectsPage({
         title="Browse Projects"
         subtitle="Search EB-5 regional center projects by name, location, TEA designation, and status."
       >
-        <Link href="/projects/add" className="btn btn-accent text-accent-content rounded-full shadow-soft hover:shadow-glow" data-add-project-hint="primary">
+        <AddProjectLink className="btn btn-accent text-accent-content rounded-full shadow-soft hover:shadow-glow" data-add-project-hint="primary">
           + Add Project
-        </Link>
+        </AddProjectLink>
       </PageHero>
 
       <div className="max-w-6xl mx-auto px-4 py-8">

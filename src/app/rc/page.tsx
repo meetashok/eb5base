@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { AddRcLink } from '@/components/AuthGatedLinks';
 import PageHero from '@/components/PageHero';
 import BrandsClient from './BrandsClient';
 import { createClient } from '@/lib/supabase-server';
@@ -50,10 +50,6 @@ async function loadBrands(): Promise<{ brands: BrandRow[]; error: string | null 
 
 export default async function RCBrandsPage() {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
   const { brands: rows, error } = await loadBrands();
 
   const brands = rows.map((b) => ({
@@ -77,11 +73,9 @@ export default async function RCBrandsPage() {
         title="Regional Centers"
         subtitle="EB-5 regional center organizations and their active projects."
       >
-        {user && (
-          <Link href="/rc/add" className="btn btn-accent text-accent-content rounded-full shadow-soft hover:shadow-glow">
-            + Add Regional Center
-          </Link>
-        )}
+        <AddRcLink className="btn btn-accent text-accent-content rounded-full shadow-soft hover:shadow-glow">
+          + Add Regional Center
+        </AddRcLink>
       </PageHero>
 
       <div className="max-w-6xl mx-auto py-8 px-4">
@@ -102,7 +96,7 @@ export default async function RCBrandsPage() {
           </div>
         )}
 
-        <BrandsClient brands={brands} isLoggedIn={Boolean(user)} />
+        <BrandsClient brands={brands} />
       </div>
     </div>
   );

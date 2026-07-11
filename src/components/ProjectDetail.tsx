@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import AuthGateLink from '@/components/AuthGateLink';
 import TEATag from '@/components/TEATag';
 import StatusBadge from '@/components/StatusBadge';
 import ConfirmationWidget from '@/components/ConfirmationWidget';
@@ -90,12 +91,12 @@ export default function ProjectDetail({
             <div className="flex flex-col items-start md:items-end gap-2 shrink-0">
               <ReportDuplicateButton projectId={p.id} userId={userId} />
               {canEdit && (
-                <Link
+                <AuthGateLink
                   href={projectEditPath(p)}
                   className="btn btn-outline btn-sm border-primary-content/40 text-primary-content hover:bg-primary-content/10 rounded-full"
                 >
                   Edit Project
-                </Link>
+                </AuthGateLink>
               )}
             </div>
           </div>
