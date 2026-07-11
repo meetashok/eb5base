@@ -43,8 +43,8 @@ export function RCCardSkeleton() {
 export function AddProjectCTACard({ prominent = false }: { prominent?: boolean }) {
   if (prominent) {
     return (
-      <div className="card-elevated border-2 border-secondary/40 bg-gradient-to-br from-secondary/15 via-secondary/5 to-base-100 h-full shadow-soft">
-        <div className="card-body items-center text-center p-5 py-10">
+      <div className="card-elevated project-grid-card border-2 border-secondary/40 bg-gradient-to-br from-secondary/15 via-secondary/5 to-base-100 shadow-soft">
+        <div className="card-body items-center text-center p-5 py-6 project-grid-card-body justify-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="w-10 h-10 text-secondary mb-2"
@@ -72,8 +72,8 @@ export function AddProjectCTACard({ prominent = false }: { prominent?: boolean }
   }
 
   return (
-    <div className="card-elevated border-dashed border-2 border-secondary/25 h-full">
-      <div className="card-body items-center text-center p-4 py-8">
+    <div className="card-elevated project-grid-card border-dashed border-2 border-secondary/25">
+      <div className="card-body items-center text-center p-4 py-6 project-grid-card-body justify-center">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="w-8 h-8 text-secondary/40 mb-1.5"

@@ -132,6 +132,22 @@ body {
     @apply shadow-lift -translate-y-0.5 border-secondary/30;
   }
 
+  .project-grid-card {
+    @apply h-full min-h-[14rem] flex flex-col;
+  }
+
+  .project-grid-card-body {
+    @apply flex flex-col flex-1;
+  }
+
+  .project-card-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 items-stretch;
+  }
+
+  .project-card-grid-wide {
+    @apply xl:grid-cols-4;
+  }
+
   .stat-pill {
     @apply rounded-2xl bg-base-100/85 backdrop-blur-sm border border-base-300/60 shadow-soft px-6 py-4 min-w-[7rem];
   }

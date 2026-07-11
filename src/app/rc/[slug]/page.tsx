@@ -224,7 +224,7 @@ export default async function RCBrandDetailPage({ params }: { params: { slug: st
             </AddProjectLink>
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="project-card-grid">
             {list.map((p) => (
               <ProjectCard key={p.id} project={p} />
             ))}

@@ -36,7 +36,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   const detailHref = projectPath(project);
 
   return (
-    <div className="card-elevated h-full relative overflow-hidden">
+    <div className="card-elevated project-grid-card relative overflow-hidden">
       {coverUrl && (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -55,7 +55,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           />
         </>
       )}
-      <div className="card-body p-3 gap-2 relative z-10">
+      <div className="card-body p-3 gap-2 relative z-10 project-grid-card-body">
         <Link href={detailHref} className="block group">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0 flex-1">
@@ -109,13 +109,15 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           </div>
         </Link>
 
-        <ConfirmStatusButtons
-          projectId={project.id}
-          projectHref={detailHref}
-          confirmationCount={confirmationCount}
-          showCount={false}
-          variant="card"
-        />
+        <div className="mt-auto">
+          <ConfirmStatusButtons
+            projectId={project.id}
+            projectHref={detailHref}
+            confirmationCount={confirmationCount}
+            showCount={false}
+            variant="card"
+          />
+        </div>
       </div>
     </div>
   );
