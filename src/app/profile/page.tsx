@@ -1,67 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { AddProjectLink } from '@/components/AuthGatedLinks';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import CountrySelect from '@/components/CountrySelect';
 import { ROLE_BADGE_LABELS } from '@/lib/constants';
 import { findCountry } from '@/lib/countries';
-import type {
-  ContentSubmission,
-  DuplicateReportGroup,
-  Profile,
-  Project,
-  ProjectVote,
-  RcBrand,
-  RcMembership,
-} from '@/lib/types';
-import { PROJECT_SELECT } from '@/lib/types';
+import type { Profile, RcMembership } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
-import { brandPath, projectEditPath, projectPath } from '@/lib/slugs';
-import {
-  duplicateStatusBadgeClass,
-  duplicateStatusLabel,
-  statusBadgeClass,
-  statusLabel,
-} from '@/lib/approvals';
-
-type Tab = 'confirmations' | 'projects' | 'activity' | 'settings';
-
-interface ConfirmationRow extends ProjectVote {
-  projects?: {
-    id: string;
-    name: string;
-    slug?: string | null;
-    brand_id?: string | null;
-    rc_brands?: { id: string; slug?: string | null } | null;
-  } | null;
-}
-
-interface SubmissionRow extends ContentSubmission {
-  title: string;
-}
-
-interface DuplicateReportRow extends DuplicateReportGroup {
-  title: string;
-  duplicate_titles: string[];
-}
-
-type ActivityKind = 'submission' | 'duplicate' | 'brand';
-
-interface ActivityRow {
-  id: string;
-  kind: ActivityKind;
-  title: string;
-  subtitle: string;
-  status: string | null;
-  statusClass: string;
-  statusText: string;
-  created_at: string;
-  rejection_reason?: string | null;
-  href?: string | null;
-}
 
 function CheckIcon({ className }: { className?: string }) {
   return (
@@ -82,15 +29,8 @@ function ClockIcon({ className }: { className?: string }) {
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [tab, setTab] = useState<Tab>('confirmations');
   const [profile, setProfile] = useState<Profile | null>(null);
   const [rcMembership, setRcMembership] = useState<RcMembership | null>(null);
-  const [confirmations, setConfirmations] = useState<ConfirmationRow[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [brands, setBrands] = useState<RcBrand[]>([]);
-  const [submissions, setSubmissions] = useState<SubmissionRow[]>([]);
-  const [duplicateReports, setDuplicateReports] = useState<DuplicateReportRow[]>([]);
-  const [claimedProjects, setClaimedProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingName, setEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState('');
@@ -103,12 +43,16 @@ export default function ProfilePage() {
       t === 'confirmations' ||
       t === 'projects' ||
       t === 'activity' ||
-      t === 'submissions' ||
-      t === 'settings'
+      t === 'submissions'
     ) {
-      setTab(t === 'submissions' ? 'activity' : (t as Tab));
+      const params = new URLSearchParams();
+      if (t === 'confirmations') params.set('filter', 'confirmations');
+      else if (t === 'projects') params.set('filter', 'projects');
+      else if (t === 'activity' || t === 'submissions') params.set('filter', 'reports');
+      const qs = params.toString();
+      router.replace(qs ? `/timeline?${qs}` : '/timeline');
     }
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -118,193 +62,21 @@ export default function ProfilePage() {
         router.replace('/login?redirect=/profile');
         return;
       }
-      const [
-        { data: p },
-        { data: v },
-        { data: myProjects },
-        { data: membership },
-        brandsRes,
-        subsRes,
-        dupRes,
-        claimedRes,
-      ] = await Promise.all([
+      const [{ data: p }, { data: membership }] = await Promise.all([
         supabase.from('profiles').select('*').eq('id', auth.user.id).single(),
-        supabase
-          .from('project_votes')
-          .select('*, projects:project_id(id, name, slug, brand_id, rc_brands!brand_id(id, slug))')
-          .eq('user_id', auth.user.id)
-          .order('created_at', { ascending: false }),
-        supabase
-          .from('projects')
-          .select(PROJECT_SELECT)
-          .eq('added_by', auth.user.id)
-          .is('merged_into', null)
-          .order('created_at', { ascending: false }),
         supabase
           .from('rc_memberships')
           .select('*, regional_centers(id, name)')
           .eq('user_id', auth.user.id)
           .eq('active', true)
           .maybeSingle(),
-        supabase
-          .from('rc_brands')
-          .select('*')
-          .eq('added_by', auth.user.id)
-          .order('created_at', { ascending: false }),
-        supabase
-          .from('content_submissions')
-          .select('*')
-          .eq('submitted_by', auth.user.id)
-          .order('created_at', { ascending: false }),
-        supabase
-          .from('duplicate_report_groups')
-          .select('*')
-          .eq('reported_by', auth.user.id)
-          .order('created_at', { ascending: false }),
-        supabase
-          .from('projects')
-          .select(PROJECT_SELECT)
-          .eq('claimed_by', auth.user.id)
-          .is('merged_into', null)
-          .order('claimed_at', { ascending: false }),
       ]);
       setProfile(p);
       setNameDraft(p?.display_name || '');
-      setConfirmations((v as ConfirmationRow[]) || []);
-      setProjects((myProjects as Project[]) || []);
       setRcMembership((membership as RcMembership) || null);
-      setBrands(brandsRes.error ? [] : ((brandsRes.data as RcBrand[]) || []));
-
-      const subRows = subsRes.error ? [] : ((subsRes.data as ContentSubmission[]) || []);
-      const enriched: SubmissionRow[] = [];
-      for (const s of subRows) {
-        let title =
-          typeof s.payload?.name === 'string'
-            ? s.payload.name
-            : `${s.entity_type} ${s.entity_id.slice(0, 8)}`;
-        if (s.entity_type === 'project') {
-          const match = (myProjects as Project[] | null)?.find((x) => x.id === s.entity_id);
-          if (match?.name) title = match.name;
-        } else {
-          const match = (brandsRes.data as RcBrand[] | null)?.find((x) => x.id === s.entity_id);
-          if (match?.name) title = match.name;
-        }
-        enriched.push({ ...s, title });
-      }
-      setSubmissions(enriched);
-      setClaimedProjects((claimedRes.data as Project[]) || []);
-
-      const dupRows = dupRes.error ? [] : ((dupRes.data as DuplicateReportGroup[]) || []);
-      const enrichedDups: DuplicateReportRow[] = [];
-      for (const d of dupRows) {
-        const table = d.entity_type === 'project' ? 'projects' : 'rc_brands';
-        const { data: reported } = await supabase
-          .from(table)
-          .select('name')
-          .eq('id', d.reported_entity_id)
-          .maybeSingle();
-        const duplicateTitles: string[] = [];
-        for (const dupId of d.duplicate_entity_ids || []) {
-          const { data: dup } = await supabase
-            .from(table)
-            .select('name')
-            .eq('id', dupId)
-            .maybeSingle();
-          if (dup?.name) duplicateTitles.push(dup.name);
-        }
-        enrichedDups.push({
-          ...d,
-          title: reported?.name || d.reported_entity_id.slice(0, 8),
-          duplicate_titles: duplicateTitles,
-        });
-      }
-      setDuplicateReports(enrichedDups);
       setLoading(false);
     })();
   }, [router]);
-
-  const tabs: { id: Tab; label: string }[] = [
-    { id: 'confirmations', label: 'My Confirmations' },
-    { id: 'projects', label: 'My Projects' },
-    { id: 'activity', label: 'My Activity' },
-    { id: 'settings', label: 'Settings' },
-  ];
-
-  const activityRows = useMemo((): ActivityRow[] => {
-    const rows: ActivityRow[] = [];
-
-    for (const s of submissions) {
-      rows.push({
-        id: `sub-${s.id}`,
-        kind: 'submission',
-        title: s.title,
-        subtitle: `${s.action === 'create' ? 'Created' : 'Edited'} ${
-          s.entity_type === 'project' ? 'project' : 'regional center'
-        }`,
-        status: s.status,
-        statusClass: statusBadgeClass(s.status),
-        statusText: statusLabel(s.status),
-        created_at: s.created_at,
-        rejection_reason: s.rejection_reason,
-        href:
-          s.entity_type === 'project'
-            ? projectPath({ id: s.entity_id, slug: null })
-            : brandPath({ id: s.entity_id, slug: null }),
-      });
-    }
-
-    for (const b of brands) {
-      if (submissions.some((s) => s.entity_type === 'rc_brand' && s.entity_id === b.id)) {
-        continue;
-      }
-      rows.push({
-        id: `brand-${b.id}`,
-        kind: 'brand',
-        title: b.name,
-        subtitle: 'Regional center',
-        status: b.status,
-        statusClass: statusBadgeClass(b.status),
-        statusText: statusLabel(b.status),
-        created_at: b.created_at,
-        rejection_reason: b.rejection_reason,
-        href: brandPath(b),
-      });
-    }
-
-    for (const d of duplicateReports) {
-      rows.push({
-        id: `dup-${d.id}`,
-        kind: 'duplicate',
-        title: d.title,
-        subtitle: `Duplicate report${
-          d.duplicate_titles.length ? `: ${d.duplicate_titles.join(', ')}` : ''
-        } · ${d.entity_type === 'project' ? 'Project' : 'Regional center'}`,
-        status: d.status,
-        statusClass: duplicateStatusBadgeClass(d.status),
-        statusText: duplicateStatusLabel(d.status),
-        created_at: d.created_at,
-        href:
-          d.entity_type === 'project'
-            ? projectPath({ id: d.reported_entity_id, slug: null })
-            : brandPath({ id: d.reported_entity_id, slug: null }),
-      });
-    }
-
-    return rows.sort(
-      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    );
-  }, [submissions, brands, duplicateReports]);
-
-  const confirmationsByMonth = useMemo(() => {
-    const groups = new Map<string, ConfirmationRow[]>();
-    for (const v of confirmations) {
-      const d = new Date(v.created_at);
-      const key = d.toLocaleString('en-US', { month: 'long', year: 'numeric' });
-      if (!groups.has(key)) groups.set(key, []);
-      groups.get(key)!.push(v);
-    }
-    return Array.from(groups.entries());
-  }, [confirmations]);
 
   async function saveProfile(updates: Partial<Profile>) {
     if (!profile) return;
@@ -387,7 +159,7 @@ export default function ProfilePage() {
                   {profile.display_name || 'Click to set display name'}
                 </button>
               )}
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2 mt-1">
                 {roleLabel && (
                   <span className="badge bg-secondary/15 text-secondary border border-secondary/30 rounded-full">
                     {roleLabel}
@@ -399,15 +171,16 @@ export default function ProfilePage() {
                   </Link>
                 )}
               </div>
+              <Link href="/timeline" className="link link-secondary text-sm mt-2 inline-block">
+                View my timeline →
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="card-elevated p-6 mb-8 -mt-6 relative z-10 shadow-lift">
-      <div className="space-y-4">
-
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="card-elevated p-6 mb-8 -mt-6 relative z-10 shadow-lift space-y-6">
           {profile.role === 'rc_operator' && rcMembership && (
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-sm text-neutral/70">
@@ -470,9 +243,7 @@ export default function ProfilePage() {
               <span className="label-text text-meta">Country of birth</span>
             </label>
             <CountrySelect
-              value={
-                findCountry(profile.country_of_birth)?.code || profile.country_of_birth
-              }
+              value={findCountry(profile.country_of_birth)?.code || profile.country_of_birth}
               onChange={(country) => {
                 const next = country?.code || null;
                 if (next !== profile.country_of_birth) {
@@ -491,210 +262,34 @@ export default function ProfilePage() {
             />
             Profile visible to others
           </label>
-        </div>
-      </div>
 
-      {message && <p className="text-sm text-success mb-4">{message}</p>}
-
-      <div className="tabs tabs-bordered mb-6 overflow-x-auto [&_.tab-active]:text-secondary [&_.tab-active]:border-secondary">
-        {tabs.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            className={`tab ${tab === t.id ? 'tab-active' : ''}`}
-            onClick={() => setTab(t.id)}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      {tab === 'confirmations' && (
-        <div className="space-y-6">
-          {confirmations.length === 0 ? (
-            <p className="text-neutral/60">You haven&apos;t confirmed any project statuses yet.</p>
-          ) : (
-            confirmationsByMonth.map(([month, rows]) => (
-              <div key={month}>
-                <h3 className="font-semibold text-primary mb-2">{month}</h3>
-                <ul className="space-y-2">
-                  {rows.map((v) => (
-                    <li
-                      key={v.id}
-                      className="flex flex-wrap gap-2 justify-between text-sm border-b border-base-300 py-2"
-                    >
-                      <Link
-                        href={
-                          v.projects
-                            ? projectPath(v.projects)
-                            : `/projects/${v.project_id}`
-                        }
-                        className="link link-secondary font-medium"
-                      >
-                        {v.projects?.name || 'Project'}
-                      </Link>
-                      <span>
-                        confirmed {v.subscription_status === 'open' ? 'Open' : 'Closed'} ·{' '}
-                        {formatDate(v.created_at)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))
-          )}
-        </div>
-      )}
-
-      {tab === 'projects' && (
-        <div className="space-y-8">
-          <ul className="space-y-2">
-            {projects.length === 0 ? (
-              <p className="text-neutral/60">
-                No projects yet.{' '}
-                <AddProjectLink className="link link-secondary">
-                  Add one
-                </AddProjectLink>
-                .
+          <div className="border-t border-base-300/70 pt-6 space-y-4 max-w-md">
+            <h2 className="font-semibold text-primary">Settings</h2>
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                className="toggle toggle-primary"
+                checked={profile.email_notifications}
+                onChange={(e) => saveProfile({ email_notifications: e.target.checked })}
+              />
+              <span className="text-sm">Email notifications</span>
+            </label>
+            <div className="text-sm space-y-1">
+              <p>
+                <span className="text-neutral/50">Email:</span> {profile.email}
               </p>
-            ) : (
-              projects.map((p) => (
-                <li
-                  key={p.id}
-                  className="flex flex-wrap items-center justify-between gap-2 border-b border-base-300 py-3"
-                >
-                  <div>
-                    <Link href={projectPath(p)} className="link link-secondary font-medium">
-                      {p.name}
-                    </Link>
-                    <div className="flex flex-wrap items-center gap-2 mt-1">
-                      <span className={`badge badge-sm rounded-full ${statusBadgeClass(p.status)}`}>
-                        {statusLabel(p.status)}
-                      </span>
-                      {p.rc_verified_at && (
-                        <span className="badge badge-sm bg-secondary/15 text-secondary border border-secondary/30 rounded-full">
-                          RC verified
-                        </span>
-                      )}
-                      <p className="text-meta text-neutral/50">Added {formatDate(p.created_at)}</p>
-                    </div>
-                    {p.status === 'rejected' && p.rejection_reason && (
-                      <p className="text-sm text-error mt-1">Reason: {p.rejection_reason}</p>
-                    )}
-                  </div>
-                  <Link
-                    href={projectEditPath(p)}
-                    className="btn btn-outline btn-sm transition-all duration-150"
-                  >
-                    Edit
-                  </Link>
-                </li>
-              ))
-            )}
-          </ul>
-
-          {claimedProjects.length > 0 && (
-            <div>
-              <h3 className="font-semibold text-primary mb-3">Projects I&apos;ve claimed</h3>
-              <ul className="space-y-2">
-                {claimedProjects.map((p) => (
-                  <li
-                    key={`claimed-${p.id}`}
-                    className="flex flex-wrap items-center justify-between gap-2 border-b border-base-300 py-3"
-                  >
-                    <div>
-                      <Link href={projectPath(p)} className="link link-secondary font-medium">
-                        {p.name}
-                      </Link>
-                      <p className="text-meta text-neutral/50 mt-1">
-                        Claimed {p.claimed_at ? formatDate(p.claimed_at) : '—'}
-                      </p>
-                    </div>
-                    <Link
-                      href={projectEditPath(p)}
-                      className="btn btn-outline btn-sm transition-all duration-150"
-                    >
-                      Edit
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              <p>
+                <span className="text-neutral/50">Joined:</span> {formatDate(profile.created_at)}
+              </p>
             </div>
-          )}
-        </div>
-      )}
-
-      {tab === 'activity' && (
-        <ul className="space-y-2">
-          {activityRows.length === 0 ? (
-            <p className="text-neutral/60">
-              No activity yet. When you add or edit a project, report a duplicate, or submit a
-              regional center, it will show up here.
-            </p>
-          ) : (
-            activityRows.map((row) => (
-              <li key={row.id} className="border-b border-base-300 py-3 space-y-1">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div>
-                    {row.href ? (
-                      <Link href={row.href} className="font-medium link link-secondary">
-                        {row.title}
-                      </Link>
-                    ) : (
-                      <p className="font-medium text-primary">{row.title}</p>
-                    )}
-                    <p className="text-meta text-neutral/50">
-                      {row.subtitle} · {formatDate(row.created_at)}
-                    </p>
-                  </div>
-                  <span className={`badge badge-sm rounded-full ${row.statusClass}`}>
-                    {row.statusText}
-                  </span>
-                </div>
-                {row.rejection_reason && (
-                  <p className="text-sm text-error">Reason: {row.rejection_reason}</p>
-                )}
-                {row.kind !== 'duplicate' && row.status === 'pending' && (
-                  <p className="text-sm text-neutral/50">
-                    Waiting for an admin to review your submission.
-                  </p>
-                )}
-                {row.kind === 'duplicate' && row.status === 'pending' && (
-                  <p className="text-sm text-neutral/50">
-                    An admin will review this duplicate report.
-                  </p>
-                )}
-              </li>
-            ))
-          )}
-        </ul>
-      )}
-
-      {tab === 'settings' && (
-        <div className="space-y-6 max-w-md">
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              className="toggle toggle-primary"
-              checked={profile.email_notifications}
-              onChange={(e) => saveProfile({ email_notifications: e.target.checked })}
-            />
-            <span className="text-sm">Email notifications</span>
-          </label>
-          <div className="text-sm space-y-1">
-            <p>
-              <span className="text-neutral/50">Email:</span> {profile.email}
-            </p>
-            <p>
-              <span className="text-neutral/50">Joined:</span> {formatDate(profile.created_at)}
-            </p>
+            <button type="button" className="btn btn-error btn-outline btn-sm" onClick={deleteAccount}>
+              Delete account
+            </button>
           </div>
-          <button type="button" className="btn btn-error btn-outline btn-sm" onClick={deleteAccount}>
-            Delete account
-          </button>
         </div>
-      )}
-    </div>
+
+        {message && <p className="text-sm text-success">{message}</p>}
+      </div>
     </div>
   );
 }

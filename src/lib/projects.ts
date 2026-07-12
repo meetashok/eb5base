@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase-server';
 import type { ProjectWithVotes } from '@/lib/types';
-import { PAGE_SIZE } from '@/lib/constants';
+import { F956_FILED_STATUSES, PAGE_SIZE } from '@/lib/constants';
 import { ensureSlugsForProjects } from '@/lib/ensure-slugs';
 
 /** Prefer brand join; fall back to plain select if embed fails (pre-migration DB) */
@@ -180,6 +180,18 @@ function parseList(value: string | undefined): string[] {
   return value.split(',').filter(Boolean);
 }
 
+function expandF956FilterValues(values: string[]): string[] {
+  const expanded = new Set<string>();
+  for (const v of values) {
+    if (v === 'filed') {
+      F956_FILED_STATUSES.forEach((s) => expanded.add(s));
+    } else {
+      expanded.add(v);
+    }
+  }
+  return Array.from(expanded);
+}
+
 export interface ProjectFilters {
   q?: string;
   tea?: string;
@@ -202,7 +214,7 @@ export async function getFilteredProjects(filters: ProjectFilters) {
   const to = from + PAGE_SIZE - 1;
 
   let tea = parseList(filters.tea);
-  let f956 = parseList(filters.f956);
+  let f956 = expandF956FilterValues(parseList(filters.f956));
   let subscription = parseList(filters.subscription);
   if (filters.filter === 'rural') tea = Array.from(new Set([...tea, 'rural']));
   if (filters.filter === 'hua') tea = Array.from(new Set([...tea, 'hua']));
@@ -259,18 +271,8 @@ export async function getFilteredProjects(filters: ProjectFilters) {
     if (subscription.length) query = query.in('subscription_status', subscription);
     if (filters.state) query = query.eq('location_state', filters.state);
 
-    if (filters.amount === 'under_800k') query = query.lt('investment_amount', 800000);
-    if (filters.amount === '800k') query = query.eq('investment_amount', 800000);
-    if (filters.amount === '800k_1050k')
-      query = query.gte('investment_amount', 800000).lte('investment_amount', 1050000);
-    if (filters.amount === 'over_1050k') query = query.gt('investment_amount', 1050000);
-
     const sort = filters.sort || 'newest';
     if (sort === 'az' || sort === 'alpha') query = query.order('name', { ascending: true });
-    else if (sort === 'amount' || sort === 'amount_low')
-      query = query.order('investment_amount', { ascending: true, nullsFirst: false });
-    else if (sort === 'amount_high')
-      query = query.order('investment_amount', { ascending: false, nullsFirst: false });
     else query = query.order('created_at', { ascending: false });
 
     return query.range(from, to);

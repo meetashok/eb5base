@@ -4,19 +4,12 @@ import { useMemo, useRef, useState, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import {
-  F956_OPTIONS,
+  F956_FILTER_OPTIONS,
   PROJECT_TYPES,
   SUBSCRIPTION_OPTIONS,
   TEA_OPTIONS,
   US_STATES,
 } from '@/lib/constants';
-
-const INVESTMENT_RANGES = [
-  { value: 'under_800k', label: 'Under $800K' },
-  { value: '800k', label: '$800K' },
-  { value: '800k_1050k', label: '$800K–$1.05M' },
-  { value: 'over_1050k', label: 'Over $1.05M' },
-];
 
 function parseList(value: string | null): string[] {
   if (!value) return [];
@@ -210,26 +203,25 @@ export default function FilterPanel() {
   const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
 
-  const tea = parseList(searchParams.get('tea'));
   const f956 = parseList(searchParams.get('f956'));
   const subscription = parseList(searchParams.get('subscription'));
+  const tea = parseList(searchParams.get('tea'));
   const projectType = parseList(searchParams.get('type'));
   const state = searchParams.get('state') || '';
-  const amount = searchParams.get('amount') || '';
   const rc = searchParams.get('rc') || '';
   const rcName = searchParams.get('rc_name') || '';
 
   const activeCount = useMemo(() => {
-    let count = tea.length + f956.length + subscription.length + projectType.length;
+    let count = f956.length + subscription.length + tea.length + projectType.length;
     if (state) count += 1;
-    if (amount) count += 1;
     if (rc) count += 1;
     return count;
-  }, [tea, f956, subscription, projectType, state, amount, rc]);
+  }, [f956, subscription, tea, projectType, state, rc]);
 
   function updateParam(key: string, values: string[] | string) {
     const params = new URLSearchParams(searchParams.toString());
     params.delete('page');
+    params.delete('amount');
     if (Array.isArray(values)) {
       if (values.length) params.set(key, values.join(','));
       else params.delete(key);
@@ -244,6 +236,7 @@ export default function FilterPanel() {
   function setRcFilter(id: string, name: string) {
     const params = new URLSearchParams(searchParams.toString());
     params.delete('page');
+    params.delete('amount');
     if (id) {
       params.set('rc', id);
       params.set('rc_name', name);
@@ -287,25 +280,9 @@ export default function FilterPanel() {
         </div>
       </FilterGroup>
 
-      <FilterGroup title="TEA Type" defaultOpen>
-        <div className="space-y-1.5 pt-1">
-          {TEA_OPTIONS.map((opt) => (
-            <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                className="checkbox checkbox-sm checkbox-secondary"
-                checked={tea.includes(opt.value)}
-                onChange={() => toggleList('tea', tea, opt.value)}
-              />
-              <span>{opt.label}</span>
-            </label>
-          ))}
-        </div>
-      </FilterGroup>
-
       <FilterGroup title="I-956F Status" defaultOpen>
         <div className="space-y-1.5 pt-1">
-          {F956_OPTIONS.map((opt) => (
+          {F956_FILTER_OPTIONS.map((opt) => (
             <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
@@ -319,7 +296,7 @@ export default function FilterPanel() {
         </div>
       </FilterGroup>
 
-      <FilterGroup title="Subscription Status">
+      <FilterGroup title="Subscription Status" defaultOpen>
         <div className="space-y-1.5 pt-1">
           {SUBSCRIPTION_OPTIONS.map((opt) => (
             <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
@@ -335,35 +312,19 @@ export default function FilterPanel() {
         </div>
       </FilterGroup>
 
-      <FilterGroup title="State">
-        <div className="pt-1">
-          <StateCombobox value={state} onChange={(code) => updateParam('state', code)} />
-        </div>
-      </FilterGroup>
-
-      <FilterGroup title="Investment Amount">
+      <FilterGroup title="TEA Type">
         <div className="space-y-1.5 pt-1">
-          {INVESTMENT_RANGES.map((opt) => (
+          {TEA_OPTIONS.map((opt) => (
             <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
               <input
-                type="radio"
-                name="amount"
-                className="radio radio-sm radio-secondary"
-                checked={amount === opt.value}
-                onChange={() => updateParam('amount', opt.value)}
+                type="checkbox"
+                className="checkbox checkbox-sm checkbox-secondary"
+                checked={tea.includes(opt.value)}
+                onChange={() => toggleList('tea', tea, opt.value)}
               />
               <span>{opt.label}</span>
             </label>
           ))}
-          {amount && (
-            <button
-              type="button"
-              className="link link-secondary text-meta"
-              onClick={() => updateParam('amount', '')}
-            >
-              Clear amount
-            </button>
-          )}
         </div>
       </FilterGroup>
 
@@ -380,6 +341,12 @@ export default function FilterPanel() {
               <span>{opt.label}</span>
             </label>
           ))}
+        </div>
+      </FilterGroup>
+
+      <FilterGroup title="State">
+        <div className="pt-1">
+          <StateCombobox value={state} onChange={(code) => updateParam('state', code)} />
         </div>
       </FilterGroup>
     </div>

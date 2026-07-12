@@ -15,6 +15,27 @@ interface BrandsClientProps {
   brands: BrandListItem[];
 }
 
+function BrandCard({ brand }: { brand: BrandListItem }) {
+  return (
+    <Link key={brand.id} href={brandPath(brand)} className="card-elevated block">
+      <div className="p-5">
+        <h2 className="text-base font-bold text-primary">{brand.name}</h2>
+        {brand.website_url && (
+          <p className="text-xs text-neutral/50 truncate mt-1">{brand.website_url}</p>
+        )}
+        <div className="flex gap-3 mt-3 text-xs text-neutral/50">
+          <span className="badge bg-secondary/10 text-secondary border-0 rounded-full">
+            {brand.project_count} project{brand.project_count !== 1 ? 's' : ''}
+          </span>
+          <span className="badge bg-base-200 text-neutral/60 border-0 rounded-full">
+            {brand.entity_count} USCIS entit{brand.entity_count !== 1 ? 'ies' : 'y'}
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
 export default function BrandsClient({ brands }: BrandsClientProps) {
   const [q, setQ] = useState('');
 
@@ -23,6 +44,14 @@ export default function BrandsClient({ brands }: BrandsClientProps) {
     const term = q.trim().toLowerCase();
     return brands.filter((b) => b.name.toLowerCase().includes(term));
   }, [brands, q]);
+
+  const { withProjects, withoutProjects } = useMemo(() => {
+    const sorted = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
+    return {
+      withProjects: sorted.filter((b) => b.project_count > 0),
+      withoutProjects: sorted.filter((b) => b.project_count === 0),
+    };
+  }, [filtered]);
 
   return (
     <div>
@@ -52,25 +81,32 @@ export default function BrandsClient({ brands }: BrandsClientProps) {
           </AddRcLink>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((brand) => (
-            <Link key={brand.id} href={brandPath(brand)} className="card-elevated block">
-              <div className="p-5">
-                <h2 className="text-base font-bold text-primary">{brand.name}</h2>
-                {brand.website_url && (
-                  <p className="text-xs text-neutral/50 truncate mt-1">{brand.website_url}</p>
-                )}
-                <div className="flex gap-3 mt-3 text-xs text-neutral/50">
-                  <span className="badge bg-secondary/10 text-secondary border-0 rounded-full">
-                    {brand.project_count} project{brand.project_count !== 1 ? 's' : ''}
-                  </span>
-                  <span className="badge bg-base-200 text-neutral/60 border-0 rounded-full">
-                    {brand.entity_count} USCIS entit{brand.entity_count !== 1 ? 'ies' : 'y'}
-                  </span>
-                </div>
+        <div className="space-y-10">
+          {withProjects.length > 0 && (
+            <section>
+              <h2 className="text-lg font-bold text-primary mb-4">
+                With projects ({withProjects.length})
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {withProjects.map((brand) => (
+                  <BrandCard key={brand.id} brand={brand} />
+                ))}
               </div>
-            </Link>
-          ))}
+            </section>
+          )}
+
+          {withoutProjects.length > 0 && (
+            <section>
+              <h2 className="text-lg font-bold text-primary mb-4">
+                No projects yet ({withoutProjects.length})
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {withoutProjects.map((brand) => (
+                  <BrandCard key={brand.id} brand={brand} />
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       )}
     </div>

@@ -151,7 +151,7 @@ export default function EditRcBrandPage() {
     }
 
     toast('Edits submitted for approval', 'success');
-    router.push('/profile?tab=activity');
+    router.push('/timeline');
   }
 
   async function handleDelete() {

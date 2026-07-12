@@ -10,7 +10,7 @@ import type { ProjectWithVotes } from '@/lib/types';
 import type { ProjectFilters } from '@/lib/projects';
 import {
   CTA_CARD_PROMINENT_UNTIL,
-  F956_OPTIONS,
+  F956_FILTER_OPTIONS,
   PROJECT_TYPES,
   SUBSCRIPTION_OPTIONS,
   TEA_OPTIONS,
@@ -41,13 +41,6 @@ function parseList(value?: string): string[] {
   return value.split(',').filter(Boolean);
 }
 
-const AMOUNT_LABELS: Record<string, string> = {
-  under_800k: 'Under $800K',
-  '800k': '$800K',
-  '800k_1050k': '$800K–$1.05M',
-  over_1050k: 'Over $1.05M',
-};
-
 const FILTER_CHIP_LABELS: Record<string, string> = {
   rural: 'Rural',
   hua: 'HUA',
@@ -63,7 +56,6 @@ function hasActiveSearchOrFilters(filters: ProjectFilters): boolean {
       filters.subscription ||
       filters.type ||
       filters.state ||
-      filters.amount ||
       filters.rc ||
       filters.filter
   );
@@ -96,7 +88,7 @@ export default function ProjectsClient({
       chips.push({
         key: 'f956',
         value: v,
-        label: F956_OPTIONS.find((o) => o.value === v)?.label || v,
+        label: F956_FILTER_OPTIONS.find((o) => o.value === v)?.label || v,
       });
     });
     parseList(filters.subscription).forEach((v) => {
@@ -127,13 +119,6 @@ export default function ProjectsClient({
         label: filters.rc_name || 'Regional Center',
       });
     }
-    if (filters.amount) {
-      chips.push({
-        key: 'amount',
-        value: filters.amount,
-        label: AMOUNT_LABELS[filters.amount] || filters.amount,
-      });
-    }
     if (filters.filter) {
       chips.push({
         key: 'filter',
@@ -158,8 +143,6 @@ export default function ProjectsClient({
       }
     } else if (key === 'state') {
       delete next.state;
-    } else if (key === 'amount') {
-      delete next.amount;
     } else if (key === 'filter') {
       delete next.filter;
     } else if (key === 'rc') {
@@ -225,8 +208,6 @@ export default function ProjectsClient({
           >
             <option value="newest">Newest first</option>
             <option value="most_confirmed">Most confirmed status</option>
-            <option value="amount_low">Investment: low to high</option>
-            <option value="amount_high">Investment: high to low</option>
             <option value="alpha">Alphabetical</option>
           </select>
         </label>

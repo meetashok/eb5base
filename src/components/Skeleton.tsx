@@ -8,8 +8,8 @@ export function ProjectCardSkeleton() {
   return (
     <div className="card-elevated animate-pulse h-full flex flex-col">
       <div className="card-body p-3 pb-3 gap-2 flex flex-col flex-1">
-        <div className="h-4 bg-base-300 rounded w-full mb-1" />
-        <div className="h-3 bg-base-300 rounded w-4/5" />
+        <div className="h-4 bg-base-300 rounded w-4/5" />
+        <div className="h-3 bg-base-300 rounded w-full mt-0.5" />
         <div className="h-5 bg-base-300 rounded-full w-20 mt-1.5" />
         <div className="h-3 bg-base-300 rounded w-1/2 mt-1" />
         <div className="flex gap-1 mt-1.5">

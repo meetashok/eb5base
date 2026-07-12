@@ -34,3 +34,4 @@ Open [http://localhost:3000](http://localhost:3000).
 - Set the auth redirect URL to `https://your-domain/auth/callback` (and `http://localhost:3000/auth/callback` for local).
 - The database schema, RLS policies, and triggers are assumed to already exist in Supabase.
 - **Pre-release manual testing:** see [docs/V1_TESTING_PLAN.md](docs/V1_TESTING_PLAN.md) (Supabase toggle personas + workflow checklist).
+- **Public beta launch:** see [docs/DEPLOY_CHECKLIST.md](docs/DEPLOY_CHECKLIST.md) and [docs/LAUNCH_COMMS.md](docs/LAUNCH_COMMS.md).

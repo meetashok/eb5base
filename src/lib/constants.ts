@@ -79,9 +79,20 @@ export const F956_OPTIONS: { value: F956Status; label: string }[] = [
   { value: 'unknown', label: 'Unknown' },
 ];
 
+/** Browse filter: RFE statuses roll up to Filed */
+export const F956_FILTER_OPTIONS: { value: F956Status; label: string }[] = [
+  { value: 'not_filed', label: 'Not Filed' },
+  { value: 'filed', label: 'Filed' },
+  { value: 'approved', label: 'Approved' },
+  { value: 'denied', label: 'Denied' },
+  { value: 'unknown', label: 'Unknown' },
+];
+
+export const F956_FILED_STATUSES: F956Status[] = ['filed', 'rfe', 'rfe_response_submitted'];
+
 export const SUBSCRIPTION_OPTIONS: { value: SubscriptionStatus; label: string }[] = [
-  { value: 'open', label: 'Open' },
   { value: 'not_yet_open', label: 'Not Yet Open' },
+  { value: 'open', label: 'Open' },
   { value: 'closed', label: 'Closed' },
   { value: 'unknown', label: 'Unknown' },
 ];

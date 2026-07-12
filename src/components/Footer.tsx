@@ -31,11 +31,17 @@ export default function Footer() {
             >
               Privacy
             </Link>
-            <a
-              href="mailto:hello@eb5base.com"
+            <Link
+              href="/contact"
               className="text-sm text-neutral/50 hover:text-primary transition-colors"
             >
               Contact
+            </Link>
+            <a
+              href="mailto:feedback@eb5base.com"
+              className="text-sm text-neutral/50 hover:text-primary transition-colors"
+            >
+              Feedback
             </a>
           </div>
         </div>

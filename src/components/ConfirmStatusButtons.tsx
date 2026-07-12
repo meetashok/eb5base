@@ -200,6 +200,10 @@ export default function ConfirmStatusButtons({
   }
 
   function handleNotSure() {
+    if (!userId) {
+      promptSignIn();
+      return;
+    }
     dismissConfirmPrompt(projectId);
     setDismissed(true);
   }

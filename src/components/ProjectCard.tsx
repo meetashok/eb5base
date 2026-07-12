@@ -9,7 +9,7 @@ import TEATag from './TEATag';
 import ConfirmStatusButtons from './ConfirmStatusButtons';
 import {
   consensus7dLabel,
-  f956Label,
+  f956BrowseLabel,
   f956Variant,
   formatConfirmations7d,
   formatOpenPct7d,
@@ -71,17 +71,19 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       )}
       <div className="card-body p-3 pb-3 gap-2 relative z-10 flex flex-col flex-1">
         <Link href={detailHref} className="block min-w-0 flex-1">
-          <h3 className="text-sm font-bold text-primary leading-snug line-clamp-2 group-hover:text-secondary transition-colors">
-            {project.name}
-          </h3>
           {brandName && (
-            <p className="text-xs font-medium text-neutral/70 line-clamp-2 mt-0.5">{brandName}</p>
+            <h3 className="text-sm font-bold text-primary leading-snug line-clamp-2 group-hover:text-secondary transition-colors">
+              {brandName}
+            </h3>
           )}
+          <p className={`text-xs font-medium text-neutral/70 line-clamp-2 ${brandName ? 'mt-0.5' : ''}`}>
+            {project.name}
+          </p>
 
           {project.f956_status && (
             <div className="mt-1.5">
               <StatusBadge
-                label={`956F ${f956Label(project.f956_status)}`}
+                label={`956F ${f956BrowseLabel(project.f956_status)}`}
                 variant={f956Variant(project.f956_status)}
                 className={compactBadge}
               />

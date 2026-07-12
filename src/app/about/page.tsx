@@ -129,7 +129,7 @@ export default function AboutPage() {
             About <BrandWordmark variant="on-light" className="text-[0.88em] sm:text-[0.95em]" />
           </span>
         }
-        subtitle="A community directory for EB-5 investors and regional centers to find projects, confirm subscription status, and share what they know."
+        subtitle="A community directory for EB-5 investors and regional centers. We're in public beta — your feedback helps us improve (feedback@eb5base.com)."
       />
 
       <div className="max-w-4xl mx-auto px-4 py-10 space-y-6">

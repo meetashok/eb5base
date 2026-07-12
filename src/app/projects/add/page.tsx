@@ -345,7 +345,7 @@ export default function NewProjectForm() {
           : 'Submitted for approval. It will appear publicly once an admin reviews it.',
         'success'
       );
-      router.push(autoApprove ? projectPath(project) : '/profile?tab=activity');
+      router.push(autoApprove ? projectPath(project) : '/timeline');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to submit');
       toast(err instanceof Error ? err.message : 'Failed to submit', 'error');

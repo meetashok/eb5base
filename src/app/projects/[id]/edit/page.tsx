@@ -314,7 +314,7 @@ export default function EditProjectPage() {
 
       setPendingNotice(true);
       toast('Edits submitted for approval', 'success');
-      router.push('/profile?tab=activity');
+      router.push('/timeline');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save');
       setSaving(false);

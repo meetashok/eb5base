@@ -134,7 +134,7 @@ export default function NewRcBrandPage() {
         : 'Submitted for approval. It will appear publicly once an admin reviews it.',
       'success'
     );
-    router.push(autoApproveBrand ? brandPath(data) : '/profile?tab=activity');
+    router.push(autoApproveBrand ? brandPath(data) : '/timeline');
   }
 
   if (checkingAuth) {

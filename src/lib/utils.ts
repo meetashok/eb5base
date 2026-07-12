@@ -38,6 +38,12 @@ export function f956Label(status: F956Status | string | null | undefined): strin
   return F956_OPTIONS.find((o) => o.value === status)?.label ?? 'Unknown';
 }
 
+/** Card and browse labels: RFE / RFE response count as Filed */
+export function f956BrowseLabel(status: F956Status | string | null | undefined): string {
+  if (status === 'rfe' || status === 'rfe_response_submitted') return 'Filed';
+  return f956Label(status);
+}
+
 export function subscriptionLabel(
   status: SubscriptionStatus | string | null | undefined
 ): string {

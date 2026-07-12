@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Script from 'next/script';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import Navbar from '@/components/Navbar';
+import BetaBanner from '@/components/BetaBanner';
 import Footer from '@/components/Footer';
 import AddProjectHint from '@/components/AddProjectHint';
 import { AuthPromptProvider } from '@/components/AuthPromptProvider';
@@ -55,6 +56,7 @@ export default function RootLayout({
       <body className={`${jakarta.variable} font-sans antialiased min-h-screen flex flex-col`}>
         <ToastProvider>
           <AuthPromptProvider>
+            <BetaBanner />
             <Navbar />
             <main className="flex-1 page-enter">{children}</main>
             <Footer />
