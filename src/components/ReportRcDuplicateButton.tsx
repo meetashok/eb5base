@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase';
 import { useAuthPrompt } from '@/components/AuthPromptProvider';
+import { isMissingRcBrandMergedInto } from '@/lib/schema-compat';
 import type { RcBrand } from '@/lib/types';
 
 interface ReportRcDuplicateButtonProps {
@@ -29,14 +30,22 @@ export default function ReportRcDuplicateButton({
     }
     const t = setTimeout(async () => {
       const supabase = createClient();
-      const { data } = await supabase
+      let res = await supabase
         .from('rc_brands')
         .select('id, name, slug')
         .is('merged_into', null)
         .neq('id', brandId)
         .ilike('name', `%${query.trim()}%`)
         .limit(8);
-      setResults((data as RcBrand[]) || []);
+      if (res.error && isMissingRcBrandMergedInto(res.error.message)) {
+        res = await supabase
+          .from('rc_brands')
+          .select('id, name, slug')
+          .neq('id', brandId)
+          .ilike('name', `%${query.trim()}%`)
+          .limit(8);
+      }
+      setResults((res.data as RcBrand[]) || []);
     }, 250);
     return () => clearTimeout(t);
   }, [query, brandId]);
