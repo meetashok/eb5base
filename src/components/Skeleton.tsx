@@ -10,10 +10,11 @@ export function ProjectCardSkeleton() {
       <div className="card-body p-3 pb-3 gap-2">
         <div className="h-4 bg-base-300 rounded w-full mb-1" />
         <div className="h-3 bg-base-300 rounded w-4/5" />
-        <div className="h-3 bg-base-300 rounded w-1/2" />
+        <div className="h-5 bg-base-300 rounded-full w-20 mt-1.5" />
+        <div className="h-3 bg-base-300 rounded w-1/2 mt-1" />
         <div className="flex gap-1 mt-1.5">
-          <div className="h-5 bg-base-300 rounded-full w-12" />
-          <div className="h-5 bg-base-300 rounded-full w-16" />
+          <div className="h-5 bg-base-300 rounded-full w-12 border border-base-300/70" />
+          <div className="h-5 bg-base-300 rounded-full w-10 border border-base-300/70" />
         </div>
         <div className="h-3 bg-base-300 rounded w-2/3 mt-1" />
         <div className="border-t border-base-200/70 pt-2 mt-1">

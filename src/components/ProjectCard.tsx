@@ -21,18 +21,7 @@ interface ProjectCardProps {
 }
 
 const compactBadge = 'text-[10px] px-2 py-0 min-h-0 h-5 font-medium';
-
-function cardTeaClass(designation: string): string {
-  if (designation === 'rural') {
-    return cn(compactBadge, 'bg-base-200 text-neutral/70 border border-base-300/60');
-  }
-  return compactBadge;
-}
-
-function cardF956Variant(status: string | null | undefined) {
-  if (status === 'approved') return 'muted' as const;
-  return f956Variant(status);
-}
+const subtleTeaBadge = cn(compactBadge, 'font-medium');
 
 export default function ProjectCard({ project }: ProjectCardProps) {
   const location = [project.location_city, project.location_state].filter(Boolean).join(', ');
@@ -58,6 +47,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           .filter(Boolean)
           .join(' · ')
       : null;
+  const teaDesignations = project.tea_designations || [];
 
   return (
     <div className="card-elevated group relative overflow-hidden">
@@ -87,8 +77,19 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           {brandName && (
             <p className="text-xs font-medium text-neutral/70 line-clamp-2 mt-0.5">{brandName}</p>
           )}
+
+          {project.f956_status && (
+            <div className="mt-1.5">
+              <StatusBadge
+                label={`956F ${f956Label(project.f956_status)}`}
+                variant={f956Variant(project.f956_status)}
+                className={compactBadge}
+              />
+            </div>
+          )}
+
           {location && (
-            <p className="text-xs text-neutral/50 truncate mt-0.5">{location}</p>
+            <p className="text-xs text-neutral/50 truncate mt-1">{location}</p>
           )}
 
           {project.total_slots != null && project.total_slots > 0 && (
@@ -97,18 +98,18 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             </p>
           )}
 
-          <div className="flex flex-wrap gap-1 mt-1.5">
-            {(project.tea_designations || []).map((tea) => (
-              <TEATag key={tea} designation={tea} className={cardTeaClass(tea)} />
-            ))}
-            {project.f956_status && (
-              <StatusBadge
-                label={`956F ${f956Label(project.f956_status)}`}
-                variant={cardF956Variant(project.f956_status)}
-                className={compactBadge}
-              />
-            )}
-          </div>
+          {teaDesignations.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-1.5">
+              {teaDesignations.map((tea) => (
+                <TEATag
+                  key={tea}
+                  designation={tea}
+                  variant="subtle"
+                  className={subtleTeaBadge}
+                />
+              ))}
+            </div>
+          )}
 
           {consensusMeta && (
             <p className="text-[11px] text-neutral/50 mt-1.5 leading-snug">{consensusMeta}</p>
