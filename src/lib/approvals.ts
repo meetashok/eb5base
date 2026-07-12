@@ -1,7 +1,22 @@
 import { createClient } from '@/lib/supabase';
 import type { ContentSubmission, ModerationStatus, Project } from '@/lib/types';
 
+// v2 TODO: email/in-app notifications when submissions are approved/rejected
+// or duplicate reports are resolved/dismissed.
+
 type SupabaseClient = ReturnType<typeof createClient>;
+
+export async function isAdmin(
+  supabase: SupabaseClient,
+  userId: string
+): Promise<boolean> {
+  const { data } = await supabase
+    .from('profiles')
+    .select('is_admin')
+    .eq('id', userId)
+    .maybeSingle();
+  return Boolean(data?.is_admin);
+}
 
 /** Verified RC rep for this project's brand / legacy rc entity. */
 export async function isVerifiedRcRepForProject(
@@ -63,6 +78,26 @@ export async function isVerifiedRcRepForBrand(
   return Boolean(data);
 }
 
+/** Admin or verified RC rep for this project — skip moderation queue. */
+export async function shouldAutoApproveProjectAction(
+  supabase: SupabaseClient,
+  userId: string,
+  project: Pick<Project, 'brand_id' | 'rc_id'>
+): Promise<boolean> {
+  if (await isAdmin(supabase, userId)) return true;
+  return isVerifiedRcRepForProject(supabase, userId, project);
+}
+
+/** Admin or verified RC rep for this brand — skip moderation queue. */
+export async function shouldAutoApproveBrandAction(
+  supabase: SupabaseClient,
+  userId: string,
+  brandId: string
+): Promise<boolean> {
+  if (await isAdmin(supabase, userId)) return true;
+  return isVerifiedRcRepForBrand(supabase, userId, brandId);
+}
+
 export async function createSubmission(
   supabase: SupabaseClient,
   input: {
@@ -87,7 +122,6 @@ export async function createSubmission(
     .single();
 
   if (error || !data) {
-    // Table may not exist yet — don't block the main write
     console.error('createSubmission failed:', error?.message);
     if (error && /content_submissions|schema cache/i.test(error.message)) {
       return { id: 'legacy' };
@@ -107,6 +141,22 @@ export function statusLabel(status: ModerationStatus | null | undefined): string
   if (status === 'approved') return 'Approved';
   if (status === 'rejected') return 'Rejected';
   return 'Pending approval';
+}
+
+export function duplicateStatusBadgeClass(
+  status: 'pending' | 'resolved' | 'dismissed' | null | undefined
+): string {
+  if (status === 'resolved') return 'bg-secondary text-secondary-content border-0';
+  if (status === 'dismissed') return 'bg-neutral/30 text-neutral border-0';
+  return 'bg-copper text-white border-0';
+}
+
+export function duplicateStatusLabel(
+  status: 'pending' | 'resolved' | 'dismissed' | null | undefined
+): string {
+  if (status === 'resolved') return 'Resolved';
+  if (status === 'dismissed') return 'Dismissed';
+  return 'Pending review';
 }
 
 export type SubmissionListItem = ContentSubmission & {

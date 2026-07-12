@@ -53,6 +53,7 @@ export interface RcBrand {
   status: ModerationStatus | null;
   rejection_reason: string | null;
   added_by: string | null;
+  merged_into: string | null;
   created_at: string;
   updated_at: string;
   projects?: { count: number }[] | null;
@@ -120,6 +121,10 @@ export interface Project {
   notes: string | null;
   added_by: string | null;
   merged_into: string | null;
+  claimed_by: string | null;
+  claimed_at: string | null;
+  rc_verified_at: string | null;
+  rc_verified_by: string | null;
   created_at: string;
   updated_at: string;
   cover_image_id?: string | null;
@@ -167,6 +172,21 @@ export interface DuplicateReport {
   project_id: string;
   duplicate_of_id: string;
   reported_by: string;
+  created_at: string;
+}
+
+export type DuplicateReportStatus = 'pending' | 'resolved' | 'dismissed';
+
+export interface DuplicateReportGroup {
+  id: string;
+  entity_type: 'project' | 'rc_brand';
+  reported_entity_id: string;
+  duplicate_entity_ids: string[];
+  reported_by: string | null;
+  status: DuplicateReportStatus;
+  canonical_entity_id: string | null;
+  resolved_by: string | null;
+  resolved_at: string | null;
   created_at: string;
 }
 

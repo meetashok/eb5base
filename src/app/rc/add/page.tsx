@@ -6,8 +6,9 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import { useAuthPrompt } from '@/components/AuthPromptProvider';
 import { useToast } from '@/components/Toast';
-import { allocateUniqueSlug, slugify } from '@/lib/slugs';
-import { createSubmission } from '@/lib/approvals';
+import { allocateUniqueSlug, brandPath, slugify } from '@/lib/slugs';
+import { createSubmission, isAdmin } from '@/lib/approvals';
+import type { ModerationStatus } from '@/lib/types';
 
 export default function NewRcBrandPage() {
   const router = useRouter();
@@ -68,18 +69,21 @@ export default function NewRcBrandPage() {
       return Boolean(data);
     });
 
+    const {
+      data: { user: authUser },
+    } = await supabase.auth.getUser();
+    const uid = authUser?.id;
+    const autoApproveBrand = uid ? await isAdmin(supabase, uid) : false;
+
     const baseInsert = {
       name: name.trim(),
       website_url: website.trim() || null,
       description: description.trim() || null,
-      status: 'pending' as const,
+      status: (autoApproveBrand ? 'approved' : 'pending') as ModerationStatus,
       added_by: null as string | null,
     };
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (user) baseInsert.added_by = user.id;
+    if (authUser) baseInsert.added_by = authUser.id;
 
     let { data, error: insertError } = await supabase
       .from('rc_brands')
@@ -114,18 +118,23 @@ export default function NewRcBrandPage() {
       return;
     }
 
-    if (user) {
+    if (authUser && !autoApproveBrand) {
       await createSubmission(supabase, {
         entity_type: 'rc_brand',
         entity_id: data.id,
         action: 'create',
         payload: baseInsert,
-        submitted_by: user.id,
+        submitted_by: authUser.id,
       });
     }
 
-    toast('Submitted for approval. It will appear publicly once an admin reviews it.', 'success');
-    router.push('/profile?tab=submissions');
+    toast(
+      autoApproveBrand
+        ? 'Regional center published.'
+        : 'Submitted for approval. It will appear publicly once an admin reviews it.',
+      'success'
+    );
+    router.push(autoApproveBrand ? brandPath(data) : '/profile?tab=activity');
   }
 
   if (checkingAuth) {

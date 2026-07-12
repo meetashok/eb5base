@@ -14,7 +14,7 @@ import {
 import type { RcBrand } from '@/lib/types';
 import {
   createSubmission,
-  isVerifiedRcRepForBrand,
+  shouldAutoApproveBrandAction,
 } from '@/lib/approvals';
 
 export default function EditRcBrandPage() {
@@ -107,7 +107,7 @@ export default function EditRcBrandPage() {
       updated_at: new Date().toISOString(),
     };
 
-    const autoApprove = await isVerifiedRcRepForBrand(supabase, userId, brandId);
+    const autoApprove = await shouldAutoApproveBrandAction(supabase, userId, brandId);
 
     if (autoApprove) {
       let updateError = (
@@ -151,7 +151,7 @@ export default function EditRcBrandPage() {
     }
 
     toast('Edits submitted for approval', 'success');
-    router.push('/profile?tab=submissions');
+    router.push('/profile?tab=activity');
   }
 
   async function handleDelete() {

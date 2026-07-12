@@ -6,10 +6,14 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import { useToast } from '@/components/Toast';
 import PageHero from '@/components/PageHero';
+import AdminDuplicateQueue from '@/components/admin/AdminDuplicateQueue';
+import AdminRcVerifyQueue from '@/components/admin/AdminRcVerifyQueue';
 import { brandPath, projectPath } from '@/lib/slugs';
 import { statusBadgeClass, statusLabel } from '@/lib/approvals';
 import type { ContentSubmission, ModerationStatus } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
+
+type AdminTab = 'submissions' | 'duplicates' | 'rc-verify';
 
 interface QueueItem extends ContentSubmission {
   title: string;
@@ -19,11 +23,20 @@ interface QueueItem extends ContentSubmission {
 export default function AdminApprovalsPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const [tab, setTab] = useState<AdminTab>('submissions');
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState<QueueItem[]>([]);
   const [rejectId, setRejectId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
   const [acting, setActing] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const t = new URLSearchParams(window.location.search).get('tab');
+    if (t === 'submissions' || t === 'duplicates' || t === 'rc-verify') {
+      setTab(t);
+    }
+  }, []);
 
   async function loadQueue() {
     const supabase = createClient();
@@ -124,7 +137,6 @@ export default function AdminApprovalsPage() {
         return;
       }
     } else {
-      // Apply proposed payload to live entity
       const table = item.entity_type === 'project' ? 'projects' : 'rc_brands';
       const payload = { ...(item.payload || {}) };
       delete payload.status;
@@ -208,6 +220,12 @@ export default function AdminApprovalsPage() {
     return brandPath({ id: item.entity_id, slug: null });
   }
 
+  const adminTabs: { id: AdminTab; label: string }[] = [
+    { id: 'submissions', label: 'Submissions' },
+    { id: 'duplicates', label: 'Duplicate reports' },
+    { id: 'rc-verify', label: 'RC verification' },
+  ];
+
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-12">
@@ -221,109 +239,129 @@ export default function AdminApprovalsPage() {
     <div>
       <PageHero
         eyebrow="Moderation"
-        title="Approval queue"
-        subtitle="Review community submissions for projects and regional centers."
+        title="Admin queues"
+        subtitle="Review community submissions, duplicate reports, and RC representative verification."
       />
 
       <div className="max-w-4xl mx-auto px-4 py-10">
-      {items.length === 0 ? (
-        <div className="card-elevated text-center py-16 border-dashed border-2 border-base-300/60">
-          <p className="text-neutral/60">No pending submissions</p>
-        </div>
-      ) : (
-        <ul className="space-y-4">
-          {items.map((item) => (
-            <li key={item.id} className="card-elevated">
-              <div className="p-5 gap-3 flex flex-col">
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div>
-                    <h2 className="font-bold text-primary">{item.title}</h2>
-                    <p className="text-sm text-neutral/60 mt-1">
-                      {item.action === 'create' ? 'New' : 'Edit'}{' '}
-                      {item.entity_type === 'project' ? 'project' : 'regional center'}
-                      {' · '}
-                      by {item.submitter_name}
-                      {' · '}
-                      {formatDate(item.created_at)}
-                    </p>
-                  </div>
-                  <span className={`badge rounded-full ${statusBadgeClass(item.status)}`}>
-                    {statusLabel(item.status)}
-                  </span>
-                </div>
-
-                {item.action === 'update' && (
-                  <details className="text-sm">
-                    <summary className="cursor-pointer text-neutral/60">Proposed changes</summary>
-                    <pre className="mt-2 p-3 bg-base-200 rounded-lg overflow-auto text-xs">
-                      {JSON.stringify(item.payload, null, 2)}
-                    </pre>
-                  </details>
-                )}
-
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {itemHref(item) && (
-                    <Link href={itemHref(item)!} className="btn btn-ghost btn-sm rounded-full">
-                      View
-                    </Link>
-                  )}
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-sm rounded-full"
-                    disabled={acting}
-                    onClick={() => approve(item)}
-                  >
-                    Approve
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-outline btn-error btn-sm rounded-full"
-                    disabled={acting}
-                    onClick={() => {
-                      setRejectId(item.id);
-                      setRejectReason('');
-                    }}
-                  >
-                    Reject
-                  </button>
-                </div>
-
-                {rejectId === item.id && (
-                  <div className="mt-2 p-3 panel-copper space-y-2">
-                    <label className="form-control">
-                      <span className="label-text text-sm">Reason for rejection</span>
-                      <textarea
-                        className="textarea textarea-bordered textarea-sm"
-                        rows={2}
-                        value={rejectReason}
-                        onChange={(e) => setRejectReason(e.target.value)}
-                        placeholder="Explain what needs to change…"
-                      />
-                    </label>
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        className="btn btn-ghost btn-sm rounded-full"
-                        onClick={() => setRejectId(null)}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-error btn-sm rounded-full"
-                        disabled={acting}
-                        onClick={() => reject(item)}
-                      >
-                        Confirm reject
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </li>
+        <div className="tabs tabs-bordered mb-6 overflow-x-auto [&_.tab-active]:text-secondary [&_.tab-active]:border-secondary">
+          {adminTabs.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              className={`tab ${tab === t.id ? 'tab-active' : ''}`}
+              onClick={() => setTab(t.id)}
+            >
+              {t.label}
+            </button>
           ))}
-        </ul>
-      )}
+        </div>
+
+        {tab === 'submissions' && (
+          <>
+            {items.length === 0 ? (
+              <div className="card-elevated text-center py-16 border-dashed border-2 border-base-300/60">
+                <p className="text-neutral/60">No pending submissions</p>
+              </div>
+            ) : (
+              <ul className="space-y-4">
+                {items.map((item) => (
+                  <li key={item.id} className="card-elevated">
+                    <div className="p-5 gap-3 flex flex-col">
+                      <div className="flex flex-wrap items-start justify-between gap-2">
+                        <div>
+                          <h2 className="font-bold text-primary">{item.title}</h2>
+                          <p className="text-sm text-neutral/60 mt-1">
+                            {item.action === 'create' ? 'New' : 'Edit'}{' '}
+                            {item.entity_type === 'project' ? 'project' : 'regional center'}
+                            {' · '}
+                            by {item.submitter_name}
+                            {' · '}
+                            {formatDate(item.created_at)}
+                          </p>
+                        </div>
+                        <span className={`badge rounded-full ${statusBadgeClass(item.status)}`}>
+                          {statusLabel(item.status)}
+                        </span>
+                      </div>
+
+                      {item.action === 'update' && (
+                        <details className="text-sm">
+                          <summary className="cursor-pointer text-neutral/60">Proposed changes</summary>
+                          <pre className="mt-2 p-3 bg-base-200 rounded-lg overflow-auto text-xs">
+                            {JSON.stringify(item.payload, null, 2)}
+                          </pre>
+                        </details>
+                      )}
+
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {itemHref(item) && (
+                          <Link href={itemHref(item)!} className="btn btn-ghost btn-sm rounded-full">
+                            View
+                          </Link>
+                        )}
+                        <button
+                          type="button"
+                          className="btn btn-primary btn-sm rounded-full"
+                          disabled={acting}
+                          onClick={() => approve(item)}
+                        >
+                          Approve
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-outline btn-error btn-sm rounded-full"
+                          disabled={acting}
+                          onClick={() => {
+                            setRejectId(item.id);
+                            setRejectReason('');
+                          }}
+                        >
+                          Reject
+                        </button>
+                      </div>
+
+                      {rejectId === item.id && (
+                        <div className="mt-2 p-3 panel-copper space-y-2">
+                          <label className="form-control">
+                            <span className="label-text text-sm">Reason for rejection</span>
+                            <textarea
+                              className="textarea textarea-bordered textarea-sm"
+                              rows={2}
+                              value={rejectReason}
+                              onChange={(e) => setRejectReason(e.target.value)}
+                              placeholder="Explain what needs to change…"
+                            />
+                          </label>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              className="btn btn-ghost btn-sm rounded-full"
+                              onClick={() => setRejectId(null)}
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-error btn-sm rounded-full"
+                              disabled={acting}
+                              onClick={() => reject(item)}
+                            >
+                              Confirm reject
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
+        )}
+
+        {tab === 'duplicates' && <AdminDuplicateQueue />}
+        {tab === 'rc-verify' && <AdminRcVerifyQueue />}
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import { notFound, redirect } from 'next/navigation';
 import ProjectDetail from '@/components/ProjectDetail';
 import { createClient } from '@/lib/supabase-server';
-import { canEditProject, loadProjectByParam } from '@/lib/project-loader';
+import { canEditProject, canViewProject, loadProjectByParam } from '@/lib/project-loader';
 import {
   canManageProjectImagesServer,
   loadProjectImages,
@@ -27,6 +27,12 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
 
   if (project.merged_into) await redirectToMergedTarget(project.merged_into);
 
+  const supabase = createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id ?? null;
+
+  if (!(await canViewProject(project, userId))) notFound();
+
   // Prefer nested readable URL when brand + project slugs exist
   const nested = projectPath(project);
   if (nested.startsWith('/rc/') && nested !== `/projects/${params.id}`) {
@@ -38,18 +44,12 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
     redirect(`/projects/${project.slug}`);
   }
 
-  const supabase = createClient();
-  const [{ data: contacts }, { data: auth }] = await Promise.all([
+  const [{ data: contacts }, canEdit, images, canManageImages] = await Promise.all([
     supabase
       .from('project_contacts')
       .select('*')
       .eq('project_id', project.id)
       .order('created_at', { ascending: true }),
-    supabase.auth.getUser(),
-  ]);
-
-  const userId = auth.user?.id ?? null;
-  const [canEdit, images, canManageImages] = await Promise.all([
     canEditProject(project, userId),
     loadProjectImages(project.id),
     canManageProjectImagesServer(project, userId),

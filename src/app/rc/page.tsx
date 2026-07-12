@@ -23,6 +23,7 @@ async function loadBrands(): Promise<{ brands: BrandRow[]; error: string | null 
     .from('rc_brands')
     .select('*, projects!brand_id(count), regional_centers!brand_id(count)')
     .eq('status', 'approved')
+    .is('merged_into', null)
     .order('name');
 
   if (!withCounts.error && withCounts.data) {
@@ -34,13 +35,18 @@ async function loadBrands(): Promise<{ brands: BrandRow[]; error: string | null 
     const retry = await supabase
       .from('rc_brands')
       .select('*, projects!brand_id(count), regional_centers!brand_id(count)')
+      .is('merged_into', null)
       .order('name');
     if (!retry.error && retry.data) {
       return { brands: retry.data as BrandRow[], error: null };
     }
   }
 
-  const basic = await supabase.from('rc_brands').select('*').order('name');
+  const basic = await supabase
+    .from('rc_brands')
+    .select('*')
+    .is('merged_into', null)
+    .order('name');
   if (basic.error) {
     console.error('rc_brands list failed:', basic.error.message);
     return { brands: [], error: basic.error.message };
