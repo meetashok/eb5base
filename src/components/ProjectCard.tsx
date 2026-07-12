@@ -50,7 +50,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   const teaDesignations = project.tea_designations || [];
 
   return (
-    <div className="card-elevated group relative overflow-hidden">
+    <div className="card-elevated group relative overflow-hidden h-full flex flex-col">
       {coverUrl && (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -69,8 +69,8 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           />
         </>
       )}
-      <div className="card-body p-3 pb-3 gap-2 relative z-10">
-        <Link href={detailHref} className="block min-w-0">
+      <div className="card-body p-3 pb-3 gap-2 relative z-10 flex flex-col flex-1">
+        <Link href={detailHref} className="block min-w-0 flex-1">
           <h3 className="text-sm font-bold text-primary leading-snug line-clamp-2 group-hover:text-secondary transition-colors">
             {project.name}
           </h3>

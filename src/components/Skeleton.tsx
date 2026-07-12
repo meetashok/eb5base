@@ -6,8 +6,8 @@ export function Skeleton({ className = '' }: { className?: string }) {
 
 export function ProjectCardSkeleton() {
   return (
-    <div className="card-elevated animate-pulse">
-      <div className="card-body p-3 pb-3 gap-2">
+    <div className="card-elevated animate-pulse h-full flex flex-col">
+      <div className="card-body p-3 pb-3 gap-2 flex flex-col flex-1">
         <div className="h-4 bg-base-300 rounded w-full mb-1" />
         <div className="h-3 bg-base-300 rounded w-4/5" />
         <div className="h-5 bg-base-300 rounded-full w-20 mt-1.5" />
@@ -45,14 +45,14 @@ export function RCCardSkeleton() {
 export function AddProjectCTACard({ prominent = false }: { prominent?: boolean }) {
   return (
     <div
-      className={
+      className={`h-full flex flex-col ${
         prominent
           ? 'card-elevated border-2 border-accent/50 bg-gradient-to-br from-accent/25 via-copper/10 to-base-100 shadow-glow'
           : 'card-elevated border-dashed border-2 border-accent/30'
-      }
+      }`}
     >
-      <div className="card-body p-3 pb-3 gap-2">
-        <div className="min-w-0">
+      <div className="card-body p-3 pb-3 gap-2 flex flex-col flex-1">
+        <div className="min-w-0 flex-1">
           <div className="flex items-start gap-2">
             <div
               className={`rounded-full bg-accent/15 flex items-center justify-center shrink-0 ${
@@ -84,7 +84,7 @@ export function AddProjectCTACard({ prominent = false }: { prominent?: boolean }
             </div>
           </div>
         </div>
-        <div className="border-t border-base-200/70 pt-2 mt-1">
+        <div className="border-t border-base-200/70 pt-2 mt-1 shrink-0">
           <AddProjectLink
             className={`btn w-full rounded-full min-h-0 h-6 px-2 text-[10px] font-medium ${
               prominent

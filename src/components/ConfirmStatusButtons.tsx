@@ -331,7 +331,7 @@ export default function ConfirmStatusButtons({
 
   return (
     <div
-      className={isCard ? 'border-t border-base-200/70 pt-2 mt-1' : 'border-t border-base-200 pt-3 mt-3'}
+      className={isCard ? 'border-t border-base-200/70 pt-2 mt-1 shrink-0' : 'border-t border-base-200 pt-3 mt-3'}
       onClick={(e) => e.preventDefault()}
       onKeyDown={(e) => e.stopPropagation()}
     >
