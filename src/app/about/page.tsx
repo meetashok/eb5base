@@ -351,7 +351,7 @@ export default function AboutPage() {
               <p>
                 Ashok Kumar is an EB-5 investor and data scientist based in the Seattle area. He has
                 lived in the U.S. since 2015 and received conditional permanent residency through
-                the EB-5 program in September 2025.
+                the EB-5 program in 2025.
               </p>
               <p>
                 He has been active in EB-5 community groups for years. He built EB5 Base because
