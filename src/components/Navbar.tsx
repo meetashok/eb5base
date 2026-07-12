@@ -93,13 +93,16 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 bg-nav-gradient text-primary-content shadow-nav">
       <div className="navbar max-w-6xl mx-auto px-4 min-h-16">
         <div className="navbar-start">
-          <Link href="/" className="hover:opacity-90 transition-opacity">
+          <Link href="/" className="hover:opacity-90 transition-opacity inline-flex items-center gap-2">
             <Logo
               size={36}
               showWordmark
               wordmarkVariant="on-dark"
               wordmarkClassName="text-xl sm:text-[1.35rem]"
             />
+            <span className="badge badge-xs rounded-full border border-accent/50 bg-accent/15 text-accent font-semibold uppercase tracking-wider px-1.5 min-h-0 h-4 text-[9px]">
+              Beta
+            </span>
           </Link>
         </div>
 
