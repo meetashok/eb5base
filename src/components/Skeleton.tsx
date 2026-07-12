@@ -6,18 +6,20 @@ export function Skeleton({ className = '' }: { className?: string }) {
 
 export function ProjectCardSkeleton() {
   return (
-    <div className="card-elevated animate-pulse">
-      <div className="card-body p-3 gap-2">
-        <div className="flex justify-between gap-2 mb-1">
-          <div className="h-4 bg-base-300 rounded w-3/4" />
-          <div className="h-4 bg-base-300 rounded w-12" />
-        </div>
-        <div className="h-3 bg-base-300 rounded w-1/2" />
+    <div className="card-elevated animate-pulse h-full flex flex-col">
+      <div className="card-body p-3 pb-3 gap-2 flex flex-col flex-1">
+        <div className="h-4 bg-base-300 rounded w-full mb-1" />
+        <div className="h-3 bg-base-300 rounded w-4/5" />
+        <div className="h-5 bg-base-300 rounded-full w-20 mt-1.5" />
+        <div className="h-3 bg-base-300 rounded w-1/2 mt-1" />
         <div className="flex gap-1 mt-1.5">
-          <div className="h-5 bg-base-300 rounded-full w-12" />
-          <div className="h-5 bg-base-300 rounded-full w-16" />
+          <div className="h-5 bg-base-300 rounded-full w-12 border border-base-300/70" />
+          <div className="h-5 bg-base-300 rounded-full w-10 border border-base-300/70" />
         </div>
-        <div className="h-8 bg-base-300 rounded w-full mt-1" />
+        <div className="h-3 bg-base-300 rounded w-2/3 mt-1" />
+        <div className="border-t border-base-200/70 pt-2 mt-1">
+          <div className="h-6 bg-base-300 rounded w-full" />
+        </div>
       </div>
     </div>
   );
@@ -41,60 +43,58 @@ export function RCCardSkeleton() {
 }
 
 export function AddProjectCTACard({ prominent = false }: { prominent?: boolean }) {
-  if (prominent) {
-    return (
-      <div className="card-elevated border-2 border-secondary/40 bg-gradient-to-br from-secondary/15 via-secondary/5 to-base-100 h-full shadow-soft">
-        <div className="card-body items-center text-center p-5 py-10">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-10 h-10 text-secondary mb-2"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+  return (
+    <div
+      className={`h-full flex flex-col ${
+        prominent
+          ? 'card-elevated border-2 border-accent/50 bg-gradient-to-br from-accent/25 via-copper/10 to-base-100 shadow-glow'
+          : 'card-elevated border-dashed border-2 border-accent/30'
+      }`}
+    >
+      <div className="card-body p-3 pb-3 gap-2 flex flex-col flex-1">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start gap-2">
+            <div
+              className={`rounded-full bg-accent/15 flex items-center justify-center shrink-0 ${
+                prominent ? 'w-7 h-7' : 'w-6 h-6'
+              }`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className={prominent ? 'w-4 h-4 text-accent' : 'w-3.5 h-3.5 text-accent/70'}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <div className="min-w-0">
+              <h3 className="text-sm font-bold text-primary leading-snug">
+                Know an EB-5 project?
+              </h3>
+              <p className="text-xs text-neutral/60 mt-0.5 leading-snug">
+                Help fellow investors by adding it to the directory
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="border-t border-base-200/70 pt-2 mt-1 shrink-0">
+          <AddProjectLink
+            className={`btn w-full rounded-full min-h-0 h-6 px-2 text-[10px] font-medium ${
+              prominent
+                ? 'btn-accent text-accent-content shadow-soft'
+                : 'btn-outline border-accent/40 text-primary'
+            }`}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          <h3 className="text-base font-bold text-primary">Know an EB-5 project?</h3>
-          <p className="text-sm text-neutral/60 mt-1 max-w-xs">
-            Help fellow investors by adding it to the directory
-          </p>
-          <AddProjectLink className="btn btn-secondary text-secondary-content btn-sm mt-4 rounded-full shadow-soft">
             Add a Project
           </AddProjectLink>
         </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="card-elevated border-dashed border-2 border-secondary/25 h-full">
-      <div className="card-body items-center text-center p-4 py-8">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-8 h-8 text-secondary/40 mb-1.5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1.5}
-            d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        <h3 className="text-sm font-semibold text-neutral/70">Know an EB-5 project?</h3>
-        <p className="text-xs text-neutral/50 mt-0.5">
-          Help fellow investors by adding it to the directory
-        </p>
-        <AddProjectLink className="btn btn-outline btn-secondary btn-xs mt-2">
-          Add a Project
-        </AddProjectLink>
       </div>
     </div>
   );

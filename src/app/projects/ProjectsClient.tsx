@@ -55,6 +55,20 @@ const FILTER_CHIP_LABELS: Record<string, string> = {
   approved: 'I-956F Approved',
 };
 
+function hasActiveSearchOrFilters(filters: ProjectFilters): boolean {
+  return Boolean(
+    filters.q ||
+      filters.tea ||
+      filters.f956 ||
+      filters.subscription ||
+      filters.type ||
+      filters.state ||
+      filters.amount ||
+      filters.rc ||
+      filters.filter
+  );
+}
+
 export default function ProjectsClient({
   projects,
   total,
@@ -65,7 +79,8 @@ export default function ProjectsClient({
 }: ProjectsClientProps) {
   const router = useRouter();
   const ctaProminent = directoryTotal < CTA_CARD_PROMINENT_UNTIL;
-  const showCta = ctaProminent || projects.length < 3;
+  const showCta =
+    !hasActiveSearchOrFilters(filters) && (ctaProminent || projects.length < 3);
 
   const activeChips = useMemo(() => {
     const chips: { key: string; value: string; label: string }[] = [];
@@ -228,7 +243,7 @@ export default function ProjectsClient({
           </AddProjectLink>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 items-stretch">
           {ctaProminent && showCta && <AddProjectCTACard prominent />}
           {projects.map((p) => (
             <ProjectCard key={p.id} project={p} />

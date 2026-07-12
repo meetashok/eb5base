@@ -29,7 +29,7 @@ function SectionHeading({
   return (
     <div className={className}>
       <p
-        className={`text-xs uppercase tracking-widest font-semibold mb-2 ${eyebrowClassName} ${
+        className={`text-xs uppercase tracking-[0.22em] font-semibold mb-2 ${eyebrowClassName} ${
           centered ? 'text-center' : ''
         }`}
       >
@@ -352,10 +352,11 @@ export default function AboutPage() {
               <p>
                 Ashok Kumar is an EB-5 investor and data scientist based in the Seattle area. He has
                 lived in the U.S. since 2015 and received conditional permanent residency through
-                the EB-5 program in September 2025.
+                the EB-5 program in 2025.
               </p>
               <p>
-                He has been active in EB-5 community groups for years. He built EB5 Base because
+                EB-5 community groups were an invaluable resource throughout his immigration
+                journey, and he remains an active contributor. He built EB5 Base because
                 the lack of reliable project information is a problem he saw firsthand: tips passed
                 through word-of-mouth, scattered across groups, and gone as soon as the
                 conversation moves on.

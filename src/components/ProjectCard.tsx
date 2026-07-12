@@ -14,12 +14,14 @@ import {
   formatConfirmations7d,
   formatOpenPct7d,
 } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 
 interface ProjectCardProps {
   project: ProjectWithVotes;
 }
 
 const compactBadge = 'text-[10px] px-2 py-0 min-h-0 h-5 font-medium';
+const subtleTeaBadge = cn(compactBadge, 'font-medium');
 
 export default function ProjectCard({ project }: ProjectCardProps) {
   const location = [project.location_city, project.location_state].filter(Boolean).join(', ');
@@ -35,8 +37,20 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   const openPctLine = formatOpenPct7d(project.open_pct_7d);
   const detailHref = projectPath(project);
 
+  const consensusMeta =
+    confirmations7d > 0 && consensus
+      ? [
+          formatConfirmations7d(confirmations7d),
+          openPctLine,
+          `Community says ${consensus7dLabel(consensus).toLowerCase()}`,
+        ]
+          .filter(Boolean)
+          .join(' · ')
+      : null;
+  const teaDesignations = project.tea_designations || [];
+
   return (
-    <div className="card-elevated h-full relative overflow-hidden">
+    <div className="card-elevated group relative overflow-hidden h-full flex flex-col">
       {coverUrl && (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -55,39 +69,28 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           />
         </>
       )}
-      <div className="card-body p-3 gap-2 relative z-10">
-        <Link href={detailHref} className="block group">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0 flex-1">
-              <h3 className="text-sm font-bold text-primary leading-snug line-clamp-2 group-hover:text-secondary transition-colors">
-                {project.name}
-              </h3>
-              {brandName && (
-                <p className="text-xs font-semibold text-secondary truncate mt-0.5">{brandName}</p>
-              )}
-              {location && (
-                <p className="text-xs text-neutral/60 truncate mt-0.5">{location}</p>
-              )}
-            </div>
+      <div className="card-body p-3 pb-3 gap-2 relative z-10 flex flex-col flex-1">
+        <Link href={detailHref} className="block min-w-0 flex-1">
+          <h3 className="text-sm font-bold text-primary leading-snug line-clamp-2 group-hover:text-secondary transition-colors">
+            {project.name}
+          </h3>
+          {brandName && (
+            <p className="text-xs font-medium text-neutral/70 line-clamp-2 mt-0.5">{brandName}</p>
+          )}
 
-            {confirmations7d > 0 && consensus && (
-              <div className="text-right shrink-0 leading-tight">
-                <p
-                  className={`text-xs font-bold ${
-                    consensus === 'open' ? 'text-secondary' : 'text-error'
-                  }`}
-                >
-                  {consensus7dLabel(consensus)}
-                </p>
-                <p className="text-[10px] text-neutral/50 mt-0.5">
-                  {formatConfirmations7d(confirmations7d)}
-                </p>
-                {openPctLine && (
-                  <p className="text-[10px] text-neutral/50">{openPctLine}</p>
-                )}
-              </div>
-            )}
-          </div>
+          {project.f956_status && (
+            <div className="mt-1.5">
+              <StatusBadge
+                label={`956F ${f956Label(project.f956_status)}`}
+                variant={f956Variant(project.f956_status)}
+                className={compactBadge}
+              />
+            </div>
+          )}
+
+          {location && (
+            <p className="text-xs text-neutral/50 truncate mt-1">{location}</p>
+          )}
 
           {project.total_slots != null && project.total_slots > 0 && (
             <p className="text-[11px] text-neutral/50 mt-0.5">
@@ -95,18 +98,22 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             </p>
           )}
 
-          <div className="flex flex-wrap gap-1 mt-1.5">
-            {(project.tea_designations || []).map((tea) => (
-              <TEATag key={tea} designation={tea} className={compactBadge} />
-            ))}
-            {project.f956_status && (
-              <StatusBadge
-                label={`956F ${f956Label(project.f956_status)}`}
-                variant={f956Variant(project.f956_status)}
-                className={compactBadge}
-              />
-            )}
-          </div>
+          {teaDesignations.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-1.5">
+              {teaDesignations.map((tea) => (
+                <TEATag
+                  key={tea}
+                  designation={tea}
+                  variant="subtle"
+                  className={subtleTeaBadge}
+                />
+              ))}
+            </div>
+          )}
+
+          {consensusMeta && (
+            <p className="text-[11px] text-neutral/50 mt-1.5 leading-snug">{consensusMeta}</p>
+          )}
         </Link>
 
         <ConfirmStatusButtons

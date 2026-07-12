@@ -183,8 +183,8 @@ export default async function RCBrandDetailPage({ params }: { params: { slug: st
             </ul>
           </div>
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-            <div>
-              <p className="page-hero-eyebrow mb-2">Regional Center</p>
+            <div className="page-hero-copy min-w-0">
+              <p className="page-hero-eyebrow">Regional Center</p>
               <h1 className="page-hero-title">{brand.name}</h1>
               {brand.website_url && (
                 <a
@@ -274,7 +274,7 @@ export default async function RCBrandDetailPage({ params }: { params: { slug: st
             </AddProjectLink>
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 items-stretch">
             {(verified.length > 0 ? verified : list).map((p) => (
               <ProjectCard key={p.id} project={p} />
             ))}
