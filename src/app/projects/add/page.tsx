@@ -18,7 +18,7 @@ import {
   TEA_OPTIONS,
   US_STATES,
 } from '@/lib/constants';
-import type { F956Status, SubscriptionStatus } from '@/lib/types';
+import type { F956Status, ModerationStatus, SubscriptionStatus } from '@/lib/types';
 import {
   formatCurrency,
   f956Label,
@@ -30,7 +30,7 @@ import {
 import { allocateUniqueSlug, projectPath, slugify } from '@/lib/slugs';
 import { uploadProjectImage } from '@/lib/project-images';
 import { useToast } from '@/components/Toast';
-import { createSubmission } from '@/lib/approvals';
+import { createSubmission, shouldAutoApproveProjectAction, isAdmin } from '@/lib/approvals';
 
 interface ContactDraft {
   name: string;
@@ -167,6 +167,9 @@ export default function NewProjectForm() {
 
     if (existing?.id) return existing.id;
 
+    const adminUser = await isAdmin(supabase, userId!);
+    const brandStatus = adminUser ? 'approved' : 'pending';
+
     const { data: created, error: createError } = await supabase
       .from('rc_brands')
       .insert({
@@ -179,7 +182,7 @@ export default function NewProjectForm() {
             .maybeSingle();
           return Boolean(data);
         }),
-        status: 'pending',
+        status: brandStatus,
         added_by: userId,
       })
       .select('id')
@@ -189,13 +192,15 @@ export default function NewProjectForm() {
       throw new Error(createError?.message || 'Failed to create regional center');
     }
 
-    await createSubmission(supabase, {
-      entity_type: 'rc_brand',
-      entity_id: created.id,
-      action: 'create',
-      payload: { name: nameToCreate },
-      submitted_by: userId!,
-    });
+    if (!adminUser) {
+      await createSubmission(supabase, {
+        entity_type: 'rc_brand',
+        entity_id: created.id,
+        action: 'create',
+        payload: { name: nameToCreate },
+        submitted_by: userId!,
+      });
+    }
 
     return created.id;
   }
@@ -267,6 +272,11 @@ export default function NewProjectForm() {
         return Boolean(data);
       });
 
+      const autoApprove = await shouldAutoApproveProjectAction(supabase, userId, {
+        brand_id: brandId,
+        rc_id: null,
+      });
+
       const payload = {
         name: name.trim(),
         slug: projectSlug,
@@ -283,7 +293,7 @@ export default function NewProjectForm() {
         website_url: website.trim() || null,
         notes: notes.trim() || null,
         added_by: userId,
-        status: 'pending' as const,
+        status: (autoApprove ? 'approved' : 'pending') as ModerationStatus,
       };
 
       const { data: project, error: insertError } = await supabase
@@ -312,13 +322,15 @@ export default function NewProjectForm() {
         );
       }
 
-      await createSubmission(supabase, {
-        entity_type: 'project',
-        entity_id: project.id,
-        action: 'create',
-        payload,
-        submitted_by: userId,
-      });
+      if (!autoApprove) {
+        await createSubmission(supabase, {
+          entity_type: 'project',
+          entity_id: project.id,
+          action: 'create',
+          payload,
+          submitted_by: userId,
+        });
+      }
 
       if (coverFile && canUploadImages) {
         const { error: imageError } = await uploadProjectImage(project.id, coverFile);
@@ -327,8 +339,13 @@ export default function NewProjectForm() {
         }
       }
 
-      toast('Submitted for approval. It will appear publicly once an admin reviews it.', 'success');
-      router.push('/profile?tab=submissions');
+      toast(
+        autoApprove
+          ? 'Project published.'
+          : 'Submitted for approval. It will appear publicly once an admin reviews it.',
+        'success'
+      );
+      router.push(autoApprove ? projectPath(project) : '/profile?tab=activity');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to submit');
       toast(err instanceof Error ? err.message : 'Failed to submit', 'error');

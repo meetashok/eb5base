@@ -109,6 +109,30 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse;
   }
 
+  if (pathname.startsWith('/admin')) {
+    const { data: adminProfile } = await supabase
+      .from('profiles')
+      .select('is_admin, profile_completed')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (!adminProfile?.profile_completed) {
+      const setupUrl = request.nextUrl.clone();
+      setupUrl.pathname = '/profile/setup';
+      setupUrl.search = '';
+      return NextResponse.redirect(setupUrl);
+    }
+
+    if (!adminProfile?.is_admin) {
+      const profileUrl = request.nextUrl.clone();
+      profileUrl.pathname = '/profile';
+      profileUrl.search = '';
+      return NextResponse.redirect(profileUrl);
+    }
+
+    return supabaseResponse;
+  }
+
   const { data: profile } = await supabase
     .from('profiles')
     .select('profile_completed')

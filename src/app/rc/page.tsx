@@ -4,6 +4,7 @@ import BrandsClient from './BrandsClient';
 import { createClient } from '@/lib/supabase-server';
 import type { RcBrand } from '@/lib/types';
 import { ensureSlugsForBrands } from '@/lib/ensure-slugs';
+import { isMissingRcBrandMergedInto } from '@/lib/schema-compat';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,34 +20,55 @@ type BrandRow = RcBrand & {
 async function loadBrands(): Promise<{ brands: BrandRow[]; error: string | null }> {
   const supabase = createClient();
 
-  const withCounts = await supabase
-    .from('rc_brands')
-    .select('*, projects!brand_id(count), regional_centers!brand_id(count)')
-    .eq('status', 'approved')
-    .order('name');
-
-  if (!withCounts.error && withCounts.data) {
-    return { brands: withCounts.data as BrandRow[], error: null };
+  async function withCounts(filterMerged: boolean, approvedOnly: boolean) {
+    let query = supabase
+      .from('rc_brands')
+      .select('*, projects!brand_id(count), regional_centers!brand_id(count)');
+    if (approvedOnly) query = query.eq('status', 'approved');
+    if (filterMerged) query = query.is('merged_into', null);
+    return query.order('name');
   }
 
-  if (withCounts.error) {
-    console.error('rc_brands list (with counts) failed:', withCounts.error.message);
-    const retry = await supabase
-      .from('rc_brands')
-      .select('*, projects!brand_id(count), regional_centers!brand_id(count)')
-      .order('name');
+  async function basic(filterMerged: boolean) {
+    let query = supabase.from('rc_brands').select('*');
+    if (filterMerged) query = query.is('merged_into', null);
+    return query.order('name');
+  }
+
+  let filterMerged = true;
+  let withCountsRes = await withCounts(filterMerged, true);
+
+  if (withCountsRes.error && isMissingRcBrandMergedInto(withCountsRes.error.message)) {
+    filterMerged = false;
+    withCountsRes = await withCounts(false, true);
+  }
+
+  if (!withCountsRes.error && withCountsRes.data) {
+    return { brands: withCountsRes.data as BrandRow[], error: null };
+  }
+
+  if (withCountsRes.error) {
+    console.error('rc_brands list (with counts) failed:', withCountsRes.error.message);
+    let retry = await withCounts(filterMerged, false);
+    if (retry.error && isMissingRcBrandMergedInto(retry.error.message)) {
+      filterMerged = false;
+      retry = await withCounts(false, false);
+    }
     if (!retry.error && retry.data) {
       return { brands: retry.data as BrandRow[], error: null };
     }
   }
 
-  const basic = await supabase.from('rc_brands').select('*').order('name');
-  if (basic.error) {
-    console.error('rc_brands list failed:', basic.error.message);
-    return { brands: [], error: basic.error.message };
+  let basicRes = await basic(filterMerged);
+  if (basicRes.error && isMissingRcBrandMergedInto(basicRes.error.message)) {
+    basicRes = await basic(false);
+  }
+  if (basicRes.error) {
+    console.error('rc_brands list failed:', basicRes.error.message);
+    return { brands: [], error: basicRes.error.message };
   }
 
-  return { brands: (basic.data as BrandRow[]) || [], error: null };
+  return { brands: (basicRes.data as BrandRow[]) || [], error: null };
 }
 
 export default async function RCBrandsPage() {

@@ -3,24 +3,23 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase';
 import { useAuthPrompt } from '@/components/AuthPromptProvider';
-import type { Project } from '@/lib/types';
-import { PROJECT_SELECT } from '@/lib/types';
-import { projectBrandName } from '@/lib/types';
+import { isMissingRcBrandMergedInto } from '@/lib/schema-compat';
+import type { RcBrand } from '@/lib/types';
 
-interface ReportDuplicateButtonProps {
-  projectId: string;
+interface ReportRcDuplicateButtonProps {
+  brandId: string;
   userId: string | null;
 }
 
-export default function ReportDuplicateButton({
-  projectId,
+export default function ReportRcDuplicateButton({
+  brandId,
   userId,
-}: ReportDuplicateButtonProps) {
+}: ReportRcDuplicateButtonProps) {
   const { promptSignIn } = useAuthPrompt();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<Project[]>([]);
-  const [selected, setSelected] = useState<Project[]>([]);
+  const [results, setResults] = useState<RcBrand[]>([]);
+  const [selected, setSelected] = useState<RcBrand[]>([]);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -31,36 +30,44 @@ export default function ReportDuplicateButton({
     }
     const t = setTimeout(async () => {
       const supabase = createClient();
-      const { data } = await supabase
-        .from('projects')
-        .select(PROJECT_SELECT)
+      let res = await supabase
+        .from('rc_brands')
+        .select('id, name, slug')
         .is('merged_into', null)
-        .neq('id', projectId)
+        .neq('id', brandId)
         .ilike('name', `%${query.trim()}%`)
         .limit(8);
-      setResults((data as Project[]) || []);
+      if (res.error && isMissingRcBrandMergedInto(res.error.message)) {
+        res = await supabase
+          .from('rc_brands')
+          .select('id, name, slug')
+          .neq('id', brandId)
+          .ilike('name', `%${query.trim()}%`)
+          .limit(8);
+      }
+      setResults((res.data as RcBrand[]) || []);
     }, 250);
     return () => clearTimeout(t);
-  }, [query, projectId]);
+  }, [query, brandId]);
 
-  function toggleSelect(p: Project) {
+  function toggleSelect(b: RcBrand) {
     setSelected((prev) =>
-      prev.some((x) => x.id === p.id) ? prev.filter((x) => x.id !== p.id) : [...prev, p]
+      prev.some((x) => x.id === b.id) ? prev.filter((x) => x.id !== b.id) : [...prev, b]
     );
   }
 
   async function submit() {
     if (!userId) {
-      promptSignIn(`/projects/${projectId}`);
+      promptSignIn(`/rc/${brandId}`);
       return;
     }
     if (selected.length === 0) return;
     setSaving(true);
     const supabase = createClient();
     const { error } = await supabase.from('duplicate_report_groups').insert({
-      entity_type: 'project',
-      reported_entity_id: projectId,
-      duplicate_entity_ids: selected.map((p) => p.id),
+      entity_type: 'rc_brand',
+      reported_entity_id: brandId,
+      duplicate_entity_ids: selected.map((b) => b.id),
       reported_by: userId,
       status: 'pending',
     });
@@ -79,10 +86,10 @@ export default function ReportDuplicateButton({
     <>
       <button
         type="button"
-        className="text-meta text-neutral/50 hover:text-secondary transition-all duration-150"
+        className="text-meta text-neutral/50 hover:text-copper transition-all duration-150"
         onClick={() => {
           if (!userId) {
-            promptSignIn(`/projects/${projectId}`);
+            promptSignIn(`/rc/${brandId}`);
             return;
           }
           setOpen(true);
@@ -95,14 +102,14 @@ export default function ReportDuplicateButton({
       {open && (
         <dialog className="modal modal-open">
           <div className="modal-box max-w-lg">
-            <h3 className="font-bold text-lg text-primary">Report duplicate</h3>
+            <h3 className="font-bold text-lg text-primary">Report duplicate RC</h3>
             <p className="text-sm text-neutral/70 py-2">
-              Search and select one or more projects this listing duplicates.
+              Select regional center listings that duplicate this one.
             </p>
             <input
               type="search"
               className="input input-bordered w-full"
-              placeholder="Search projects…"
+              placeholder="Search regional centers…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -114,14 +121,11 @@ export default function ReportDuplicateButton({
                     <button
                       type="button"
                       className={`w-full text-left px-3 py-2 rounded-lg transition-all duration-150 ${
-                        isSelected ? 'bg-primary text-primary-content' : 'hover:bg-base-200'
+                        isSelected ? 'bg-copper text-white' : 'hover:bg-base-200'
                       }`}
                       onClick={() => toggleSelect(r)}
                     >
                       <span className="font-medium">{r.name}</span>
-                      <span className="block text-meta opacity-70">
-                        {[projectBrandName(r), r.location_state].filter(Boolean).join(' · ')}
-                      </span>
                     </button>
                   </li>
                 );
@@ -129,7 +133,7 @@ export default function ReportDuplicateButton({
             </ul>
             {selected.length > 0 && (
               <p className="text-meta text-neutral/60 mt-2">
-                {selected.length} project{selected.length === 1 ? '' : 's'} selected
+                {selected.length} listing{selected.length === 1 ? '' : 's'} selected
               </p>
             )}
             <div className="modal-action">

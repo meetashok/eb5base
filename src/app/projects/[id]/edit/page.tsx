@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { FormEvent, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
@@ -24,6 +25,7 @@ import { useToast } from '@/components/Toast';
 import {
   createSubmission,
   isVerifiedRcRepForProject,
+  shouldAutoApproveProjectAction,
 } from '@/lib/approvals';
 
 export default function EditProjectPage() {
@@ -57,6 +59,9 @@ export default function EditProjectPage() {
   const [notes, setNotes] = useState('');
   const [existingSlug, setExistingSlug] = useState<string | null>(null);
   const [canManageImages, setCanManageImages] = useState(false);
+  const [canEdit, setCanEdit] = useState(true);
+  const [canDelete, setCanDelete] = useState(false);
+  const [rcVerified, setRcVerified] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -145,12 +150,18 @@ export default function EditProjectPage() {
       setAmount(p.investment_amount != null ? String(p.investment_amount) : '');
       setTotalSlots(p.total_slots != null ? String(p.total_slots) : '');
       setNotes(p.notes || '');
+      setRcVerified(Boolean(p.rc_verified_at));
 
-      const [{ data: profile }, verifiedRc] = await Promise.all([
-        supabase.from('profiles').select('is_admin').eq('id', auth.user.id).maybeSingle(),
-        isVerifiedRcRepForProject(supabase, auth.user.id, p),
-      ]);
+      const [{ data: profile }, verifiedRc, autoApprove, verifiedRcForDelete] =
+        await Promise.all([
+          supabase.from('profiles').select('is_admin').eq('id', auth.user.id).maybeSingle(),
+          isVerifiedRcRepForProject(supabase, auth.user.id, p),
+          shouldAutoApproveProjectAction(supabase, auth.user.id, p),
+          isVerifiedRcRepForProject(supabase, auth.user.id, p),
+        ]);
       setCanManageImages(Boolean(profile?.is_admin) || verifiedRc);
+      setCanEdit(autoApprove || !p.rc_verified_at);
+      setCanDelete(Boolean(profile?.is_admin) || verifiedRcForDelete);
 
       setLoading(false);
     })();
@@ -245,7 +256,7 @@ export default function EditProjectPage() {
         notes: notes.trim() || null,
       };
 
-      const autoApprove = await isVerifiedRcRepForProject(supabase, userId, {
+      const autoApprove = await shouldAutoApproveProjectAction(supabase, userId, {
         brand_id: brandId,
         rc_id: existingRcId,
       });
@@ -303,7 +314,7 @@ export default function EditProjectPage() {
 
       setPendingNotice(true);
       toast('Edits submitted for approval', 'success');
-      router.push('/profile?tab=submissions');
+      router.push('/profile?tab=activity');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save');
       setSaving(false);
@@ -311,7 +322,11 @@ export default function EditProjectPage() {
   }
 
   async function handleDelete() {
-    if (!projectId) return;
+    if (!projectId || !userId) return;
+    if (!canDelete) {
+      toast('Only admins or verified RC representatives can delete projects', 'error');
+      return;
+    }
     setDeleting(true);
     setError(null);
     const supabase = createClient();
@@ -355,12 +370,36 @@ export default function EditProjectPage() {
     );
   }
 
+  if (!canEdit) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-12">
+        <h1 className="text-2xl font-bold text-primary mb-2">Edit Project</h1>
+        <div className="alert-heritage-info text-sm px-4 py-3 space-y-2">
+          <p>
+            This project has been verified by a regional center representative. Community edit
+            suggestions are no longer accepted.
+          </p>
+          <p className="text-neutral/60">
+            You can still confirm subscription status or report duplicates from the project page.
+          </p>
+        </div>
+        <Link
+          href={projectId ? `/projects/${existingSlug || projectId}` : '/projects'}
+          className="btn btn-ghost rounded-full mt-4"
+        >
+          Back to project
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold text-primary mb-2">Edit Project</h1>
       <p className="text-sm text-neutral/60 mb-6">
-        Changes are reviewed by an admin before going live, unless you are a verified
+        Changes are reviewed by an admin before going live, unless you are an admin or verified
         regional center representative for this project.
+        {rcVerified && ' This listing is RC verified.'}
       </p>
       {pendingNotice && (
         <div className="alert-heritage-info mb-4 text-sm px-4 py-3">
@@ -560,7 +599,7 @@ export default function EditProjectPage() {
           <button
             type="button"
             className="btn btn-outline btn-error rounded-full ml-auto"
-            disabled={saving || deleting}
+            disabled={saving || deleting || !canDelete}
             onClick={() => setConfirmDelete(true)}
           >
             Delete

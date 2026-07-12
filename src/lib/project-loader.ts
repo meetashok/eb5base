@@ -3,6 +3,11 @@ import type { Project } from '@/lib/types';
 import { PROJECT_SELECT, PROJECT_SELECT_LEGACY } from '@/lib/types';
 import { ensureBrandSlug, ensureProjectSlug } from '@/lib/ensure-slugs';
 import { isUuid, slugify } from '@/lib/slugs';
+import {
+  isAdmin,
+  isVerifiedRcRepForProject,
+  shouldAutoApproveProjectAction,
+} from '@/lib/approvals';
 
 const DETAIL_SELECT = `${PROJECT_SELECT}, profiles!added_by(display_name, avatar_url)`;
 const DETAIL_SELECT_LEGACY = `${PROJECT_SELECT_LEGACY}, profiles!added_by(display_name, avatar_url)`;
@@ -168,11 +173,39 @@ export async function loadNestedProject(
   return null;
 }
 
+export async function canViewProject(
+  project: Project,
+  userId: string | null
+): Promise<boolean> {
+  if (!project.status || project.status === 'approved') return true;
+  if (!userId) return false;
+  const supabase = createClient();
+  if (await isAdmin(supabase, userId)) return true;
+  if (project.added_by === userId) return true;
+  if (project.status === 'pending' || project.status === 'rejected') {
+    return project.added_by === userId;
+  }
+  return false;
+}
+
 export async function canEditProject(
   project: Project,
   userId: string | null
 ): Promise<boolean> {
-  // Community directory: any signed-in user can edit (matches brands UPDATE policy).
-  // Seeded rows often have added_by = null, so owner-only checks hid the button.
-  return Boolean(userId);
+  if (!userId) return false;
+  const supabase = createClient();
+  const autoApprove = await shouldAutoApproveProjectAction(supabase, userId, project);
+  if (autoApprove) return true;
+  if (project.rc_verified_at) return false;
+  return true;
+}
+
+export async function canDeleteProject(
+  project: Project,
+  userId: string | null
+): Promise<boolean> {
+  if (!userId) return false;
+  const supabase = createClient();
+  if (await isAdmin(supabase, userId)) return true;
+  return isVerifiedRcRepForProject(supabase, userId, project);
 }

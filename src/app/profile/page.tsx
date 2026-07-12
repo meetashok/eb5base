@@ -10,6 +10,7 @@ import { ROLE_BADGE_LABELS } from '@/lib/constants';
 import { findCountry } from '@/lib/countries';
 import type {
   ContentSubmission,
+  DuplicateReportGroup,
   Profile,
   Project,
   ProjectVote,
@@ -19,9 +20,14 @@ import type {
 import { PROJECT_SELECT } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
 import { brandPath, projectEditPath, projectPath } from '@/lib/slugs';
-import { statusBadgeClass, statusLabel } from '@/lib/approvals';
+import {
+  duplicateStatusBadgeClass,
+  duplicateStatusLabel,
+  statusBadgeClass,
+  statusLabel,
+} from '@/lib/approvals';
 
-type Tab = 'confirmations' | 'projects' | 'submissions' | 'settings';
+type Tab = 'confirmations' | 'projects' | 'activity' | 'settings';
 
 interface ConfirmationRow extends ProjectVote {
   projects?: {
@@ -35,6 +41,26 @@ interface ConfirmationRow extends ProjectVote {
 
 interface SubmissionRow extends ContentSubmission {
   title: string;
+}
+
+interface DuplicateReportRow extends DuplicateReportGroup {
+  title: string;
+  duplicate_titles: string[];
+}
+
+type ActivityKind = 'submission' | 'duplicate' | 'brand';
+
+interface ActivityRow {
+  id: string;
+  kind: ActivityKind;
+  title: string;
+  subtitle: string;
+  status: string | null;
+  statusClass: string;
+  statusText: string;
+  created_at: string;
+  rejection_reason?: string | null;
+  href?: string | null;
 }
 
 function CheckIcon({ className }: { className?: string }) {
@@ -63,6 +89,8 @@ export default function ProfilePage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [brands, setBrands] = useState<RcBrand[]>([]);
   const [submissions, setSubmissions] = useState<SubmissionRow[]>([]);
+  const [duplicateReports, setDuplicateReports] = useState<DuplicateReportRow[]>([]);
+  const [claimedProjects, setClaimedProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingName, setEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState('');
@@ -74,10 +102,11 @@ export default function ProfilePage() {
     if (
       t === 'confirmations' ||
       t === 'projects' ||
+      t === 'activity' ||
       t === 'submissions' ||
       t === 'settings'
     ) {
-      setTab(t);
+      setTab(t === 'submissions' ? 'activity' : (t as Tab));
     }
   }, []);
 
@@ -96,6 +125,8 @@ export default function ProfilePage() {
         { data: membership },
         brandsRes,
         subsRes,
+        dupRes,
+        claimedRes,
       ] = await Promise.all([
         supabase.from('profiles').select('*').eq('id', auth.user.id).single(),
         supabase
@@ -125,6 +156,17 @@ export default function ProfilePage() {
           .select('*')
           .eq('submitted_by', auth.user.id)
           .order('created_at', { ascending: false }),
+        supabase
+          .from('duplicate_report_groups')
+          .select('*')
+          .eq('reported_by', auth.user.id)
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('projects')
+          .select(PROJECT_SELECT)
+          .eq('claimed_by', auth.user.id)
+          .is('merged_into', null)
+          .order('claimed_at', { ascending: false }),
       ]);
       setProfile(p);
       setNameDraft(p?.display_name || '');
@@ -150,6 +192,33 @@ export default function ProfilePage() {
         enriched.push({ ...s, title });
       }
       setSubmissions(enriched);
+      setClaimedProjects((claimedRes.data as Project[]) || []);
+
+      const dupRows = dupRes.error ? [] : ((dupRes.data as DuplicateReportGroup[]) || []);
+      const enrichedDups: DuplicateReportRow[] = [];
+      for (const d of dupRows) {
+        const table = d.entity_type === 'project' ? 'projects' : 'rc_brands';
+        const { data: reported } = await supabase
+          .from(table)
+          .select('name')
+          .eq('id', d.reported_entity_id)
+          .maybeSingle();
+        const duplicateTitles: string[] = [];
+        for (const dupId of d.duplicate_entity_ids || []) {
+          const { data: dup } = await supabase
+            .from(table)
+            .select('name')
+            .eq('id', dupId)
+            .maybeSingle();
+          if (dup?.name) duplicateTitles.push(dup.name);
+        }
+        enrichedDups.push({
+          ...d,
+          title: reported?.name || d.reported_entity_id.slice(0, 8),
+          duplicate_titles: duplicateTitles,
+        });
+      }
+      setDuplicateReports(enrichedDups);
       setLoading(false);
     })();
   }, [router]);
@@ -157,9 +226,74 @@ export default function ProfilePage() {
   const tabs: { id: Tab; label: string }[] = [
     { id: 'confirmations', label: 'My Confirmations' },
     { id: 'projects', label: 'My Projects' },
-    { id: 'submissions', label: 'My Submissions' },
+    { id: 'activity', label: 'My Activity' },
     { id: 'settings', label: 'Settings' },
   ];
+
+  const activityRows = useMemo((): ActivityRow[] => {
+    const rows: ActivityRow[] = [];
+
+    for (const s of submissions) {
+      rows.push({
+        id: `sub-${s.id}`,
+        kind: 'submission',
+        title: s.title,
+        subtitle: `${s.action === 'create' ? 'Created' : 'Edited'} ${
+          s.entity_type === 'project' ? 'project' : 'regional center'
+        }`,
+        status: s.status,
+        statusClass: statusBadgeClass(s.status),
+        statusText: statusLabel(s.status),
+        created_at: s.created_at,
+        rejection_reason: s.rejection_reason,
+        href:
+          s.entity_type === 'project'
+            ? projectPath({ id: s.entity_id, slug: null })
+            : brandPath({ id: s.entity_id, slug: null }),
+      });
+    }
+
+    for (const b of brands) {
+      if (submissions.some((s) => s.entity_type === 'rc_brand' && s.entity_id === b.id)) {
+        continue;
+      }
+      rows.push({
+        id: `brand-${b.id}`,
+        kind: 'brand',
+        title: b.name,
+        subtitle: 'Regional center',
+        status: b.status,
+        statusClass: statusBadgeClass(b.status),
+        statusText: statusLabel(b.status),
+        created_at: b.created_at,
+        rejection_reason: b.rejection_reason,
+        href: brandPath(b),
+      });
+    }
+
+    for (const d of duplicateReports) {
+      rows.push({
+        id: `dup-${d.id}`,
+        kind: 'duplicate',
+        title: d.title,
+        subtitle: `Duplicate report${
+          d.duplicate_titles.length ? `: ${d.duplicate_titles.join(', ')}` : ''
+        } · ${d.entity_type === 'project' ? 'Project' : 'Regional center'}`,
+        status: d.status,
+        statusClass: duplicateStatusBadgeClass(d.status),
+        statusText: duplicateStatusLabel(d.status),
+        created_at: d.created_at,
+        href:
+          d.entity_type === 'project'
+            ? projectPath({ id: d.reported_entity_id, slug: null })
+            : brandPath({ id: d.reported_entity_id, slug: null }),
+      });
+    }
+
+    return rows.sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+  }, [submissions, brands, duplicateReports]);
 
   const confirmationsByMonth = useMemo(() => {
     const groups = new Map<string, ConfirmationRow[]>();
@@ -413,109 +547,125 @@ export default function ProfilePage() {
       )}
 
       {tab === 'projects' && (
-        <ul className="space-y-2">
-          {projects.length === 0 ? (
-            <p className="text-neutral/60">
-              No projects yet.{' '}
-              <AddProjectLink className="link link-secondary">
-                Add one
-              </AddProjectLink>
-              .
-            </p>
-          ) : (
-            projects.map((p) => (
-              <li
-                key={p.id}
-                className="flex flex-wrap items-center justify-between gap-2 border-b border-base-300 py-3"
-              >
-                <div>
-                  <Link href={projectPath(p)} className="link link-secondary font-medium">
-                    {p.name}
-                  </Link>
-                  <div className="flex flex-wrap items-center gap-2 mt-1">
-                    <span className={`badge badge-sm rounded-full ${statusBadgeClass(p.status)}`}>
-                      {statusLabel(p.status)}
-                    </span>
-                    <p className="text-meta text-neutral/50">Added {formatDate(p.created_at)}</p>
-                  </div>
-                  {p.status === 'rejected' && p.rejection_reason && (
-                    <p className="text-sm text-error mt-1">Reason: {p.rejection_reason}</p>
-                  )}
-                </div>
-                <Link
-                  href={projectEditPath(p)}
-                  className="btn btn-outline btn-sm transition-all duration-150"
+        <div className="space-y-8">
+          <ul className="space-y-2">
+            {projects.length === 0 ? (
+              <p className="text-neutral/60">
+                No projects yet.{' '}
+                <AddProjectLink className="link link-secondary">
+                  Add one
+                </AddProjectLink>
+                .
+              </p>
+            ) : (
+              projects.map((p) => (
+                <li
+                  key={p.id}
+                  className="flex flex-wrap items-center justify-between gap-2 border-b border-base-300 py-3"
                 >
-                  Edit
-                </Link>
-              </li>
-            ))
+                  <div>
+                    <Link href={projectPath(p)} className="link link-secondary font-medium">
+                      {p.name}
+                    </Link>
+                    <div className="flex flex-wrap items-center gap-2 mt-1">
+                      <span className={`badge badge-sm rounded-full ${statusBadgeClass(p.status)}`}>
+                        {statusLabel(p.status)}
+                      </span>
+                      {p.rc_verified_at && (
+                        <span className="badge badge-sm bg-secondary/15 text-secondary border border-secondary/30 rounded-full">
+                          RC verified
+                        </span>
+                      )}
+                      <p className="text-meta text-neutral/50">Added {formatDate(p.created_at)}</p>
+                    </div>
+                    {p.status === 'rejected' && p.rejection_reason && (
+                      <p className="text-sm text-error mt-1">Reason: {p.rejection_reason}</p>
+                    )}
+                  </div>
+                  <Link
+                    href={projectEditPath(p)}
+                    className="btn btn-outline btn-sm transition-all duration-150"
+                  >
+                    Edit
+                  </Link>
+                </li>
+              ))
+            )}
+          </ul>
+
+          {claimedProjects.length > 0 && (
+            <div>
+              <h3 className="font-semibold text-primary mb-3">Projects I&apos;ve claimed</h3>
+              <ul className="space-y-2">
+                {claimedProjects.map((p) => (
+                  <li
+                    key={`claimed-${p.id}`}
+                    className="flex flex-wrap items-center justify-between gap-2 border-b border-base-300 py-3"
+                  >
+                    <div>
+                      <Link href={projectPath(p)} className="link link-secondary font-medium">
+                        {p.name}
+                      </Link>
+                      <p className="text-meta text-neutral/50 mt-1">
+                        Claimed {p.claimed_at ? formatDate(p.claimed_at) : '—'}
+                      </p>
+                    </div>
+                    <Link
+                      href={projectEditPath(p)}
+                      className="btn btn-outline btn-sm transition-all duration-150"
+                    >
+                      Edit
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
-        </ul>
+        </div>
       )}
 
-      {tab === 'submissions' && (
+      {tab === 'activity' && (
         <ul className="space-y-2">
-          {submissions.length === 0 && brands.length === 0 ? (
+          {activityRows.length === 0 ? (
             <p className="text-neutral/60">
-              No submissions yet. When you add or edit a project or regional center, it will
-              show up here for review.
+              No activity yet. When you add or edit a project, report a duplicate, or submit a
+              regional center, it will show up here.
             </p>
           ) : (
-            <>
-              {submissions.map((s) => (
-                <li
-                  key={s.id}
-                  className="border-b border-base-300 py-3 space-y-1"
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                      <p className="font-medium text-primary">{s.title}</p>
-                      <p className="text-meta text-neutral/50">
-                        {s.action === 'create' ? 'Created' : 'Edited'}{' '}
-                        {s.entity_type === 'project' ? 'project' : 'regional center'}
-                        {' · '}
-                        {formatDate(s.created_at)}
-                      </p>
-                    </div>
-                    <span className={`badge badge-sm rounded-full ${statusBadgeClass(s.status)}`}>
-                      {statusLabel(s.status)}
-                    </span>
-                  </div>
-                  {s.status === 'rejected' && s.rejection_reason && (
-                    <p className="text-sm text-error">Reason: {s.rejection_reason}</p>
-                  )}
-                  {s.status === 'pending' && (
-                    <p className="text-sm text-neutral/50">
-                      Waiting for an admin to review your submission.
-                    </p>
-                  )}
-                </li>
-              ))}
-              {brands.map((b) => (
-                <li
-                  key={`brand-${b.id}`}
-                  className="border-b border-base-300 py-3 space-y-1"
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                      <Link href={brandPath(b)} className="font-medium link link-secondary">
-                        {b.name}
+            activityRows.map((row) => (
+              <li key={row.id} className="border-b border-base-300 py-3 space-y-1">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    {row.href ? (
+                      <Link href={row.href} className="font-medium link link-secondary">
+                        {row.title}
                       </Link>
-                      <p className="text-meta text-neutral/50">
-                        Regional center · {formatDate(b.created_at)}
-                      </p>
-                    </div>
-                    <span className={`badge badge-sm rounded-full ${statusBadgeClass(b.status)}`}>
-                      {statusLabel(b.status)}
-                    </span>
+                    ) : (
+                      <p className="font-medium text-primary">{row.title}</p>
+                    )}
+                    <p className="text-meta text-neutral/50">
+                      {row.subtitle} · {formatDate(row.created_at)}
+                    </p>
                   </div>
-                  {b.status === 'rejected' && b.rejection_reason && (
-                    <p className="text-sm text-error">Reason: {b.rejection_reason}</p>
-                  )}
-                </li>
-              ))}
-            </>
+                  <span className={`badge badge-sm rounded-full ${row.statusClass}`}>
+                    {row.statusText}
+                  </span>
+                </div>
+                {row.rejection_reason && (
+                  <p className="text-sm text-error">Reason: {row.rejection_reason}</p>
+                )}
+                {row.kind !== 'duplicate' && row.status === 'pending' && (
+                  <p className="text-sm text-neutral/50">
+                    Waiting for an admin to review your submission.
+                  </p>
+                )}
+                {row.kind === 'duplicate' && row.status === 'pending' && (
+                  <p className="text-sm text-neutral/50">
+                    An admin will review this duplicate report.
+                  </p>
+                )}
+              </li>
+            ))
           )}
         </ul>
       )}

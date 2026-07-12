@@ -5,6 +5,7 @@ import StatusBadge from '@/components/StatusBadge';
 import ConfirmationWidget from '@/components/ConfirmationWidget';
 import ProjectGallery from '@/components/ProjectGallery';
 import ReportDuplicateButton from '@/app/projects/[id]/ReportDuplicateButton';
+import RcVerifiedBadge from '@/components/RcVerifiedBadge';
 import type { Project, ProjectContact, ProjectImage, Profile } from '@/lib/types';
 import { brandPath, projectEditPath } from '@/lib/slugs';
 import {
@@ -78,7 +79,10 @@ export default function ProjectDetail({
           <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
             <div>
               <p className="hero-eyebrow text-accent mb-2">Project</p>
-              <h1 className="text-3xl font-bold">{p.name}</h1>
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <h1 className="text-3xl font-bold">{p.name}</h1>
+                {p.rc_verified_at && <RcVerifiedBadge />}
+              </div>
               <div className="flex flex-wrap gap-1.5 mt-4">
                 {(p.tea_designations || []).map((tea) => (
                   <TEATag key={tea} designation={tea} />

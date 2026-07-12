@@ -2,8 +2,11 @@ import Link from 'next/link';
 import { AddProjectLink } from '@/components/AuthGatedLinks';
 import { notFound, redirect } from 'next/navigation';
 import ProjectCard from '@/components/ProjectCard';
+import ClaimProjectButton from '@/components/ClaimProjectButton';
+import ReportRcDuplicateButton from '@/components/ReportRcDuplicateButton';
 import { createClient } from '@/lib/supabase-server';
-import { brandEditPath, brandPath, isUuid, slugify } from '@/lib/slugs';
+import { isVerifiedRcRepForBrand } from '@/lib/approvals';
+import { brandEditPath, brandPath, isUuid, projectPath, slugify } from '@/lib/slugs';
 import { ensureBrandSlug, ensureSlugsForProjects } from '@/lib/ensure-slugs';
 import type {
   ProjectWithVotes,
@@ -66,6 +69,17 @@ async function resolveBrand(param: string): Promise<RcBrand | null> {
   }
 
   if (!brand) return null;
+
+  if (brand.merged_into) {
+    const { data: canonical } = await supabase
+      .from('rc_brands')
+      .select('*')
+      .eq('id', brand.merged_into)
+      .maybeSingle();
+    if (canonical) {
+      brand = canonical as RcBrand;
+    }
+  }
 
   brand.slug = await ensureBrandSlug(brand);
   return brand;
@@ -146,6 +160,13 @@ export default async function RCBrandDetailPage({ params }: { params: { slug: st
     data: { user },
   } = await supabase.auth.getUser();
 
+  const userId = user?.id ?? null;
+  const canClaim =
+    userId != null && (await isVerifiedRcRepForBrand(supabase, userId, brandId));
+
+  const claimable = list.filter((p) => !p.rc_verified_at);
+  const verified = list.filter((p) => p.rc_verified_at);
+
   return (
     <div>
       <section className="page-hero">
@@ -180,12 +201,15 @@ export default async function RCBrandDetailPage({ params }: { params: { slug: st
               )}
             </div>
             {user && (
-              <Link
-                href={brandEditPath(brand)}
-                className="btn btn-outline btn-sm border-primary/30 text-primary hover:bg-primary/5 rounded-full shrink-0"
-              >
-                Edit
-              </Link>
+              <div className="flex flex-wrap items-center gap-2 shrink-0">
+                <ReportRcDuplicateButton brandId={brandId} userId={userId} />
+                <Link
+                  href={brandEditPath(brand)}
+                  className="btn btn-outline btn-sm border-primary/30 text-primary hover:bg-primary/5 rounded-full"
+                >
+                  Edit
+                </Link>
+              </div>
             )}
           </div>
         </div>
@@ -214,9 +238,35 @@ export default async function RCBrandDetailPage({ params }: { params: { slug: st
         </div>
       )}
 
+      {canClaim && claimable.length > 0 && (
+        <div className="mb-8 panel-copper p-5 space-y-4">
+          <div>
+            <h2 className="text-lg font-bold text-primary">Available to claim</h2>
+            <p className="text-sm text-neutral/60 mt-1">
+              Review these projects and confirm details to publish them with an RC verified badge.
+            </p>
+          </div>
+          <ul className="space-y-3">
+            {claimable.map((p) => (
+              <li
+                key={p.id}
+                className="flex flex-wrap items-center justify-between gap-3 border-b border-base-300/60 pb-3 last:border-0 last:pb-0"
+              >
+                <Link href={projectPath(p)} className="link link-secondary font-medium">
+                  {p.name}
+                </Link>
+                <ClaimProjectButton project={p} userId={userId!} canClaim={canClaim} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <div className="mb-8">
-        <h2 className="text-xl font-bold text-primary mb-4">Projects ({list.length})</h2>
-        {list.length === 0 ? (
+        <h2 className="text-xl font-bold text-primary mb-4">
+          Projects ({verified.length > 0 ? verified.length : list.length})
+        </h2>
+        {(verified.length > 0 ? verified : list).length === 0 ? (
           <p className="text-neutral/50 text-sm">
             No projects listed yet.{' '}
             <AddProjectLink className="link link-secondary">
@@ -225,7 +275,7 @@ export default async function RCBrandDetailPage({ params }: { params: { slug: st
           </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {list.map((p) => (
+            {(verified.length > 0 ? verified : list).map((p) => (
               <ProjectCard key={p.id} project={p} />
             ))}
           </div>
