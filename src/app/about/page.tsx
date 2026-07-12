@@ -354,7 +354,8 @@ export default function AboutPage() {
                 the EB-5 program in 2025.
               </p>
               <p>
-                He has been active in EB-5 community groups for years. He built EB5 Base because
+                EB-5 community groups were an invaluable resource throughout his immigration
+                journey, and he remains an active contributor. He built EB5 Base because
                 the lack of reliable project information is a problem he saw firsthand: tips passed
                 through word-of-mouth, scattered across groups, and gone as soon as the
                 conversation moves on.
