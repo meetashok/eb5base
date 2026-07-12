@@ -226,7 +226,7 @@ export default function ProfilePage() {
                 {(profile.display_name || profile.email || 'U').charAt(0).toUpperCase()}
               </div>
             )}
-            <div className="flex-1 space-y-2 w-full">
+            <div className="flex-1 page-hero-copy w-full min-w-0">
               <p className="page-hero-eyebrow">Your profile</p>
               {editingName ? (
                 <input

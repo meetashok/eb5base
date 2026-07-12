@@ -76,8 +76,8 @@ export default function ProjectDetail({
       <section className="card-elevated overflow-hidden mb-8">
         <div className="bg-page-hero-gradient text-primary-content px-6 py-8 md:px-8">
           <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-            <div>
-              <p className="hero-eyebrow text-accent mb-2">Project</p>
+            <div className="page-hero-copy min-w-0">
+              <p className="hero-eyebrow text-accent">Project</p>
               <h1 className="text-3xl font-bold">{p.name}</h1>
               <div className="flex flex-wrap gap-1.5 mt-4">
                 {(p.tea_designations || []).map((tea) => (

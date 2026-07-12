@@ -156,6 +156,24 @@ body {
     @apply text-xs uppercase tracking-[0.22em] font-semibold text-secondary;
   }
 
+  .page-hero-copy {
+    @apply flex flex-col items-start gap-2 min-w-0;
+  }
+
+  .page-hero-copy .page-hero-eyebrow,
+  .page-hero-copy .hero-eyebrow {
+    @apply mb-0;
+    margin-right: -0.22em;
+  }
+
+  .page-hero-copy .page-hero-title {
+    @apply leading-tight;
+  }
+
+  .page-hero-copy .page-hero-subtitle {
+    @apply mt-0;
+  }
+
   .panel-copper {
     @apply bg-panel-copper border border-copper/20 rounded-2xl;
   }

@@ -29,7 +29,7 @@ function SectionHeading({
   return (
     <div className={className}>
       <p
-        className={`text-xs uppercase tracking-widest font-semibold mb-2 ${eyebrowClassName} ${
+        className={`text-xs uppercase tracking-[0.22em] font-semibold mb-2 ${eyebrowClassName} ${
           centered ? 'text-center' : ''
         }`}
       >

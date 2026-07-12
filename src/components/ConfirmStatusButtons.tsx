@@ -10,6 +10,28 @@ import { useAuthPrompt } from './AuthPromptProvider';
 const REPROMPT_DAYS = 3;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const DAILY_LIMIT = 1;
+const DISMISS_KEY_PREFIX = 'eb5base:confirm-dismiss:';
+
+function dismissStorageKey(projectId: string): string {
+  return `${DISMISS_KEY_PREFIX}${projectId}`;
+}
+
+function isConfirmDismissed(projectId: string): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    return sessionStorage.getItem(dismissStorageKey(projectId)) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function dismissConfirmPrompt(projectId: string): void {
+  try {
+    sessionStorage.setItem(dismissStorageKey(projectId), '1');
+  } catch {
+    // ignore quota / private mode
+  }
+}
 
 interface ConfirmStatusButtonsProps {
   projectId: string;
@@ -54,10 +76,15 @@ export default function ConfirmStatusButtons({
   const [thanks, setThanks] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [localCount, setLocalCount] = useState(confirmationCount);
+  const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
     setLocalCount(confirmationCount);
   }, [confirmationCount]);
+
+  useEffect(() => {
+    setDismissed(isConfirmDismissed(projectId));
+  }, [projectId]);
 
   const refreshUserState = useCallback(async () => {
     const supabase = createClient();
@@ -171,6 +198,11 @@ export default function ConfirmStatusButtons({
     void insertConfirmation(status);
   }
 
+  function handleNotSure() {
+    dismissConfirmPrompt(projectId);
+    setDismissed(true);
+  }
+
   function handleReprompt(confirmed: boolean) {
     if (!lastStatus || (lastStatus !== 'open' && lastStatus !== 'closed')) return;
     const prior = lastStatus as 'open' | 'closed';
@@ -185,7 +217,7 @@ export default function ConfirmStatusButtons({
     return (
       <div
         className={
-          isCard ? 'skeleton-shimmer h-8 w-full mt-1' : 'skeleton-shimmer h-16 w-full mt-3'
+          isCard ? 'skeleton-shimmer h-7 w-full border-t border-base-200/70 pt-2 mt-1' : 'skeleton-shimmer h-16 w-full mt-3'
         }
       />
     );
@@ -205,6 +237,13 @@ export default function ConfirmStatusButtons({
 
   const showDetailThanks = !isCard && showThanks && !rateLimited;
 
+  const isDefaultPrompt =
+    !showCardThanks && !showDetailThanks && !needsReprompt && !rateLimited;
+
+  if (isCard && dismissed && isDefaultPrompt) {
+    return null;
+  }
+
   const openBtnClass = isCard
     ? `h-6 min-h-0 px-2 text-[10px] font-medium gap-1 rounded-md border border-secondary/40 text-secondary hover:bg-secondary/10 inline-flex items-center justify-center transition-colors ${
         pendingStatus === 'open' && userId ? 'bg-secondary/15 border-secondary' : ''
@@ -222,6 +261,72 @@ export default function ConfirmStatusButtons({
       }`;
 
   const repromptLabel = lastStatus === 'open' ? 'open' : 'closed';
+
+  function renderActionButtons(includeQuestion: boolean) {
+    return (
+      <div className={isCard ? 'space-y-1' : 'space-y-2'}>
+        {includeQuestion && (
+          <p
+            className={
+              isCard ? 'text-[10px] text-neutral/50 leading-tight' : 'text-sm text-neutral/60'
+            }
+          >
+            {isCard ? 'Open for subscriptions?' : 'Is this project open for subscriptions?'}
+          </p>
+        )}
+        <div className={`flex flex-wrap items-center ${isCard ? 'gap-1' : 'gap-2'}`}>
+          <button
+            type="button"
+            className={openBtnClass}
+            onClick={() => chooseStatus('open')}
+            disabled={saving}
+          >
+            <span className={`${iconBox} inline-flex items-center justify-center shrink-0`}>
+              <svg className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.5}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </span>
+            <span>Open</span>
+          </button>
+          <button
+            type="button"
+            className={closedBtnClass}
+            onClick={() => chooseStatus('closed')}
+            disabled={saving}
+          >
+            <span className={`${iconBox} inline-flex items-center justify-center shrink-0`}>
+              <svg className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.5}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </span>
+            <span>Closed</span>
+          </button>
+          <button
+            type="button"
+            className={
+              isCard
+                ? 'text-[10px] text-neutral/45 hover:text-neutral/70 px-1 min-h-6'
+                : 'btn btn-ghost btn-sm text-neutral/60'
+            }
+            onClick={handleNotSure}
+            disabled={saving}
+          >
+            Not sure
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -282,54 +387,27 @@ export default function ConfirmStatusButtons({
             </>
           )}
         </p>
-      ) : (
-        <div className={isCard ? 'space-y-1' : 'space-y-2'}>
-          <p
-            className={
-              isCard ? 'text-[10px] text-neutral/50 leading-tight' : 'text-sm text-neutral/60'
-            }
-          >
-            {isCard ? 'Open for subscriptions?' : 'Is this project open for subscriptions?'}
+      ) : isCard ? (
+        <>
+          {/* Desktop: collapsed hint until card hover/focus */}
+          <p className="hidden md:block md:group-hover:hidden md:group-focus-within:hidden text-[10px] text-neutral/50 leading-tight">
+            {!userId ? (
+              <button type="button" className="link link-neutral" onClick={() => promptSignIn()}>
+                Sign in to confirm status
+              </button>
+            ) : (
+              'Confirm subscription status?'
+            )}
           </p>
-          <div className={`flex ${isCard ? 'gap-1' : 'gap-2'}`}>
-            <button
-              type="button"
-              className={openBtnClass}
-              onClick={() => chooseStatus('open')}
-              disabled={saving}
-            >
-              <span className={`${iconBox} inline-flex items-center justify-center shrink-0`}>
-                <svg className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2.5}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </span>
-              <span>Open</span>
-            </button>
-            <button
-              type="button"
-              className={closedBtnClass}
-              onClick={() => chooseStatus('closed')}
-              disabled={saving}
-            >
-              <span className={`${iconBox} inline-flex items-center justify-center shrink-0`}>
-                <svg className="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2.5}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </span>
-              <span>Closed</span>
-            </button>
+          {/* Mobile: always show actions */}
+          <div className="flex md:hidden">{renderActionButtons(false)}</div>
+          {/* Desktop: show actions on card hover/focus */}
+          <div className="hidden md:group-hover:block md:group-focus-within:block">
+            {renderActionButtons(false)}
           </div>
-        </div>
+        </>
+      ) : (
+        renderActionButtons(true)
       )}
 
       {!userId && !rateLimited && !showDetailThanks && !isCard && (
