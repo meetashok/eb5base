@@ -42,62 +42,58 @@ export function RCCardSkeleton() {
 }
 
 export function AddProjectCTACard({ prominent = false }: { prominent?: boolean }) {
-  if (prominent) {
-    return (
-      <div className="card-elevated border-2 border-accent/50 bg-gradient-to-br from-accent/25 via-copper/10 to-base-100 shadow-glow">
-        <div className="card-body items-center text-center p-5 py-10">
-          <div className="w-12 h-12 rounded-full bg-accent/15 flex items-center justify-center mb-3">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-7 h-7 text-accent"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+  return (
+    <div
+      className={
+        prominent
+          ? 'card-elevated border-2 border-accent/50 bg-gradient-to-br from-accent/25 via-copper/10 to-base-100 shadow-glow'
+          : 'card-elevated border-dashed border-2 border-accent/30'
+      }
+    >
+      <div className="card-body p-3 pb-3 gap-2">
+        <div className="min-w-0">
+          <div className="flex items-start gap-2">
+            <div
+              className={`rounded-full bg-accent/15 flex items-center justify-center shrink-0 ${
+                prominent ? 'w-7 h-7' : 'w-6 h-6'
+              }`}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className={prominent ? 'w-4 h-4 text-accent' : 'w-3.5 h-3.5 text-accent/70'}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <div className="min-w-0">
+              <h3 className="text-sm font-bold text-primary leading-snug">
+                Know an EB-5 project?
+              </h3>
+              <p className="text-xs text-neutral/60 mt-0.5 leading-snug">
+                Help fellow investors by adding it to the directory
+              </p>
+            </div>
           </div>
-          <h3 className="text-base font-bold text-primary">Know an EB-5 project?</h3>
-          <p className="text-sm text-neutral/60 mt-1 max-w-xs">
-            Help fellow investors by adding it to the directory
-          </p>
-          <AddProjectLink className="btn btn-accent text-accent-content btn-sm mt-4 rounded-full shadow-soft">
+        </div>
+        <div className="border-t border-base-200/70 pt-2 mt-1">
+          <AddProjectLink
+            className={`btn w-full rounded-full min-h-0 h-6 px-2 text-[10px] font-medium ${
+              prominent
+                ? 'btn-accent text-accent-content shadow-soft'
+                : 'btn-outline border-accent/40 text-primary'
+            }`}
+          >
             Add a Project
           </AddProjectLink>
         </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="card-elevated border-dashed border-2 border-accent/30">
-      <div className="card-body items-center text-center p-4 py-8">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-8 h-8 text-accent/50 mb-1.5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1.5}
-            d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        <h3 className="text-sm font-semibold text-neutral/70">Know an EB-5 project?</h3>
-        <p className="text-xs text-neutral/50 mt-0.5">
-          Help fellow investors by adding it to the directory
-        </p>
-        <AddProjectLink className="btn btn-outline border-accent/40 text-primary btn-xs mt-2 rounded-full">
-          Add a Project
-        </AddProjectLink>
       </div>
     </div>
   );

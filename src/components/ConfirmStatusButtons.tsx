@@ -11,6 +11,7 @@ const REPROMPT_DAYS = 3;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const DAILY_LIMIT = 1;
 const DISMISS_KEY_PREFIX = 'eb5base:confirm-dismiss:';
+const CARD_INVESTOR_PROMPT = 'Is this project accepting new investors?';
 
 function dismissStorageKey(projectId: string): string {
   return `${DISMISS_KEY_PREFIX}${projectId}`;
@@ -271,7 +272,7 @@ export default function ConfirmStatusButtons({
               isCard ? 'text-[10px] text-neutral/50 leading-tight' : 'text-sm text-neutral/60'
             }
           >
-            {isCard ? 'Open for subscriptions?' : 'Is this project open for subscriptions?'}
+            {isCard ? CARD_INVESTOR_PROMPT : 'Is this project accepting new investors?'}
           </p>
         )}
         <div className={`flex flex-wrap items-center ${isCard ? 'gap-1' : 'gap-2'}`}>
@@ -389,21 +390,16 @@ export default function ConfirmStatusButtons({
         </p>
       ) : isCard ? (
         <>
-          {/* Desktop: collapsed hint until card hover/focus */}
-          <p className="hidden md:block md:group-hover:hidden md:group-focus-within:hidden text-[10px] text-neutral/50 leading-tight">
-            {!userId ? (
-              <button type="button" className="link link-neutral" onClick={() => promptSignIn()}>
-                Sign in to confirm status
-              </button>
-            ) : (
-              'Confirm subscription status?'
-            )}
-          </p>
           {/* Mobile: always show actions */}
           <div className="flex md:hidden">{renderActionButtons(false)}</div>
-          {/* Desktop: show actions on card hover/focus */}
-          <div className="hidden md:group-hover:block md:group-focus-within:block">
-            {renderActionButtons(false)}
+          {/* Desktop: fixed-height slot — prompt fades out, actions fade in on hover */}
+          <div className="hidden md:block relative h-6">
+            <p className="absolute inset-0 flex items-center text-[10px] text-neutral/50 leading-tight transition-opacity duration-150 group-hover:opacity-0 group-focus-within:opacity-0 pointer-events-none">
+              {CARD_INVESTOR_PROMPT}
+            </p>
+            <div className="absolute inset-0 flex items-center opacity-0 invisible pointer-events-none transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100 group-hover:visible group-focus-within:visible group-hover:pointer-events-auto group-focus-within:pointer-events-auto">
+              {renderActionButtons(false)}
+            </div>
           </div>
         </>
       ) : (
