@@ -42,8 +42,8 @@ export default function PrivacyPage() {
           </p>
           <p>
             <strong className="text-neutral">Profile information.</strong> You may provide a display
-            name, role (such as investor, RC representative, attorney, or agent), optional country of
-            birth, profile visibility preferences, and email notification settings.
+            name, role (such as investor, RC representative, attorney, or agent), profile visibility
+            preferences, and email notification settings.
           </p>
           <p>
             <strong className="text-neutral">Community contributions.</strong> We collect information
@@ -73,8 +73,8 @@ export default function PrivacyPage() {
 
         <Section title="What is public vs. private">
           <p>
-            <strong className="text-neutral">Generally private:</strong> Your email address, country
-            of birth, and account settings are not shown publicly on the directory.
+            <strong className="text-neutral">Generally private:</strong> Your email address and
+            account settings are not shown publicly on the directory.
           </p>
           <p>
             <strong className="text-neutral">May be public:</strong> Depending on your settings and

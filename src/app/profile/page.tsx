@@ -4,11 +4,9 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
-import CountrySelect from '@/components/CountrySelect';
 import RolePicker from '@/components/profile/RolePicker';
 import RcVerificationPanel, { type BrandPick } from '@/components/profile/RcVerificationPanel';
 import { ROLE_BADGE_LABELS } from '@/lib/constants';
-import { findCountry } from '@/lib/countries';
 import { applyRoleChange } from '@/lib/profile-role';
 import type { InvestorStage, Profile, RcMembership, UserRole } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
@@ -473,21 +471,6 @@ export default function ProfilePage() {
               </label>
             </fieldset>
           )}
-
-          <div className="form-control max-w-xs">
-            <label className="label py-1">
-              <span className="label-text text-meta">Country of birth</span>
-            </label>
-            <CountrySelect
-              value={findCountry(profile.country_of_birth)?.code || profile.country_of_birth}
-              onChange={(country) => {
-                const next = country?.code || null;
-                if (next !== profile.country_of_birth) {
-                  saveProfile({ country_of_birth: next });
-                }
-              }}
-            />
-          </div>
 
           <label className="flex items-center gap-2 cursor-pointer text-sm">
             <input

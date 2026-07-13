@@ -4,10 +4,8 @@ import { useEffect, useState } from 'react';
 import { BrandWordmark } from '@/components/Logo';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
-import CountrySelect from '@/components/CountrySelect';
 import RolePicker from '@/components/profile/RolePicker';
 import RcVerificationPanel, { type BrandPick } from '@/components/profile/RcVerificationPanel';
-import { findCountry } from '@/lib/countries';
 import { applyRoleChange } from '@/lib/profile-role';
 import type { InvestorStage, UserRole } from '@/lib/types';
 
@@ -46,7 +44,6 @@ export default function ProfileSetupPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [displayName, setDisplayName] = useState('');
-  const [countryOfBirth, setCountryOfBirth] = useState<string | null>(null);
   const [role, setRole] = useState<UserRole | null>(null);
   const [investorStage, setInvestorStage] = useState<InvestorStage | null>(null);
   const [loading, setLoading] = useState(true);
@@ -82,10 +79,6 @@ export default function ProfileSetupPage() {
       }
 
       setDisplayName(profile?.display_name || metaName);
-      if (profile?.country_of_birth) {
-        const match = findCountry(profile.country_of_birth);
-        setCountryOfBirth(match?.code || profile.country_of_birth);
-      }
       if (profile?.investor_stage) setInvestorStage(profile.investor_stage as InvestorStage);
       setLoading(false);
     });
@@ -98,7 +91,6 @@ export default function ProfileSetupPage() {
       .from('profiles')
       .update({
         display_name: displayName.trim(),
-        country_of_birth: countryOfBirth || null,
       })
       .eq('id', userId);
   }
@@ -185,21 +177,6 @@ export default function ProfileSetupPage() {
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="Your name"
               />
-            </div>
-
-            <div className="form-control mb-6">
-              <label className="label">
-                <span className="label-text font-medium">Country of Birth</span>
-              </label>
-              <CountrySelect
-                value={countryOfBirth}
-                onChange={(country) => setCountryOfBirth(country?.code || null)}
-              />
-              <label className="label">
-                <span className="label-text-alt text-neutral/50">
-                  Optional. Not displayed publicly.
-                </span>
-              </label>
             </div>
 
             <button
