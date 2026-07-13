@@ -10,11 +10,13 @@ import { projectBrandName } from '@/lib/types';
 interface ReportDuplicateButtonProps {
   projectId: string;
   userId: string | null;
+  className?: string;
 }
 
 export default function ReportDuplicateButton({
   projectId,
   userId,
+  className = 'text-meta text-neutral/50 hover:text-secondary transition-all duration-150',
 }: ReportDuplicateButtonProps) {
   const { promptSignIn } = useAuthPrompt();
   const [open, setOpen] = useState(false);
@@ -79,7 +81,7 @@ export default function ReportDuplicateButton({
     <>
       <button
         type="button"
-        className="text-meta text-neutral/50 hover:text-secondary transition-all duration-150"
+        className={className}
         onClick={() => {
           if (!userId) {
             promptSignIn(`/projects/${projectId}`);
