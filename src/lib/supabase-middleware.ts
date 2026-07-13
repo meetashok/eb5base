@@ -48,6 +48,10 @@ function isPublicPath(pathname: string): boolean {
   return false;
 }
 
+function needsProfileSetup(profile: { profile_completed?: boolean | null; role?: string | null } | null): boolean {
+  return !profile?.profile_completed || !profile?.role;
+}
+
 function isAuthOnlyPath(pathname: string): boolean {
   return AUTH_ONLY_PREFIXES.some(
     (p) => pathname === p || pathname.startsWith(p + '/')
@@ -112,11 +116,11 @@ export async function updateSession(request: NextRequest) {
   if (pathname.startsWith('/admin')) {
     const { data: adminProfile } = await supabase
       .from('profiles')
-      .select('is_admin, profile_completed')
+      .select('is_admin, profile_completed, role')
       .eq('id', user.id)
       .maybeSingle();
 
-    if (!adminProfile?.profile_completed) {
+    if (needsProfileSetup(adminProfile)) {
       const setupUrl = request.nextUrl.clone();
       setupUrl.pathname = '/profile/setup';
       setupUrl.search = '';
@@ -135,11 +139,11 @@ export async function updateSession(request: NextRequest) {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('profile_completed')
+    .select('profile_completed, role')
     .eq('id', user.id)
     .maybeSingle();
 
-  if (!profile?.profile_completed) {
+  if (needsProfileSetup(profile)) {
     const setupUrl = request.nextUrl.clone();
     setupUrl.pathname = '/profile/setup';
     setupUrl.search = '';

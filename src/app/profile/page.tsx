@@ -5,9 +5,12 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import CountrySelect from '@/components/CountrySelect';
+import RolePicker from '@/components/profile/RolePicker';
+import RcVerificationPanel, { type RcPick } from '@/components/profile/RcVerificationPanel';
 import { ROLE_BADGE_LABELS } from '@/lib/constants';
 import { findCountry } from '@/lib/countries';
-import type { Profile, RcMembership } from '@/lib/types';
+import { applyRoleChange } from '@/lib/profile-role';
+import type { InvestorStage, Profile, RcMembership, UserRole } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
 
 function CheckIcon({ className }: { className?: string }) {
@@ -27,6 +30,22 @@ function ClockIcon({ className }: { className?: string }) {
   );
 }
 
+function InfoIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      aria-hidden
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 16v-4M12 8h.01" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export default function ProfilePage() {
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -35,6 +54,39 @@ export default function ProfilePage() {
   const [editingName, setEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState('');
   const [message, setMessage] = useState<string | null>(null);
+  const [roleDraft, setRoleDraft] = useState<UserRole | null>(null);
+  const [investorStageDraft, setInvestorStageDraft] = useState<InvestorStage | null>(null);
+  const [selectedRc, setSelectedRc] = useState<RcPick | null>(null);
+  const [savingRole, setSavingRole] = useState(false);
+  const [roleError, setRoleError] = useState<string | null>(null);
+
+  async function loadProfile(userId: string) {
+    const supabase = createClient();
+    const [{ data: p }, { data: membership }] = await Promise.all([
+      supabase.from('profiles').select('*').eq('id', userId).single(),
+      supabase
+        .from('rc_memberships')
+        .select('*, regional_centers(id, name)')
+        .eq('user_id', userId)
+        .eq('active', true)
+        .maybeSingle(),
+    ]);
+    setProfile(p);
+    setNameDraft(p?.display_name || '');
+    setRoleDraft(p?.role || null);
+    setInvestorStageDraft((p?.investor_stage as InvestorStage) || null);
+    setRcMembership((membership as RcMembership) || null);
+    if (membership?.regional_centers) {
+      setSelectedRc({
+        id: membership.rc_id,
+        name: membership.regional_centers.name,
+        uscis_rc_id: null,
+      });
+    } else {
+      setSelectedRc(null);
+    }
+    setLoading(false);
+  }
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -62,19 +114,7 @@ export default function ProfilePage() {
         router.replace('/login?redirect=/profile');
         return;
       }
-      const [{ data: p }, { data: membership }] = await Promise.all([
-        supabase.from('profiles').select('*').eq('id', auth.user.id).single(),
-        supabase
-          .from('rc_memberships')
-          .select('*, regional_centers(id, name)')
-          .eq('user_id', auth.user.id)
-          .eq('active', true)
-          .maybeSingle(),
-      ]);
-      setProfile(p);
-      setNameDraft(p?.display_name || '');
-      setRcMembership((membership as RcMembership) || null);
-      setLoading(false);
+      await loadProfile(auth.user.id);
     })();
   }, [router]);
 
@@ -93,6 +133,88 @@ export default function ProfilePage() {
     }
     setProfile(data);
     setMessage('Saved');
+  }
+
+  async function handleRoleSelect(nextRole: UserRole) {
+    if (!profile) return;
+    setRoleError(null);
+    setRoleDraft(nextRole);
+
+    if (nextRole === profile.role) return;
+
+    if (nextRole === 'attorney' || nextRole === 'agent') {
+      setSavingRole(true);
+      const result = await applyRoleChange({ userId: profile.id, role: nextRole });
+      setSavingRole(false);
+      if (!result.ok) {
+        setRoleError(result.error);
+        setRoleDraft(profile.role);
+        return;
+      }
+      await loadProfile(profile.id);
+      setMessage('Profile type updated');
+      return;
+    }
+
+    if (nextRole === 'investor') {
+      const stage = investorStageDraft || profile.investor_stage;
+      if (stage) {
+        setSavingRole(true);
+        const result = await applyRoleChange({
+          userId: profile.id,
+          role: 'investor',
+          investorStage: stage,
+        });
+        setSavingRole(false);
+        if (!result.ok) {
+          setRoleError(result.error);
+          setRoleDraft(profile.role);
+          return;
+        }
+        await loadProfile(profile.id);
+        setMessage('Profile type updated');
+      }
+    }
+
+    if (nextRole === 'rc_operator') {
+      setSelectedRc(null);
+    }
+  }
+
+  async function confirmInvestorRole() {
+    if (!profile || !investorStageDraft) return;
+    setSavingRole(true);
+    setRoleError(null);
+    const result = await applyRoleChange({
+      userId: profile.id,
+      role: 'investor',
+      investorStage: investorStageDraft,
+    });
+    setSavingRole(false);
+    if (!result.ok) {
+      setRoleError(result.error);
+      return;
+    }
+    await loadProfile(profile.id);
+    setMessage('Profile type updated');
+  }
+
+  async function confirmRcRole() {
+    if (!profile || !selectedRc) return;
+    setSavingRole(true);
+    setRoleError(null);
+    const result = await applyRoleChange({
+      userId: profile.id,
+      role: 'rc_operator',
+      rcId: selectedRc.id,
+    });
+    setSavingRole(false);
+    if (!result.ok) {
+      setRoleError(result.error);
+      return;
+    }
+    await loadProfile(profile.id);
+    setMessage('Profile type updated. Verification is pending.');
   }
 
   async function deleteAccount() {
@@ -114,6 +236,8 @@ export default function ProfilePage() {
   }
 
   const roleLabel = profile.role ? ROLE_BADGE_LABELS[profile.role] : null;
+  const roleChanged = roleDraft !== profile.role;
+  const showRcConfirm = roleDraft === 'rc_operator' && roleChanged;
 
   return (
     <div>
@@ -181,7 +305,98 @@ export default function ProfilePage() {
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="card-elevated p-6 mb-8 -mt-6 relative z-10 shadow-lift space-y-6">
-          {profile.role === 'rc_operator' && rcMembership && (
+          <div className="space-y-4">
+            <div>
+              <h2 className="font-semibold text-primary">Profile type</h2>
+              <p className="text-sm text-neutral/60 mt-1">
+                Choose how you use EB5 Base. You can change this later.
+              </p>
+            </div>
+
+            <RolePicker value={roleDraft} onChange={handleRoleSelect} />
+
+            {roleDraft === 'investor' && (roleChanged || profile.role === 'investor') && (
+              <fieldset className="flex flex-col gap-3 text-sm">
+                <legend className="font-medium text-sm mb-1">Where are you in your journey?</legend>
+                {(
+                  [
+                    { value: 'considering' as const, title: 'Considering EB-5' },
+                    { value: 'invested' as const, title: 'Already Invested' },
+                  ] as const
+                ).map((opt) => (
+                  <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="role-investor-stage"
+                      className="radio radio-sm radio-primary"
+                      checked={investorStageDraft === opt.value}
+                      onChange={() => setInvestorStageDraft(opt.value)}
+                    />
+                    {opt.title}
+                  </label>
+                ))}
+                {roleChanged && (
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-sm rounded-full w-fit mt-2"
+                    disabled={!investorStageDraft || savingRole}
+                    onClick={confirmInvestorRole}
+                  >
+                    {savingRole ? <span className="loading loading-spinner loading-sm" /> : 'Save profile type'}
+                  </button>
+                )}
+              </fieldset>
+            )}
+
+            {roleDraft === 'attorney' && roleChanged && (
+              <div className="bg-base-200 rounded-xl p-4">
+                <div className="flex gap-3 items-start">
+                  <InfoIcon className="w-5 h-5 text-secondary mt-0.5 shrink-0" />
+                  <p className="text-sm text-neutral/60">
+                    Attorney features are coming soon. Your profile type will update right away.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {roleDraft === 'agent' && roleChanged && (
+              <div className="bg-base-200 rounded-xl p-4">
+                <div className="flex gap-3 items-start">
+                  <InfoIcon className="w-5 h-5 text-secondary mt-0.5 shrink-0" />
+                  <p className="text-sm text-neutral/60">
+                    Agent features are coming soon. Your profile type will update right away.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {showRcConfirm && (
+              <div className="border border-base-300 rounded-xl p-4">
+                <RcVerificationPanel
+                  selectedRc={selectedRc}
+                  onSelectedRcChange={setSelectedRc}
+                  onError={setRoleError}
+                  title="Verify your regional center"
+                />
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm rounded-full mt-4"
+                  disabled={!selectedRc || savingRole}
+                  onClick={confirmRcRole}
+                >
+                  {savingRole ? (
+                    <span className="loading loading-spinner loading-sm" />
+                  ) : (
+                    'Save profile type & request verification'
+                  )}
+                </button>
+              </div>
+            )}
+
+            {roleError && <p className="text-error text-sm">{roleError}</p>}
+          </div>
+
+          {profile.role === 'rc_operator' && rcMembership && !showRcConfirm && (
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-sm text-neutral/70">
                 {rcMembership.regional_centers?.name || 'Regional center'}
@@ -212,7 +427,7 @@ export default function ProfilePage() {
             }}
           />
 
-          {profile.role === 'investor' && (
+          {profile.role === 'investor' && !roleChanged && (
             <fieldset className="flex flex-wrap gap-4 text-sm">
               <legend className="sr-only">Investor stage</legend>
               <label className="flex items-center gap-2 cursor-pointer">
