@@ -27,8 +27,12 @@ If the domain is not on Cloudflare yet, add the site and switch nameservers firs
    - **Include → Emails:**
      - your email
      - the attorney’s email
-5. Under identity / login methods, enable **One-time PIN** (email code). That is enough; no Google Workspace required.
-6. Save.
+5. Enable **One-time PIN** as a login method (this is separate from the application form):
+   1. Zero Trust → **Integrations → Identity providers**
+   2. **Add new identity provider**
+   3. Choose **One-time PIN** and save  
+   (New Zero Trust orgs default to “Cloudflare” login only; OTP is no longer added automatically.)
+6. Save the Access application / policy if you have not already.
 
 ## 3. Test Access while maintenance is still on
 
