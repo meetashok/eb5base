@@ -28,7 +28,7 @@ export default function ContactPage() {
         <section className="card-elevated p-8 text-center">
           <h2 className="text-lg font-bold text-primary mb-2">Send feedback</h2>
           <p className="text-neutral/70 mb-6 text-sm">
-            Bug reports, wrong project data, UX suggestions — especially during our public beta.
+            Bug reports, wrong project data, UX suggestions, especially during our public beta.
           </p>
           <a
             href={`mailto:${FEEDBACK_EMAIL}?subject=EB5%20Base%20feedback`}

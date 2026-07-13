@@ -22,22 +22,22 @@ export const metadata: Metadata = {
     template: '%s | EB5 Base',
   },
   description:
-    'Community-driven directory of EB-5 regional center projects. Browse projects, confirm subscription status, and make informed investment decisions.',
+    'Community-built EB-5 project directory. Browse regional center projects, confirm subscription status, and help fellow investors stay informed.',
   metadataBase: new URL('https://eb5base.com'),
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: 'https://eb5base.com',
     siteName: 'EB5 Base',
-    title: 'EB5 Base - EB-5 Project Directory',
+    title: 'EB5 Base - The EB-5 Project Directory',
     description:
-      'Community-driven directory of EB-5 regional center projects.',
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'EB5 Base' }],
+      'Browse regional center projects, confirm subscription status, and keep fellow investors informed. Free, community-built.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'EB5 Base - EB-5 Project Directory',
-    images: ['/og-image.png'],
+    title: 'EB5 Base - The EB-5 Project Directory',
+    description:
+      'Browse regional center projects, confirm subscription status, and keep fellow investors informed. Free, community-built.',
   },
   robots: { index: false, follow: false },
   icons: {

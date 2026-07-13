@@ -13,11 +13,12 @@ export default function Icon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: '#ffffff',
-          color: '#1e3a5f',
-          fontSize: 14,
+          background: 'linear-gradient(135deg, #0a1628 0%, #1a3d32 100%)',
+          color: '#d4af37',
+          fontSize: 13,
           fontWeight: 700,
           fontFamily: 'sans-serif',
+          letterSpacing: '-0.04em',
         }}
       >
         EB

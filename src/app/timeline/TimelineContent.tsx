@@ -94,7 +94,7 @@ export default function TimelineContent() {
       <PageHero
         eyebrow="Your contributions"
         title="My Timeline"
-        subtitle="Confirmations, projects, and reports — everything you've added to the community directory."
+        subtitle="Confirmations, projects, and reports: everything you've added to the community directory."
       />
 
       <div className="max-w-3xl mx-auto px-4 py-8">
