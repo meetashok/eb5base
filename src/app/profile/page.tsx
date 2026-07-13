@@ -434,19 +434,7 @@ export default function ProfilePage() {
             </div>
           )}
 
-          <textarea
-            className="textarea textarea-bordered w-full text-sm"
-            placeholder="Bio (optional)"
-            rows={2}
-            defaultValue={profile.bio || ''}
-            onBlur={(e) => {
-              if (e.target.value !== (profile.bio || '')) {
-                saveProfile({ bio: e.target.value || null });
-              }
-            }}
-          />
-
-          {profile.role === 'investor' && (
+          <div className="form-control max-w-xs">
             <fieldset className="flex flex-wrap gap-4 text-sm">
               <legend className="sr-only">Investor stage</legend>
               <label className="flex items-center gap-2 cursor-pointer">
