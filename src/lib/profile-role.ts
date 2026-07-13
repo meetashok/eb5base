@@ -12,24 +12,41 @@ export type ApplyRoleChangeResult =
   | { ok: true }
   | { ok: false; error: string };
 
-export async function deactivateRcMemberships(userId: string): Promise<ApplyRoleChangeResult> {
+async function deactivateRcMemberships(): Promise<ApplyRoleChangeResult> {
   const supabase = createClient();
-  const { error } = await supabase
+  const { error } = await supabase.rpc('deactivate_own_rc_memberships');
+
+  if (!error) return { ok: true };
+
+  // Fallback for environments before the RPC migration is applied
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) return { ok: false, error: error.message };
+
+  const { error: fallbackErr } = await supabase
     .from('rc_memberships')
     .update({ active: false })
     .eq('user_id', userId)
     .eq('active', true);
 
-  if (error) return { ok: false, error: error.message };
+  if (fallbackErr) return { ok: false, error: fallbackErr.message };
   return { ok: true };
 }
 
-export async function requestRcMembership(
-  userId: string,
-  rcId: string
-): Promise<ApplyRoleChangeResult> {
+async function requestRcMembership(rcId: string): Promise<ApplyRoleChangeResult> {
   const supabase = createClient();
-  const { error } = await supabase.from('rc_memberships').insert({
+  const { error } = await supabase.rpc('request_rc_membership', { p_rc_id: rcId });
+
+  if (!error) return { ok: true };
+
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) return { ok: false, error: error.message };
+
+  const deactivated = await deactivateRcMemberships();
+  if (!deactivated.ok) return deactivated;
+
+  const { error: insertErr } = await supabase.from('rc_memberships').insert({
     rc_id: rcId,
     user_id: userId,
     role: 'editor',
@@ -37,7 +54,7 @@ export async function requestRcMembership(
     verified_at: null,
   });
 
-  if (error) return { ok: false, error: error.message };
+  if (insertErr) return { ok: false, error: insertErr.message };
   return { ok: true };
 }
 
@@ -93,8 +110,10 @@ export async function applyRoleChange({
     return { ok: false, error: 'Please select a regional center.' };
   }
 
-  const deactivated = await deactivateRcMemberships(userId);
-  if (!deactivated.ok) return deactivated;
+  if (role !== 'rc_operator') {
+    const deactivated = await deactivateRcMemberships();
+    if (!deactivated.ok) return deactivated;
+  }
 
   const profileUpdate = {
     role,
@@ -112,7 +131,7 @@ export async function applyRoleChange({
   if (role === 'rc_operator' && brandId) {
     const resolved = await resolveRcEntityForBrand(brandId);
     if (!resolved.ok || !resolved.rcId) return resolved;
-    return requestRcMembership(userId, resolved.rcId);
+    return requestRcMembership(resolved.rcId);
   }
 
   return { ok: true };
