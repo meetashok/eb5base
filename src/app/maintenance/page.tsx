@@ -28,7 +28,7 @@ export default function MaintenancePage() {
             questions with counsel. Thank you for your patience.
           </p>
 
-          <div className="mt-10 rounded-2xl border border-base-300 bg-base-100/80 px-6 py-5 text-left shadow-soft">
+          <div className="mt-10 rounded-2xl border border-base-300 bg-base-100/80 px-6 py-5 text-center shadow-soft">
             <p className="text-sm text-neutral/70 leading-relaxed">
               If you need to reach us in the meantime, email{' '}
               <a href={`mailto:${CONTACT_EMAIL}`} className="link link-secondary font-medium">
