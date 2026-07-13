@@ -2,6 +2,7 @@ import { ImageResponse } from 'next/og';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { getHomeStats } from '@/lib/projects';
+import { isMaintenanceMode } from '@/lib/maintenance';
 import { isSupabaseConfigured } from '@/lib/supabase-env';
 
 export const OG_SIZE = { width: 1200, height: 630 };
@@ -74,7 +75,95 @@ function formatStat(value: number) {
   return new Intl.NumberFormat('en-US').format(value);
 }
 
+async function createMaintenanceOgImage() {
+  const [logoSrc, fontMedium, fontSemiBold, fontBold] = await Promise.all([
+    loadLogoDataUrl(),
+    loadJakartaFont(500),
+    loadJakartaFont(600),
+    loadJakartaFont(700),
+  ]);
+
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          padding: '56px 64px',
+          background: 'linear-gradient(135deg, #060f1a 0%, #0a1628 32%, #1a3d32 72%, #0a1628 100%)',
+          fontFamily: 'Plus Jakarta Sans',
+          color: '#f5f1ea',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 6,
+            background: 'linear-gradient(90deg, #d4af37 0%, #b87333 55%, #2d5a47 100%)',
+          }}
+        />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 36 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse requires raw <img> */}
+          <img src={logoSrc} width={68} height={68} alt="" style={{ borderRadius: 16 }} />
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+            <span style={{ fontSize: 34, fontWeight: 500, color: 'rgba(245, 241, 234, 0.78)' }}>
+              EB5
+            </span>
+            <span style={{ fontSize: 34, fontWeight: 700, color: '#d4af37' }}>Base</span>
+          </div>
+        </div>
+        <div style={{ fontSize: 54, fontWeight: 700, letterSpacing: '-0.03em', color: '#faf7f2' }}>
+          Temporarily unavailable
+        </div>
+        <div
+          style={{
+            marginTop: 18,
+            fontSize: 26,
+            fontWeight: 500,
+            color: 'rgba(245, 241, 234, 0.74)',
+            maxWidth: 900,
+            lineHeight: 1.35,
+          }}
+        >
+          We have paused the public directory while we review legal and compliance questions
+          with counsel.
+        </div>
+        <div
+          style={{
+            marginTop: 40,
+            fontSize: 22,
+            fontWeight: 600,
+            color: 'rgba(245, 241, 234, 0.7)',
+          }}
+        >
+          eb5base.com
+        </div>
+      </div>
+    ),
+    {
+      ...OG_SIZE,
+      fonts: [
+        { name: 'Plus Jakarta Sans', data: fontMedium, weight: 500, style: 'normal' },
+        { name: 'Plus Jakarta Sans', data: fontSemiBold, weight: 600, style: 'normal' },
+        { name: 'Plus Jakarta Sans', data: fontBold, weight: 700, style: 'normal' },
+      ],
+    }
+  );
+}
+
 export async function createOgImage() {
+  if (isMaintenanceMode()) {
+    return createMaintenanceOgImage();
+  }
+
   const [logoSrc, stats, fontMedium, fontSemiBold, fontBold] = await Promise.all([
     loadLogoDataUrl(),
     getStatsSafe(),
