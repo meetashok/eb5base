@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import CountrySelect from '@/components/CountrySelect';
 import RolePicker from '@/components/profile/RolePicker';
-import RcVerificationPanel, { type RcPick } from '@/components/profile/RcVerificationPanel';
+import RcVerificationPanel, { type BrandPick } from '@/components/profile/RcVerificationPanel';
 import { findCountry } from '@/lib/countries';
 import { applyRoleChange } from '@/lib/profile-role';
 import type { InvestorStage, UserRole } from '@/lib/types';
@@ -53,7 +53,8 @@ export default function ProfileSetupPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-  const [selectedRc, setSelectedRc] = useState<RcPick | null>(null);
+  const [signInEmail, setSignInEmail] = useState<string | null>(null);
+  const [selectedBrand, setSelectedBrand] = useState<BrandPick | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -63,6 +64,7 @@ export default function ProfileSetupPage() {
         return;
       }
       setUserId(data.user.id);
+      setSignInEmail(data.user.email || null);
       const metaName =
         data.user.user_metadata?.full_name ||
         data.user.user_metadata?.name ||
@@ -124,7 +126,7 @@ export default function ProfileSetupPage() {
   }
 
   async function handleCompleteRcOperator() {
-    if (!userId || !selectedRc) return;
+    if (!userId || !selectedBrand) return;
     setSaving(true);
     setError(null);
     await saveBasics();
@@ -132,7 +134,7 @@ export default function ProfileSetupPage() {
     const result = await applyRoleChange({
       userId,
       role: 'rc_operator',
-      rcId: selectedRc.id,
+      brandId: selectedBrand.id,
     });
 
     setSaving(false);
@@ -359,9 +361,10 @@ export default function ProfileSetupPage() {
         <div className="card-elevated bg-base-100">
           <div className="card-body">
             <RcVerificationPanel
-              selectedRc={selectedRc}
-              onSelectedRcChange={setSelectedRc}
+              selectedBrand={selectedBrand}
+              onSelectedBrandChange={setSelectedBrand}
               onError={setError}
+              signInEmail={signInEmail}
             />
 
             {error && <p className="text-error text-sm mb-2">{error}</p>}
@@ -377,7 +380,7 @@ export default function ProfileSetupPage() {
               <button
                 type="button"
                 className="btn btn-primary flex-1 rounded-full"
-                disabled={!selectedRc || saving}
+                disabled={!selectedBrand || saving}
                 onClick={handleCompleteRcOperator}
               >
                 {saving ? <span className="loading loading-spinner loading-sm" /> : 'Complete Setup'}

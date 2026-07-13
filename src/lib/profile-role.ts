@@ -5,7 +5,7 @@ export type ApplyRoleChangeInput = {
   userId: string;
   role: UserRole;
   investorStage?: InvestorStage | null;
-  rcId?: string;
+  brandId?: string;
 };
 
 export type ApplyRoleChangeResult =
@@ -41,11 +41,47 @@ export async function requestRcMembership(
   return { ok: true };
 }
 
+/** Map a user-selected RC brand to a regional_centers row for rc_memberships.rc_id. */
+export async function resolveRcEntityForBrand(
+  brandId: string
+): Promise<ApplyRoleChangeResult & { rcId?: string }> {
+  const supabase = createClient();
+
+  const { data: entities, error: fetchErr } = await supabase
+    .from('regional_centers')
+    .select('id')
+    .eq('brand_id', brandId)
+    .order('created_at', { ascending: true })
+    .limit(1);
+
+  if (fetchErr) return { ok: false, error: fetchErr.message };
+  if (entities?.[0]) return { ok: true, rcId: entities[0].id };
+
+  const { data: brand, error: brandErr } = await supabase
+    .from('rc_brands')
+    .select('id, name')
+    .eq('id', brandId)
+    .maybeSingle();
+
+  if (brandErr || !brand) {
+    return { ok: false, error: brandErr?.message || 'Regional center brand not found.' };
+  }
+
+  const { data: created, error: insertErr } = await supabase
+    .from('regional_centers')
+    .insert({ name: brand.name, brand_id: brandId })
+    .select('id')
+    .single();
+
+  if (insertErr) return { ok: false, error: insertErr.message };
+  return { ok: true, rcId: created.id };
+}
+
 export async function applyRoleChange({
   userId,
   role,
   investorStage,
-  rcId,
+  brandId,
 }: ApplyRoleChangeInput): Promise<ApplyRoleChangeResult> {
   const supabase = createClient();
 
@@ -53,7 +89,7 @@ export async function applyRoleChange({
     return { ok: false, error: 'Please select your investor stage.' };
   }
 
-  if (role === 'rc_operator' && !rcId) {
+  if (role === 'rc_operator' && !brandId) {
     return { ok: false, error: 'Please select a regional center.' };
   }
 
@@ -73,8 +109,10 @@ export async function applyRoleChange({
 
   if (profileErr) return { ok: false, error: profileErr.message };
 
-  if (role === 'rc_operator' && rcId) {
-    return requestRcMembership(userId, rcId);
+  if (role === 'rc_operator' && brandId) {
+    const resolved = await resolveRcEntityForBrand(brandId);
+    if (!resolved.ok || !resolved.rcId) return resolved;
+    return requestRcMembership(userId, resolved.rcId);
   }
 
   return { ok: true };

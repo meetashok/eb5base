@@ -17,6 +17,7 @@ Apply if not already done:
 - [ ] `supabase/migrations/20260710_profile_onboarding.sql`
 - [ ] `supabase/migrations/20260712_user_flows_v1.sql`
 - [ ] `supabase/migrations/20260713_profile_role_onboarding_fix.sql`
+- [ ] `supabase/migrations/20260714_rc_memberships_grants.sql`
 
 ## Email forwarding
 

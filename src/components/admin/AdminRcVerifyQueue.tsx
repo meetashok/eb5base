@@ -11,7 +11,7 @@ interface PendingMembership {
   user_id: string;
   rc_id: string;
   created_at: string;
-  regional_centers: { name: string } | null;
+  regional_centers: { name: string; rc_brands?: { name: string } | null } | null;
   profiles: { display_name: string | null; email: string | null } | null;
 }
 
@@ -32,7 +32,9 @@ export default function AdminRcVerifyQueue() {
 
     const { data, error } = await supabase
       .from('rc_memberships')
-      .select('id, user_id, rc_id, created_at, regional_centers(name), profiles: user_id(display_name, email)')
+      .select(
+        'id, user_id, rc_id, created_at, regional_centers(name, rc_brands:brand_id(name)), profiles: user_id(display_name, email)'
+      )
       .eq('active', true)
       .is('verified_at', null)
       .is('revoked_at', null)
@@ -91,8 +93,10 @@ export default function AdminRcVerifyQueue() {
               {item.profiles?.display_name || item.profiles?.email || 'User'}
             </p>
             <p className="text-sm text-neutral/60 mt-1">
-              {item.regional_centers?.name || 'Regional center'} · Requested{' '}
-              {formatDate(item.created_at)}
+              {item.regional_centers?.rc_brands?.name ||
+                item.regional_centers?.name ||
+                'Regional center'}{' '}
+              · Requested {formatDate(item.created_at)}
             </p>
           </div>
           <button
