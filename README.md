@@ -28,21 +28,19 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Access lock (owner + attorney)
+## Access while paused
 
-Recommended while legal review is open:
+Public visitors see the maintenance page. You and counsel unlock the real directory with a private link (no Cloudflare login wall).
 
-1. Put Cloudflare Access in front of `eb5base.com` (allowlist your email + counsel).
-2. Then set `MAINTENANCE_MODE=false` so after Cloudflare login you see the real directory.
-
-Step-by-step: [docs/CLOUDFLARE_ACCESS.md](docs/CLOUDFLARE_ACCESS.md)
+See [docs/PRIVATE_ACCESS.md](docs/PRIVATE_ACCESS.md).
 
 ## Maintenance mode
 
 The site defaults to a public maintenance page (all routes, including `/rc` and `/projects`).
 
-- Leave `MAINTENANCE_MODE` unset, or set `MAINTENANCE_MODE=true`, to keep the directory offline for everyone (including you).
-- Set `MAINTENANCE_MODE=false` only after Cloudflare Access is enabled, then redeploy.
+- Leave `MAINTENANCE_MODE` unset, or set `MAINTENANCE_MODE=true`, to keep the directory offline for the public.
+- Set `MAINTENANCE_BYPASS_SECRET` and open `/?access=YOUR_SECRET` for private access.
+- Set `MAINTENANCE_MODE=false` only when you want the directory public again.
 
 ## Notes
 
