@@ -202,6 +202,7 @@ export interface ProjectFilters {
   amount?: string;
   rc?: string;
   rc_name?: string;
+  rc_verified?: string;
   filter?: string;
   sort?: string;
   page?: string;
@@ -270,6 +271,10 @@ export async function getFilteredProjects(filters: ProjectFilters) {
     if (f956.length) query = query.in('f956_status', f956);
     if (subscription.length) query = query.in('subscription_status', subscription);
     if (filters.state) query = query.eq('location_state', filters.state);
+
+    if (filters.rc_verified === 'yes' || filters.rc_verified === '1') {
+      query = query.not('rc_verified_at', 'is', null);
+    }
 
     const sort = filters.sort || 'newest';
     if (sort === 'az' || sort === 'alpha') query = query.order('name', { ascending: true });

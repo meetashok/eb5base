@@ -210,13 +210,15 @@ export default function FilterPanel() {
   const state = searchParams.get('state') || '';
   const rc = searchParams.get('rc') || '';
   const rcName = searchParams.get('rc_name') || '';
+  const rcVerified = searchParams.get('rc_verified') === 'yes';
 
   const activeCount = useMemo(() => {
     let count = f956.length + subscription.length + tea.length + projectType.length;
     if (state) count += 1;
     if (rc) count += 1;
+    if (rcVerified) count += 1;
     return count;
-  }, [f956, subscription, tea, projectType, state, rc]);
+  }, [f956, subscription, tea, projectType, state, rc, rcVerified]);
 
   function updateParam(key: string, values: string[] | string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -256,7 +258,7 @@ export default function FilterPanel() {
 
   function clearAll() {
     const params = new URLSearchParams(searchParams.toString());
-    ['tea', 'f956', 'subscription', 'type', 'state', 'amount', 'page', 'filter', 'rc', 'rc_name'].forEach(
+    ['tea', 'f956', 'subscription', 'type', 'state', 'amount', 'page', 'filter', 'rc', 'rc_name', 'rc_verified'].forEach(
       (k) => params.delete(k)
     );
     const q = params.get('q');
@@ -275,8 +277,17 @@ export default function FilterPanel() {
       </div>
 
       <FilterGroup title="Regional Center" defaultOpen>
-        <div className="pt-1">
+        <div className="pt-1 space-y-3">
           <RCCombobox value={rc} label={rcName} onChange={setRcFilter} />
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              className="checkbox checkbox-sm checkbox-secondary"
+              checked={rcVerified}
+              onChange={() => updateParam('rc_verified', rcVerified ? '' : 'yes')}
+            />
+            <span>RC verified only</span>
+          </label>
         </div>
       </FilterGroup>
 

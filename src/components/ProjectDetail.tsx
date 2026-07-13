@@ -81,7 +81,7 @@ export default function ProjectDetail({
               <p className="hero-eyebrow text-accent">Project</p>
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-3xl font-bold">{p.name}</h1>
-                {p.rc_verified_at && <RcVerifiedBadge />}
+                {p.rc_verified_at && <RcVerifiedBadge variant="onDark" />}
               </div>
               <div className="flex flex-wrap gap-1.5 mt-4">
                 {(p.tea_designations || []).map((tea) => (
@@ -103,14 +103,23 @@ export default function ProjectDetail({
             </div>
             <div className="flex flex-col items-start md:items-end gap-2 shrink-0">
               <ReportDuplicateButton projectId={p.id} userId={userId} />
-              {canEdit && (
+              {canEdit ? (
                 <AuthGateLink
                   href={projectEditPath(p)}
                   className="btn btn-outline btn-sm border-primary-content/40 text-primary-content hover:bg-primary-content/10 rounded-full"
                 >
                   Edit Project
                 </AuthGateLink>
-              )}
+              ) : p.rc_verified_at && userId ? (
+                <button
+                  type="button"
+                  disabled
+                  className="btn btn-outline btn-sm border-primary-content/30 text-primary-content/50 rounded-full cursor-not-allowed"
+                  title="Only verified regional center representatives can edit this listing."
+                >
+                  Edit Project
+                </button>
+              ) : null}
             </div>
           </div>
         </div>

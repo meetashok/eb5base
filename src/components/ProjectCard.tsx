@@ -7,6 +7,7 @@ import { projectPath } from '@/lib/slugs';
 import StatusBadge from './StatusBadge';
 import TEATag from './TEATag';
 import ConfirmStatusButtons from './ConfirmStatusButtons';
+import RcVerifiedBadge from './RcVerifiedBadge';
 import {
   consensus7dLabel,
   f956BrowseLabel,
@@ -81,12 +82,19 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           </p>
 
           {project.f956_status && (
-            <div className="mt-1.5">
+            <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
               <StatusBadge
                 label={`956F ${f956BrowseLabel(project.f956_status)}`}
                 variant={f956Variant(project.f956_status)}
                 className={compactBadge}
               />
+              {project.rc_verified_at && <RcVerifiedBadge size="sm" />}
+            </div>
+          )}
+
+          {!project.f956_status && project.rc_verified_at && (
+            <div className="mt-1.5">
+              <RcVerifiedBadge size="sm" />
             </div>
           )}
 

@@ -67,8 +67,9 @@ export default function ClaimProjectButton({
             <h3 className="font-bold text-lg text-primary">Claim project</h3>
             <p className="text-sm text-neutral/70 py-2">
               Review <strong>{project.name}</strong> and confirm the listing details are accurate.
-              This project will show an <strong>RC verified</strong> badge and community edit
-              suggestions will be disabled.
+              Once you claim this project, <strong>only verified representatives of this regional center</strong>{' '}
+              can edit the listing — please keep the project details accurate and up to date at all times.
+              This project will show an <strong>RC verified</strong> badge on browse and detail pages.
             </p>
             <label className="flex items-start gap-2 cursor-pointer mt-4">
               <input
