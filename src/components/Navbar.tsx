@@ -100,7 +100,7 @@ export default function Navbar() {
               wordmarkVariant="on-dark"
               wordmarkClassName="text-xl sm:text-[1.35rem]"
             />
-            <span className="badge badge-xs rounded-full border border-accent/50 bg-accent/15 text-accent font-semibold uppercase tracking-wider px-1.5 min-h-0 h-4 text-[9px]">
+            <span className="badge badge-xs rounded-full border border-copper/50 bg-copper/20 text-copper-light font-semibold uppercase tracking-wider px-1.5 min-h-0 h-4 text-[9px]">
               Beta
             </span>
           </Link>
