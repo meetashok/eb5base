@@ -28,6 +28,13 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+## Maintenance mode
+
+The site defaults to a public maintenance page (all routes, including `/rc` and `/projects`).
+
+- Leave `MAINTENANCE_MODE` unset, or set `MAINTENANCE_MODE=true`, to keep the directory offline.
+- Set `MAINTENANCE_MODE=false` in the host env (e.g. Vercel) and redeploy to restore the site.
+
 ## Notes
 
 - Configure Google OAuth and magic link (email OTP) in the Supabase dashboard.
