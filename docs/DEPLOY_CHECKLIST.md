@@ -19,6 +19,7 @@ Apply if not already done:
 - [ ] `supabase/migrations/20260713_profile_role_onboarding_fix.sql`
 - [ ] `supabase/migrations/20260714_rc_memberships_grants.sql`
 - [ ] `supabase/migrations/20260715_rc_memberships_rpc.sql` (required for RC verification save)
+- [ ] `supabase/migrations/20260716_profile_avatar_picture.sql`
 
 ## Email forwarding
 

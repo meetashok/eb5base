@@ -8,6 +8,7 @@ import Logo from '@/components/Logo';
 import AuthGateLink from '@/components/AuthGateLink';
 import type { User } from '@supabase/supabase-js';
 import type { Profile } from '@/lib/types';
+import { resolveProfileAvatar } from '@/lib/profile-avatar';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -89,6 +90,8 @@ export default function Navbar() {
     </AuthGateLink>
   );
 
+  const avatarUrl = resolveProfileAvatar(profile, user);
+
   return (
     <header className="sticky top-0 z-50 bg-nav-gradient text-primary-content shadow-nav">
       <div className="navbar max-w-6xl mx-auto px-4 min-h-16">
@@ -122,10 +125,10 @@ export default function Navbar() {
                 role="button"
                 className="btn btn-ghost btn-circle avatar placeholder"
               >
-                {profile?.avatar_url ? (
+                {avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    src={profile.avatar_url}
+                    src={avatarUrl}
                     alt=""
                     className="w-9 h-9 rounded-full object-cover"
                   />

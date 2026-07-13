@@ -9,6 +9,8 @@ import RcVerificationPanel, { type BrandPick } from '@/components/profile/RcVeri
 import { ROLE_BADGE_LABELS } from '@/lib/constants';
 import { applyRoleChange } from '@/lib/profile-role';
 import type { InvestorStage, Profile, RcMembership, UserRole } from '@/lib/types';
+import { resolveProfileAvatar } from '@/lib/profile-avatar';
+import type { User } from '@supabase/supabase-js';
 import { formatDate } from '@/lib/utils';
 
 function CheckIcon({ className }: { className?: string }) {
@@ -55,6 +57,7 @@ function membershipBrandName(membership: RcMembership | null): string | null {
 export default function ProfilePage() {
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [authUser, setAuthUser] = useState<User | null>(null);
   const [rcMembership, setRcMembership] = useState<RcMembership | null>(null);
   const [loading, setLoading] = useState(true);
   const [editingName, setEditingName] = useState(false);
@@ -124,6 +127,7 @@ export default function ProfilePage() {
         router.replace('/login?redirect=/profile');
         return;
       }
+      setAuthUser(auth.user);
       await loadProfile(auth.user.id);
     })();
   }, [router]);
@@ -230,6 +234,7 @@ export default function ProfilePage() {
   }
 
   const roleLabel = profile.role ? ROLE_BADGE_LABELS[profile.role] : null;
+  const avatarUrl = resolveProfileAvatar(profile, authUser);
   const roleChanged = roleDraft !== profile.role;
   const showRcPanel = changingProfileType && roleDraft === 'rc_operator' && roleChanged;
   const showInvestorStage =
@@ -250,10 +255,10 @@ export default function ProfilePage() {
       <section className="page-hero">
         <div className="page-hero-inner">
           <div className="flex flex-col sm:flex-row gap-4 items-start">
-            {profile.avatar_url ? (
+            {avatarUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={profile.avatar_url}
+                src={avatarUrl}
                 alt=""
                 className="w-16 h-16 rounded-full object-cover ring-2 ring-accent/50 shadow-soft"
               />
@@ -434,7 +439,7 @@ export default function ProfilePage() {
             </div>
           )}
 
-          <div className="form-control max-w-xs">
+          {profile.role === 'investor' && (
             <fieldset className="flex flex-wrap gap-4 text-sm">
               <legend className="sr-only">Investor stage</legend>
               <label className="flex items-center gap-2 cursor-pointer">

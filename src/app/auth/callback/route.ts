@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { getSupabaseConfig, isSupabaseConfigured } from '@/lib/supabase-env';
+import { avatarFromAuthUser } from '@/lib/profile-avatar';
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -49,6 +50,13 @@ export async function GET(request: Request) {
 
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      const avatar = avatarFromAuthUser(user);
+      if (user && avatar) {
+        await supabase.from('profiles').update({ avatar_url: avatar }).eq('id', user.id);
+      }
       return redirectResponse;
     }
 
