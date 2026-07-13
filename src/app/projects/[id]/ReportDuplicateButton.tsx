@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase';
 import { useAuthPrompt } from '@/components/AuthPromptProvider';
+import AppModal from '@/components/AppModal';
 import type { Project } from '@/lib/types';
 import { PROJECT_SELECT } from '@/lib/types';
 import { projectBrandName } from '@/lib/types';
@@ -51,6 +52,10 @@ export default function ReportDuplicateButton({
     );
   }
 
+  function closeModal() {
+    setOpen(false);
+  }
+
   async function submit() {
     if (!userId) {
       promptSignIn(`/projects/${projectId}`);
@@ -94,67 +99,58 @@ export default function ReportDuplicateButton({
       </button>
       {message && <p className="text-meta text-success">{message}</p>}
 
-      {open && (
-        <dialog className="modal modal-open">
-          <div className="modal-box max-w-lg">
-            <h3 className="font-bold text-lg text-primary">Report duplicate</h3>
-            <p className="text-sm text-neutral/70 py-2">
-              Search and select one or more projects this listing duplicates.
-            </p>
-            <input
-              type="search"
-              className="input input-bordered w-full"
-              placeholder="Search projects…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-            <ul className="mt-3 max-h-48 overflow-auto space-y-1">
-              {results.map((r) => {
-                const isSelected = selected.some((x) => x.id === r.id);
-                return (
-                  <li key={r.id}>
-                    <button
-                      type="button"
-                      className={`w-full text-left px-3 py-2 rounded-lg transition-all duration-150 ${
-                        isSelected ? 'bg-primary text-primary-content' : 'hover:bg-base-200'
-                      }`}
-                      onClick={() => toggleSelect(r)}
-                    >
-                      <span className="font-medium">{r.name}</span>
-                      <span className="block text-meta opacity-70">
-                        {[projectBrandName(r), r.location_state].filter(Boolean).join(' · ')}
-                      </span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-            {selected.length > 0 && (
-              <p className="text-meta text-neutral/60 mt-2">
-                {selected.length} project{selected.length === 1 ? '' : 's'} selected
-              </p>
-            )}
-            <div className="modal-action">
-              <button type="button" className="btn btn-ghost" onClick={() => setOpen(false)}>
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="btn btn-primary"
-                disabled={selected.length === 0 || saving}
-                onClick={submit}
-              >
-                {saving ? 'Submitting…' : 'Submit report'}
-              </button>
-            </div>
-          </div>
-          <form method="dialog" className="modal-backdrop">
-            <button type="button" onClick={() => setOpen(false)}>
-              close
-            </button>
-          </form>
-        </dialog>
-      )}
+      <AppModal open={open} onClose={closeModal} boxClassName="max-w-lg">
+        <h3 className="font-bold text-lg text-primary">Report duplicate</h3>
+        <p className="text-sm text-neutral/70 py-2">
+          Search and select one or more projects this listing duplicates.
+        </p>
+        <input
+          type="search"
+          className="input input-bordered w-full"
+          placeholder="Search projects…"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        <ul className="mt-3 max-h-48 overflow-auto space-y-1">
+          {results.map((r) => {
+            const isSelected = selected.some((x) => x.id === r.id);
+            return (
+              <li key={r.id}>
+                <button
+                  type="button"
+                  className={`w-full text-left px-3 py-2 rounded-lg transition-all duration-150 ${
+                    isSelected ? 'bg-primary text-primary-content' : 'hover:bg-base-200'
+                  }`}
+                  onClick={() => toggleSelect(r)}
+                >
+                  <span className="font-medium">{r.name}</span>
+                  <span className="block text-meta opacity-70">
+                    {[projectBrandName(r), r.location_state].filter(Boolean).join(' · ')}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+        {selected.length > 0 && (
+          <p className="text-meta text-neutral/60 mt-2">
+            {selected.length} project{selected.length === 1 ? '' : 's'} selected
+          </p>
+        )}
+        <div className="modal-action">
+          <button type="button" className="btn btn-ghost" onClick={closeModal}>
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="btn btn-primary"
+            disabled={selected.length === 0 || saving}
+            onClick={submit}
+          >
+            {saving ? 'Submitting…' : 'Submit report'}
+          </button>
+        </div>
+      </AppModal>
     </>
   );
 }

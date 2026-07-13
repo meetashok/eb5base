@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase';
 import { useAuthPrompt } from '@/components/AuthPromptProvider';
+import AppModal from '@/components/AppModal';
 import { isMissingRcBrandMergedInto } from '@/lib/schema-compat';
 import type { RcBrand } from '@/lib/types';
 
@@ -56,6 +57,10 @@ export default function ReportRcDuplicateButton({
     );
   }
 
+  function closeModal() {
+    setOpen(false);
+  }
+
   async function submit() {
     if (!userId) {
       promptSignIn(`/rc/${brandId}`);
@@ -99,64 +104,55 @@ export default function ReportRcDuplicateButton({
       </button>
       {message && <p className="text-meta text-success">{message}</p>}
 
-      {open && (
-        <dialog className="modal modal-open">
-          <div className="modal-box max-w-lg">
-            <h3 className="font-bold text-lg text-primary">Report duplicate RC</h3>
-            <p className="text-sm text-neutral/70 py-2">
-              Select regional center listings that duplicate this one.
-            </p>
-            <input
-              type="search"
-              className="input input-bordered w-full"
-              placeholder="Search regional centers…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-            <ul className="mt-3 max-h-48 overflow-auto space-y-1">
-              {results.map((r) => {
-                const isSelected = selected.some((x) => x.id === r.id);
-                return (
-                  <li key={r.id}>
-                    <button
-                      type="button"
-                      className={`w-full text-left px-3 py-2 rounded-lg transition-all duration-150 ${
-                        isSelected ? 'bg-copper text-white' : 'hover:bg-base-200'
-                      }`}
-                      onClick={() => toggleSelect(r)}
-                    >
-                      <span className="font-medium">{r.name}</span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-            {selected.length > 0 && (
-              <p className="text-meta text-neutral/60 mt-2">
-                {selected.length} listing{selected.length === 1 ? '' : 's'} selected
-              </p>
-            )}
-            <div className="modal-action">
-              <button type="button" className="btn btn-ghost" onClick={() => setOpen(false)}>
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="btn btn-primary"
-                disabled={selected.length === 0 || saving}
-                onClick={submit}
-              >
-                {saving ? 'Submitting…' : 'Submit report'}
-              </button>
-            </div>
-          </div>
-          <form method="dialog" className="modal-backdrop">
-            <button type="button" onClick={() => setOpen(false)}>
-              close
-            </button>
-          </form>
-        </dialog>
-      )}
+      <AppModal open={open} onClose={closeModal} boxClassName="max-w-lg">
+        <h3 className="font-bold text-lg text-primary">Report duplicate RC</h3>
+        <p className="text-sm text-neutral/70 py-2">
+          Select regional center listings that duplicate this one.
+        </p>
+        <input
+          type="search"
+          className="input input-bordered w-full"
+          placeholder="Search regional centers…"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        <ul className="mt-3 max-h-48 overflow-auto space-y-1">
+          {results.map((r) => {
+            const isSelected = selected.some((x) => x.id === r.id);
+            return (
+              <li key={r.id}>
+                <button
+                  type="button"
+                  className={`w-full text-left px-3 py-2 rounded-lg transition-all duration-150 ${
+                    isSelected ? 'bg-copper text-white' : 'hover:bg-base-200'
+                  }`}
+                  onClick={() => toggleSelect(r)}
+                >
+                  <span className="font-medium">{r.name}</span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+        {selected.length > 0 && (
+          <p className="text-meta text-neutral/60 mt-2">
+            {selected.length} listing{selected.length === 1 ? '' : 's'} selected
+          </p>
+        )}
+        <div className="modal-action">
+          <button type="button" className="btn btn-ghost" onClick={closeModal}>
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="btn btn-primary"
+            disabled={selected.length === 0 || saving}
+            onClick={submit}
+          >
+            {saving ? 'Submitting…' : 'Submit report'}
+          </button>
+        </div>
+      </AppModal>
     </>
   );
 }
