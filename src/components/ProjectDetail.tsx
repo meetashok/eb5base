@@ -24,7 +24,6 @@ interface ProjectDetailProps {
   images?: ProjectImage[];
   userId: string | null;
   canEdit: boolean;
-  canManageImages?: boolean;
 }
 
 export default function ProjectDetail({
@@ -33,7 +32,6 @@ export default function ProjectDetail({
   images = [],
   userId,
   canEdit,
-  canManageImages = false,
 }: ProjectDetailProps) {
   const location = [p.location_city, p.location_state].filter(Boolean).join(', ');
   const adder = p.profiles as Pick<Profile, 'display_name'> | null | undefined;
@@ -130,12 +128,6 @@ export default function ProjectDetail({
           </div>
         </div>
       </section>
-
-      <ProjectGallery
-        projectId={p.id}
-        initialImages={images}
-        canManage={canManageImages}
-      />
 
       <section className="card-elevated overflow-hidden mb-8 grid grid-cols-1 md:grid-cols-2">
         <InfoRow label="Location" value={location || 'Not listed'} />
@@ -238,6 +230,8 @@ export default function ProjectDetail({
       <div className="mb-8">
         <ConfirmationWidget projectId={p.id} />
       </div>
+
+      <ProjectGallery initialImages={images} />
 
       <section className="mb-8">
         <h2 className="text-lg font-bold text-primary mb-3">Notes</h2>

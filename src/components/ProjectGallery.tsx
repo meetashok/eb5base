@@ -2,19 +2,12 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import type { ProjectImage } from '@/lib/types';
-import ProjectImageManager from './ProjectImageManager';
 
 interface ProjectGalleryProps {
-  projectId: string;
   initialImages?: ProjectImage[];
-  canManage?: boolean;
 }
 
-export default function ProjectGallery({
-  projectId,
-  initialImages = [],
-  canManage = false,
-}: ProjectGalleryProps) {
+export default function ProjectGallery({ initialImages = [] }: ProjectGalleryProps) {
   const [images, setImages] = useState<ProjectImage[]>(initialImages);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
@@ -38,67 +31,56 @@ export default function ProjectGallery({
     return () => window.removeEventListener('keydown', onKey);
   }, [lightboxIndex, images.length, closeLightbox]);
 
+  if (images.length === 0) return null;
+
   const hero = images[0];
 
   return (
-    <section className="mb-6">
-      {canManage && (
-        <div className="mb-4">
-          <ProjectImageManager
-            projectId={projectId}
-            canManage={canManage}
-            onChange={setImages}
+    <section className="mb-8">
+      <h2 className="text-lg font-bold text-primary mb-3">Photos</h2>
+      <div className="relative rounded-xl overflow-hidden bg-base-200 h-48 md:h-64">
+        <button
+          type="button"
+          className="absolute inset-0 w-full h-full group"
+          onClick={() => setLightboxIndex(0)}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={hero.url}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover object-right"
           />
-        </div>
-      )}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                'linear-gradient(to right, hsl(var(--b1)) 0%, hsl(var(--b1) / 0.85) 25%, transparent 55%)',
+            }}
+          />
+          {images.length > 1 && (
+            <span className="absolute bottom-3 right-3 badge badge-sm bg-base-100/90 text-neutral border-0">
+              {images.length} photos
+            </span>
+          )}
+        </button>
+      </div>
 
-      {images.length === 0 ? null : (
-        <>
-          <div className="relative rounded-xl overflow-hidden bg-base-200 h-48 md:h-64">
+      {images.length > 1 && (
+        <div className="flex gap-2 mt-2 overflow-x-auto pb-1">
+          {images.map((img, idx) => (
             <button
+              key={img.id}
               type="button"
-              className="absolute inset-0 w-full h-full group"
-              onClick={() => setLightboxIndex(0)}
+              className={`shrink-0 rounded-lg overflow-hidden border-2 transition-colors ${
+                idx === 0 ? 'border-secondary' : 'border-transparent hover:border-base-300'
+              }`}
+              onClick={() => setLightboxIndex(idx)}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={hero.url}
-                alt=""
-                className="absolute inset-0 w-full h-full object-cover object-right"
-              />
-              <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  background:
-                    'linear-gradient(to right, hsl(var(--b1)) 0%, hsl(var(--b1) / 0.85) 25%, transparent 55%)',
-                }}
-              />
-              {images.length > 1 && (
-                <span className="absolute bottom-3 right-3 badge badge-sm bg-base-100/90 text-neutral border-0">
-                  {images.length} photos
-                </span>
-              )}
+              <img src={img.url} alt="" className="w-16 h-16 object-cover" />
             </button>
-          </div>
-
-          {images.length > 1 && (
-            <div className="flex gap-2 mt-2 overflow-x-auto pb-1">
-              {images.map((img, idx) => (
-                <button
-                  key={img.id}
-                  type="button"
-                  className={`shrink-0 rounded-lg overflow-hidden border-2 transition-colors ${
-                    idx === 0 ? 'border-secondary' : 'border-transparent hover:border-base-300'
-                  }`}
-                  onClick={() => setLightboxIndex(idx)}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={img.url} alt="" className="w-16 h-16 object-cover" />
-                </button>
-              ))}
-            </div>
-          )}
-        </>
+          ))}
+        </div>
       )}
 
       {lightboxIndex !== null && images[lightboxIndex] && (

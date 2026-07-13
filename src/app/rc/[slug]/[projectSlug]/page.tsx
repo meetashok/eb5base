@@ -3,7 +3,6 @@ import ProjectDetail from '@/components/ProjectDetail';
 import { createClient } from '@/lib/supabase-server';
 import { canEditProject, canViewProject, loadNestedProject, loadProjectByParam } from '@/lib/project-loader';
 import {
-  canManageProjectImagesServer,
   loadProjectImages,
 } from '@/lib/project-images-server';
 import { projectPath } from '@/lib/slugs';
@@ -47,7 +46,7 @@ export default async function NestedProjectPage({ params }: Props) {
 
   if (!(await canViewProject(project, userId))) notFound();
 
-  const [{ data: contacts }, canEdit, images, canManageImages] = await Promise.all([
+  const [{ data: contacts }, canEdit, images] = await Promise.all([
     supabase
       .from('project_contacts')
       .select('*')
@@ -55,7 +54,6 @@ export default async function NestedProjectPage({ params }: Props) {
       .order('created_at', { ascending: true }),
     canEditProject(project, userId),
     loadProjectImages(project.id),
-    canManageProjectImagesServer(project, userId),
   ]);
 
   return (
@@ -65,7 +63,6 @@ export default async function NestedProjectPage({ params }: Props) {
       images={images}
       userId={userId}
       canEdit={canEdit}
-      canManageImages={canManageImages}
     />
   );
 }
