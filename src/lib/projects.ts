@@ -35,6 +35,45 @@ function finalizeVoteSummary(summary: VoteSummary) {
   return { ...summary, confirmations_7d, consensus_7d, open_pct_7d };
 }
 
+export type ProjectConfirmationStats = {
+  last_vote_at: string | null;
+  confirmations_7d: number;
+  open_pct_7d: number | null;
+};
+
+/** Confirmation summary for a single project detail page. */
+export async function getProjectConfirmationStats(
+  projectId: string
+): Promise<ProjectConfirmationStats> {
+  const supabase = createClient();
+  const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const { data: votes } = await supabase
+    .from('project_votes')
+    .select('subscription_status, created_at')
+    .eq('project_id', projectId)
+    .order('created_at', { ascending: false });
+
+  const summary = emptyVoteSummary();
+  for (const v of votes || []) {
+    summary.count += 1;
+    if (!summary.last_at) {
+      summary.last_status = v.subscription_status;
+      summary.last_at = v.created_at;
+    }
+    if (new Date(v.created_at).getTime() >= sevenDaysAgo) {
+      if (v.subscription_status === 'open') summary.open_7d += 1;
+      else if (v.subscription_status === 'closed') summary.closed_7d += 1;
+    }
+  }
+
+  const finalized = finalizeVoteSummary(summary);
+  return {
+    last_vote_at: summary.last_at,
+    confirmations_7d: finalized.confirmations_7d,
+    open_pct_7d: finalized.open_pct_7d,
+  };
+}
+
 function withCounts(
   projects: ProjectWithVotes[],
   voteMap?: Map<string, VoteSummary>
