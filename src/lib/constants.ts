@@ -104,7 +104,7 @@ export const ROLE_OPTIONS = [
     value: 'investor',
     label: 'Investor',
     description: "I'm considering or have made an EB-5 investment",
-    emoji: '📊',
+    emoji: '💰',
   },
   {
     value: 'rc_operator',
