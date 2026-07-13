@@ -2,7 +2,9 @@
  * When enabled, every public URL serves the maintenance page
  * (including /projects, /rc, /about, etc.).
  *
- * Default: ON. Set MAINTENANCE_MODE=false to restore the site.
+ * Default: ON. Set MAINTENANCE_MODE=false to restore the directory.
+ * Recommended lock: enable Cloudflare Access first, then set
+ * MAINTENANCE_MODE=false (see docs/CLOUDFLARE_ACCESS.md).
  */
 export function isMaintenanceMode(): boolean {
   const raw = process.env.MAINTENANCE_MODE?.trim().toLowerCase();

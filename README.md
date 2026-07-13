@@ -28,12 +28,21 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+## Access lock (owner + attorney)
+
+Recommended while legal review is open:
+
+1. Put Cloudflare Access in front of `eb5base.com` (allowlist your email + counsel).
+2. Then set `MAINTENANCE_MODE=false` so after Cloudflare login you see the real directory.
+
+Step-by-step: [docs/CLOUDFLARE_ACCESS.md](docs/CLOUDFLARE_ACCESS.md)
+
 ## Maintenance mode
 
 The site defaults to a public maintenance page (all routes, including `/rc` and `/projects`).
 
-- Leave `MAINTENANCE_MODE` unset, or set `MAINTENANCE_MODE=true`, to keep the directory offline.
-- Set `MAINTENANCE_MODE=false` in the host env (e.g. Vercel) and redeploy to restore the site.
+- Leave `MAINTENANCE_MODE` unset, or set `MAINTENANCE_MODE=true`, to keep the directory offline for everyone (including you).
+- Set `MAINTENANCE_MODE=false` only after Cloudflare Access is enabled, then redeploy.
 
 ## Notes
 
