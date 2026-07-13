@@ -1,8 +1,7 @@
 -- EB5 Base — production release (investor beta)
 -- Run once in Supabase SQL Editor. Safe to re-run (idempotent).
 -- Replaces individual migrations listed in docs/DEPLOY_CHECKLIST.md.
-
-BEGIN;
+-- Note: do not wrap in BEGIN/COMMIT — function bodies use END; which conflicts.
 
 -- =============================================================================
 -- 1. Profiles: grants + RLS
@@ -75,7 +74,7 @@ RETURNS trigger
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
-AS $$
+AS $handle_new_user$
 BEGIN
   INSERT INTO public.profiles (id, email, display_name, avatar_url, profile_completed)
   VALUES (
@@ -94,7 +93,7 @@ BEGIN
   );
   RETURN NEW;
 END;
-$$;
+$handle_new_user$;
 
 -- Backfill avatars for existing profiles where Google picture exists in auth metadata
 UPDATE public.profiles p
@@ -233,7 +232,7 @@ RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
-AS $$
+AS $deactivate_own_rc_memberships$
 BEGIN
   IF auth.uid() IS NULL THEN
     RAISE EXCEPTION 'Not authenticated';
@@ -243,14 +242,14 @@ BEGIN
   SET active = FALSE
   WHERE user_id = auth.uid() AND active = TRUE;
 END;
-$$;
+$deactivate_own_rc_memberships$;
 
 CREATE OR REPLACE FUNCTION public.request_rc_membership(p_rc_id uuid)
 RETURNS uuid
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
-AS $$
+AS $request_rc_membership$
 DECLARE
   new_id uuid;
 BEGIN
@@ -276,11 +275,9 @@ BEGIN
 
   RETURN new_id;
 END;
-$$;
+$request_rc_membership$;
 
 REVOKE ALL ON FUNCTION public.deactivate_own_rc_memberships() FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.request_rc_membership(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.deactivate_own_rc_memberships() TO authenticated;
 GRANT EXECUTE ON FUNCTION public.request_rc_membership(uuid) TO authenticated;
-
-COMMIT;
