@@ -220,7 +220,7 @@ export async function createOgImage() {
               maxWidth: 980,
             }}
           >
-            Free directory of regional center projects — browse listings, confirm
+            Free directory of regional center projects. Browse listings, confirm
             subscription status, and help keep the community current.
           </div>
         </div>

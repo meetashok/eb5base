@@ -29,13 +29,13 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://eb5base.com',
     siteName: 'EB5 Base',
-    title: 'EB5 Base — The EB-5 Project Directory',
+    title: 'EB5 Base - The EB-5 Project Directory',
     description:
       'Browse regional center projects, confirm subscription status, and keep fellow investors informed. Free, community-built.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'EB5 Base — The EB-5 Project Directory',
+    title: 'EB5 Base - The EB-5 Project Directory',
     description:
       'Browse regional center projects, confirm subscription status, and keep fellow investors informed. Free, community-built.',
   },

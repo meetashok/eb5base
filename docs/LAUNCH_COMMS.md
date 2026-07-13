@@ -1,4 +1,4 @@
-# EB5 Base — Launch communications
+# EB5 Base - Launch communications
 
 Use these templates for the public beta launch (investor WhatsApp groups + direct RC outreach).
 
@@ -8,7 +8,7 @@ Use these templates for the public beta launch (investor WhatsApp groups + direc
 
 **Short post:**
 
-> EB5 Base is a community-built directory of EB-5 projects — browse by regional center, location, and I-956F status.
+> EB5 Base is a community-built directory of EB-5 projects. Browse by regional center, location, and I-956F status.
 >
 > **Public beta:** https://eb5base.com
 >
@@ -16,21 +16,21 @@ Use these templates for the public beta launch (investor WhatsApp groups + direc
 >
 > Feedback welcome: feedback@eb5base.com
 
-**Follow-up (3–4 days later if quiet):**
+**Follow-up (3-4 days later if quiet):**
 
-> Quick reminder — if you've checked subscription status on any EB-5 project recently, a 10-second confirmation on EB5 Base helps fellow investors: https://eb5base.com/projects
+> Quick reminder: if you've checked subscription status on any EB-5 project recently, a 10-second confirmation on EB5 Base helps fellow investors: https://eb5base.com/projects
 >
 > feedback@eb5base.com for bugs or corrections.
 
 ---
 
-## Direct RC outreach (2–3 trusted contacts)
+## Direct RC outreach (2-3 trusted contacts)
 
-**Subject:** EB5 Base public beta — would love your RC's projects listed accurately
+**Subject:** EB5 Base public beta: would love your RC's projects listed accurately
 
 > Hi [Name],
 >
-> I built EB5 Base (https://eb5base.com) — a community directory where investors browse EB-5 projects and confirm subscription status.
+> I built EB5 Base (https://eb5base.com), a community directory where investors browse EB-5 projects and confirm subscription status.
 >
 > We're in **public beta** this week. If [RC name] has active projects, I'd appreciate you:
 > 1. Checking listings are accurate

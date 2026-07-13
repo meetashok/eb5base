@@ -39,7 +39,7 @@ export default function AuthBrandPanel({
       <div className="space-y-4">
         <div className="flex items-center gap-3">
           <CheckIcon />
-          <span>Browse and compare EB-5 projects</span>
+          <span>Browse EB-5 project listings</span>
         </div>
         <div className="flex items-center gap-3">
           <CheckIcon />

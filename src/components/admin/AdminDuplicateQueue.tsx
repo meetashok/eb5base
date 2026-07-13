@@ -160,7 +160,7 @@ export default function AdminDuplicateQueue() {
           <div>
             <h2 className="font-bold text-primary">{item.reported_name}</h2>
             <p className="text-sm text-neutral/60 mt-1">
-              Reported as duplicate of: {item.duplicate_names.join(', ') || '—'}
+              Reported as duplicate of: {item.duplicate_names.join(', ') || '-'}
               {' · '}
               {item.entity_type === 'project' ? 'Project' : 'Regional center'}
               {' · '}
