@@ -32,7 +32,13 @@ function GoogleIcon() {
 function LoginForm() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
+  const [magicLoading, setMagicLoading] = useState(false);
+  const [email, setEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [magicSent, setMagicSent] = useState(false);
+
+  const redirect = searchParams.get('redirect') || '/onboarding';
+  const nextPath = redirect.startsWith('/') ? redirect : '/onboarding';
 
   async function handleGoogleSignIn() {
     setLoading(true);
@@ -42,13 +48,34 @@ function LoginForm() {
     const { error: err } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${origin}/auth/callback?next=${encodeURIComponent('/profile/setup')}`,
+        redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(nextPath)}`,
       },
     });
     if (err) {
       setLoading(false);
       setError(err.message);
     }
+  }
+
+  async function handleMagicLink(e: React.FormEvent) {
+    e.preventDefault();
+    setMagicLoading(true);
+    setError(null);
+    setMagicSent(false);
+    const supabase = createClient();
+    const origin = window.location.origin;
+    const { error: err } = await supabase.auth.signInWithOtp({
+      email: email.trim(),
+      options: {
+        emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(nextPath)}`,
+      },
+    });
+    setMagicLoading(false);
+    if (err) {
+      setError(err.message);
+      return;
+    }
+    setMagicSent(true);
   }
 
   const urlError = searchParams.get('error');
@@ -64,7 +91,7 @@ function LoginForm() {
               Sign in to <BrandWordmark variant="on-light" className="text-[1.05em]" />
             </h1>
             <p className="text-neutral/60 mt-2">
-              Browse projects, confirm status, and contribute
+              Track your EB-5 cases with encrypted receipt storage
             </p>
           </div>
 
@@ -73,11 +100,16 @@ function LoginForm() {
               {(error || urlError) && (
                 <p className="text-error text-sm">{error || urlError}</p>
               )}
+              {magicSent && (
+                <p className="text-success text-sm">
+                  Check your email for a magic link to sign in.
+                </p>
+              )}
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
                 className="btn btn-outline w-full gap-2 rounded-full transition-all duration-150"
-                disabled={loading}
+                disabled={loading || magicLoading}
               >
                 {loading ? (
                   <span className="loading loading-spinner loading-sm" />
@@ -89,16 +121,40 @@ function LoginForm() {
                 )}
               </button>
 
-              <p className="text-center text-sm text-neutral/50">
-                Email sign-in coming soon
-              </p>
+              <div className="divider text-xs text-neutral/40 my-1">or</div>
+
+              <form onSubmit={handleMagicLink} className="space-y-3">
+                <label className="form-control w-full">
+                  <span className="label-text text-sm">Email magic link</span>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    className="input input-bordered w-full rounded-full"
+                    disabled={magicLoading || loading}
+                  />
+                </label>
+                <button
+                  type="submit"
+                  className="btn btn-primary w-full rounded-full"
+                  disabled={magicLoading || loading || !email.trim()}
+                >
+                  {magicLoading ? (
+                    <span className="loading loading-spinner loading-sm" />
+                  ) : (
+                    'Send magic link'
+                  )}
+                </button>
+              </form>
             </div>
           </div>
 
           <p className="text-center text-xs text-neutral/40 mt-6">
             By signing in, you agree to our{' '}
             <a href="/terms" className="link link-hover">
-              Terms of Service
+              Terms
             </a>{' '}
             and{' '}
             <a href="/privacy" className="link link-hover">
@@ -114,7 +170,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="max-w-md mx-auto px-4 py-12 skeleton-shimmer h-64" />}>
+    <Suspense fallback={<div className="min-h-[50vh] flex items-center justify-center"><span className="loading loading-spinner" /></div>}>
       <LoginForm />
     </Suspense>
   );

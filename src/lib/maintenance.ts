@@ -1,10 +1,9 @@
 import { cookies } from 'next/headers';
 
 /**
- * When enabled, every public URL serves the maintenance page
- * (including /projects, /rc, /about, etc.).
+ * When enabled, every public URL serves the maintenance page.
  *
- * Default: ON. Set MAINTENANCE_MODE=false to restore the directory for everyone.
+ * Default: ON. Set MAINTENANCE_MODE=false to make the case tracker public.
  *
  * Private unlock (owner + counsel): set MAINTENANCE_BYPASS_SECRET and visit
  * https://eb5base.com/?access=YOUR_SECRET once. A cookie keeps access open.

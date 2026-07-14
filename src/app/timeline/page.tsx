@@ -1,19 +1,26 @@
-'use client';
+import { redirect } from 'next/navigation';
+import { createClient } from '@/lib/supabase-server';
+import { loadTimelineData } from '@/lib/cases';
+import TimelineClient from './TimelineClient';
 
-import { Suspense } from 'react';
-import TimelineContent from './TimelineContent';
+export const metadata = { title: 'Timeline' };
+export const dynamic = 'force-dynamic';
 
-export default function TimelinePage() {
+export default async function TimelinePage() {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/login?redirect=/timeline');
+
+  const data = await loadTimelineData(user.id);
+
   return (
-    <Suspense
-      fallback={
-        <div className="max-w-3xl mx-auto px-4 py-12">
-          <div className="skeleton-shimmer h-16 w-full mb-6" />
-          <div className="skeleton-shimmer h-48 w-full" />
-        </div>
-      }
-    >
-      <TimelineContent />
-    </Suspense>
+    <TimelineClient
+      individuals={data.individuals}
+      historyByCase={data.historyByCase}
+      wom={data.wom}
+      profile={data.profile}
+    />
   );
 }

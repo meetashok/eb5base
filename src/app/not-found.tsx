@@ -18,18 +18,17 @@ export default function NotFound() {
             <div className="text-center md:text-left flex-1 min-w-0">
               <p className="hero-eyebrow mb-3">404 · Page not found</p>
               <h1 className="text-3xl md:text-4xl font-bold hero-headline tracking-tight text-balance">
-                This page isn&apos;t open for subscriptions
+                This page is not on your timeline
               </h1>
               <p className="text-neutral/70 leading-relaxed mt-4">
-                Our eagle checked the file. This URL is not in the directory: not approved, not
-                pending, not anywhere on EB5 Base.
+                Our eagle checked the file. This URL is not part of EB5 Base.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 mt-6 justify-center md:justify-start">
                 <Link href="/" className="btn btn-primary rounded-full">
                   Go home
                 </Link>
-                <Link href="/projects" className="btn btn-ghost rounded-full">
-                  Browse projects
+                <Link href="/about" className="btn btn-ghost rounded-full">
+                  About
                 </Link>
               </div>
             </div>

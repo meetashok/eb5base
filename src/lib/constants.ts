@@ -1,4 +1,4 @@
-import type { F956Status, ProjectType, SubscriptionStatus, TeaDesignation } from './types';
+import type { Classification, FormType, I956FStatus, NotifyMode, WomStatus } from './types';
 
 export const US_STATES = [
   { code: 'AL', name: 'Alabama' },
@@ -54,100 +54,50 @@ export const US_STATES = [
   { code: 'DC', name: 'District of Columbia' },
 ] as const;
 
-export const PROJECT_TYPES: { value: ProjectType; label: string }[] = [
-  { value: 'real_estate', label: 'Real Estate' },
-  { value: 'hospitality', label: 'Hospitality' },
-  { value: 'infrastructure', label: 'Infrastructure' },
-  { value: 'manufacturing', label: 'Manufacturing' },
-  { value: 'mixed_use', label: 'Mixed Use' },
-  { value: 'other', label: 'Other' },
-];
+export const RECEIPT_PREFIXES = ['IOE', 'SRC', 'MSC', 'LIN', 'EAC', 'WAC', 'NBC'] as const;
 
-export const TEA_OPTIONS: { value: TeaDesignation; label: string }[] = [
+export const FORM_TYPES: FormType[] = ['I-526E', 'I-485', 'I-131', 'I-765'];
+
+export const PRIMARY_FORM_TYPES: FormType[] = ['I-526E', 'I-485', 'I-131', 'I-765'];
+
+export const DERIVATIVE_FORM_TYPES: FormType[] = ['I-485', 'I-131', 'I-765'];
+
+export const CLASSIFICATION_OPTIONS: { value: Classification; label: string }[] = [
   { value: 'rural', label: 'Rural' },
   { value: 'hua', label: 'HUA' },
-  { value: 'infra', label: 'Infra' },
+  { value: 'both', label: 'Both' },
 ];
 
-export const F956_OPTIONS: { value: F956Status; label: string }[] = [
-  { value: 'not_filed', label: 'Not Filed' },
-  { value: 'filed', label: 'Filed' },
-  { value: 'rfe', label: 'RFE' },
-  { value: 'rfe_response_submitted', label: 'RFE Response Submitted' },
+export const I956F_STATUS_OPTIONS: { value: I956FStatus; label: string }[] = [
   { value: 'approved', label: 'Approved' },
-  { value: 'denied', label: 'Denied' },
+  { value: 'pending', label: 'Pending' },
   { value: 'unknown', label: 'Unknown' },
 ];
 
-/** Browse filter: RFE statuses roll up to Filed */
-export const F956_FILTER_OPTIONS: { value: F956Status; label: string }[] = [
-  { value: 'not_filed', label: 'Not Filed' },
+export const WOM_STATUS_OPTIONS: { value: WomStatus; label: string }[] = [
   { value: 'filed', label: 'Filed' },
-  { value: 'approved', label: 'Approved' },
-  { value: 'denied', label: 'Denied' },
-  { value: 'unknown', label: 'Unknown' },
+  { value: 'hearing_scheduled', label: 'Hearing Scheduled' },
+  { value: 'decided_favorable', label: 'Decided - Favorable' },
+  { value: 'decided_unfavorable', label: 'Decided - Unfavorable' },
+  { value: 'settled', label: 'Settled' },
+  { value: 'dismissed', label: 'Dismissed' },
 ];
 
-export const F956_FILED_STATUSES: F956Status[] = ['filed', 'rfe', 'rfe_response_submitted'];
-
-export const SUBSCRIPTION_OPTIONS: { value: SubscriptionStatus; label: string }[] = [
-  { value: 'not_yet_open', label: 'Not Yet Open' },
-  { value: 'open', label: 'Open' },
-  { value: 'closed', label: 'Closed' },
-  { value: 'unknown', label: 'Unknown' },
+export const NOTIFY_MODE_OPTIONS: { value: NotifyMode; label: string }[] = [
+  { value: 'immediate', label: 'Immediate' },
+  { value: 'digest', label: 'Daily digest' },
 ];
 
-export const CONTACT_ROLES = ['Sales', 'Owner', 'Manager', 'Legal', 'Other'] as const;
-
-export const ROLE_OPTIONS = [
-  {
-    value: 'investor',
-    label: 'Investor',
-    description: "I'm considering or have made an EB-5 investment",
-    emoji: '💰',
-  },
-  {
-    value: 'rc_operator',
-    label: 'RC Representative',
-    description: 'I work for a regional center',
-    emoji: '🏢',
-  },
-  {
-    value: 'attorney',
-    label: 'Attorney',
-    description: 'I practice immigration law',
-    emoji: '⚖️',
-  },
-  {
-    value: 'agent',
-    label: 'Agent',
-    description: 'I help connect investors with projects',
-    emoji: '🤝',
-  },
-] as const;
-
-export const ROLE_BADGE_LABELS: Record<
-  'investor' | 'rc_operator' | 'attorney' | 'agent',
-  string
-> = {
-  investor: 'Investor',
-  rc_operator: 'RC Representative',
-  attorney: 'Attorney',
-  agent: 'Agent',
-};
+export const INSIGHTS_MIN_USERS = 5;
 
 /**
  * Naming convention for user-facing copy:
  * - "EB5 Base" — product/brand (matches domain eb5base.com)
- * - "EB-5" — USCIS visa program (investment, projects, regional centers)
- * - Third-party RC names keep their spelling (e.g. "EB5 United")
+ * - "EB-5" — USCIS visa program
  */
 export const DISCLAIMER =
-  'EB5 Base is a community-maintained directory of EB-5 projects for informational purposes only. It is not affiliated with USCIS, any regional center, or any immigration law firm. Listings are user-contributed and not independently verified. Nothing on this site constitutes legal, financial, or investment advice. Always consult a qualified immigration attorney before making investment decisions.';
+  'EB5 Base helps EB-5 investors track USCIS case status for informational purposes only. It is not affiliated with USCIS, any regional center, or any immigration law firm. Status data comes from USCIS (or a development stub) and may be delayed or incomplete. Nothing on this site constitutes legal, financial, or investment advice. Always consult a qualified immigration attorney.';
 
-export const PAGE_SIZE = 20;
+export const SITE_URL = 'https://eb5base.com';
 
-/** Show the add-project CTA card first (prominent) until the directory reaches this size. */
-export const CTA_CARD_PROMINENT_UNTIL = 12;
-
-export const ADD_PROJECT_HINT_STORAGE_KEY = 'eb5base_seen_add_project_hint';
+export const CONTACT_EMAIL = 'hello@eb5base.com';

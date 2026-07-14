@@ -10,38 +10,26 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex flex-col sm:flex-row items-center gap-3 text-sm text-neutral/50">
             <Logo size={28} showWordmark wordmarkVariant="on-light" wordmarkClassName="text-base" />
-            <span>© {new Date().getFullYear()} EB5 Base. Community-built directory.</span>
+            <span>© {new Date().getFullYear()} EB5 Base. Case status tracker for EB-5 investors.</span>
           </div>
           <div className="flex gap-6">
-            <Link
-              href="/about"
-              className="text-sm text-neutral/50 hover:text-primary transition-colors"
-            >
+            <Link href="/about" className="text-sm text-neutral/50 hover:text-primary transition-colors">
               About
             </Link>
-            <Link
-              href="/terms"
-              className="text-sm text-neutral/50 hover:text-primary transition-colors"
-            >
+            <Link href="/terms" className="text-sm text-neutral/50 hover:text-primary transition-colors">
               Terms
             </Link>
-            <Link
-              href="/privacy"
-              className="text-sm text-neutral/50 hover:text-primary transition-colors"
-            >
+            <Link href="/privacy" className="text-sm text-neutral/50 hover:text-primary transition-colors">
               Privacy
             </Link>
-            <Link
-              href="/contact"
-              className="text-sm text-neutral/50 hover:text-primary transition-colors"
-            >
+            <Link href="/contact" className="text-sm text-neutral/50 hover:text-primary transition-colors">
               Contact
             </Link>
             <a
-              href="mailto:feedback@eb5base.com"
+              href="mailto:hello@eb5base.com"
               className="text-sm text-neutral/50 hover:text-primary transition-colors"
             >
-              Feedback
+              Hello
             </a>
           </div>
         </div>

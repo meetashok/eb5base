@@ -1,39 +1,23 @@
 import { ImageResponse } from 'next/og';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
-import { getHomeStats } from '@/lib/projects';
 import { isMaintenanceMode } from '@/lib/maintenance';
-import { isSupabaseConfigured } from '@/lib/supabase-env';
 
 export const OG_SIZE = { width: 1200, height: 630 };
 export const OG_CONTENT_TYPE = 'image/png';
 
-type OgStats = {
-  projects: number;
-  regionalCenters: number;
-  investors: number;
-  confirmations: number;
-};
-
-const FALLBACK_STATS: OgStats = {
-  projects: 0,
-  regionalCenters: 0,
-  investors: 0,
-  confirmations: 0,
-};
-
 const FEATURES = [
   {
-    title: 'Browse projects',
-    body: 'Search by regional center, location, TEA, and I-956F status.',
+    title: 'Track cases',
+    body: 'I-526E, I-485, I-131, and I-765 for your whole family.',
   },
   {
-    title: 'Confirm status',
-    body: 'Share whether a project is still open for subscriptions.',
+    title: 'Encrypted receipts',
+    body: 'AES-256 at rest. Plaintext never stored in the database.',
   },
   {
-    title: 'Add what you know',
-    body: 'Contribute factual details so fellow investors stay informed.',
+    title: 'Status alerts',
+    body: 'Email when USCIS updates a case you track.',
   },
 ];
 
@@ -43,7 +27,6 @@ async function loadLogoDataUrl() {
 }
 
 async function loadJakartaFont(weight: 500 | 600 | 700) {
-  // Request TTF (not woff2) — @vercel/og / Satori only parse OpenType/TrueType.
   const css = await fetch(
     `https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@${weight}&display=swap`,
     {
@@ -60,19 +43,6 @@ async function loadJakartaFont(weight: 500 | 600 | 700) {
   }
 
   return fetch(match[1]).then((res) => res.arrayBuffer());
-}
-
-async function getStatsSafe(): Promise<OgStats> {
-  if (!isSupabaseConfigured()) return FALLBACK_STATS;
-  try {
-    return await getHomeStats();
-  } catch {
-    return FALLBACK_STATS;
-  }
-}
-
-function formatStat(value: number) {
-  return new Intl.NumberFormat('en-US').format(value);
 }
 
 async function createMaintenanceOgImage() {
@@ -92,68 +62,24 @@ async function createMaintenanceOgImage() {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          padding: '56px 64px',
-          background: 'linear-gradient(135deg, #060f1a 0%, #0a1628 32%, #1a3d32 72%, #0a1628 100%)',
-          fontFamily: 'Plus Jakarta Sans',
-          color: '#f5f1ea',
-          position: 'relative',
-          overflow: 'hidden',
+          padding: 72,
+          background: 'linear-gradient(145deg, #0a1628 0%, #14304a 55%, #2d5a47 100%)',
+          color: '#faf7f2',
+          fontFamily: 'Jakarta',
         }}
       >
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 6,
-            background: 'linear-gradient(90deg, #d4af37 0%, #b87333 55%, #2d5a47 100%)',
-          }}
-        />
-        <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 36 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse requires raw <img> */}
-          <img src={logoSrc} width={68} height={68} alt="" style={{ borderRadius: 16 }} />
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-            <span style={{ fontSize: 34, fontWeight: 500, color: 'rgba(245, 241, 234, 0.78)' }}>
-              EB5
-            </span>
-            <span style={{ fontSize: 34, fontWeight: 700, color: '#d4af37' }}>Base</span>
-          </div>
-        </div>
-        <div style={{ fontSize: 54, fontWeight: 700, letterSpacing: '-0.03em', color: '#faf7f2' }}>
-          Temporarily unavailable
-        </div>
-        <div
-          style={{
-            marginTop: 18,
-            fontSize: 26,
-            fontWeight: 500,
-            color: 'rgba(245, 241, 234, 0.74)',
-            maxWidth: 900,
-            lineHeight: 1.35,
-          }}
-        >
-          We have paused the public directory while we review legal and compliance questions
-          with counsel.
-        </div>
-        <div
-          style={{
-            marginTop: 40,
-            fontSize: 22,
-            fontWeight: 600,
-            color: 'rgba(245, 241, 234, 0.7)',
-          }}
-        >
-          eb5base.com
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={logoSrc} width={84} height={84} alt="" />
+        <div style={{ fontSize: 54, fontWeight: 700, marginTop: 28 }}>EB5 Base</div>
+        <div style={{ fontSize: 28, opacity: 0.85, marginTop: 12 }}>Temporarily unavailable</div>
       </div>
     ),
     {
       ...OG_SIZE,
       fonts: [
-        { name: 'Plus Jakarta Sans', data: fontMedium, weight: 500, style: 'normal' },
-        { name: 'Plus Jakarta Sans', data: fontSemiBold, weight: 600, style: 'normal' },
-        { name: 'Plus Jakarta Sans', data: fontBold, weight: 700, style: 'normal' },
+        { name: 'Jakarta', data: fontMedium, weight: 500, style: 'normal' },
+        { name: 'Jakarta', data: fontSemiBold, weight: 600, style: 'normal' },
+        { name: 'Jakarta', data: fontBold, weight: 700, style: 'normal' },
       ],
     }
   );
@@ -164,21 +90,12 @@ export async function createOgImage() {
     return createMaintenanceOgImage();
   }
 
-  const [logoSrc, stats, fontMedium, fontSemiBold, fontBold] = await Promise.all([
+  const [logoSrc, fontMedium, fontSemiBold, fontBold] = await Promise.all([
     loadLogoDataUrl(),
-    getStatsSafe(),
     loadJakartaFont(500),
     loadJakartaFont(600),
     loadJakartaFont(700),
   ]);
-
-  const showStats = stats.projects >= 10;
-  const statItems = [
-    { label: 'Projects', value: stats.projects },
-    { label: 'Regional Centers', value: stats.regionalCenters },
-    { label: 'Investors', value: stats.investors },
-    { label: 'Confirmations', value: stats.confirmations },
-  ];
 
   return new ImageResponse(
     (
@@ -188,258 +105,54 @@ export async function createOgImage() {
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between',
-          padding: '48px 56px 44px',
-          background: 'linear-gradient(135deg, #060f1a 0%, #0a1628 32%, #1a3d32 72%, #0a1628 100%)',
-          fontFamily: 'Plus Jakarta Sans',
-          color: '#f5f1ea',
-          position: 'relative',
-          overflow: 'hidden',
+          padding: 64,
+          background: '#faf7f2',
+          color: '#0a1628',
+          fontFamily: 'Jakarta',
         }}
       >
-        {/* Atmosphere glows */}
-        <div
-          style={{
-            position: 'absolute',
-            top: -100,
-            right: -20,
-            width: 460,
-            height: 460,
-            borderRadius: 999,
-            background:
-              'radial-gradient(circle, rgba(184, 115, 51, 0.3) 0%, rgba(212, 175, 55, 0.12) 42%, transparent 70%)',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            bottom: -140,
-            left: -80,
-            width: 520,
-            height: 520,
-            borderRadius: 999,
-            background: 'radial-gradient(circle, rgba(45, 90, 71, 0.4) 0%, transparent 68%)',
-          }}
-        />
-
-        {/* Gold → copper → forest accent rule */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 6,
-            background: 'linear-gradient(90deg, #d4af37 0%, #b87333 55%, #2d5a47 100%)',
-          }}
-        />
-
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-            {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse requires raw <img> */}
-            <img
-              src={logoSrc}
-              width={68}
-              height={68}
-              alt=""
-              style={{ borderRadius: 16 }}
-            />
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-              <span
-                style={{
-                  fontSize: 34,
-                  fontWeight: 500,
-                  color: 'rgba(245, 241, 234, 0.78)',
-                  letterSpacing: '0.04em',
-                }}
-              >
-                EB5
-              </span>
-              <span
-                style={{
-                  fontSize: 34,
-                  fontWeight: 700,
-                  color: '#d4af37',
-                  letterSpacing: '-0.02em',
-                }}
-              >
-                Base
-              </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={logoSrc} width={72} height={72} alt="" />
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ fontSize: 42, fontWeight: 700 }}>
+              EB5 <span style={{ color: '#d4af37' }}>Base</span>
+            </div>
+            <div style={{ fontSize: 22, color: '#2d5a47', fontWeight: 600 }}>
+              EB-5 case status tracker
             </div>
           </div>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              padding: '10px 18px',
-              borderRadius: 999,
-              border: '1px solid rgba(212, 175, 55, 0.35)',
-              background: 'rgba(250, 247, 242, 0.06)',
-              color: '#d4af37',
-              fontSize: 16,
-              fontWeight: 600,
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-            }}
-          >
-            Community-built · Investor-led
-          </div>
         </div>
 
-        {/* Headline + supporting copy */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 18 }}>
-          <div
-            style={{
-              fontSize: 54,
-              fontWeight: 700,
-              letterSpacing: '-0.03em',
-              lineHeight: 1.08,
-              color: '#faf7f2',
-            }}
-          >
-            The EB-5 Project Directory
-          </div>
-          <div
-            style={{
-              fontSize: 24,
-              fontWeight: 500,
-              color: 'rgba(245, 241, 234, 0.74)',
-              lineHeight: 1.35,
-              maxWidth: 980,
-            }}
-          >
-            Free directory of regional center projects. Browse listings, confirm
-            subscription status, and help keep the community current.
-          </div>
-        </div>
-
-        {/* Full-width info strip: live stats when available, otherwise value props */}
-        {showStats ? (
-          <div style={{ display: 'flex', gap: 14, marginTop: 10, width: '100%' }}>
-            {statItems.map((item) => (
-              <div
-                key={item.label}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  flex: 1,
-                  padding: '22px 24px',
-                  borderRadius: 18,
-                  background: 'rgba(250, 247, 242, 0.09)',
-                  border: '1px solid rgba(212, 175, 55, 0.24)',
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: 42,
-                    fontWeight: 700,
-                    color: '#d4af37',
-                    letterSpacing: '-0.02em',
-                    lineHeight: 1,
-                  }}
-                >
-                  {formatStat(item.value)}
-                </div>
-                <div
-                  style={{
-                    marginTop: 12,
-                    fontSize: 14,
-                    fontWeight: 600,
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                    color: 'rgba(245, 241, 234, 0.58)',
-                  }}
-                >
-                  {item.label}
-                </div>
+        <div style={{ display: 'flex', gap: 20, marginTop: 48 }}>
+          {FEATURES.map((f) => (
+            <div
+              key={f.title}
+              style={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                padding: 24,
+                borderRadius: 20,
+                background: 'white',
+                border: '1px solid rgba(10,22,40,0.08)',
+              }}
+            >
+              <div style={{ fontSize: 22, fontWeight: 700 }}>{f.title}</div>
+              <div style={{ fontSize: 18, marginTop: 10, color: '#4b5563', lineHeight: 1.4 }}>
+                {f.body}
               </div>
-            ))}
-          </div>
-        ) : (
-          <div style={{ display: 'flex', gap: 14, marginTop: 10, width: '100%' }}>
-            {FEATURES.map((feature) => (
-              <div
-                key={feature.title}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  flex: 1,
-                  padding: '22px 24px',
-                  borderRadius: 18,
-                  background: 'rgba(250, 247, 242, 0.09)',
-                  border: '1px solid rgba(45, 90, 71, 0.5)',
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: 22,
-                    fontWeight: 700,
-                    color: '#d4af37',
-                    letterSpacing: '-0.01em',
-                    lineHeight: 1.2,
-                  }}
-                >
-                  {feature.title}
-                </div>
-                <div
-                  style={{
-                    marginTop: 10,
-                    fontSize: 18,
-                    fontWeight: 500,
-                    color: 'rgba(245, 241, 234, 0.7)',
-                    lineHeight: 1.35,
-                  }}
-                >
-                  {feature.body}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Footer */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginTop: 16,
-          }}
-        >
-          <div
-            style={{
-              fontSize: 22,
-              fontWeight: 600,
-              color: 'rgba(245, 241, 234, 0.78)',
-              letterSpacing: '0.02em',
-            }}
-          >
-            eb5base.com
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              fontSize: 18,
-              fontWeight: 500,
-              color: 'rgba(245, 241, 234, 0.55)',
-            }}
-          >
-            No account needed to browse
-            <span style={{ color: '#d4af37' }}>·</span>
-            Built for EB-5 investors
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     ),
     {
       ...OG_SIZE,
       fonts: [
-        { name: 'Plus Jakarta Sans', data: fontMedium, weight: 500, style: 'normal' },
-        { name: 'Plus Jakarta Sans', data: fontSemiBold, weight: 600, style: 'normal' },
-        { name: 'Plus Jakarta Sans', data: fontBold, weight: 700, style: 'normal' },
+        { name: 'Jakarta', data: fontMedium, weight: 500, style: 'normal' },
+        { name: 'Jakarta', data: fontSemiBold, weight: 600, style: 'normal' },
+        { name: 'Jakarta', data: fontBold, weight: 700, style: 'normal' },
       ],
     }
   );

@@ -1,18 +1,15 @@
-import type { F956Status, SubscriptionStatus } from './types';
-import { F956_OPTIONS, PROJECT_TYPES, SUBSCRIPTION_OPTIONS, TEA_OPTIONS } from './constants';
+import type { BadgeVariant } from './types';
 
-export function formatCurrency(amount: number | null | undefined): string {
-  if (amount == null) return 'Not listed';
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
+export type { BadgeVariant };
 
 export function formatDate(date: string | null | undefined): string {
-  if (!date) return 'Not listed';
-  return new Date(date).toLocaleDateString('en-US', {
+  if (!date) return '—';
+  // Prefer date-only strings without timezone shift
+  const d = /^\d{4}-\d{2}-\d{2}$/.test(date)
+    ? new Date(date + 'T12:00:00')
+    : new Date(date);
+  if (Number.isNaN(d.getTime())) return '—';
+  return d.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -34,79 +31,42 @@ export function timeAgo(date: string | null | undefined): string {
   return `${Math.floor(months / 12)}y ago`;
 }
 
-export function f956Label(status: F956Status | string | null | undefined): string {
-  return F956_OPTIONS.find((o) => o.value === status)?.label ?? 'Unknown';
-}
-
-/** Card and browse labels: RFE / RFE response count as Filed */
-export function f956BrowseLabel(status: F956Status | string | null | undefined): string {
-  if (status === 'rfe' || status === 'rfe_response_submitted') return 'Filed';
-  return f956Label(status);
-}
-
-export function subscriptionLabel(
-  status: SubscriptionStatus | string | null | undefined
-): string {
-  return SUBSCRIPTION_OPTIONS.find((o) => o.value === status)?.label ?? 'Unknown';
-}
-
-export function teaLabel(value: string): string {
-  return TEA_OPTIONS.find((o) => o.value === value)?.label ?? value.toUpperCase();
-}
-
-export function projectTypeLabel(value: string): string {
-  return PROJECT_TYPES.find((o) => o.value === value)?.label ?? value;
-}
-
-export type BadgeVariant = 'success' | 'warning' | 'error' | 'info' | 'muted';
-
-export function f956Variant(status: F956Status | string | null | undefined): BadgeVariant {
-  switch (status) {
-    case 'approved':
-      return 'success';
-    case 'denied':
-      return 'error';
-    case 'filed':
-    case 'rfe':
-    case 'rfe_response_submitted':
-      return 'warning';
-    case 'not_filed':
-    case 'unknown':
-    default:
-      return 'muted';
-  }
-}
-
-export function subscriptionVariant(
-  status: SubscriptionStatus | string | null | undefined
-): BadgeVariant {
-  switch (status) {
-    case 'open':
-      return 'success';
-    case 'closed':
-      return 'error';
-    case 'not_yet_open':
-    case 'unknown':
-    default:
-      return 'muted';
-  }
-}
-
 export function cn(...classes: Array<string | false | null | undefined>): string {
   return classes.filter(Boolean).join(' ');
 }
 
-export function consensus7dLabel(consensus: 'open' | 'closed' | null | undefined): string {
-  if (consensus === 'open') return 'Open';
-  if (consensus === 'closed') return 'Closed';
-  return '';
+/** Color coding for USCIS case statuses on the timeline */
+export function caseStatusVariant(status: string | null | undefined): BadgeVariant {
+  if (!status) return 'muted';
+  const s = status.toLowerCase();
+  if (s.includes('approved') || s.includes('card was produced') || s.includes('oath')) {
+    return 'success';
+  }
+  if (
+    s.includes('rfe') ||
+    s.includes('request for evidence') ||
+    s.includes('denied') ||
+    s.includes('rejected') ||
+    s.includes('withdrawn') ||
+    s.includes('unable') ||
+    s.includes('not found') ||
+    s.includes('invalid')
+  ) {
+    return s.includes('denied') || s.includes('rejected') ? 'error' : 'warning';
+  }
+  if (s.includes('actively reviewed') || s.includes('interview') || s.includes('transferred')) {
+    return 'info';
+  }
+  if (s.includes('received') || s.includes('accepted')) {
+    return 'muted';
+  }
+  return 'info';
 }
 
-export function formatConfirmations7d(count: number): string {
-  return `${count} confirmation${count === 1 ? '' : 's'} in last 7 days`;
-}
-
-export function formatOpenPct7d(pct: number | null | undefined): string | null {
-  if (pct == null) return null;
-  return `${pct}% say open`;
+export function filingQuarter(date: string | null | undefined): string | null {
+  if (!date) return null;
+  const d = new Date(date + (date.length === 10 ? 'T12:00:00' : ''));
+  if (Number.isNaN(d.getTime())) return null;
+  const q = Math.floor(d.getUTCMonth() / 3) + 1;
+  return `Q${q} ${d.getUTCFullYear()}`;
 }

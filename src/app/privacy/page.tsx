@@ -1,3 +1,5 @@
+import { CONTACT_EMAIL } from '@/lib/constants';
+
 export const metadata = {
   title: 'Privacy Policy',
 };
@@ -6,7 +8,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return (
     <section className="space-y-3">
       <h2 className="text-xl font-bold text-primary">{title}</h2>
-      <div className="space-y-3 text-sm text-neutral/80 leading-relaxed">{children}</div>
+      <div className="space-y-3 text-[15px] text-neutral/80 leading-relaxed">{children}</div>
     </section>
   );
 }
@@ -15,17 +17,14 @@ export default function PrivacyPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
       <h1 className="text-3xl font-bold text-primary mb-2">Privacy Policy</h1>
-      <p className="text-sm text-neutral/50 mb-8">Last updated: July 11, 2026</p>
+      <p className="text-sm text-neutral/50 mb-8">Last updated: July 14, 2026</p>
 
       <div className="space-y-10">
         <Section title="Overview">
           <p>
-            EB5 Base (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) operates a community
-            directory of EB-5 regional center projects. This Privacy Policy explains what information
-            we collect, how we use it, and the choices you have.
-          </p>
-          <p>
-            By using EB5 Base, you agree to this policy and our{' '}
+            EB5 Base (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) operates a USCIS case
+            status tracker for EB-5 investors. This policy explains what we collect, how we store it,
+            and your choices. By using the site, you also agree to our{' '}
             <a href="/terms" className="link link-secondary">
               Terms of Service
             </a>
@@ -33,179 +32,98 @@ export default function PrivacyPage() {
           </p>
         </Section>
 
-        <Section title="Information we collect">
+        <Section title="What we collect">
           <p>
-            <strong className="text-neutral">Account information.</strong> When you sign in, we
-            collect your email address and basic authentication data. If you use Google sign-in,
-            Google may share your name and profile image with us according to your Google account
-            settings.
+            <strong className="text-neutral">Account data.</strong> Email address, display name, and
+            sign-in details from Google OAuth or magic link.
           </p>
           <p>
-            <strong className="text-neutral">Profile information.</strong> You may provide a display
-            name, role (such as investor, RC representative, attorney, or agent), profile visibility
-            preferences, and email notification settings.
-          </p>
-          <p>
-            <strong className="text-neutral">Community contributions.</strong> We collect information
-            you choose to submit, including project listings, edits, status confirmations, duplicate
-            reports, and regional center verification requests.
-          </p>
-          <p>
-            <strong className="text-neutral">Technical information.</strong> Our hosting and
-            analytics providers may collect limited technical data such as browser type, device
-            information, page views, and approximate usage patterns.
+            <strong className="text-neutral">Case data.</strong> USCIS receipt numbers (encrypted),
+            form types, filing dates, project/regional center details you provide, family member
+            labels, optional WOM details, and status history returned by USCIS (or our development
+            stub).
           </p>
         </Section>
 
-        <Section title="How we use information">
-          <p>We use information to:</p>
-          <ul className="list-disc pl-5 space-y-2">
-            <li>Create and secure your account</li>
-            <li>Display your profile and community contributions according to your settings</li>
-            <li>Operate, maintain, and improve EB5 Base</li>
-            <li>Review submissions and moderate content</li>
-            <li>Respond to support requests and reports</li>
-            <li>Send service-related emails, such as login links and account notifications</li>
-            <li>Understand aggregate site usage through privacy-focused analytics</li>
-          </ul>
-          <p>We do not sell your personal information.</p>
-        </Section>
-
-        <Section title="What is public vs. private">
+        <Section title="How we store data">
           <p>
-            <strong className="text-neutral">Generally private:</strong> Your email address and
-            account settings are not shown publicly on the directory.
-          </p>
-          <p>
-            <strong className="text-neutral">May be public:</strong> Depending on your settings and
-            activity, your display name, role, project submissions, edits, and other community
-            contributions may be visible to other users as part of the directory. Status
-            confirmations are aggregated. Other users see counts, not who confirmed.
-          </p>
-          <p>
-            You can control whether your profile is visible to others through your profile settings.
-            Even when profile visibility is limited, contributions you make to public directory
-            content may still appear with your display name.
+            Data is stored in Supabase (Postgres) with Row Level Security so you can only access your
+            own rows. Receipt numbers are encrypted at rest with server-side AES-256-GCM. Plaintext
+            receipt numbers are not stored in the database.
           </p>
         </Section>
 
-        <Section title="Third-party services">
-          <p>We use trusted third-party services to operate EB5 Base:</p>
-          <ul className="list-disc pl-5 space-y-2">
-            <li>
-              <strong className="text-neutral">Supabase</strong> for authentication, database
-              hosting, and account session management
-            </li>
-            <li>
-              <strong className="text-neutral">Google</strong> if you choose Google sign-in
-            </li>
-            <li>
-              <strong className="text-neutral">GoatCounter</strong> for privacy-focused, anonymized
-              website analytics
-            </li>
-          </ul>
+        <Section title="How we use data">
           <p>
-            These providers process information on our behalf according to their own privacy
-            policies and our instructions. We recommend reviewing their policies if you want more
-            detail about how they handle data.
+            We use your data only to poll USCIS case status, show you your timeline, send the email
+            alerts you opt into, and compute anonymized aggregate insights. Insights never include
+            receipt numbers and require a minimum group size before we show results.
           </p>
         </Section>
 
-        <Section title="Cookies and similar technologies">
+        <Section title="Sharing">
           <p>
-            EB5 Base uses cookies and similar technologies needed for sign-in, session management,
-            and security. Supabase authentication may set cookies so you can stay signed in.
-          </p>
-          <p>
-            GoatCounter analytics is designed to avoid tracking cookies for advertising and does not
-            build individual advertising profiles. We do not use advertising cookies or third-party
-            ad networks.
+            We do not sell personal information. We do not share receipt numbers with third parties.
+            Aggregate insights are anonymized. Service providers (hosting, email delivery, database)
+            process data only to run the product.
           </p>
         </Section>
 
-        <Section title="Analytics">
-          <p>
-            We use GoatCounter to understand aggregate traffic and usage, such as which pages are
-            visited and general referral information. Analytics are intended to be lightweight and
-            privacy-focused rather than used for cross-site tracking or ad targeting.
-          </p>
+        <Section title="Retention">
+          <p>We keep your data until you delete your account. Deletion removes your data from our database.</p>
         </Section>
 
-        <Section title="Data retention">
+        <Section title="Your rights">
           <p>
-            We retain account and contribution data for as long as needed to operate EB5 Base,
-            maintain the directory, comply with legal obligations, resolve disputes, and enforce our
-            policies.
+            <strong className="text-neutral">Right to know / export.</strong> Use Export My Data in
+            Settings to download a JSON file of your information (including decrypted receipt numbers
+            for your own records).
           </p>
           <p>
-            If you request account deletion, we will take reasonable steps to remove or anonymize
-            personal account information, although some community contributions may remain visible
-            in anonymized or historical form where needed to preserve directory integrity.
-          </p>
-        </Section>
-
-        <Section title="Your choices and rights">
-          <p>
-            You can update many profile fields and notification settings from your account. You may
-            also contact us to request access to, correction of, or deletion of personal information
-            associated with your account.
+            <strong className="text-neutral">Right to delete.</strong> Use Delete My Account in
+            Settings to permanently remove your data.
           </p>
           <p>
-            Depending on where you live, you may have additional rights under laws such as GDPR or
-            CCPA, including the right to know what personal information we process, request deletion,
-            or object to certain processing. We will honor applicable legal rights when verified.
+            <strong className="text-neutral">Right to opt out of sale.</strong> We do not sell personal
+            information. You may still exercise this right by contacting us.
           </p>
-        </Section>
-
-        <Section title="Account deletion">
           <p>
-            To request deletion of your account, email{' '}
-            <a href="mailto:hello@eb5base.com" className="link link-secondary">
-              hello@eb5base.com
+            <a href="/privacy#do-not-sell" className="link link-secondary">
+              Do Not Sell My Personal Information
             </a>
-            . We may need to verify your request before processing it.
           </p>
         </Section>
 
-        <Section title="Children">
-          <p>
-            EB5 Base is not directed to children under 13, and we do not knowingly collect personal
-            information from children under 13. If you believe a child has provided us personal
-            information, contact us and we will take appropriate steps to remove it.
+        <Section title="Do Not Sell My Personal Information">
+          <p id="do-not-sell">
+            EB5 Base does not sell personal information. If you have questions about this statement,
+            email {CONTACT_EMAIL}.
           </p>
         </Section>
 
-        <Section title="International users">
+        <Section title="Breach notification">
           <p>
-            EB5 Base is operated from the United States. If you access the site from outside the
-            United States, your information may be processed in the United States and other
-            countries where our service providers operate. Those countries may have different data
-            protection laws than your home country.
+            If we learn of a breach that affects your personal information, we will notify affected
+            users and regulators as required by applicable law, using the email on your account when
+            possible.
           </p>
         </Section>
 
-        <Section title="Security">
+        <Section title="CCPA">
           <p>
-            We use reasonable administrative, technical, and organizational safeguards to protect
-            personal information. No online service can guarantee absolute security, so please use
-            a strong sign-in method and protect access to your email account.
-          </p>
-        </Section>
-
-        <Section title="Changes to this policy">
-          <p>
-            We may update this Privacy Policy from time to time. When we do, we will revise the
-            &quot;Last updated&quot; date above. Continued use of EB5 Base after changes become
-            effective means you accept the revised policy.
+            If you are a California resident, you have rights under the CCPA/CPRA including access,
+            deletion, and opt-out of sale. We do not sell personal information. Contact{' '}
+            {CONTACT_EMAIL} to make a request.
           </p>
         </Section>
 
         <Section title="Contact">
           <p>
-            Privacy questions or requests:{' '}
-            <a href="mailto:hello@eb5base.com" className="link link-secondary">
-              hello@eb5base.com
+            Email{' '}
+            <a href={`mailto:${CONTACT_EMAIL}`} className="link link-secondary">
+              {CONTACT_EMAIL}
             </a>
+            .
           </p>
         </Section>
       </div>

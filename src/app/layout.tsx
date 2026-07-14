@@ -4,7 +4,6 @@ import { Plus_Jakarta_Sans } from 'next/font/google';
 import Navbar from '@/components/Navbar';
 import BetaBanner from '@/components/BetaBanner';
 import Footer from '@/components/Footer';
-import AddProjectHint from '@/components/AddProjectHint';
 import { AuthPromptProvider } from '@/components/AuthPromptProvider';
 import { ToastProvider } from '@/components/Toast';
 import { hasMaintenanceBypass, isMaintenanceMode } from '@/lib/maintenance';
@@ -24,12 +23,12 @@ export async function generateMetadata(): Promise<Metadata> {
     title: {
       default: publicMaintenance
         ? 'EB5 Base - Temporarily unavailable'
-        : 'EB5 Base - EB-5 Project Directory',
+        : 'EB5 Base - EB-5 Case Status Tracker',
       template: '%s | EB5 Base',
     },
     description: publicMaintenance
       ? 'EB5 Base is temporarily unavailable while we review legal and compliance questions.'
-      : 'Community-built EB-5 project directory. Browse regional center projects, confirm subscription status, and help fellow investors stay informed.',
+      : 'Track your EB-5 USCIS cases with encrypted receipt storage, status notifications, and community insights.',
     metadataBase: new URL('https://eb5base.com'),
     openGraph: {
       type: 'website',
@@ -38,19 +37,19 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: 'EB5 Base',
       title: publicMaintenance
         ? 'EB5 Base - Temporarily unavailable'
-        : 'EB5 Base - The EB-5 Project Directory',
+        : 'EB5 Base - EB-5 Case Status Tracker',
       description: publicMaintenance
         ? 'EB5 Base is temporarily unavailable while we review legal and compliance questions.'
-        : 'Browse regional center projects, confirm subscription status, and keep fellow investors informed. Free, community-built.',
+        : 'Encrypted receipt tracking, email alerts on status changes, and anonymized cohort insights for EB-5 investors.',
     },
     twitter: {
       card: 'summary_large_image',
       title: publicMaintenance
         ? 'EB5 Base - Temporarily unavailable'
-        : 'EB5 Base - The EB-5 Project Directory',
+        : 'EB5 Base - EB-5 Case Status Tracker',
       description: publicMaintenance
         ? 'EB5 Base is temporarily unavailable while we review legal and compliance questions.'
-        : 'Browse regional center projects, confirm subscription status, and keep fellow investors informed. Free, community-built.',
+        : 'Encrypted receipt tracking, email alerts on status changes, and anonymized cohort insights for EB-5 investors.',
     },
     robots: { index: false, follow: false },
     icons: {
@@ -80,7 +79,6 @@ export default function RootLayout({
                 <Navbar />
                 <main className="flex-1 page-enter">{children}</main>
                 <Footer />
-                <AddProjectHint />
               </>
             )}
           </AuthPromptProvider>

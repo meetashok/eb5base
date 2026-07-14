@@ -31,25 +31,25 @@ export default function AuthBrandPanel({
         }}
       />
       <div className="relative">
-      <Logo size={72} className="mb-6 drop-shadow-lg" />
-      <h1 className="text-4xl font-bold mb-4 flex flex-wrap items-center gap-x-2 gap-y-1">{heading}</h1>
-      <p className="text-lg text-primary-content/70 mb-8">
-        Help build the most comprehensive directory of EB-5 projects
-      </p>
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <CheckIcon />
-          <span>Browse EB-5 project listings</span>
+        <Logo size={72} className="mb-6 drop-shadow-lg" />
+        <h1 className="text-4xl font-bold mb-4 flex flex-wrap items-center gap-x-2 gap-y-1">{heading}</h1>
+        <p className="text-lg text-primary-content/70 mb-8">
+          Track your EB-5 USCIS cases with encrypted receipt numbers
+        </p>
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <CheckIcon />
+            <span>Family-wide case timeline</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <CheckIcon />
+            <span>Email alerts on status changes</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <CheckIcon />
+            <span>Anonymized community insights</span>
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          <CheckIcon />
-          <span>Confirm subscription status</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <CheckIcon />
-          <span>Track your investments</span>
-        </div>
-      </div>
       </div>
     </div>
   );

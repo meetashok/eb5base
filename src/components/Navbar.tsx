@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import Logo from '@/components/Logo';
-import AuthGateLink from '@/components/AuthGateLink';
 import type { User } from '@supabase/supabase-js';
 import type { Profile } from '@/lib/types';
 import { resolveProfileAvatar } from '@/lib/profile-avatar';
@@ -62,10 +61,9 @@ export default function Navbar() {
     router.refresh();
   }
 
-  const navLink = (href: string, label: string, hint?: string) => (
+  const navLink = (href: string, label: string) => (
     <Link
       href={href}
-      data-add-project-hint={hint}
       className={`px-3 py-2 text-sm font-medium transition-all duration-150 hover:text-accent ${
         pathname === href || (href !== '/' && pathname.startsWith(href))
           ? 'text-accent'
@@ -76,27 +74,15 @@ export default function Navbar() {
     </Link>
   );
 
-  const authNavLink = (href: string, label: string, hint?: string) => (
-    <AuthGateLink
-      href={href}
-      data-add-project-hint={hint}
-      className={`px-3 py-2 text-sm font-medium transition-all duration-150 hover:text-accent ${
-        pathname === href || (href !== '/' && pathname.startsWith(href))
-          ? 'text-accent'
-          : 'text-primary-content/90'
-      }`}
-    >
-      {label}
-    </AuthGateLink>
-  );
-
   const avatarUrl = resolveProfileAvatar(profile, user);
+  const loggedIn = Boolean(user);
+  const onboarded = Boolean(profile?.onboarding_complete);
 
   return (
     <header className="sticky top-0 z-50 bg-nav-gradient text-primary-content shadow-nav">
       <div className="navbar max-w-6xl mx-auto px-4 min-h-16">
         <div className="navbar-start">
-          <Link href="/" className="hover:opacity-90 transition-opacity inline-flex items-center gap-2">
+          <Link href={loggedIn && onboarded ? '/timeline' : '/'} className="hover:opacity-90 transition-opacity inline-flex items-center gap-2">
             <Logo
               size={36}
               showWordmark
@@ -110,11 +96,19 @@ export default function Navbar() {
         </div>
 
         <div className="navbar-center hidden md:flex gap-1">
-          {navLink('/projects', 'Browse')}
-          {navLink('/rc', 'Regional Centers')}
-          {user && authNavLink('/timeline', 'My Timeline')}
-          {authNavLink('/projects/add', 'Add Project', 'nav')}
-          {navLink('/about', 'About')}
+          {loggedIn && onboarded ? (
+            <>
+              {navLink('/timeline', 'Timeline')}
+              {navLink('/insights', 'Insights')}
+              {navLink('/settings', 'Settings')}
+            </>
+          ) : (
+            <>
+              {navLink('/about', 'About')}
+              {navLink('/privacy', 'Privacy')}
+              {navLink('/terms', 'Terms')}
+            </>
+          )}
         </div>
 
         <div className="navbar-end gap-2">
@@ -142,12 +136,9 @@ export default function Navbar() {
                 tabIndex={0}
                 className="dropdown-content menu bg-base-100 text-neutral rounded-box z-[1] w-52 p-2 shadow-sm border border-base-300 mt-2"
               >
-                <li>
-                  <Link href="/profile">Profile</Link>
-                </li>
-                {profile?.is_admin && (
+                {onboarded && (
                   <li>
-                    <Link href="/admin">Approvals</Link>
+                    <Link href="/settings">Settings</Link>
                   </li>
                 )}
                 <li>
@@ -159,7 +150,7 @@ export default function Navbar() {
             </div>
           ) : (
             <Link href="/login" className="btn btn-sm btn-accent text-accent-content shadow-soft hover:shadow-glow transition-all duration-200">
-              Sign In
+              Login
             </Link>
           )}
 
@@ -178,11 +169,20 @@ export default function Navbar() {
 
       {menuOpen && (
         <div className="md:hidden border-t border-primary-content/20 px-4 pb-4 flex flex-col">
-          {navLink('/projects', 'Browse')}
-          {navLink('/rc', 'Regional Centers')}
-          {user && authNavLink('/timeline', 'My Timeline')}
-          {authNavLink('/projects/add', 'Add Project', 'nav')}
-          {navLink('/about', 'About')}
+          {loggedIn && onboarded ? (
+            <>
+              {navLink('/timeline', 'Timeline')}
+              {navLink('/insights', 'Insights')}
+              {navLink('/settings', 'Settings')}
+            </>
+          ) : (
+            <>
+              {navLink('/about', 'About')}
+              {navLink('/privacy', 'Privacy')}
+              {navLink('/terms', 'Terms')}
+              {!user && navLink('/login', 'Login')}
+            </>
+          )}
         </div>
       )}
     </header>
