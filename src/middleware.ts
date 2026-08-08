@@ -5,6 +5,7 @@ import {
   isValidMaintenanceBypassToken,
   MAINTENANCE_BYPASS_COOKIE,
 } from '@/lib/maintenance';
+import { isNprmTabId, nprmTabHref } from '@/lib/nprm/tabs';
 import { updateSession } from '@/lib/supabase-middleware';
 
 const BYPASS_MAX_AGE_SEC = 60 * 60 * 24 * 30; // 30 days
@@ -27,6 +28,24 @@ function isMaintenancePassthrough(pathname: string): boolean {
   );
 }
 
+/** Legacy ?tab=comments → /nprm/comments (no leftover query). */
+function redirectLegacyNprmTab(request: NextRequest): NextResponse | null {
+  const { pathname } = request.nextUrl;
+  if (pathname !== '/nprm' && pathname !== '/nprm/' && pathname !== '/nrpm' && pathname !== '/nrpm/') {
+    return null;
+  }
+  const tab = request.nextUrl.searchParams.get('tab');
+  if (!isNprmTabId(tab)) return null;
+
+  const url = request.nextUrl.clone();
+  url.pathname = nprmTabHref(tab);
+  url.searchParams.delete('tab');
+  if (!url.searchParams.toString()) {
+    url.search = '';
+  }
+  return NextResponse.redirect(url);
+}
+
 function setBypassCookie(response: NextResponse, secret: string, request: NextRequest) {
   response.cookies.set(MAINTENANCE_BYPASS_COOKIE, secret, {
     httpOnly: true,
@@ -38,6 +57,9 @@ function setBypassCookie(response: NextResponse, secret: string, request: NextRe
 }
 
 export async function middleware(request: NextRequest) {
+  const legacyTab = redirectLegacyNprmTab(request);
+  if (legacyTab) return legacyTab;
+
   if (isMaintenanceMode()) {
     const { pathname } = request.nextUrl;
     const secret = getMaintenanceBypassSecret();

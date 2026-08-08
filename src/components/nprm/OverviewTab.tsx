@@ -34,11 +34,11 @@ export default function OverviewTab({
 }: Props) {
   const volume = dailyVolume(comments);
   const fr =
-    lastCheck?.metadata.federal_register_citation || FR_CITATION;
-  const rin = lastCheck?.metadata.rin || RIN;
+    lastCheck?.metadata?.federal_register_citation || FR_CITATION;
+  const rin = lastCheck?.metadata?.rin || RIN;
   const ends =
     stats.comment_period_ends ||
-    lastCheck?.metadata.comment_period_ends ||
+    lastCheck?.metadata?.comment_period_ends ||
     'Aug 31, 2026 11:59 PM EDT';
   const lastPullLabel = formatLastPull(stats.last_pull);
 
