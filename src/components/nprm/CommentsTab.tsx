@@ -76,8 +76,9 @@ export default function CommentsTab({ comments, themes }: Props) {
           Comments ({filtered.length})
         </h2>
         <p className="text-sm text-neutral mt-1 max-w-xl leading-relaxed">
-          Sorted by date descending. Full comment text lives on regulations.gov.
-          Theme filter only includes comments with grounded sample IDs.
+          Sorted by comment number (newest ID first). Full comment text lives on
+          regulations.gov. Theme filter only includes comments with grounded
+          sample IDs.
         </p>
       </div>
 
@@ -134,17 +135,17 @@ export default function CommentsTab({ comments, themes }: Props) {
               <article className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-3">
                 <header className="space-y-1">
                   <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                    <h3 className="font-bold text-primary text-base leading-snug">
-                      {poster}
-                    </h3>
                     <a
                       href={source}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm font-semibold text-secondary underline underline-offset-2"
+                      className="font-bold text-primary text-base leading-snug underline underline-offset-2 decoration-secondary/50 hover:text-secondary"
                     >
-                      Comment {idLabel} ↗
+                      {comment.id}
                     </a>
+                    <span className="text-sm font-medium text-neutral">
+                      ({poster})
+                    </span>
                   </div>
                   <p className="text-xs font-medium text-neutral/75">
                     Submitted {formatShortDate(comment.attributes?.postedDate)}
