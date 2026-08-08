@@ -105,6 +105,37 @@ export function commentsSince(
   }).length;
 }
 
+export function formatLastPull(raw?: string): string {
+  if (!raw) return 'n/a';
+  // e.g. "2026-08-09 03:32 IST" or ISO-ish strings
+  const m = raw.match(
+    /^(\d{4})-(\d{2})-(\d{2})[ T](\d{1,2}):(\d{2})(?::(\d{2}))?\s*([A-Za-z/_]+)?/
+  );
+  if (!m) return raw;
+  const [, y, mo, d, hh, mm, , tz] = m;
+  const hour24 = Number(hh);
+  const ampm = hour24 >= 12 ? 'PM' : 'AM';
+  const hour12 = hour24 % 12 || 12;
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+  const month = months[Number(mo) - 1] || mo;
+  const time = `${hour12}:${mm} ${ampm}`;
+  const zone = tz ? ` ${tz}` : '';
+  return `${month} ${Number(d)}, ${y}, ${time}${zone}`;
+}
+
 export function formatShortDate(iso?: string): string {
   if (!iso) return 'n/a';
   const d = new Date(iso);

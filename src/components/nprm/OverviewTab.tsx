@@ -8,8 +8,8 @@ import {
   DOCUMENT_URL,
   FR_CITATION,
   RIN,
-  commentsSince,
   dailyVolume,
+  formatLastPull,
 } from '@/lib/nprm/utils';
 import type { NprmComment, NprmTheme } from '@/lib/nprm/types';
 import { FEED_SHARE } from '@/lib/nprm/fetch';
@@ -26,7 +26,6 @@ interface Props {
 
 export default function OverviewTab({
   stats,
-  themes,
   comments,
   lastCheck,
   feedSource,
@@ -34,7 +33,6 @@ export default function OverviewTab({
   onAbout,
 }: Props) {
   const volume = dailyVolume(comments);
-  const sinceAug3 = commentsSince(comments, '2026-08-03');
   const fr =
     lastCheck?.metadata.federal_register_citation || FR_CITATION;
   const rin = lastCheck?.metadata.rin || RIN;
@@ -42,6 +40,7 @@ export default function OverviewTab({
     stats.comment_period_ends ||
     lastCheck?.metadata.comment_period_ends ||
     'Aug 31, 2026 11:59 PM EDT';
+  const lastPullLabel = formatLastPull(stats.last_pull);
 
   return (
     <div className="space-y-8 animate-[fadeIn_0.35s_ease-out]">
@@ -86,35 +85,30 @@ export default function OverviewTab({
         </div>
       </header>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {[
-          { label: 'Comments', value: String(stats.total_comments) },
-          {
-            label: 'Since Aug 3',
-            value: sinceAug3 > 0 ? `+${sinceAug3}` : String(sinceAug3),
-          },
-          { label: 'Themes', value: String(themes.length) },
-          { label: 'Last pull', value: stats.last_pull },
-        ].map((stat) => (
-          <div
-            key={stat.label}
-            className="rounded-xl border-2 border-base-300 bg-base-100 px-3 py-3 shadow-sm"
-          >
-            <p className="text-[11px] uppercase tracking-wider text-neutral/70 font-bold">
-              {stat.label}
-            </p>
-            <p className="mt-1 text-lg font-bold text-primary tabular-nums leading-tight">
-              {stat.value}
-            </p>
-          </div>
-        ))}
+      <div className="rounded-xl border-2 border-base-300 bg-base-100 px-4 py-4 sm:px-5 sm:py-5 shadow-soft flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+        <div>
+          <p className="text-[11px] uppercase tracking-wider text-neutral/70 font-bold">
+            Total comments
+          </p>
+          <p className="mt-1 text-4xl sm:text-5xl font-bold text-primary tabular-nums leading-none">
+            {stats.total_comments}
+          </p>
+        </div>
+        <div className="sm:text-right">
+          <p className="text-[11px] uppercase tracking-wider text-neutral/70 font-bold">
+            Last pull
+          </p>
+          <p className="mt-1 text-sm font-semibold text-neutral tabular-nums">
+            {lastPullLabel}
+          </p>
+        </div>
       </div>
 
       <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
         <div className="flex items-center justify-between gap-3 mb-4">
-          <h3 className="font-bold text-primary">Daily comment volume</h3>
+          <h3 className="font-bold text-primary">Comment volume</h3>
           <span className="text-xs font-medium text-neutral/70">
-            {comments.length} plotted
+            Daily bars + cumulative line
           </span>
         </div>
         <VolumeChart data={volume} />

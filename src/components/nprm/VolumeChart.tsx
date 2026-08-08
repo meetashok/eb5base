@@ -1,8 +1,16 @@
 'use client';
 
+import { useMemo, useState } from 'react';
+
 interface VolumePoint {
   date: string;
   count: number;
+}
+
+interface SeriesPoint {
+  date: string;
+  daily: number;
+  cumulative: number;
 }
 
 /** Fill every calendar day between first and last so the axis is continuous. */
@@ -27,63 +35,133 @@ function shortLabel(iso: string): string {
   return d.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
+    year: 'numeric',
     timeZone: 'UTC',
   });
 }
 
+function toSeries(data: VolumePoint[]): SeriesPoint[] {
+  const filled = fillDailySeries(data);
+  let running = 0;
+  return filled.map((d) => {
+    running += d.count;
+    return { date: d.date, daily: d.count, cumulative: running };
+  });
+}
+
 export default function VolumeChart({ data }: { data: VolumePoint[] }) {
-  if (data.length === 0) {
+  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
+
+  const series = useMemo(() => toSeries(data), [data]);
+  const maxDaily = Math.max(...series.map((d) => d.daily), 1);
+  const maxCum = Math.max(...series.map((d) => d.cumulative), 1);
+  const chartH = 180;
+  const padTop = 8;
+  const padBottom = 4;
+  const plotH = chartH - padTop - padBottom;
+
+  if (series.length === 0) {
     return (
       <p className="text-sm text-neutral">No posted-date volume data yet.</p>
     );
   }
 
-  const series = fillDailySeries(data);
-  const max = Math.max(...series.map((d) => d.count), 1);
-  const chartH = 160; // px - absolute so bar heights resolve reliably
+  const linePoints = series
+    .map((d, i) => {
+      const x = ((i + 0.5) / series.length) * 100;
+      const y =
+        padTop + plotH - (d.cumulative / maxCum) * plotH;
+      return `${x},${(y / chartH) * 100}`;
+    })
+    .join(' ');
+
+  const hovered = hoverIdx != null ? series[hoverIdx] : null;
 
   return (
-    <div className="w-full">
+    <div className="w-full space-y-3">
+      <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-neutral">
+        <span className="inline-flex items-center gap-1.5">
+          <span className="inline-block h-2.5 w-2.5 rounded-sm bg-secondary" />
+          Daily
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="inline-block h-0.5 w-4 bg-primary" />
+          Cumulative total
+        </span>
+        {hovered && (
+          <span className="ml-auto tabular-nums text-primary">
+            {shortLabel(hovered.date)} · +{hovered.daily} day · {hovered.cumulative} total
+          </span>
+        )}
+      </div>
+
       <div
-        className="flex items-end gap-0.5 sm:gap-1"
+        className="relative w-full"
         style={{ height: chartH }}
         role="img"
-        aria-label="Daily comment volume chart"
+        aria-label="Daily and cumulative comment volume chart"
+        onMouseLeave={() => setHoverIdx(null)}
       >
-        {series.map((d) => {
-          const barPx =
-            d.count <= 0 ? 0 : Math.max(6, Math.round((d.count / max) * chartH));
-          return (
-            <div
-              key={d.date}
-              className="group relative flex-1 min-w-0 h-full flex flex-col justify-end items-center"
-            >
-              <div
-                className={`w-full max-w-[14px] sm:max-w-[18px] mx-auto rounded-t-sm transition-colors duration-150 ${
-                  d.count > 0
-                    ? 'bg-secondary group-hover:bg-primary'
-                    : 'bg-transparent'
-                }`}
-                style={{ height: barPx }}
-                title={`${d.date}: ${d.count} comment${d.count === 1 ? '' : 's'}`}
+        {/* Cumulative line (SVG overlay, percent coords) */}
+        <svg
+          className="absolute inset-0 h-full w-full pointer-events-none"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          aria-hidden
+        >
+          <polyline
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.25"
+            vectorEffect="non-scaling-stroke"
+            className="text-primary"
+            points={linePoints}
+          />
+          {series.map((d, i) => {
+            const x = ((i + 0.5) / series.length) * 100;
+            const y =
+              ((padTop + plotH - (d.cumulative / maxCum) * plotH) / chartH) *
+              100;
+            return (
+              <circle
+                key={d.date}
+                cx={x}
+                cy={y}
+                r={hoverIdx === i ? 1.4 : 0.9}
+                className={hoverIdx === i ? 'fill-accent' : 'fill-primary'}
+                vectorEffect="non-scaling-stroke"
               />
-              {/* Hover tooltip */}
-              <div className="pointer-events-none absolute -top-1 left-1/2 z-10 hidden -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-md border border-base-300 bg-base-100 px-2 py-1 text-[10px] font-semibold text-primary shadow-soft group-hover:block">
-                {shortLabel(d.date)} · {d.count}
+            );
+          })}
+        </svg>
+
+        {/* Daily bars */}
+        <div className="absolute inset-0 flex items-end gap-0.5 sm:gap-1">
+          {series.map((d, i) => {
+            const barPx =
+              d.daily <= 0
+                ? 0
+                : Math.max(4, Math.round((d.daily / maxDaily) * plotH));
+            return (
+              <div
+                key={d.date}
+                className="group relative flex-1 min-w-0 h-full flex flex-col justify-end items-center"
+                onMouseEnter={() => setHoverIdx(i)}
+              >
+                <div
+                  className={`w-full max-w-[14px] sm:max-w-[18px] mx-auto rounded-t-sm transition-colors duration-150 ${
+                    d.daily > 0
+                      ? hoverIdx === i
+                        ? 'bg-primary'
+                        : 'bg-secondary/85'
+                      : 'bg-transparent'
+                  }`}
+                  style={{ height: barPx }}
+                />
               </div>
-              <span className="sr-only">
-                {d.date}: {d.count} comments
-              </span>
-            </div>
-          );
-        })}
-      </div>
-      <div className="flex justify-between mt-2 text-[10px] sm:text-xs font-semibold text-neutral">
-        <span>{shortLabel(series[0].date)}</span>
-        <span>
-          Peak {max}/day · {data.reduce((s, d) => s + d.count, 0)} total
-        </span>
-        <span>{shortLabel(series[series.length - 1].date)}</span>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
