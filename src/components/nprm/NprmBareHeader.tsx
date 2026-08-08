@@ -14,7 +14,7 @@ export default function NprmBareHeader() {
             wordmarkClassName="text-lg"
           />
           <span className="badge badge-xs rounded-full border border-copper/50 bg-copper/20 text-copper-light font-semibold uppercase tracking-wider px-1.5 min-h-0 h-4 text-[9px]">
-            NPRM
+            Comment guide
           </span>
         </Link>
         <a

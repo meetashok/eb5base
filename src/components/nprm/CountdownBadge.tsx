@@ -20,14 +20,14 @@ export default function CountdownBadge({ endsLabel }: { endsLabel: string }) {
 
   return (
     <div
-      className={`inline-flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 rounded-lg px-3 py-2 text-sm border ${
+      className={`inline-flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 rounded-xl px-3.5 py-2.5 text-sm border-2 ${
         expired
-          ? 'bg-error/10 border-error/30 text-error'
-          : 'bg-accent/15 border-accent/40 text-primary'
+          ? 'bg-error/10 border-error/40 text-error'
+          : 'bg-accent/20 border-accent/50 text-primary'
       }`}
     >
-      <span className="font-semibold tabular-nums tracking-tight">{label}</span>
-      <span className="text-xs text-neutral/60">Closes {endsLabel}</span>
+      <span className="font-bold tabular-nums tracking-tight">{label}</span>
+      <span className="text-xs font-medium text-neutral">Closes {endsLabel}</span>
     </div>
   );
 }

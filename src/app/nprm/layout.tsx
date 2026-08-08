@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'EB-5 NPRM Tracker',
+  title: 'Comment on the EB-5 Proposed Rule',
   description:
-    'Track USCIS Docket USCIS-2026-0100 comments by theme and build a distinct personal comment prompt. Information site only — file on regulations.gov.',
+    'USCIS Docket USCIS-2026-0100 (91 FR 40676) — read EB-5 NPRM comments by theme and draft a distinct personal comment. Information only; file on regulations.gov.',
   openGraph: {
-    title: 'EB-5 NPRM Tracker | EB5 Base',
+    title: 'Comment on the EB-5 Proposed Rule | EB5 Base',
     description:
-      'Browse real NPRM comments, learn CFR stakes, generate a distinct prompt for your own LLM.',
+      'Context on the July 2026 EB-5 NPRM: grandfathering, sustainment, bridge financing, and more. Build a distinct comment for regulations.gov.',
     url: 'https://eb5base.com/nprm',
   },
 };

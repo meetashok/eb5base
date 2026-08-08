@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import NprmDisclaimer from '@/components/nprm/NprmDisclaimer';
 import {
   DISTINCTNESS_WARNING,
   PROJECT_TYPE_OPTIONS,
@@ -104,17 +103,17 @@ export default function WriteTab({
     <div className="space-y-4 animate-[fadeIn_0.35s_ease-out]">
       <div>
         <h2 className="text-xl font-bold text-primary">Prompt Lab</h2>
-        <p className="text-sm text-neutral/60 mt-1 max-w-2xl leading-relaxed">
+        <p className="text-sm text-neutral mt-1 max-w-2xl leading-relaxed">
           Deterministic prompt builder — no server LLM key. Paste into your own ChatGPT/Claude/Gemini, then paste the final draft into regulations.gov.
         </p>
-        <p className="text-[11px] text-neutral/45 mt-2 font-mono leading-relaxed">
+        <p className="text-xs text-neutral/75 mt-2 font-mono leading-relaxed">
           {/* Diversity math documented in lib/nprm/prompt.ts */}
           {PROMPT_DIVERSITY_NOTE}
         </p>
       </div>
 
       <div
-        className="rounded-lg border border-warning/40 bg-warning/10 px-3 py-3 text-sm text-neutral/80 leading-relaxed"
+        className="rounded-xl border-2 border-warning/50 bg-warning/15 px-3 py-3 text-sm text-neutral font-medium leading-relaxed"
         role="status"
       >
         {DISTINCTNESS_WARNING}
@@ -133,10 +132,10 @@ export default function WriteTab({
                 return (
                   <label
                     key={t.id}
-                    className={`flex items-start gap-2 text-sm rounded-lg border px-3 py-2 cursor-pointer ${
+                    className={`flex items-start gap-2 text-sm rounded-lg border-2 px-3 py-2.5 cursor-pointer font-medium ${
                       checked
-                        ? 'border-secondary bg-secondary/10'
-                        : 'border-base-300'
+                        ? 'border-secondary bg-secondary/15 text-primary'
+                        : 'border-base-300 bg-base-100 text-neutral'
                     } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
                     <input
@@ -158,14 +157,14 @@ export default function WriteTab({
               Step B — Opinion per theme
             </h3>
             {themeIds.length === 0 && (
-              <p className="text-xs text-neutral/50">Select a theme first.</p>
+              <p className="text-xs text-neutral">Select a theme first.</p>
             )}
             {themeIds.map((tid) => {
               const theme = themes.find((t) => t.id === tid);
               if (!theme) return null;
               return (
                 <fieldset key={tid} className="space-y-1.5">
-                  <legend className="text-xs font-medium text-neutral/60">
+                  <legend className="text-xs font-semibold text-neutral">
                     {theme.title}
                   </legend>
                   {theme.opinions.map((op) => (
@@ -350,14 +349,12 @@ export default function WriteTab({
             </p>
           )}
 
-          <ul className="text-sm text-neutral/65 space-y-1 leading-relaxed">
+          <ul className="text-sm text-neutral space-y-1 leading-relaxed">
             <li>- Paste the prompt into your own LLM</li>
             <li>- Edit the draft in your voice</li>
             <li>- Paste the final comment on regulations.gov (we do not POST for you)</li>
             <li>- Consider a 30-minute counsel memo for your file</li>
           </ul>
-
-          <NprmDisclaimer />
         </div>
       </div>
     </div>

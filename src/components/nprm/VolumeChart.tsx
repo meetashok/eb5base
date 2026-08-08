@@ -8,7 +8,7 @@ interface VolumePoint {
 export default function VolumeChart({ data }: { data: VolumePoint[] }) {
   if (data.length === 0) {
     return (
-      <p className="text-sm text-neutral/50">No posted-date volume data yet.</p>
+      <p className="text-sm text-neutral">No posted-date volume data yet.</p>
     );
   }
 
@@ -29,7 +29,7 @@ export default function VolumeChart({ data }: { data: VolumePoint[] }) {
               className="group relative flex-1 min-w-0 flex flex-col justify-end items-center"
             >
               <div
-                className="w-full max-w-[18px] mx-auto rounded-t-sm bg-secondary/80 group-hover:bg-secondary transition-colors duration-200"
+                className="w-full max-w-[18px] mx-auto rounded-t-sm bg-secondary group-hover:bg-primary transition-colors duration-200"
                 style={{ height: `${height}%` }}
                 title={`${d.date}: ${d.count}`}
               />
@@ -40,7 +40,7 @@ export default function VolumeChart({ data }: { data: VolumePoint[] }) {
           );
         })}
       </div>
-      <div className="flex justify-between mt-2 text-[10px] sm:text-xs text-neutral/50">
+      <div className="flex justify-between mt-2 text-[10px] sm:text-xs font-medium text-neutral">
         <span>{data[0]?.date}</span>
         <span>{data[data.length - 1]?.date}</span>
       </div>

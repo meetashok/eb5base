@@ -207,7 +207,11 @@ body {
   }
 
   .page-hero-subtitle {
-    @apply text-neutral/70 mt-2 text-base md:text-lg max-w-2xl;
+    @apply text-neutral mt-2 text-base md:text-lg max-w-2xl leading-relaxed;
+  }
+
+  .nprm-page .page-hero-eyebrow a {
+    @apply text-secondary;
   }
 
   .alert-heritage-info {
