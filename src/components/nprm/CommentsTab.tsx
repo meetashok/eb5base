@@ -17,11 +17,6 @@ interface Props {
   themes: NprmTheme[];
 }
 
-function shortCommentId(id: string): string {
-  const m = id.match(/(\d+)$/);
-  return m ? m[1] : id;
-}
-
 function commentNumber(id: string): number {
   const m = id.match(/(\d+)$/);
   return m ? Number(m[1]) : 0;
@@ -128,7 +123,6 @@ export default function CommentsTab({ comments, themes }: Props) {
             comment.attributes?.aiSummary ||
             groundedAiSummary(comment.id, themes);
           const source = commentUrl(comment.id);
-          const idLabel = shortCommentId(comment.id);
 
           return (
             <li key={comment.id}>
