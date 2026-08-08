@@ -61,7 +61,7 @@ export default function OverviewTab({
               </a>
             </h2>
             <p className="text-sm text-neutral leading-relaxed max-w-2xl">
-              {lastCheck?.metadata.document_title ||
+              {lastCheck?.metadata?.document_title ||
                 'EB-5 Reform and Integrity Act of 2022; Ensuring the Integrity of the EB-5 Program; Automatic Revocation of Petitions for Immigrant Classification'}
             </p>
             <div className="flex flex-wrap gap-2 text-xs">
