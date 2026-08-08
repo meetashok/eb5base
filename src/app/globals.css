@@ -207,7 +207,7 @@ body {
   }
 
   .page-hero-subtitle {
-    @apply text-neutral mt-2 text-base md:text-lg max-w-2xl leading-relaxed;
+    @apply text-neutral mt-2 text-sm md:text-base max-w-2xl leading-relaxed;
   }
 
   .nprm-page .page-hero-eyebrow a {

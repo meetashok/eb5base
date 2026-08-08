@@ -133,7 +133,7 @@ export function buildPrompt(input: {
     '',
     `Filed: ${personal.i_526e_file_date || '(I-526E file month/year)'}`,
     `Type: ${projectLabel}`,
-    `Impact: ${personal.impact || '(personal impact - at least 40 characters)'}`,
+    `Impact: ${personal.impact || '(personal impact, at least 40 characters)'}`,
     '',
     `Guidelines: ${styleLabel}, ${lengthLabel}, ${formatLabel}`,
     '',
