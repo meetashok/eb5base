@@ -4,7 +4,6 @@ import { useMemo, useState } from 'react';
 import type { NprmComment, NprmTheme } from '@/lib/nprm/types';
 import {
   buildCommentThemeIndex,
-  commentSnippet,
   commentUrl,
   formatShortDate,
   groundedAiSummary,
@@ -18,16 +17,16 @@ interface Props {
   themes: NprmTheme[];
 }
 
+function shortCommentId(id: string): string {
+  const m = id.match(/(\d+)$/);
+  return m ? m[1] : id;
+}
+
 export default function CommentsTab({ comments, themes }: Props) {
   const [themeFilter, setThemeFilter] = useState<string>('all');
   const [posterFilter, setPosterFilter] = useState<PosterFilter>('all');
-  const [expanded, setExpanded] = useState<string | null>(null);
 
   const themeIndex = useMemo(() => buildCommentThemeIndex(themes), [themes]);
-  const themeById = useMemo(
-    () => new Map(themes.map((t) => [t.id, t])),
-    [themes]
-  );
 
   const filtered = useMemo(() => {
     const list = comments.filter((c) => {
@@ -88,108 +87,59 @@ export default function CommentsTab({ comments, themes }: Props) {
 
       <ul className="space-y-3">
         {filtered.map((comment) => {
-          const { poster, posterType } = parsePoster(comment.attributes?.title);
-          const isOpen = expanded === comment.id;
+          const { poster } = parsePoster(comment.attributes?.title);
           const ai =
             comment.attributes?.aiSummary ||
             groundedAiSummary(comment.id, themes);
-          const themeIds = themeIndex.get(comment.id) || [];
           const source = commentUrl(comment.id);
+          const idLabel = shortCommentId(comment.id);
 
           return (
             <li key={comment.id}>
-              <article className="rounded-xl border-2 border-base-300 bg-base-100 overflow-hidden shadow-sm">
-                <div className="px-4 py-3 sm:px-5 sm:py-4">
-                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 mb-1.5">
-                    <a
-                      href={source}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-bold text-primary hover:text-secondary underline underline-offset-2 decoration-secondary/40"
-                    >
+              <article className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-3">
+                <header className="space-y-1">
+                  <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                    <h3 className="font-bold text-primary text-base leading-snug">
                       {poster}
-                    </a>
+                    </h3>
                     <a
                       href={source}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-secondary underline underline-offset-2"
+                      className="text-sm font-semibold text-secondary underline underline-offset-2"
                     >
-                      Source on regulations.gov ↗
+                      Comment {idLabel} ↗
                     </a>
-                    <span className="badge badge-sm border border-base-300 bg-base-200 text-neutral font-semibold uppercase tracking-wide">
-                      {posterType}
-                    </span>
-                    <span className="text-xs font-medium text-neutral/75">
-                      {formatShortDate(comment.attributes?.postedDate)}
-                    </span>
-                    {themeIds.map((tid) => (
-                      <span
-                        key={tid}
-                        className="badge badge-sm badge-secondary badge-outline font-semibold"
-                      >
-                        {themeById.get(tid)?.title || tid}
-                      </span>
-                    ))}
                   </div>
+                  <p className="text-xs font-medium text-neutral/75">
+                    Submitted {formatShortDate(comment.attributes?.postedDate)}
+                  </p>
+                </header>
 
-                  <button
-                    type="button"
-                    className="w-full text-left"
-                    onClick={() =>
-                      setExpanded((cur) =>
-                        cur === comment.id ? null : comment.id
-                      )
-                    }
-                    aria-expanded={isOpen}
-                  >
+                <div className="rounded-lg border-2 border-info/35 bg-info/5 p-3">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-info mb-1.5">
+                    AI-generated summary
+                  </p>
+                  {ai ? (
+                    <p className="text-sm text-neutral leading-relaxed">{ai}</p>
+                  ) : (
                     <p className="text-sm text-neutral leading-relaxed">
-                      {commentSnippet(comment)}
+                      No summary available for this comment yet.
                     </p>
-                    <span className="mt-2 inline-block text-xs font-semibold text-secondary">
-                      {isOpen ? 'Hide summary' : 'Show summary'}
-                    </span>
-                  </button>
+                  )}
+                  <p className="text-xs text-neutral mt-2 leading-relaxed">
+                    This summary may be incomplete or inaccurate. Please read the{' '}
+                    <a
+                      href={source}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold text-secondary underline underline-offset-2"
+                    >
+                      original comment on regulations.gov
+                    </a>{' '}
+                    to verify.
+                  </p>
                 </div>
-
-                {isOpen && (
-                  <div className="border-t-2 border-base-300 px-4 py-4 sm:px-5 space-y-3 bg-base-200/40">
-                    {ai ? (
-                      <div className="rounded-lg border-2 border-info/40 bg-base-100 p-3">
-                        <p className="text-[11px] font-bold uppercase tracking-wider text-info mb-1.5">
-                          [AI summary]
-                        </p>
-                        <p className="text-sm text-neutral leading-relaxed">
-                          {ai}
-                        </p>
-                        <p className="text-[11px] text-neutral/70 mt-2">
-                          Theme-grounded summary only. Read the full filing on{' '}
-                          <a
-                            href={source}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-semibold text-secondary underline underline-offset-2"
-                          >
-                            regulations.gov
-                          </a>
-                          .
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="rounded-lg border-2 border-dashed border-base-300 bg-base-100 p-3 text-sm text-neutral">
-                        No AI summary for this stub yet.{' '}
-                        <a
-                          href={source}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="font-semibold text-secondary underline underline-offset-2"
-                        >
-                          Open the original on regulations.gov ↗
-                        </a>
-                      </div>
-                    )}
-                  </div>
-                )}
               </article>
             </li>
           );
