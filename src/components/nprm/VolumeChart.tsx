@@ -117,23 +117,25 @@ export default function VolumeChart({ data }: { data: VolumePoint[] }) {
             className="text-primary"
             points={linePoints}
           />
+        </svg>
+
+        {/* Round markers in CSS pixels so they stay circular (SVG circles stretch). */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden>
           {series.map((d, i) => {
-            const x = ((i + 0.5) / series.length) * 100;
-            const y =
-              ((padTop + plotH - (d.cumulative / maxCum) * plotH) / chartH) *
-              100;
+            const left = ((i + 0.5) / series.length) * 100;
+            const topPx = padTop + plotH - (d.cumulative / maxCum) * plotH;
+            const active = hoverIdx === i;
             return (
-              <circle
-                key={d.date}
-                cx={x}
-                cy={y}
-                r={hoverIdx === i ? 1.4 : 0.9}
-                className={hoverIdx === i ? 'fill-accent' : 'fill-primary'}
-                vectorEffect="non-scaling-stroke"
+              <span
+                key={`dot-${d.date}`}
+                className={`absolute block rounded-full border-2 border-base-100 shadow-sm -translate-x-1/2 -translate-y-1/2 ${
+                  active ? 'bg-accent h-2.5 w-2.5' : 'bg-primary h-2 w-2'
+                }`}
+                style={{ left: `${left}%`, top: topPx }}
               />
             );
           })}
-        </svg>
+        </div>
 
         {/* Daily bars */}
         <div className="absolute inset-0 flex items-end gap-0.5 sm:gap-1">
