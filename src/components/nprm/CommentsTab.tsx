@@ -22,6 +22,11 @@ function shortCommentId(id: string): string {
   return m ? m[1] : id;
 }
 
+function commentNumber(id: string): number {
+  const m = id.match(/(\d+)$/);
+  return m ? Number(m[1]) : 0;
+}
+
 export default function CommentsTab({ comments, themes }: Props) {
   const [themeFilter, setThemeFilter] = useState<string>('all');
   const [posterFilter, setPosterFilter] = useState<PosterFilter>('all');
@@ -38,11 +43,10 @@ export default function CommentsTab({ comments, themes }: Props) {
       }
       return true;
     });
-    return [...list].sort((a, b) => {
-      const da = a.attributes?.postedDate || '';
-      const db = b.attributes?.postedDate || '';
-      return db.localeCompare(da);
-    });
+    // Highest comment number first (later filings get higher IDs).
+    return [...list].sort(
+      (a, b) => commentNumber(b.id) - commentNumber(a.id)
+    );
   }, [comments, posterFilter, themeFilter, themeIndex]);
 
   const posterOptions: { id: PosterFilter; label: string }[] = [
