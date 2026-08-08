@@ -54,7 +54,8 @@ export default function CommentsTab({ comments, themes }: Props) {
             Comments ({filtered.length})
           </h2>
           <p className="text-sm text-neutral mt-1 max-w-xl leading-relaxed">
-            Sorted by date descending. Theme filter only includes comments with grounded sample IDs.
+            Sorted by date descending. Full comment text lives on regulations.gov.
+            Theme filter only includes comments with grounded sample IDs.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -92,25 +93,30 @@ export default function CommentsTab({ comments, themes }: Props) {
           const ai =
             comment.attributes?.aiSummary ||
             groundedAiSummary(comment.id, themes);
-          const original =
-            comment.attributes?.originalText ||
-            (comment.attributes?.highlightedContent || '').trim() ||
-            '';
           const themeIds = themeIndex.get(comment.id) || [];
+          const source = commentUrl(comment.id);
 
           return (
             <li key={comment.id}>
               <article className="rounded-xl border-2 border-base-300 bg-base-100 overflow-hidden shadow-sm">
-                <button
-                  type="button"
-                  className="w-full text-left px-4 py-3 sm:px-5 sm:py-4 hover:bg-base-200/70 transition-colors"
-                  onClick={() =>
-                    setExpanded((cur) => (cur === comment.id ? null : comment.id))
-                  }
-                  aria-expanded={isOpen}
-                >
-                  <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                    <span className="font-bold text-primary">{poster}</span>
+                <div className="px-4 py-3 sm:px-5 sm:py-4">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 mb-1.5">
+                    <a
+                      href={source}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-bold text-primary hover:text-secondary underline underline-offset-2 decoration-secondary/40"
+                    >
+                      {poster}
+                    </a>
+                    <a
+                      href={source}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-secondary underline underline-offset-2"
+                    >
+                      Source on regulations.gov ↗
+                    </a>
                     <span className="badge badge-sm border border-base-300 bg-base-200 text-neutral font-semibold uppercase tracking-wide">
                       {posterType}
                     </span>
@@ -126,10 +132,25 @@ export default function CommentsTab({ comments, themes }: Props) {
                       </span>
                     ))}
                   </div>
-                  <p className="text-sm text-neutral leading-relaxed">
-                    {commentSnippet(comment)}
-                  </p>
-                </button>
+
+                  <button
+                    type="button"
+                    className="w-full text-left"
+                    onClick={() =>
+                      setExpanded((cur) =>
+                        cur === comment.id ? null : comment.id
+                      )
+                    }
+                    aria-expanded={isOpen}
+                  >
+                    <p className="text-sm text-neutral leading-relaxed">
+                      {commentSnippet(comment)}
+                    </p>
+                    <span className="mt-2 inline-block text-xs font-semibold text-secondary">
+                      {isOpen ? 'Hide summary' : 'Show summary'}
+                    </span>
+                  </button>
+                </div>
 
                 {isOpen && (
                   <div className="border-t-2 border-base-300 px-4 py-4 sm:px-5 space-y-3 bg-base-200/40">
@@ -142,37 +163,31 @@ export default function CommentsTab({ comments, themes }: Props) {
                           {ai}
                         </p>
                         <p className="text-[11px] text-neutral/70 mt-2">
-                          Grounded in theme summaries tied to this comment ID. Not a substitute for the original filing.
+                          Theme-grounded summary only. Read the full filing on{' '}
+                          <a
+                            href={source}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-semibold text-secondary underline underline-offset-2"
+                          >
+                            regulations.gov
+                          </a>
+                          .
                         </p>
                       </div>
                     ) : (
-                      <div className="rounded-lg border-2 border-dashed border-base-300 p-3 text-sm text-neutral">
-                        [AI summary] Not available for this stub yet. Open the source on regulations.gov.
+                      <div className="rounded-lg border-2 border-dashed border-base-300 bg-base-100 p-3 text-sm text-neutral">
+                        No AI summary for this stub yet.{' '}
+                        <a
+                          href={source}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-semibold text-secondary underline underline-offset-2"
+                        >
+                          Open the original on regulations.gov ↗
+                        </a>
                       </div>
                     )}
-
-                    <details className="rounded-lg border-2 border-base-300 bg-base-100">
-                      <summary className="cursor-pointer px-3 py-2 text-sm font-bold text-primary">
-                        [Original]
-                      </summary>
-                      <div className="px-3 pb-3 text-sm text-neutral leading-relaxed whitespace-pre-wrap">
-                        {original
-                          ? original
-                          : 'Original full text is not in the lightweight feed yet. Use the Source link below for the regulations.gov record.'}
-                      </div>
-                    </details>
-
-                    <footer className="text-xs text-neutral pt-1">
-                      Source:{' '}
-                      <a
-                        href={commentUrl(comment.id)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-semibold text-secondary underline underline-offset-2"
-                      >
-                        {comment.id}
-                      </a>
-                    </footer>
                   </div>
                 )}
               </article>
