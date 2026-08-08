@@ -45,43 +45,74 @@ export default function CommentsTab({ comments, themes }: Props) {
     });
   }, [comments, posterFilter, themeFilter, themeIndex]);
 
+  const posterOptions: { id: PosterFilter; label: string }[] = [
+    { id: 'all', label: 'All posters' },
+    { id: 'anonymous', label: 'Anonymous' },
+    { id: 'named', label: 'Named person' },
+    { id: 'org', label: 'Organization' },
+  ];
+
+  const themeOptions = [
+    { id: 'all', label: 'All themes' },
+    ...themes.map((t) => ({ id: t.id, label: t.title })),
+  ];
+
+  function filterBtnClass(active: boolean) {
+    return `btn btn-sm border-2 ${
+      active
+        ? 'btn-primary text-primary-content border-primary'
+        : 'btn-ghost bg-base-100 border-base-300 text-neutral hover:border-secondary/50'
+    }`;
+  }
+
   return (
     <div className="space-y-6 animate-[fadeIn_0.35s_ease-out]">
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+      <div>
+        <h2 className="text-xl font-bold text-primary">
+          Comments ({filtered.length})
+        </h2>
+        <p className="text-sm text-neutral mt-1 max-w-xl leading-relaxed">
+          Sorted by date descending. Full comment text lives on regulations.gov.
+          Theme filter only includes comments with grounded sample IDs.
+        </p>
+      </div>
+
+      <div className="space-y-3">
         <div>
-          <h2 className="text-xl font-bold text-primary">
-            Comments ({filtered.length})
-          </h2>
-          <p className="text-sm text-neutral mt-1 max-w-xl leading-relaxed">
-            Sorted by date descending. Full comment text lives on regulations.gov.
-            Theme filter only includes comments with grounded sample IDs.
+          <p className="text-[11px] uppercase tracking-wider font-bold text-neutral/70 mb-1.5">
+            Theme
           </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <select
-            className="select select-bordered select-sm border-2 font-medium"
-            value={themeFilter}
-            onChange={(e) => setThemeFilter(e.target.value)}
-            aria-label="Filter by theme"
-          >
-            <option value="all">All themes</option>
-            {themes.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.title}
-              </option>
+          <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by theme">
+            {themeOptions.map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                className={filterBtnClass(themeFilter === opt.id)}
+                aria-pressed={themeFilter === opt.id}
+                onClick={() => setThemeFilter(opt.id)}
+              >
+                {opt.label}
+              </button>
             ))}
-          </select>
-          <select
-            className="select select-bordered select-sm border-2 font-medium"
-            value={posterFilter}
-            onChange={(e) => setPosterFilter(e.target.value as PosterFilter)}
-            aria-label="Filter by poster type"
-          >
-            <option value="all">All posters</option>
-            <option value="anonymous">Anonymous</option>
-            <option value="named">Named person</option>
-            <option value="org">Organization</option>
-          </select>
+          </div>
+        </div>
+        <div>
+          <p className="text-[11px] uppercase tracking-wider font-bold text-neutral/70 mb-1.5">
+            Poster
+          </p>
+          <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by poster type">
+            {posterOptions.map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                className={filterBtnClass(posterFilter === opt.id)}
+                aria-pressed={posterFilter === opt.id}
+                onClick={() => setPosterFilter(opt.id)}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
