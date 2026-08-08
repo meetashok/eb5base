@@ -18,7 +18,12 @@ function isMaintenancePassthrough(pathname: string): boolean {
     pathname === '/opengraph-image' ||
     pathname.startsWith('/opengraph-image/') ||
     pathname === '/twitter-image' ||
-    pathname.startsWith('/twitter-image/')
+    pathname.startsWith('/twitter-image/') ||
+    // NPRM tracker is time-sensitive (comment window) — keep public during directory pause.
+    pathname === '/nprm' ||
+    pathname.startsWith('/nprm/') ||
+    pathname === '/nrpm' ||
+    pathname.startsWith('/nrpm/')
   );
 }
 
@@ -58,7 +63,7 @@ export async function middleware(request: NextRequest) {
       return updateSession(request);
     }
 
-    // Public: maintenance page + metadata images only.
+    // Public: maintenance page + metadata images + NPRM tracker only.
     if (isMaintenancePassthrough(pathname)) {
       return NextResponse.next();
     }

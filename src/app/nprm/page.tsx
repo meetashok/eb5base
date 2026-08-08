@@ -1,16 +1,22 @@
 import { Suspense } from 'react';
 import PageHero from '@/components/PageHero';
+import NprmBareHeader from '@/components/nprm/NprmBareHeader';
 import NprmClient from '@/components/nprm/NprmClient';
 import NprmDisclaimer from '@/components/nprm/NprmDisclaimer';
 import { loadNprmPageData } from '@/lib/nprm/fetch';
+import { hasMaintenanceBypass, isMaintenanceMode } from '@/lib/maintenance';
 
+// Request-time so feed + maintenance chrome stay fresh (comment window is time-sensitive).
+export const dynamic = 'force-dynamic';
 export const revalidate = 3600;
 
 export default async function NprmPage() {
   const data = await loadNprmPageData();
+  const showBareHeader = isMaintenanceMode() && !hasMaintenanceBypass();
 
   return (
     <div>
+      {showBareHeader && <NprmBareHeader />}
       <PageHero
         eyebrow="USCIS-2026-0100"
         title="EB-5 NPRM Tracker"
