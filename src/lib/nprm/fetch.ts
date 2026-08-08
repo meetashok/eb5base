@@ -26,12 +26,12 @@ export const LOCAL_DATA_BASE = '/data/nprm';
 const ASSET_PATHS = ['/assets/data', '/data'] as const;
 
 async function tryFetchText(
-  url: string,
-  revalidate: number
+  url: string
 ): Promise<{ ok: true; text: string } | { ok: false }> {
   try {
     const res = await fetch(url, {
-      next: { revalidate },
+      // Always hit Hatch/CDN fresh so daily publishes show up on refresh.
+      cache: 'no-store',
       headers: { Accept: 'application/json, text/plain, */*' },
     });
     if (!res.ok) return { ok: false };
@@ -52,10 +52,9 @@ async function tryFetchText(
 }
 
 async function tryFetchJson<T>(
-  url: string,
-  revalidate: number
+  url: string
 ): Promise<{ ok: true; data: T } | { ok: false }> {
-  const result = await tryFetchText(url, revalidate);
+  const result = await tryFetchText(url);
   if (!result.ok) return { ok: false };
   try {
     return { ok: true, data: JSON.parse(result.text) as T };
@@ -65,12 +64,11 @@ async function tryFetchJson<T>(
 }
 
 async function fetchNamedJson<T>(
-  name: string,
-  revalidate = 3600
+  name: string
 ): Promise<{ data: T; base: string; source: 'remote' | 'local' } | null> {
   for (const path of ASSET_PATHS) {
     const url = `${FEED_BASE}${path}/${name}`;
-    const remote = await tryFetchJson<T>(url, revalidate);
+    const remote = await tryFetchJson<T>(url);
     if (remote.ok) {
       return { data: remote.data, base: FEED_BASE, source: 'remote' };
     }
@@ -95,7 +93,7 @@ async function fetchNamedJson<T>(
     }
   }
 
-  const local = await tryFetchJson<T>(localUrl, revalidate);
+  const local = await tryFetchJson<T>(localUrl);
   if (local.ok) {
     return { data: local.data, base: LOCAL_DATA_BASE, source: 'local' };
   }
@@ -103,12 +101,11 @@ async function fetchNamedJson<T>(
 }
 
 async function fetchNamedText(
-  name: string,
-  revalidate = 600
+  name: string
 ): Promise<{ text: string; base: string; source: 'remote' | 'local' } | null> {
   for (const path of ASSET_PATHS) {
     const url = `${FEED_BASE}${path}/${name}`;
-    const remote = await tryFetchText(url, revalidate);
+    const remote = await tryFetchText(url);
     if (remote.ok) {
       return { text: remote.text, base: FEED_BASE, source: 'remote' };
     }
@@ -126,7 +123,7 @@ async function fetchNamedText(
     }
   }
 
-  const local = await tryFetchText(`${LOCAL_DATA_BASE}/${name}`, revalidate);
+  const local = await tryFetchText(`${LOCAL_DATA_BASE}/${name}`);
   if (local.ok) {
     return { text: local.text, base: LOCAL_DATA_BASE, source: 'local' };
   }
@@ -160,7 +157,7 @@ export const fetchNprm = {
     return r;
   },
   checkLog: async () => {
-    const r = await fetchNamedText('check.log', 600);
+    const r = await fetchNamedText('check.log');
     if (!r) throw new Error('Failed to load check.log');
     return r;
   },

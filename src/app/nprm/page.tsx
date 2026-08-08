@@ -7,9 +7,8 @@ import { loadNprmPageData } from '@/lib/nprm/fetch';
 import { hasMaintenanceBypass, isMaintenanceMode } from '@/lib/maintenance';
 import { DOCKET_URL } from '@/lib/nprm/utils';
 
-// Request-time so feed + maintenance chrome stay fresh (comment window is time-sensitive).
+// Request-time so Hatch feed publishes show up on every page load.
 export const dynamic = 'force-dynamic';
-export const revalidate = 3600;
 
 export default async function NprmPage() {
   const data = await loadNprmPageData();
