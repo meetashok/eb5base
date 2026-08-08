@@ -1,38 +1,35 @@
 'use client';
 
 import { useCallback, useEffect, useState, useTransition } from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import AboutTab from '@/components/nprm/AboutTab';
 import CommentsTab from '@/components/nprm/CommentsTab';
 import OverviewTab from '@/components/nprm/OverviewTab';
 import ThemesTab from '@/components/nprm/ThemesTab';
 import WriteTab from '@/components/nprm/WriteTab';
 import type { NprmPageData } from '@/lib/nprm/types';
+import {
+  NPRM_TABS,
+  nprmTabHref,
+  tabFromPathname,
+  type NprmTabId,
+} from '@/lib/nprm/tabs';
 
-const TABS = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'themes', label: 'Themes' },
-  { id: 'comments', label: 'Comments' },
-  { id: 'write', label: 'Write' },
-  { id: 'about', label: 'About' },
-] as const;
+export type { NprmTabId } from '@/lib/nprm/tabs';
+export { isNprmTabId, NPRM_TABS, nprmTabHref } from '@/lib/nprm/tabs';
 
-type TabId = (typeof TABS)[number]['id'];
-
-function isTabId(v: string | null): v is TabId {
-  return !!v && TABS.some((t) => t.id === v);
-}
-
-export default function NprmClient({ data }: { data: NprmPageData }) {
+export default function NprmClient({
+  data,
+  tab,
+}: {
+  data: NprmPageData;
+  tab: NprmTabId;
+}) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const tabParam = searchParams.get('tab');
   const [, startTransition] = useTransition();
 
-  const [active, setActive] = useState<TabId>(() =>
-    isTabId(tabParam) ? tabParam : 'overview'
-  );
+  const [active, setActive] = useState<NprmTabId>(tab);
   const [selectedOpinions, setSelectedOpinions] = useState<
     Record<string, string>
   >({});
@@ -42,24 +39,18 @@ export default function NprmClient({ data }: { data: NprmPageData }) {
     {}
   );
 
-  // Sync from URL (back/forward, deep links) without blocking paint.
   useEffect(() => {
-    const next = isTabId(tabParam) ? tabParam : 'overview';
-    setActive(next);
-  }, [tabParam]);
+    setActive(tabFromPathname(pathname) || tab);
+  }, [pathname, tab]);
 
   const setTab = useCallback(
-    (id: TabId) => {
-      setActive(id); // immediate UI
+    (id: NprmTabId) => {
+      setActive(id);
       startTransition(() => {
-        const params = new URLSearchParams(searchParams.toString());
-        if (id === 'overview') params.delete('tab');
-        else params.set('tab', id);
-        const qs = params.toString();
-        router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+        router.replace(nprmTabHref(id), { scroll: false });
       });
     },
-    [pathname, router, searchParams, startTransition]
+    [router, startTransition]
   );
 
   const onSelectOpinion = (themeId: string, opinionId: string) => {
@@ -83,23 +74,23 @@ export default function NprmClient({ data }: { data: NprmPageData }) {
             aria-label="EB-5 proposed rule sections"
             className="flex gap-1 overflow-x-auto py-2.5 -mx-1 px-1"
           >
-            {TABS.map((tab) => {
-              const selected = active === tab.id;
+            {NPRM_TABS.map((t) => {
+              const selected = active === t.id;
               return (
                 <button
-                  key={tab.id}
+                  key={t.id}
                   type="button"
                   role="tab"
                   aria-selected={selected}
-                  id={`nprm-tab-${tab.id}`}
+                  id={`nprm-tab-${t.id}`}
                   className={`shrink-0 px-3.5 sm:px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-150 ${
                     selected
                       ? 'bg-primary text-primary-content shadow-soft'
                       : 'text-neutral bg-base-200/80 hover:bg-base-300 hover:text-primary'
                   }`}
-                  onClick={() => setTab(tab.id)}
+                  onClick={() => setTab(t.id)}
                 >
-                  {tab.label}
+                  {t.label}
                 </button>
               );
             })}
