@@ -296,7 +296,7 @@ export default function EditProjectPage() {
         return;
       }
 
-      // Queue edit for admin approval — live listing unchanged
+      // Queue edit for admin approval - live listing unchanged
       const result = await createSubmission(supabase, {
         entity_type: 'project',
         entity_id: projectId,

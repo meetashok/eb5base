@@ -11,13 +11,13 @@ import { commentUrl } from './utils';
  * Prompt diversity math (~60k+ deterministic before personal story):
  *
  * - 6 themes × ~2.5 opinions avg ≈ 15 theme×opinion pairs
- * - × 3 phrasing variants (prompt-tree phrasing_idx 0..2) ≈ 30–45 base nodes
+ * - × 3 phrasing variants (prompt-tree phrasing_idx 0..2) ≈ 30-45 base nodes
  *   (feed currently ships 30 nodes)
  * - × 8 guideline combos (2 length × 2 style × 2 format) ≈ 240 single-theme
  * - Multi-theme (max 3): C(6,1)+C(6,2)+C(6,3) theme sets, with opinion picks
  *   ≈ 120 single + ~750 pairs + ~2,500 triples ≈ ~3.3k structural combos
  * - × ~6 context-sample rotations (which sample_id / fragment context leads)
- *   ≈ ~20k–60k deterministic prompt skeletons before the personal block
+ *   ≈ ~20k-60k deterministic prompt skeletons before the personal block
  * - Personal block (file date + project type + free-text impact) → near-infinite
  *
  * We ship fragments + a prompt, never a canned form letter. Final wording
@@ -53,7 +53,7 @@ export function buildPrompt(input: {
   opinionsByTheme: Record<string, string>;
   personal: PersonalBlock;
   guidelines: PromptGuidelines;
-  /** Stable seed for phrasing/sample rotation — e.g. impact length. */
+  /** Stable seed for phrasing/sample rotation - e.g. impact length. */
   rotationSeed?: number;
 }): string {
   const {
@@ -84,7 +84,7 @@ export function buildPrompt(input: {
 
     if (opinion) {
       stanceLines.push(
-        `- ${theme.id}: ${opinion.label} — ${opinion.stance}`
+        `- ${theme.id}: ${opinion.label}: ${opinion.stance}`
       );
     }
 
@@ -133,7 +133,7 @@ export function buildPrompt(input: {
     '',
     `Filed: ${personal.i_526e_file_date || '(I-526E file month/year)'}`,
     `Type: ${projectLabel}`,
-    `Impact: ${personal.impact || '(personal impact — at least 40 characters)'}`,
+    `Impact: ${personal.impact || '(personal impact - at least 40 characters)'}`,
     '',
     `Guidelines: ${styleLabel}, ${lengthLabel}, ${formatLabel}`,
     '',

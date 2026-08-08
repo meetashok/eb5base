@@ -1,5 +1,12 @@
-export const NPRM_DISCLAIMER =
-  'Not legal advice. Not affiliated with USCIS, any regional center, or any government agency. eb5base.com/nprm is an information site only — it does not submit comments for you. Comments must be filed by you on regulations.gov. Personal capacity: no foreign principal funding or direction.';
+export const NPRM_DISCLAIMER_PARAS = [
+  'This page is not legal advice. Nothing here is immigration, securities, or investment advice. Please do not treat anything on this page as advice for your case.',
+  'eb5base.com is not affiliated with USCIS, any regional center, or any government agency. eb5base.com/nprm is an information site only. It does not submit comments for you.',
+  'You are responsible for any comment you file on regulations.gov. Review your draft carefully, and consider speaking with your immigration counsel before you submit.',
+  'This tool is offered in a personal capacity for educational use. It is not funded or directed by a foreign principal, regional center, or government agency.',
+] as const;
+
+/** @deprecated prefer NPRM_DISCLAIMER_PARAS */
+export const NPRM_DISCLAIMER = NPRM_DISCLAIMER_PARAS.join(' ');
 
 export const APA_CITATION =
   'shall give interested persons an opportunity to participate in the rule making through submission of written data, views, or arguments...';
@@ -14,7 +21,7 @@ export const ILRC_LINK =
   'https://www.ilrc.org/community-resources/how-submit-comment-federal-regulations';
 
 export const DISTINCTNESS_WARNING =
-  'If 500 people paste the same paragraph, USCIS counts it as 1 — your personal story makes it distinct. GAO: mass mailing campaigns can yield thousands of duplicate comments that agencies may post individually, as attachments, or as a count. OIRA tooling has distilled ~300k → ~30k distinct comments.';
+  'If 500 people paste the same paragraph, USCIS counts it as 1. Your personal story makes it distinct. GAO notes that mass mailing campaigns can yield thousands of duplicate comments that agencies may post individually, as attachments, or as a count. OIRA tooling has distilled about 300k comments down to about 30k distinct ones.';
 
 export const PROJECT_TYPE_OPTIONS = [
   { value: 'rural', label: 'Rural' },

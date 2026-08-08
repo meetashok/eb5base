@@ -1,4 +1,4 @@
-/** Client-side image compression before Supabase upload (target ~300–400 KB). */
+/** Client-side image compression before Supabase upload (target ~300-400 KB). */
 
 const MAX_BYTES = 400 * 1024;
 const MAX_DIMENSION = 1600;

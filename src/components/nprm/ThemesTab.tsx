@@ -21,7 +21,7 @@ export default function ThemesTab({
       <div>
         <h2 className="text-xl font-bold text-primary">Six grounded themes</h2>
         <p className="text-sm text-neutral mt-1 max-w-2xl leading-relaxed">
-          Context and sample IDs come from real regulations.gov comments — not invented talking points.
+          Context and sample IDs come from real regulations.gov comments, not invented talking points.
           Pick an opinion, then continue in Write.
         </p>
       </div>

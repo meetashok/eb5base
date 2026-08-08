@@ -1,4 +1,4 @@
-// ISO 3166-1 alpha-2 codes — names/flags derived at runtime via Intl + emoji
+// ISO 3166-1 alpha-2 codes - names/flags derived at runtime via Intl + emoji
 export const COUNTRY_CODES = [
   'AF', 'AL', 'DZ', 'AD', 'AO', 'AG', 'AR', 'AM', 'AU', 'AT', 'AZ', 'BS', 'BH', 'BD',
   'BB', 'BY', 'BE', 'BZ', 'BJ', 'BT', 'BO', 'BA', 'BW', 'BR', 'BN', 'BG', 'BF', 'BI',

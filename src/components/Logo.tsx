@@ -9,7 +9,7 @@ type LogoProps = {
   showWordmark?: boolean;
   wordmarkClassName?: string;
   wordmarkVariant?: WordmarkVariant;
-  /** When true, clips the image to rounded corners (usually unnecessary — logo PNG is pre-rounded). */
+  /** When true, clips the image to rounded corners (usually unnecessary - logo PNG is pre-rounded). */
   rounded?: boolean;
 };
 

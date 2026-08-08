@@ -94,7 +94,7 @@ export default function WriteTab({
       setCopyMsg(`${label} copied`);
       window.setTimeout(() => setCopyMsg(null), 2000);
     } catch {
-      setCopyMsg('Copy failed — select the text manually');
+      setCopyMsg('Copy failed. Select the text manually.');
       window.setTimeout(() => setCopyMsg(null), 3000);
     }
   }
@@ -104,7 +104,7 @@ export default function WriteTab({
       <div>
         <h2 className="text-xl font-bold text-primary">Prompt Lab</h2>
         <p className="text-sm text-neutral mt-1 max-w-2xl leading-relaxed">
-          Deterministic prompt builder — no server LLM key. Paste into your own ChatGPT/Claude/Gemini, then paste the final draft into regulations.gov.
+          Deterministic prompt builder. No server LLM key. Paste into your own ChatGPT/Claude/Gemini, then paste the final draft into regulations.gov.
         </p>
         <p className="text-xs text-neutral/75 mt-2 font-mono leading-relaxed">
           {/* Diversity math documented in lib/nprm/prompt.ts */}
@@ -123,7 +123,7 @@ export default function WriteTab({
         <div className="lg:col-span-3 space-y-5">
           <section className="space-y-2">
             <h3 className="text-sm font-semibold text-primary">
-              Step A — Themes (max {MAX_THEMES})
+              Step A: Themes (max {MAX_THEMES})
             </h3>
             <div className="space-y-2">
               {themes.map((t) => {
@@ -154,7 +154,7 @@ export default function WriteTab({
 
           <section className="space-y-3">
             <h3 className="text-sm font-semibold text-primary">
-              Step B — Opinion per theme
+              Step B: Opinion per theme
             </h3>
             {themeIds.length === 0 && (
               <p className="text-xs text-neutral">Select a theme first.</p>
@@ -191,7 +191,7 @@ export default function WriteTab({
 
           <section className="space-y-2">
             <h3 className="text-sm font-semibold text-primary">
-              Step C — Personal block (required)
+              Step C: Personal block (required)
             </h3>
             <label className="form-control">
               <span className="label-text text-xs">I-526E file date</span>
@@ -230,7 +230,7 @@ export default function WriteTab({
             </label>
             <label className="form-control">
               <span className="label-text text-xs flex justify-between">
-                <span>Personal impact (1–2 lines)</span>
+                <span>Personal impact (1 to 2 lines)</span>
                 <span
                   className={
                     impactLen >= 40 ? 'text-success' : 'text-warning'
@@ -252,7 +252,7 @@ export default function WriteTab({
 
           <section className="space-y-2">
             <h3 className="text-sm font-semibold text-primary">
-              Step D — Guidelines
+              Step D: Guidelines
             </h3>
             <div className="space-y-2 text-sm">
               <label className="flex items-center gap-2 cursor-pointer">
@@ -264,7 +264,7 @@ export default function WriteTab({
                     setLength((v) => (v === '150' ? '300_450' : '150'))
                   }
                 />
-                Length: 150 words (off = 300–450)
+                Length: 150 words (off = 300 to 450)
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input

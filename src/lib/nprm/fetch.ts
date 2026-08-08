@@ -37,7 +37,7 @@ async function tryFetchText(
     if (!res.ok) return { ok: false };
     const contentType = res.headers.get('content-type') || '';
     const text = await res.text();
-    // Meta share URLs return SPA HTML for unknown paths — reject those.
+    // Meta share URLs return SPA HTML for unknown paths - reject those.
     if (
       contentType.includes('text/html') ||
       text.trimStart().startsWith('<!DOCTYPE') ||

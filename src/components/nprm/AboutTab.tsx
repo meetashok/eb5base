@@ -35,10 +35,11 @@ export default function AboutTab({
       <section className="space-y-2 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
         <h2 className="text-xl font-bold text-primary">Why we built this</h2>
         <p className="text-sm text-neutral leading-relaxed">
-          Post-RIA EB-5 investors want to comment on Docket USCIS-2026-0100 with educated personal stories — not form letters that USCIS can bucket as one. regulations.gov is hard to browse by theme. This page organizes the real comments, explains the CFR stakes in plain English, and helps you build a distinct prompt for your own LLM.
-        </p>
-        <p className="text-sm text-neutral leading-relaxed">
-          Built by Ashok (eb5base): filed I-526E March 2025, conditional green card September 30 2025, visiting Kota August 2026, active in 1,200+ member WhatsApp investor groups. Personal capacity educational use — no RC or government funding or direction.
+          Post-RIA EB-5 investors want to comment on Docket USCIS-2026-0100 with
+          educated personal stories, not form letters that USCIS can bucket as one.
+          regulations.gov is hard to browse by theme. This page organizes the real
+          comments, explains the CFR stakes in plain English, and helps you build a
+          distinct prompt for your own LLM.
         </p>
       </section>
 
@@ -46,7 +47,7 @@ export default function AboutTab({
         <h2 className="text-xl font-bold text-primary">Your rights to comment</h2>
         <div className="space-y-3 text-sm text-neutral leading-relaxed">
           <p>
-            <span className="font-bold text-primary">APA — 5 USC 553(c):</span>{' '}
+            <span className="font-bold text-primary">APA (5 USC 553(c)):</span>{' '}
             {APA_CITATION}{' '}
             <a
               href={APA_LINK}
@@ -58,7 +59,7 @@ export default function AboutTab({
             </a>
           </p>
           <p>
-            <span className="font-bold text-primary">Anonymity — ILRC:</span>{' '}
+            <span className="font-bold text-primary">Anonymity (ILRC):</span>{' '}
             {ILRC_CITATION}{' '}
             <a
               href={ILRC_LINK}
@@ -72,7 +73,7 @@ export default function AboutTab({
           <p>
             <span className="font-bold text-primary">LDA:</span> A comment on
             regulations published in the Federal Register for public comment is
-            not a lobbying contact — filing here does not trigger LDA registration
+            not a lobbying contact. Filing here does not trigger LDA registration
             by itself.
           </p>
           <p>

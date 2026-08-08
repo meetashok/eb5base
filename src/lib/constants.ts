@@ -138,8 +138,8 @@ export const ROLE_BADGE_LABELS: Record<
 
 /**
  * Naming convention for user-facing copy:
- * - "EB5 Base" — product/brand (matches domain eb5base.com)
- * - "EB-5" — USCIS visa program (investment, projects, regional centers)
+ * - "EB5 Base" - product/brand (matches domain eb5base.com)
+ * - "EB-5" - USCIS visa program (investment, projects, regional centers)
  * - Third-party RC names keep their spelling (e.g. "EB5 United")
  */
 export const DISCLAIMER =

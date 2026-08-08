@@ -40,7 +40,7 @@ export default function VolumeChart({ data }: { data: VolumePoint[] }) {
 
   const series = fillDailySeries(data);
   const max = Math.max(...series.map((d) => d.count), 1);
-  const chartH = 160; // px — absolute so bar heights resolve reliably
+  const chartH = 160; // px - absolute so bar heights resolve reliably
 
   return (
     <div className="w-full">

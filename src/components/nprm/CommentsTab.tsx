@@ -142,7 +142,7 @@ export default function CommentsTab({ comments, themes }: Props) {
                           {ai}
                         </p>
                         <p className="text-[11px] text-neutral/70 mt-2">
-                          Grounded in theme summaries tied to this comment ID — not a substitute for the original filing.
+                          Grounded in theme summaries tied to this comment ID. Not a substitute for the original filing.
                         </p>
                       </div>
                     ) : (

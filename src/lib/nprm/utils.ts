@@ -106,7 +106,7 @@ export function commentsSince(
 }
 
 export function formatShortDate(iso?: string): string {
-  if (!iso) return '—';
+  if (!iso) return 'n/a';
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso.slice(0, 10);
   return d.toLocaleDateString('en-US', {

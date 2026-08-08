@@ -396,7 +396,7 @@ export default function ConfirmStatusButtons({
         <>
           {/* Mobile: always show actions */}
           <div className="flex md:hidden">{renderActionButtons(false)}</div>
-          {/* Desktop: fixed-height slot — prompt fades out, actions fade in on hover */}
+          {/* Desktop: fixed-height slot - prompt fades out, actions fade in on hover */}
           <div className="hidden md:block relative h-6">
             <p className="absolute inset-0 flex items-center text-[10px] text-neutral/50 leading-tight transition-opacity duration-150 group-hover:opacity-0 group-focus-within:opacity-0 pointer-events-none">
               {CARD_INVESTOR_PROMPT}
