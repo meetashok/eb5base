@@ -1,0 +1,221 @@
+[
+  {
+    "id": "grandfather_retroactivity",
+    "title": "Grandfather Clause / Retroactivity",
+    "cfrs": [
+      "INA 203(b)(5) as amended by RIA March 15 2022",
+      "8 CFR 204.400(a)",
+      "8 CFR 204.423(b)",
+      "8 CFR 216.6(d)-(e)"
+    ],
+    "summary": "Should post-RIA sustainment / TEA rules apply to investors who filed I-526E after March 15 2022 but before effective date. Comment 0079 Ankit Dave argues retroactive expansion harms investors who relied on 800k TEA and filed I-526E in 2025.",
+    "sample_ids": [
+      "USCIS-2026-0100-0079",
+      "USCIS-2026-0100-0081"
+    ],
+    "opinions": [
+      {
+        "id": "no_retro",
+        "label": "No retroactive application",
+        "stance": "Rules should apply only to petitions filed after final rule effective date, RIA March 15 2022 is statutory cutoff not regulatory cutoff",
+        "fragments": [
+          "Applying new sustainment/bridge restrictions to cases that filed in reliance on existing RIA guidance violates reliance interests",
+          "Investors who filed I-526E at 800k TEA in 2025 made irreversible capital commitment",
+          "Grandfather under 204.400(a) should track RIA enactment March 15 2022 not future rulemaking effective date"
+        ]
+      },
+      {
+        "id": "limited_retro",
+        "label": "Limited retroactivity with transition",
+        "stance": "Allow pending cases 180-day grace or elect old rule",
+        "fragments": [
+          "Transition period would reduce I-829 denials based on bridge financing elimination since 2013",
+          "USCIS should publish clear election for pending I-526E to opt into old 204.423(b)"
+        ]
+      },
+      {
+        "id": "pro_retro",
+        "label": "Pro retro uniformity",
+        "stance": "Program integrity requires same rule for all pending",
+        "fragments": [
+          "Uniform application avoids two-track adjudication",
+          "Final rule should clarify prospective only to avoid litigation"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sustainment",
+    "title": "Sustainment Period - 2yr vs Job Creation",
+    "cfrs": [
+      "INA 203(b)(5)",
+      "8 CFR 204.432",
+      "8 CFR 204.433",
+      "2yr vs 5yr"
+    ],
+    "summary": "NPRM proposes 2-year sustainment. Anonymous 0080 argues 2yr insufficient, cites Portugal ARI 5yr and Yellowstone same-project money-back obligation. Concern about at-risk requirement.",
+    "sample_ids": [
+      "USCIS-2026-0100-0080",
+      "USCIS-2026-0100-0076"
+    ],
+    "opinions": [
+      {
+        "id": "tie_jobs",
+        "label": "Tie to job creation not time",
+        "stance": "Sustainment should end when jobs created and I-829 eligible, not arbitrary 2yr",
+        "fragments": [
+          "Statutory requirement is job creation, not calendar",
+          "2yr clock starting at investment creates mismatch with construction timelines",
+          "At-risk must remain but job-based test is cleaner"
+        ]
+      },
+      {
+        "id": "five_yr",
+        "label": "5yr benchmark like Portugal ARI",
+        "stance": "2yr too short for large projects, prefer 5yr or conditional extension",
+        "fragments": [
+          "Large TEA rural projects have 3-4yr construction, 2yr forces premature redeployment",
+          "Portugal Golden Visa 5yr sustainment offers stability model",
+          "If 2yr retained, clarify start date = filing of I-526E or investment"
+        ]
+      },
+      {
+        "id": "two_yr_ok",
+        "label": "2yr workable if clarified",
+        "stance": "2yr is okay but need clarity on start, redeployment, money-back",
+        "fragments": [
+          "Clarify 2yr starts at investment date not conditional GC",
+          "Money-back obligation for same project (Yellowstone) should not break sustainment",
+          "Allow redeployment within same NCE/JCE without new TEA determination"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "bridge_financing",
+    "title": "Bridge Financing 204.407(e)(1)",
+    "cfrs": [
+      "8 CFR 204.407(e)(1)",
+      "Bridge financing elimination since 2013"
+    ],
+    "summary": "Comment 0077 Intellex Capital attaches brief arguing bridge financing prohibition retroactively eliminates capital stacking used since 2013. Concern about retro cutoff.",
+    "sample_ids": [
+      "USCIS-2026-0100-0077"
+    ],
+    "opinions": [
+      {
+        "id": "allow_bridge",
+        "label": "Allow bridge in good faith",
+        "stance": "Bridge used before EB-5 capital should not disqualify job creation",
+        "fragments": [
+          "Bridge financing is standard market practice to start construction, EB-5 replaces bridge",
+          "Since 2013 industry relied on interim financing, sudden elimination harms reliance",
+          "Allow bridge if disclosed and EB-5 replaces within reasonable time"
+        ]
+      },
+      {
+        "id": "limit_bridge",
+        "label": "Limit but transition",
+        "stance": "Prohibit future bridge but grandfather existing projects",
+        "fragments": [
+          "Grandfather projects with I-956F filed before NPRM effective date",
+          "Require bridge be temporary less than 18 months"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "definitional_asymmetry",
+    "title": "Definitional Asymmetry 204.432 vs 204.433",
+    "cfrs": [
+      "8 CFR 204.432",
+      "8 CFR 204.433"
+    ],
+    "summary": "Comment 0076 points to asymmetry between regional center vs direct definitions of new commercial enterprise and job creating entity.",
+    "sample_ids": [
+      "USCIS-2026-0100-0076"
+    ],
+    "opinions": [
+      {
+        "id": "harmonize",
+        "label": "Harmonize definitions",
+        "stance": "Same NCE/JCE definitions should apply to RC and direct",
+        "fragments": [
+          "Current asymmetry creates disparate treatment of identical investments",
+          "Align 204.432 and 204.433 to reduce RFE risk"
+        ]
+      },
+      {
+        "id": "keep_distinction",
+        "label": "Keep distinction but clarify",
+        "stance": "Distinction intentional, but clarify when each applies",
+        "fragments": [
+          "RC vs direct serve different policy, need plain language guide with examples"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "tea_designation",
+    "title": "TEA Designation & Deference",
+    "cfrs": [
+      "INA 203(b)(5)(B)",
+      "8 CFR 204.409"
+    ],
+    "summary": "Concern that TEA redesignation on redeployment or sustainment extension could cause TEA loss mid-process.",
+    "sample_ids": [
+      "USCIS-2026-0100-0079"
+    ],
+    "opinions": [
+      {
+        "id": "lock_tea",
+        "label": "Lock TEA at filing",
+        "stance": "TEA at time of I-526E filing should lock for sustainment and I-829",
+        "fragments": [
+          "Investors cannot control census tract changes after locking capital",
+          "Deference policy should lock TEA at 90 days after filing"
+        ]
+      },
+      {
+        "id": "allow_redefer",
+        "label": "Allow State letter deference",
+        "stance": "Give deference to state TEA letter at I-956F stage",
+        "fragments": [
+          "State high-unemployment determinations should get deference, avoid USCIS recalculating"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "program_integrity",
+    "title": "Program Integrity / redeployment / money-back",
+    "cfrs": [
+      "RIA Sec 203",
+      "8 CFR 216.6",
+      "At-risk doctrine"
+    ],
+    "summary": "Yellowstone same project money-back and redeployment flexibility argued in 0080. Investor worried 2yr plus at-risk plus money-back guarantee conflicts.",
+    "sample_ids": [
+      "USCIS-2026-0100-0080"
+    ],
+    "opinions": [
+      {
+        "id": "allow_same_project_return",
+        "label": "Allow same-project return obligation",
+        "stance": "Money-back if jobs not created in same project should not violate at-risk",
+        "fragments": [
+          "At-risk is about equity risk not guarantee of return, same-project obligation is normal",
+          "Prohibit only third-party guarantees, not developer refund if project fails"
+        ]
+      },
+      {
+        "id": "strict_at_risk",
+        "label": "Strict at-risk",
+        "stance": "Any return obligation violates at-risk, market needs discipline",
+        "fragments": [
+          "RIA tightened at-risk to curb fraud, keep prohibition broad"
+        ]
+      }
+    ]
+  }
+]

@@ -112,6 +112,7 @@ export default function Navbar() {
         <div className="navbar-center hidden md:flex gap-1">
           {navLink('/projects', 'Browse')}
           {navLink('/rc', 'Regional Centers')}
+          {navLink('/nprm', 'NPRM')}
           {user && authNavLink('/timeline', 'My Timeline')}
           {authNavLink('/projects/add', 'Add Project', 'nav')}
           {navLink('/about', 'About')}
@@ -180,6 +181,7 @@ export default function Navbar() {
         <div className="md:hidden border-t border-primary-content/20 px-4 pb-4 flex flex-col">
           {navLink('/projects', 'Browse')}
           {navLink('/rc', 'Regional Centers')}
+          {navLink('/nprm', 'NPRM')}
           {user && authNavLink('/timeline', 'My Timeline')}
           {authNavLink('/projects/add', 'Add Project', 'nav')}
           {navLink('/about', 'About')}

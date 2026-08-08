@@ -1,0 +1,863 @@
+[
+  {
+    "theme_id": "grandfather_retroactivity",
+    "opinion_id": "no_retro",
+    "phrasing_idx": 0,
+    "label": "Grandfather Clause / Retroactivity - No retroactive application",
+    "cfrs": [
+      "INA 203(b)(5) as amended by RIA March 15 2022",
+      "8 CFR 204.400(a)",
+      "8 CFR 204.423(b)",
+      "8 CFR 216.6(d)-(e)"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0079",
+      "USCIS-2026-0100-0081"
+    ],
+    "prompt_fragment": "Applying new sustainment/bridge restrictions to cases that filed in reliance on existing RIA guidance violates reliance interests",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "grandfather_retroactivity",
+    "opinion_id": "no_retro",
+    "phrasing_idx": 1,
+    "label": "Grandfather Clause / Retroactivity - No retroactive application",
+    "cfrs": [
+      "INA 203(b)(5) as amended by RIA March 15 2022",
+      "8 CFR 204.400(a)",
+      "8 CFR 204.423(b)",
+      "8 CFR 216.6(d)-(e)"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0079",
+      "USCIS-2026-0100-0081"
+    ],
+    "prompt_fragment": "Investors who filed I-526E at 800k TEA in 2025 made irreversible capital commitment",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "grandfather_retroactivity",
+    "opinion_id": "no_retro",
+    "phrasing_idx": 2,
+    "label": "Grandfather Clause / Retroactivity - No retroactive application",
+    "cfrs": [
+      "INA 203(b)(5) as amended by RIA March 15 2022",
+      "8 CFR 204.400(a)",
+      "8 CFR 204.423(b)",
+      "8 CFR 216.6(d)-(e)"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0079",
+      "USCIS-2026-0100-0081"
+    ],
+    "prompt_fragment": "Grandfather under 204.400(a) should track RIA enactment March 15 2022 not future rulemaking effective date",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "grandfather_retroactivity",
+    "opinion_id": "limited_retro",
+    "phrasing_idx": 0,
+    "label": "Grandfather Clause / Retroactivity - Limited retroactivity with transition",
+    "cfrs": [
+      "INA 203(b)(5) as amended by RIA March 15 2022",
+      "8 CFR 204.400(a)",
+      "8 CFR 204.423(b)",
+      "8 CFR 216.6(d)-(e)"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0079",
+      "USCIS-2026-0100-0081"
+    ],
+    "prompt_fragment": "Transition period would reduce I-829 denials based on bridge financing elimination since 2013",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "grandfather_retroactivity",
+    "opinion_id": "limited_retro",
+    "phrasing_idx": 1,
+    "label": "Grandfather Clause / Retroactivity - Limited retroactivity with transition",
+    "cfrs": [
+      "INA 203(b)(5) as amended by RIA March 15 2022",
+      "8 CFR 204.400(a)",
+      "8 CFR 204.423(b)",
+      "8 CFR 216.6(d)-(e)"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0079",
+      "USCIS-2026-0100-0081"
+    ],
+    "prompt_fragment": "USCIS should publish clear election for pending I-526E to opt into old 204.423(b)",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "grandfather_retroactivity",
+    "opinion_id": "pro_retro",
+    "phrasing_idx": 0,
+    "label": "Grandfather Clause / Retroactivity - Pro retro uniformity",
+    "cfrs": [
+      "INA 203(b)(5) as amended by RIA March 15 2022",
+      "8 CFR 204.400(a)",
+      "8 CFR 204.423(b)",
+      "8 CFR 216.6(d)-(e)"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0079",
+      "USCIS-2026-0100-0081"
+    ],
+    "prompt_fragment": "Uniform application avoids two-track adjudication",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "grandfather_retroactivity",
+    "opinion_id": "pro_retro",
+    "phrasing_idx": 1,
+    "label": "Grandfather Clause / Retroactivity - Pro retro uniformity",
+    "cfrs": [
+      "INA 203(b)(5) as amended by RIA March 15 2022",
+      "8 CFR 204.400(a)",
+      "8 CFR 204.423(b)",
+      "8 CFR 216.6(d)-(e)"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0079",
+      "USCIS-2026-0100-0081"
+    ],
+    "prompt_fragment": "Final rule should clarify prospective only to avoid litigation",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "sustainment",
+    "opinion_id": "tie_jobs",
+    "phrasing_idx": 0,
+    "label": "Sustainment Period - 2yr vs Job Creation - Tie to job creation not time",
+    "cfrs": [
+      "INA 203(b)(5)",
+      "8 CFR 204.432",
+      "8 CFR 204.433",
+      "2yr vs 5yr"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0080",
+      "USCIS-2026-0100-0076"
+    ],
+    "prompt_fragment": "Statutory requirement is job creation, not calendar",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "sustainment",
+    "opinion_id": "tie_jobs",
+    "phrasing_idx": 1,
+    "label": "Sustainment Period - 2yr vs Job Creation - Tie to job creation not time",
+    "cfrs": [
+      "INA 203(b)(5)",
+      "8 CFR 204.432",
+      "8 CFR 204.433",
+      "2yr vs 5yr"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0080",
+      "USCIS-2026-0100-0076"
+    ],
+    "prompt_fragment": "2yr clock starting at investment creates mismatch with construction timelines",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "sustainment",
+    "opinion_id": "tie_jobs",
+    "phrasing_idx": 2,
+    "label": "Sustainment Period - 2yr vs Job Creation - Tie to job creation not time",
+    "cfrs": [
+      "INA 203(b)(5)",
+      "8 CFR 204.432",
+      "8 CFR 204.433",
+      "2yr vs 5yr"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0080",
+      "USCIS-2026-0100-0076"
+    ],
+    "prompt_fragment": "At-risk must remain but job-based test is cleaner",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "sustainment",
+    "opinion_id": "five_yr",
+    "phrasing_idx": 0,
+    "label": "Sustainment Period - 2yr vs Job Creation - 5yr benchmark like Portugal ARI",
+    "cfrs": [
+      "INA 203(b)(5)",
+      "8 CFR 204.432",
+      "8 CFR 204.433",
+      "2yr vs 5yr"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0080",
+      "USCIS-2026-0100-0076"
+    ],
+    "prompt_fragment": "Large TEA rural projects have 3-4yr construction, 2yr forces premature redeployment",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "sustainment",
+    "opinion_id": "five_yr",
+    "phrasing_idx": 1,
+    "label": "Sustainment Period - 2yr vs Job Creation - 5yr benchmark like Portugal ARI",
+    "cfrs": [
+      "INA 203(b)(5)",
+      "8 CFR 204.432",
+      "8 CFR 204.433",
+      "2yr vs 5yr"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0080",
+      "USCIS-2026-0100-0076"
+    ],
+    "prompt_fragment": "Portugal Golden Visa 5yr sustainment offers stability model",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "sustainment",
+    "opinion_id": "five_yr",
+    "phrasing_idx": 2,
+    "label": "Sustainment Period - 2yr vs Job Creation - 5yr benchmark like Portugal ARI",
+    "cfrs": [
+      "INA 203(b)(5)",
+      "8 CFR 204.432",
+      "8 CFR 204.433",
+      "2yr vs 5yr"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0080",
+      "USCIS-2026-0100-0076"
+    ],
+    "prompt_fragment": "If 2yr retained, clarify start date = filing of I-526E or investment",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "sustainment",
+    "opinion_id": "two_yr_ok",
+    "phrasing_idx": 0,
+    "label": "Sustainment Period - 2yr vs Job Creation - 2yr workable if clarified",
+    "cfrs": [
+      "INA 203(b)(5)",
+      "8 CFR 204.432",
+      "8 CFR 204.433",
+      "2yr vs 5yr"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0080",
+      "USCIS-2026-0100-0076"
+    ],
+    "prompt_fragment": "Clarify 2yr starts at investment date not conditional GC",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "sustainment",
+    "opinion_id": "two_yr_ok",
+    "phrasing_idx": 1,
+    "label": "Sustainment Period - 2yr vs Job Creation - 2yr workable if clarified",
+    "cfrs": [
+      "INA 203(b)(5)",
+      "8 CFR 204.432",
+      "8 CFR 204.433",
+      "2yr vs 5yr"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0080",
+      "USCIS-2026-0100-0076"
+    ],
+    "prompt_fragment": "Money-back obligation for same project (Yellowstone) should not break sustainment",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "sustainment",
+    "opinion_id": "two_yr_ok",
+    "phrasing_idx": 2,
+    "label": "Sustainment Period - 2yr vs Job Creation - 2yr workable if clarified",
+    "cfrs": [
+      "INA 203(b)(5)",
+      "8 CFR 204.432",
+      "8 CFR 204.433",
+      "2yr vs 5yr"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0080",
+      "USCIS-2026-0100-0076"
+    ],
+    "prompt_fragment": "Allow redeployment within same NCE/JCE without new TEA determination",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "bridge_financing",
+    "opinion_id": "allow_bridge",
+    "phrasing_idx": 0,
+    "label": "Bridge Financing 204.407(e)(1) - Allow bridge in good faith",
+    "cfrs": [
+      "8 CFR 204.407(e)(1)",
+      "Bridge financing elimination since 2013"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0077"
+    ],
+    "prompt_fragment": "Bridge financing is standard market practice to start construction, EB-5 replaces bridge",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "bridge_financing",
+    "opinion_id": "allow_bridge",
+    "phrasing_idx": 1,
+    "label": "Bridge Financing 204.407(e)(1) - Allow bridge in good faith",
+    "cfrs": [
+      "8 CFR 204.407(e)(1)",
+      "Bridge financing elimination since 2013"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0077"
+    ],
+    "prompt_fragment": "Since 2013 industry relied on interim financing, sudden elimination harms reliance",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "bridge_financing",
+    "opinion_id": "allow_bridge",
+    "phrasing_idx": 2,
+    "label": "Bridge Financing 204.407(e)(1) - Allow bridge in good faith",
+    "cfrs": [
+      "8 CFR 204.407(e)(1)",
+      "Bridge financing elimination since 2013"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0077"
+    ],
+    "prompt_fragment": "Allow bridge if disclosed and EB-5 replaces within reasonable time",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "bridge_financing",
+    "opinion_id": "limit_bridge",
+    "phrasing_idx": 0,
+    "label": "Bridge Financing 204.407(e)(1) - Limit but transition",
+    "cfrs": [
+      "8 CFR 204.407(e)(1)",
+      "Bridge financing elimination since 2013"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0077"
+    ],
+    "prompt_fragment": "Grandfather projects with I-956F filed before NPRM effective date",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "bridge_financing",
+    "opinion_id": "limit_bridge",
+    "phrasing_idx": 1,
+    "label": "Bridge Financing 204.407(e)(1) - Limit but transition",
+    "cfrs": [
+      "8 CFR 204.407(e)(1)",
+      "Bridge financing elimination since 2013"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0077"
+    ],
+    "prompt_fragment": "Require bridge be temporary less than 18 months",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "definitional_asymmetry",
+    "opinion_id": "harmonize",
+    "phrasing_idx": 0,
+    "label": "Definitional Asymmetry 204.432 vs 204.433 - Harmonize definitions",
+    "cfrs": [
+      "8 CFR 204.432",
+      "8 CFR 204.433"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0076"
+    ],
+    "prompt_fragment": "Current asymmetry creates disparate treatment of identical investments",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "definitional_asymmetry",
+    "opinion_id": "harmonize",
+    "phrasing_idx": 1,
+    "label": "Definitional Asymmetry 204.432 vs 204.433 - Harmonize definitions",
+    "cfrs": [
+      "8 CFR 204.432",
+      "8 CFR 204.433"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0076"
+    ],
+    "prompt_fragment": "Align 204.432 and 204.433 to reduce RFE risk",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "definitional_asymmetry",
+    "opinion_id": "keep_distinction",
+    "phrasing_idx": 0,
+    "label": "Definitional Asymmetry 204.432 vs 204.433 - Keep distinction but clarify",
+    "cfrs": [
+      "8 CFR 204.432",
+      "8 CFR 204.433"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0076"
+    ],
+    "prompt_fragment": "RC vs direct serve different policy, need plain language guide with examples",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "tea_designation",
+    "opinion_id": "lock_tea",
+    "phrasing_idx": 0,
+    "label": "TEA Designation & Deference - Lock TEA at filing",
+    "cfrs": [
+      "INA 203(b)(5)(B)",
+      "8 CFR 204.409"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0079"
+    ],
+    "prompt_fragment": "Investors cannot control census tract changes after locking capital",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "tea_designation",
+    "opinion_id": "lock_tea",
+    "phrasing_idx": 1,
+    "label": "TEA Designation & Deference - Lock TEA at filing",
+    "cfrs": [
+      "INA 203(b)(5)(B)",
+      "8 CFR 204.409"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0079"
+    ],
+    "prompt_fragment": "Deference policy should lock TEA at 90 days after filing",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "tea_designation",
+    "opinion_id": "allow_redefer",
+    "phrasing_idx": 0,
+    "label": "TEA Designation & Deference - Allow State letter deference",
+    "cfrs": [
+      "INA 203(b)(5)(B)",
+      "8 CFR 204.409"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0079"
+    ],
+    "prompt_fragment": "State high-unemployment determinations should get deference, avoid USCIS recalculating",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "program_integrity",
+    "opinion_id": "allow_same_project_return",
+    "phrasing_idx": 0,
+    "label": "Program Integrity / redeployment / money-back - Allow same-project return obligation",
+    "cfrs": [
+      "RIA Sec 203",
+      "8 CFR 216.6",
+      "At-risk doctrine"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0080"
+    ],
+    "prompt_fragment": "At-risk is about equity risk not guarantee of return, same-project obligation is normal",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "program_integrity",
+    "opinion_id": "allow_same_project_return",
+    "phrasing_idx": 1,
+    "label": "Program Integrity / redeployment / money-back - Allow same-project return obligation",
+    "cfrs": [
+      "RIA Sec 203",
+      "8 CFR 216.6",
+      "At-risk doctrine"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0080"
+    ],
+    "prompt_fragment": "Prohibit only third-party guarantees, not developer refund if project fails",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  },
+  {
+    "theme_id": "program_integrity",
+    "opinion_id": "strict_at_risk",
+    "phrasing_idx": 0,
+    "label": "Program Integrity / redeployment / money-back - Strict at-risk",
+    "cfrs": [
+      "RIA Sec 203",
+      "8 CFR 216.6",
+      "At-risk doctrine"
+    ],
+    "sample_ids": [
+      "USCIS-2026-0100-0080"
+    ],
+    "prompt_fragment": "RIA tightened at-risk to curb fraud, keep prohibition broad",
+    "personal_placeholders": [
+      "i_526e_file_date",
+      "project_type_rural_tea_infra",
+      "personal_impact_1_2_lines"
+    ],
+    "guideline_options": [
+      "length_150",
+      "length_300_450",
+      "bullets",
+      "paragraphs",
+      "plain_english",
+      "formal_regulatory"
+    ]
+  }
+]

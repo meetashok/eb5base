@@ -1,0 +1,120 @@
+export interface NprmStats {
+  docket_id: string;
+  total_comments: number;
+  last_pull: string;
+  comment_period_ends: string;
+  source: string;
+  check_log?: string;
+}
+
+export interface NprmOpinion {
+  id: string;
+  label: string;
+  stance: string;
+  fragments: string[];
+}
+
+export interface NprmTheme {
+  id: string;
+  title: string;
+  cfrs: string[];
+  summary: string;
+  sample_ids: string[];
+  opinions: NprmOpinion[];
+}
+
+export interface NprmPromptNode {
+  theme_id: string;
+  opinion_id: string;
+  phrasing_idx: number;
+  label: string;
+  cfrs: string[];
+  sample_ids: string[];
+  prompt_fragment: string;
+  personal_placeholders: string[];
+  guideline_options: string[];
+}
+
+export interface NprmCommentAttributes {
+  agencyId?: string;
+  objectId?: string;
+  documentType?: string;
+  withdrawn?: boolean;
+  highlightedContent?: string;
+  postedDate?: string;
+  lastModifiedDate?: string;
+  title?: string;
+  /** Optional full original text when enrichment exists */
+  originalText?: string;
+  /** Optional AI summary when enrichment exists */
+  aiSummary?: string;
+}
+
+export interface NprmComment {
+  id: string;
+  type?: string;
+  attributes: NprmCommentAttributes;
+}
+
+export interface NprmCommentsEnvelope {
+  retrieved?: string;
+  total: number;
+  comments: NprmComment[];
+}
+
+export interface NprmLastCheck {
+  metadata: {
+    docket_id: string;
+    document_id: string;
+    document_title: string;
+    document_type?: string;
+    agency?: string;
+    posted_date?: string;
+    comment_period_ends?: string;
+    total_comments?: number;
+    federal_register_citation?: string;
+    rin?: string;
+    dhs_docket_no?: string;
+    data_retrieved?: string;
+  };
+  comments: NprmComment[];
+}
+
+export interface NprmFeedIndex {
+  base_url_note?: string;
+  docket?: string;
+  feed?: string;
+  files?: Array<{ name: string; path: string; description?: string }>;
+  last_updated?: string;
+  total_comments?: number;
+  usage_hint?: string;
+}
+
+export type ProjectTypeOption = 'rural' | 'tea_hua' | 'infrastructure' | 'mixed';
+
+export type LengthGuideline = '150' | '300_450';
+export type StyleGuideline = 'plain' | 'formal';
+export type FormatGuideline = 'paragraphs' | 'bullets';
+
+export interface PersonalBlock {
+  i_526e_file_date: string;
+  project_type: ProjectTypeOption | '';
+  impact: string;
+}
+
+export interface PromptGuidelines {
+  length: LengthGuideline;
+  style: StyleGuideline;
+  format: FormatGuideline;
+}
+
+export interface NprmPageData {
+  stats: NprmStats;
+  themes: NprmTheme[];
+  promptTree: NprmPromptNode[];
+  comments: NprmComment[];
+  lastCheck: NprmLastCheck | null;
+  checkLog: string;
+  feedSource: 'remote' | 'local';
+  feedBaseUsed: string;
+}

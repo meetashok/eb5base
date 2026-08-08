@@ -14,6 +14,12 @@ export default function Footer() {
           </div>
           <div className="flex gap-6">
             <Link
+              href="/nprm"
+              className="text-sm text-neutral/50 hover:text-primary transition-colors"
+            >
+              NPRM
+            </Link>
+            <Link
               href="/about"
               className="text-sm text-neutral/50 hover:text-primary transition-colors"
             >
