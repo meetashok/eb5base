@@ -25,8 +25,8 @@ export default function MaintenancePage() {
         </h1>
         <p className="mt-4 text-base md:text-lg text-neutral/70 leading-relaxed">
           We paused public listings in Aug 2026 pending counsel review. Other EB5 Base
-          tools below remain available. If you need a 100–200 investor feedback cohort,
-          email us — we will share an ETA when listings can return.
+          tools below remain available. If you need a 100-200 investor feedback cohort,
+          email us and we will share an ETA when listings can return.
         </p>
 
         <div className="mt-8 flex flex-col sm:flex-row gap-2 justify-center">

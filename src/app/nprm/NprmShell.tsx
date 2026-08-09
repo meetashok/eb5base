@@ -51,7 +51,7 @@ export default async function NprmShell({ tab }: { tab: NprmTabId }) {
         subtitle={
           <div className="space-y-1.5 text-sm md:text-[0.95rem] text-neutral max-w-2xl leading-relaxed">
             <p>
-              DHS Notice of Proposed Rulemaking — July 2, 2026. EB5 Base breaks down
+              DHS Notice of Proposed Rulemaking, July 2, 2026. EB5 Base breaks down
               the 358-page rule that finally codifies the EB-5 Reform and Integrity
               Act of 2022. Comments close Aug 31, 2026 at 11:59pm ET.
             </p>

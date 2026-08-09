@@ -535,11 +535,11 @@ export default function OnboardingClient({
             <h2 className="font-bold text-lg text-primary">Review and submit</h2>
             <div className="text-sm space-y-2 text-neutral/80">
               <p>
-                <strong>Project:</strong> {draft.projectName || '—'} / {draft.regionalCenterName || '—'}
+                <strong>Project:</strong> {draft.projectName || 'n/a'} / {draft.regionalCenterName || 'n/a'}
               </p>
               <p>
-                <strong>Classification:</strong> {draft.classification || '—'} ·{' '}
-                <strong>I-956F:</strong> {draft.i956fStatus || '—'}
+                <strong>Classification:</strong> {draft.classification || 'n/a'} ·{' '}
+                <strong>I-956F:</strong> {draft.i956fStatus || 'n/a'}
               </p>
               <p>
                 <strong>People:</strong>{' '}

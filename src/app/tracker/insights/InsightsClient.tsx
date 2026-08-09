@@ -83,7 +83,7 @@ export default function InsightsClient({ projectName }: { projectName: string | 
       </p>
       <h1 className="text-3xl font-bold text-primary mb-2">How cases are moving</h1>
       <p className="text-sm text-neutral/60 mb-6">
-        Aggregates only — never individual receipt numbers. Groups with fewer than 5 users are hidden.
+        Aggregates only. Never individual receipt numbers. Groups with fewer than 5 users are hidden.
       </p>
 
       <div className="tabs tabs-boxed bg-base-200/60 p-1 mb-6 flex-wrap">

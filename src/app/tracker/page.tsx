@@ -116,7 +116,7 @@ export default async function TrackerLandingPage() {
             </p>
             <h2 className="text-xl font-bold text-primary">Notify me when Case Tracker expands</h2>
             <p className="text-sm text-neutral/70 mt-1 leading-relaxed">
-              Email us and we will add you to the notify list. No backend form yet — opens your mail
+              Email us and we will add you to the notify list. No backend form yet. Opens your mail
               client.
             </p>
           </div>
@@ -169,7 +169,7 @@ export default async function TrackerLandingPage() {
               ))}
             </div>
             <p className="text-[11px] text-neutral/60 mt-2 text-center">
-              Illustrative, anonymized — not real adjudication stats
+              Illustrative and anonymized, not real adjudication stats
             </p>
           </div>
           <p className="text-sm text-neutral/80">

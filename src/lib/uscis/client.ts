@@ -68,7 +68,7 @@ async function getLiveAccessToken(): Promise<string> {
     return cachedToken.value;
   }
 
-  // Sandbox OAuth token endpoint — confirm with USCIS docs when going live
+  // Sandbox OAuth token endpoint. Confirm with USCIS docs when going live
   const tokenUrl =
     process.env.USCIS_TOKEN_URL || 'https://api-int.uscis.gov/oauth/accesstoken';
 

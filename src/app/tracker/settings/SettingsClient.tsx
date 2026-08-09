@@ -134,7 +134,7 @@ export default function SettingsClient({
                 })
               }
             >
-              <option value="">—</option>
+              <option value="">Select…</option>
               {CLASSIFICATION_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
                   {o.label}
@@ -154,7 +154,7 @@ export default function SettingsClient({
                 })
               }
             >
-              <option value="">—</option>
+              <option value="">Select…</option>
               {I956F_STATUS_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
                   {o.label}

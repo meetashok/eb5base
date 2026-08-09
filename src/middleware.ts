@@ -11,11 +11,19 @@ import { updateSession } from '@/lib/supabase-middleware';
 
 const BYPASS_MAX_AGE_SEC = 60 * 60 * 24 * 30; // 30 days
 
+/**
+ * Maintenance passthrough for public tools and crawler surfaces.
+ * Intentionally does NOT inspect User-Agent: bots and browsers share the same SSR path.
+ */
 function isMaintenancePassthrough(pathname: string): boolean {
   return (
     pathname === '/' ||
     pathname === '/maintenance' ||
     pathname === '/robots.txt' ||
+    pathname === '/sitemap.xml' ||
+    pathname === '/llms.txt' ||
+    pathname === '/debug' ||
+    pathname.startsWith('/debug/') ||
     pathname === '/icon' ||
     pathname.startsWith('/icon/') ||
     pathname === '/opengraph-image' ||
@@ -29,8 +37,10 @@ function isMaintenancePassthrough(pathname: string): boolean {
     pathname.startsWith('/nrpm/') ||
     pathname === '/tracker' ||
     pathname.startsWith('/tracker/') ||
+    pathname === '/case-tracker' ||
     pathname === '/status' ||
     pathname.startsWith('/status/') ||
+    pathname === '/status-update' ||
     pathname === '/eb5status' ||
     pathname.startsWith('/eb5status/') ||
     pathname === '/about' ||
@@ -74,7 +84,6 @@ function setBypassCookies(response: NextResponse, secret: string, request: NextR
     path: '/',
     maxAge: BYPASS_MAX_AGE_SEC,
   });
-  // Non-httpOnly marker so client/share flows can see unlock state (review: eb5base_access=1).
   response.cookies.set(EB5BASE_ACCESS_COOKIE, '1', {
     httpOnly: false,
     secure,
@@ -85,6 +94,7 @@ function setBypassCookies(response: NextResponse, secret: string, request: NextR
 }
 
 export async function middleware(request: NextRequest) {
+  // No user-agent blocking. Crawlers receive the same HTML as browsers.
   const legacyTab = redirectLegacyNprmTab(request);
   if (legacyTab) return legacyTab;
 
@@ -97,7 +107,6 @@ export async function middleware(request: NextRequest) {
       isValidMaintenanceBypassToken(accessParam) ||
       isValidMaintenanceBypassToken(bypassCookie);
 
-    // One-click unlock for owner/counsel: ?access=SECRET → set cookies, strip param.
     if (secret && isValidMaintenanceBypassToken(accessParam)) {
       const url = request.nextUrl.clone();
       url.searchParams.delete('access');
@@ -113,7 +122,6 @@ export async function middleware(request: NextRequest) {
       return updateSession(request);
     }
 
-    // Public: maintenance page + metadata images + NPRM / status / tracker tools.
     if (isMaintenancePassthrough(pathname)) {
       return NextResponse.next();
     }

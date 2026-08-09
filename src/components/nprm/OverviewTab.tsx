@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import CountdownBanner from '@/components/nprm/CountdownBanner';
 import ImpactMatrix from '@/components/nprm/ImpactMatrix';
 import VolumeChart from '@/components/nprm/VolumeChart';
@@ -247,7 +248,15 @@ export default function OverviewTab({
         </div>
       </section>
 
-      <ImpactMatrix />
+      <Suspense
+        fallback={
+          <div className="rounded-xl border-2 border-base-300 p-4 text-sm text-neutral">
+            Loading impact matrix…
+          </div>
+        }
+      >
+        <ImpactMatrix />
+      </Suspense>
 
       <section className="space-y-3" id="proposal-themes">
         <div className="flex flex-wrap items-end justify-between gap-3">

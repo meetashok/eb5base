@@ -1351,6 +1351,58 @@
     }
   }
 
+  /** Detect A-numbers / receipt-like strings before public share. */
+  function findPiiHits(text) {
+    const patterns = [
+      /\bA\d{8,9}\b/gi,
+      /\bIOE\d{8,}\b/gi,
+      /\bWAC\d{8,}\b/gi,
+      /\bSRC\d{8,}\b/gi,
+      /\bLIN\d{8,}\b/gi,
+      /\bEAC\d{8,}\b/gi,
+      /\bMSC\d{8,}\b/gi,
+      /\breceipt\s*(no\.?|number|#)?\s*[:#]?\s*[A-Z]{3}\d+/gi,
+    ];
+    const hits = [];
+    patterns.forEach((re) => {
+      const m = text.match(re);
+      if (m) hits.push(...m);
+    });
+    return [...new Set(hits)];
+  }
+
+  function ensurePiiBanner() {
+    let el = document.getElementById("pii-warning-banner");
+    if (el) return el;
+    el = document.createElement("div");
+    el.id = "pii-warning-banner";
+    el.setAttribute("role", "alert");
+    el.hidden = true;
+    el.style.cssText =
+      "margin:0.75rem 0;padding:0.75rem 1rem;border:2px solid #f59e0b;background:#fffbeb;color:#78350f;border-radius:0.75rem;font-size:0.875rem;line-height:1.4;";
+    const form = document.getElementById("status-form");
+    if (form && form.parentNode) {
+      form.parentNode.insertBefore(el, form);
+    } else {
+      document.body.prepend(el);
+    }
+    return el;
+  }
+
+  function showPiiWarning(hits) {
+    const el = ensurePiiBanner();
+    el.hidden = false;
+    el.textContent =
+      "Remove personal identifiers before sharing. Found: " +
+      hits.slice(0, 5).join(", ") +
+      ". Do not post A-numbers or receipt numbers publicly.";
+  }
+
+  function clearPiiWarning() {
+    const el = document.getElementById("pii-warning-banner");
+    if (el) el.hidden = true;
+  }
+
   /** Primary CTA: native share when available, otherwise copy to clipboard. */
   async function shareOrCopyStatus(button) {
     const fromMobile = button && button.id === "mobile-copy-btn";
@@ -1359,6 +1411,17 @@
       : preview?.value || mobilePreview?.value || "";
     const text = raw.trim();
     if (!text) return;
+
+    const piiHits = findPiiHits(text);
+    if (piiHits.length) {
+      showPiiWarning(piiHits);
+      const proceed = window.confirm(
+        "Your status looks like it includes an A-number or receipt number. Remove it before sharing publicly. Copy or share anyway?"
+      );
+      if (!proceed) return;
+    } else {
+      clearPiiWarning();
+    }
 
     if (canNativeShareText(text)) {
       try {

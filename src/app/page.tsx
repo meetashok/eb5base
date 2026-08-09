@@ -11,8 +11,8 @@ const TOOLS = [
   {
     href: '/nprm',
     title: 'NPRM Comment Guide',
-    body: 'Plain-English explainer of the July 2026 EB-5 proposed rule, impact matrix, themes, and comment builder — comments close Aug 31.',
-    cta: 'Read explainer — 5 min',
+    body: 'Plain-English explainer of the July 2026 EB-5 proposed rule, impact matrix, themes, and comment builder. Comments close Aug 31.',
+    cta: 'Read explainer (5 min)',
     comingSoon: false,
     primary: true,
   },
@@ -37,7 +37,7 @@ const TOOLS = [
 const FAQ = [
   {
     q: 'Is this legal advice?',
-    a: 'No. EB5 Base is information only — not legal or financial advice, and not affiliated with USCIS or DHS. Verify on the Federal Register and consult an immigration attorney.',
+    a: 'No. EB5 Base is information only, not legal or financial advice, and not affiliated with USCIS or DHS. Verify on the Federal Register and consult an immigration attorney.',
   },
   {
     q: 'Who built this?',
@@ -75,6 +75,9 @@ export default function HomePage() {
           <p className="mt-3 text-sm font-semibold text-primary max-w-xl mx-auto">
             Built by investors, for investors. 0 ads, 0 referral fees.
           </p>
+          <p className="mt-2 text-xs sm:text-sm text-neutral/70 max-w-xl mx-auto leading-relaxed">
+            Not affiliated with USCIS or DHS. Sources linked. No ads, no referral fees.
+          </p>
           <p className="mt-2 text-sm font-medium text-amber-800 max-w-xl mx-auto leading-relaxed">
             Nothing here is legal or financial advice.
           </p>
@@ -93,6 +96,31 @@ export default function HomePage() {
                 Soon
               </span>
             </span>
+          </div>
+          <div className="mt-8 max-w-lg mx-auto rounded-xl border border-base-300/80 bg-base-100/80 px-4 py-3 text-left shadow-soft">
+            <p className="text-[11px] uppercase tracking-wider font-bold text-secondary mb-2">
+              How does the NPRM affect me?
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Link
+                href="/nprm?investor=pre_ria#impact-matrix"
+                className="btn btn-sm btn-outline flex-1"
+              >
+                Filed before Mar 2022
+              </Link>
+              <Link
+                href="/nprm?investor=post_ria#impact-matrix"
+                className="btn btn-sm btn-outline flex-1"
+              >
+                Filed after Mar 2022
+              </Link>
+              <Link
+                href="/nprm?investor=future#impact-matrix"
+                className="btn btn-sm btn-outline flex-1"
+              >
+                Planning to file
+              </Link>
+            </div>
           </div>
         </div>
       </section>

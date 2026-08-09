@@ -36,7 +36,7 @@ export default function ThemesTab({
           <li>Personalize with your filing date and story (we check length).</li>
           <li>
             Paste on regulations.gov, category: Investor / Family. You can submit
-            anonymous — do not include A-Number or address.
+            anonymous. Do not include A-Number or address.
           </li>
         </ol>
       </div>

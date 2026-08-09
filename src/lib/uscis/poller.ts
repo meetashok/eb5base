@@ -100,7 +100,7 @@ export async function pollCases(options?: {
     const now = new Date().toISOString();
     const statusText =
       result.error === 'not_found'
-        ? 'Case not found — please verify receipt number'
+        ? 'Case not found. Please verify receipt number'
         : result.error === 'invalid'
           ? 'Invalid receipt number'
           : result.error === 'upstream'
@@ -139,14 +139,14 @@ export async function pollCases(options?: {
           userId: row.user_id,
           formType: row.form_type,
           receipt: masked,
-          previous: prev || '—',
+          previous: prev || 'n/a',
           current: statusText,
           historyId: hist.id,
           individualId: row.individual_id,
         });
       }
     } else if (!prev && statusText) {
-      // First status — seed history without notifying as a "change"
+      // First status: seed history without notifying as a "change"
       await supabase.from('case_status_history').insert({
         case_id: row.id,
         status: statusText,

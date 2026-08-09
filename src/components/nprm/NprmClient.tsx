@@ -68,8 +68,29 @@ export default function NprmClient({
 
   return (
     <div className="pb-16">
-      <div className="border-b-2 border-base-300 bg-base-100 sticky top-[6.75rem] z-30 shadow-sm">
+      <div className="border-b-2 border-base-300 bg-base-100 sticky top-[var(--site-sticky-offset)] z-30 shadow-sm">
         <div className="max-w-6xl mx-auto px-4">
+          <ol className="flex flex-wrap gap-x-3 gap-y-1 pt-2 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-neutral/60">
+            {[
+              { n: 1, label: 'Understand', tabs: ['overview', 'summary'] },
+              { n: 2, label: 'Themes', tabs: ['themes', 'comments'] },
+              { n: 3, label: 'Personalize', tabs: ['write'] },
+              { n: 4, label: 'Submit', tabs: ['write'] },
+            ].map((step) => {
+              const on =
+                step.tabs.includes(active) ||
+                (step.n === 4 && active === 'write');
+              return (
+                <li
+                  key={step.n}
+                  className={on ? 'text-secondary' : undefined}
+                  aria-current={on ? 'step' : undefined}
+                >
+                  <span className="tabular-nums">{step.n}.</span> {step.label}
+                </li>
+              );
+            })}
+          </ol>
           <div
             role="tablist"
             aria-label="EB-5 proposed rule sections"

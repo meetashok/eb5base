@@ -4,6 +4,7 @@ import { Plus_Jakarta_Sans } from 'next/font/google';
 import Navbar from '@/components/Navbar';
 import BetaBanner from '@/components/BetaBanner';
 import TrustDisclaimerBar from '@/components/TrustDisclaimerBar';
+import StickyOffsetSync from '@/components/StickyOffsetSync';
 import Footer from '@/components/Footer';
 import { AuthPromptProvider } from '@/components/AuthPromptProvider';
 import { ToastProvider } from '@/components/Toast';
@@ -86,8 +87,11 @@ export default function RootLayout({
         <ToastProvider>
           <AuthPromptProvider>
             <BetaBanner />
-            <Navbar />
-            <TrustDisclaimerBar />
+            <div id="site-chrome" className="sticky top-0 z-50">
+              <Navbar />
+              <TrustDisclaimerBar />
+            </div>
+            <StickyOffsetSync />
             <main id="main-content" className="flex-1 page-enter" tabIndex={-1}>
               {children}
             </main>

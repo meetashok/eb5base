@@ -134,7 +134,7 @@ export default function CommentsTab({
         </p>
       </div>
 
-      <div className="space-y-3 sticky top-[7.5rem] z-30 -mx-1 px-1 py-2 bg-base-100/95 backdrop-blur-sm border-b border-base-300/60">
+      <div className="space-y-3 sticky top-[calc(var(--site-sticky-offset)+3.25rem)] z-30 -mx-1 px-1 py-2 bg-base-100/95 backdrop-blur-sm border-b border-base-300/60">
         <div>
           <label
             htmlFor="nprm-comment-search"
@@ -279,7 +279,7 @@ export default function CommentsTab({
 
       <p className="text-xs text-neutral/70 leading-relaxed border-t border-base-300 pt-4">
         Source: regulations.gov via api.data.gov · Live feed · Titles from
-        regulations.gov · Last pull {lastPullLabel}. Official filings may be newer —
+        regulations.gov · Last pull {lastPullLabel}. Official filings may be newer.
         always check the docket.
       </p>
     </div>
