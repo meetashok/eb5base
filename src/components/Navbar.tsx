@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import Logo from '@/components/Logo';
-import AuthGateLink from '@/components/AuthGateLink';
 import type { User } from '@supabase/supabase-js';
 import type { Profile } from '@/lib/types';
 import { resolveProfileAvatar } from '@/lib/profile-avatar';
@@ -62,10 +61,9 @@ export default function Navbar() {
     router.refresh();
   }
 
-  const navLink = (href: string, label: string, hint?: string) => (
+  const navLink = (href: string, label: string) => (
     <Link
       href={href}
-      data-add-project-hint={hint}
       className={`px-3 py-2 text-sm font-medium transition-all duration-150 hover:text-accent ${
         pathname === href || (href !== '/' && pathname.startsWith(href))
           ? 'text-accent'
@@ -74,20 +72,6 @@ export default function Navbar() {
     >
       {label}
     </Link>
-  );
-
-  const authNavLink = (href: string, label: string, hint?: string) => (
-    <AuthGateLink
-      href={href}
-      data-add-project-hint={hint}
-      className={`px-3 py-2 text-sm font-medium transition-all duration-150 hover:text-accent ${
-        pathname === href || (href !== '/' && pathname.startsWith(href))
-          ? 'text-accent'
-          : 'text-primary-content/90'
-      }`}
-    >
-      {label}
-    </AuthGateLink>
   );
 
   const avatarUrl = resolveProfileAvatar(profile, user);
@@ -110,11 +94,8 @@ export default function Navbar() {
         </div>
 
         <div className="navbar-center hidden md:flex gap-1">
-          {navLink('/projects', 'Browse')}
-          {navLink('/rc', 'Regional Centers')}
+          {navLink('/tracker', 'Tracker')}
           {navLink('/nprm', 'NPRM')}
-          {user && authNavLink('/timeline', 'My Timeline')}
-          {authNavLink('/projects/add', 'Add Project', 'nav')}
           {navLink('/about', 'About')}
         </div>
 
@@ -179,11 +160,8 @@ export default function Navbar() {
 
       {menuOpen && (
         <div className="md:hidden border-t border-primary-content/20 px-4 pb-4 flex flex-col">
-          {navLink('/projects', 'Browse')}
-          {navLink('/rc', 'Regional Centers')}
+          {navLink('/tracker', 'Tracker')}
           {navLink('/nprm', 'NPRM')}
-          {user && authNavLink('/timeline', 'My Timeline')}
-          {authNavLink('/projects/add', 'Add Project', 'nav')}
           {navLink('/about', 'About')}
         </div>
       )}

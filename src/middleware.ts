@@ -20,11 +20,17 @@ function isMaintenancePassthrough(pathname: string): boolean {
     pathname.startsWith('/opengraph-image/') ||
     pathname === '/twitter-image' ||
     pathname.startsWith('/twitter-image/') ||
-    // NPRM tracker is time-sensitive (comment window) - keep public during directory pause.
+    // Public tools that should stay reachable during the directory pause.
     pathname === '/nprm' ||
     pathname.startsWith('/nprm/') ||
     pathname === '/nrpm' ||
-    pathname.startsWith('/nrpm/')
+    pathname.startsWith('/nrpm/') ||
+    pathname === '/tracker' ||
+    pathname.startsWith('/tracker/') ||
+    pathname === '/about' ||
+    pathname === '/privacy' ||
+    pathname === '/terms' ||
+    pathname === '/contact'
   );
 }
 

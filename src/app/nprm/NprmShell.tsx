@@ -1,20 +1,16 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
 import PageHero from '@/components/PageHero';
-import NprmBareHeader from '@/components/nprm/NprmBareHeader';
 import NprmClient from '@/components/nprm/NprmClient';
 import { loadNprmPageData } from '@/lib/nprm/fetch';
 import type { NprmTabId } from '@/lib/nprm/tabs';
-import { hasMaintenanceBypass, isMaintenanceMode } from '@/lib/maintenance';
 import { DOCKET_URL } from '@/lib/nprm/utils';
 
 export default async function NprmShell({ tab }: { tab: NprmTabId }) {
   const data = await loadNprmPageData();
-  const showBareHeader = isMaintenanceMode() && !hasMaintenanceBypass();
 
   return (
     <div className="nprm-page">
-      {showBareHeader && <NprmBareHeader />}
       <PageHero
         eyebrow={
           <a

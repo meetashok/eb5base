@@ -143,7 +143,7 @@ export const ROLE_BADGE_LABELS: Record<
  * - Third-party RC names keep their spelling (e.g. "EB5 United")
  */
 export const DISCLAIMER =
-  'EB5 Base is a community-maintained directory of EB-5 projects for informational purposes only. It is not affiliated with USCIS, any regional center, or any immigration law firm. Listings are user-contributed and not independently verified. Nothing on this site constitutes legal, financial, or investment advice. Always consult a qualified immigration attorney before making investment decisions.';
+  'EB5 Base provides informational tools for the EB-5 community. It is not affiliated with USCIS, any regional center, or any immigration law firm. Nothing on this site constitutes legal, financial, or investment advice. Always consult a qualified immigration attorney before making immigration or investment decisions.';
 
 export const PAGE_SIZE = 20;
 
