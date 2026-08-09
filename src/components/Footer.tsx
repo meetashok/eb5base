@@ -14,30 +14,6 @@ export default function Footer() {
           </div>
           <div className="flex gap-6 flex-wrap justify-center">
             <Link
-              href="/status"
-              className="text-sm text-neutral/50 hover:text-primary transition-colors"
-            >
-              Status Update
-            </Link>
-            <Link
-              href="/tracker"
-              className="text-sm text-neutral/50 hover:text-primary transition-colors"
-            >
-              Case Tracker
-            </Link>
-            <Link
-              href="/nprm"
-              className="text-sm text-neutral/50 hover:text-primary transition-colors"
-            >
-              NPRM
-            </Link>
-            <Link
-              href="/resources"
-              className="text-sm text-neutral/50 hover:text-primary transition-colors"
-            >
-              Resources
-            </Link>
-            <Link
               href="/about"
               className="text-sm text-neutral/50 hover:text-primary transition-colors"
             >
