@@ -99,6 +99,7 @@ export default function Navbar() {
         </div>
 
         <div className="navbar-center hidden md:flex gap-1">
+          {navLink('/status', 'Status Update')}
           {navLink(caseTrackerHref, 'Case Tracker')}
           {onboarded && (
             <>
@@ -177,6 +178,7 @@ export default function Navbar() {
 
       {menuOpen && (
         <div className="md:hidden border-t border-primary-content/20 px-4 pb-4 flex flex-col">
+          {navLink('/status', 'Status Update')}
           {navLink(caseTrackerHref, 'Case Tracker')}
           {onboarded && (
             <>

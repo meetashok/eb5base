@@ -12,7 +12,13 @@ export default function Footer() {
             <Logo size={28} showWordmark wordmarkVariant="on-light" wordmarkClassName="text-base" />
             <span>© {new Date().getFullYear()} EB5 Base. Built for the EB-5 community.</span>
           </div>
-          <div className="flex gap-6">
+          <div className="flex gap-6 flex-wrap justify-center">
+            <Link
+              href="/status"
+              className="text-sm text-neutral/50 hover:text-primary transition-colors"
+            >
+              Status Update
+            </Link>
             <Link
               href="/tracker"
               className="text-sm text-neutral/50 hover:text-primary transition-colors"

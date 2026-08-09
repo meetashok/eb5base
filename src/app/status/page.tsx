@@ -1,0 +1,38 @@
+import type { Metadata } from 'next';
+import PageHero from '@/components/PageHero';
+import { BrandWordmark } from '@/components/Logo';
+import StatusUpdateEmbed from '@/components/StatusUpdateEmbed';
+
+export const metadata: Metadata = {
+  title: 'Status Update',
+  description:
+    'Draft a structured EB-5 status update for WhatsApp: milestones, preview, and one-click copy. All fields optional; drafts stay in your browser.',
+};
+
+export default function StatusUpdatePage() {
+  return (
+    <div>
+      <PageHero
+        eyebrow={<span>Status Update</span>}
+        title="Build your WhatsApp status update"
+        subtitle={
+          <p>
+            Fill in the milestones that apply, preview the message live, and copy or share it with
+            your investor group. Part of <BrandWordmark variant="on-light" className="font-semibold" />{' '}
+            — same builder as{' '}
+            <a
+              href="https://bit.ly/eb5status"
+              className="link link-secondary"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              bit.ly/eb5status
+            </a>
+            .
+          </p>
+        }
+      />
+      <StatusUpdateEmbed />
+    </div>
+  );
+}

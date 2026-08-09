@@ -28,6 +28,10 @@ function isMaintenancePassthrough(pathname: string): boolean {
     pathname.startsWith('/nrpm/') ||
     pathname === '/tracker' ||
     pathname.startsWith('/tracker/') ||
+    pathname === '/status' ||
+    pathname.startsWith('/status/') ||
+    pathname === '/eb5status' ||
+    pathname.startsWith('/eb5status/') ||
     pathname === '/about' ||
     pathname === '/privacy' ||
     pathname === '/terms' ||

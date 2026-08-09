@@ -4,10 +4,18 @@ import { BrandWordmark } from '@/components/Logo';
 export const metadata = {
   title: 'EB5 Base - Information for EB-5 investors',
   description:
-    'Community-built information tools for EB-5 investors: NPRM comment guide and encrypted case tracker. Not legal advice.',
+    'Community-built information tools for EB-5 investors: status update builder, NPRM comment guide, and case tracker. Not legal advice.',
 };
 
 const TOOLS = [
+  {
+    href: '/status',
+    eyebrow: 'Available now',
+    title: 'Status Update',
+    body: 'Draft a structured EB-5 WhatsApp status update from your milestones, preview it live, and copy or share it. Same tool as bit.ly/eb5status, now on EB5 Base.',
+    cta: 'Open Status Update',
+    primary: true,
+  },
   {
     href: '/nprm',
     eyebrow: 'Available now',
@@ -49,7 +57,10 @@ export default function HomePage() {
             legal advice.
           </p>
           <div className="flex flex-wrap gap-3 justify-center mt-8">
-            <Link href="/nprm" className="btn btn-primary rounded-full px-6">
+            <Link href="/status" className="btn btn-primary rounded-full px-6">
+              Status Update
+            </Link>
+            <Link href="/nprm" className="btn btn-outline rounded-full px-6">
               NPRM Comment Guide
             </Link>
             <Link href="/tracker" className="btn btn-outline rounded-full px-6">
@@ -67,7 +78,7 @@ export default function HomePage() {
           <h2 className="text-2xl md:text-3xl font-bold text-primary">Current tools</h2>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-5 max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-5 max-w-5xl mx-auto">
           {TOOLS.map((tool) => (
             <article
               key={tool.href}
