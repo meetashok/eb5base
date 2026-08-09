@@ -6,6 +6,7 @@ import type {
   NprmLastCheck,
   NprmPageData,
   NprmPromptNode,
+  NprmProposalSummary,
   NprmStats,
   NprmTheme,
 } from './types';
@@ -172,6 +173,13 @@ export const fetchNprm = {
     if (!r) throw new Error('Failed to load all_comments.json');
     return r;
   },
+  proposal: async () => {
+    const r = await fetchNamedJson<NprmProposalSummary>(
+      'proposal_summary.json'
+    );
+    if (!r) throw new Error('Failed to load proposal_summary.json');
+    return r;
+  },
   themes: async () => {
     const r = await fetchNamedJson<NprmTheme[]>('themes.json');
     if (!r) throw new Error('Failed to load themes.json');
@@ -215,14 +223,16 @@ export function sanitizeCheckLog(text: string): string {
 }
 
 export async function loadNprmPageData(): Promise<NprmPageData> {
-  const [statsR, themesR, promptsR, allR, lastR, logR] = await Promise.all([
-    fetchNprm.stats(),
-    fetchNprm.themes(),
-    fetchNprm.prompts(),
-    fetchNprm.all(),
-    fetchNprm.lastCheck().catch(() => null),
-    fetchNprm.checkLog().catch(() => null),
-  ]);
+  const [statsR, themesR, promptsR, allR, proposalR, lastR, logR] =
+    await Promise.all([
+      fetchNprm.stats(),
+      fetchNprm.themes(),
+      fetchNprm.prompts(),
+      fetchNprm.all(),
+      fetchNprm.proposal().catch(() => null),
+      fetchNprm.lastCheck().catch(() => null),
+      fetchNprm.checkLog().catch(() => null),
+    ]);
 
   const comments = (allR.data.comments ?? []).map(normalizeComment);
   // Prefer last-check stubs when they carry richer attributes later.
@@ -247,6 +257,7 @@ export async function loadNprmPageData(): Promise<NprmPageData> {
     themes: themesR.data,
     promptTree: promptsR.data,
     comments: merged,
+    proposal: proposalR?.data ?? null,
     lastCheck: lastR?.data ?? null,
     checkLog: sanitizeCheckLog(logR?.text ?? ''),
     feedSource: statsR.source,

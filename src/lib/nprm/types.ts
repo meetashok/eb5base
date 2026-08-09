@@ -121,6 +121,33 @@ export interface NprmFeedIndex {
   usage_hint?: string;
 }
 
+/** Plain-language NPRM explainer from Hatch proposal_summary.json */
+export interface NprmProposalShortSummary {
+  title: string;
+  text: string;
+  citations: string[];
+}
+
+export interface NprmProposalThemeSummary {
+  theme_id: string;
+  title: string;
+  plain_text: string;
+  uscis_phrasing: string;
+  citation: string;
+  source_link: string;
+}
+
+export interface NprmProposalSummary {
+  docket_id: string;
+  source_document: string;
+  source_url: string;
+  retrieved: string;
+  comment_deadline: string;
+  plain_language_note: string;
+  short_summary: NprmProposalShortSummary;
+  long_summary_by_theme: NprmProposalThemeSummary[];
+}
+
 export type ProjectTypeOption = 'rural' | 'tea_hua' | 'infrastructure' | 'mixed';
 
 export type LengthGuideline = '150' | '300_450';
@@ -144,6 +171,7 @@ export interface NprmPageData {
   themes: NprmTheme[];
   promptTree: NprmPromptNode[];
   comments: NprmComment[];
+  proposal: NprmProposalSummary | null;
   lastCheck: NprmLastCheck | null;
   checkLog: string;
   feedSource: 'remote' | 'local';

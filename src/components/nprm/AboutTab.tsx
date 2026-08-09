@@ -8,18 +8,21 @@ import {
   ILRC_CITATION,
   ILRC_LINK,
 } from '@/lib/nprm/constants';
+import type { NprmProposalSummary } from '@/lib/nprm/types';
 import { COMMENT_ON_URL, DOCKET_URL } from '@/lib/nprm/utils';
 
 interface Props {
   checkLog: string;
   lastPull: string;
   totalComments: number;
+  proposal: NprmProposalSummary | null;
 }
 
 export default function AboutTab({
   checkLog,
   lastPull,
   totalComments,
+  proposal,
 }: Props) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -27,6 +30,10 @@ export default function AboutTab({
     const el = document.getElementById('disclaimer');
     el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, []);
+
+  const proposalUrl =
+    proposal?.source_url ||
+    'https://www.govinfo.gov/content/pkg/FR-2026-07-02/pdf/2026-13392.pdf';
 
   return (
     <div className="space-y-8 max-w-3xl animate-[fadeIn_0.35s_ease-out]">
@@ -37,10 +44,41 @@ export default function AboutTab({
         <p className="text-sm text-neutral leading-relaxed">
           Post-RIA EB-5 investors want to comment on Docket USCIS-2026-0100 with
           educated personal stories, not form letters that USCIS can bucket as one.
-          regulations.gov is hard to browse by theme. This page organizes the real
-          comments, explains the CFR stakes in plain English, and helps you build a
-          distinct prompt for your own LLM.
+          regulations.gov is hard to browse by theme. This page explains what the
+          NPRM itself proposes in plain English, organizes the real comments, and
+          helps you build a distinct prompt for your own LLM.
         </p>
+      </section>
+
+      <section className="space-y-2 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
+        <h2 className="text-xl font-bold text-primary">
+          Proposal summary sources
+        </h2>
+        <p className="text-sm text-neutral leading-relaxed">
+          Overview proposal summaries are plain-language paraphrases of Federal
+          Register Doc 2026-13392 (Vol 91 No 126, July 2 2026, RIN 1615-AC94).
+          Every statement cites the FR section and page it paraphrases. We do not
+          invent facts. For the official text, read{' '}
+          <a
+            href={proposalUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-secondary underline underline-offset-2 break-all"
+          >
+            {proposalUrl}
+          </a>
+          .
+        </p>
+        {proposal?.plain_language_note ? (
+          <p className="text-sm text-neutral leading-relaxed">
+            {proposal.plain_language_note}
+          </p>
+        ) : null}
+        {proposal?.source_document ? (
+          <p className="text-xs text-neutral/80 leading-relaxed">
+            Source document: {proposal.source_document}
+          </p>
+        ) : null}
       </section>
 
       <section className="space-y-3 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
@@ -123,7 +161,9 @@ export default function AboutTab({
       <section className="space-y-2 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
         <h2 className="text-xl font-bold text-primary">Records / chain of custody</h2>
         <p className="text-sm text-neutral leading-relaxed">
-          We keep last-check.json, dated all_comments snapshots, and check.log so every card can be attributed. Current seed: {totalComments} comments, last pull {lastPull}.
+          We keep last-check.json, dated all_comments snapshots, and check.log so
+          every card can be attributed. Current seed: {totalComments} comments,
+          last pull {lastPull}.
         </p>
         <pre className="rounded-lg border-2 border-base-300 bg-base-200 p-3 text-xs font-mono text-neutral whitespace-pre-wrap overflow-auto max-h-48">
           {checkLog || 'check.log unavailable'}

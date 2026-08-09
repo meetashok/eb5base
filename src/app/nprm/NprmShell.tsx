@@ -34,13 +34,11 @@ export default async function NprmShell({ tab }: { tab: NprmTabId }) {
           <div className="space-y-1.5 text-sm md:text-[0.95rem] text-neutral max-w-2xl leading-relaxed">
             <p>
               USCIS published this NPRM on July 2, 2026 (91 FR 40676, RIN 1615-AC94).
-              It would change grandfathering, sustainment, bridge financing, TEA lock,
-              and related definitions for post-RIA investors. Comments close Aug 31,
-              2026 at 11:59pm ET.
+              Start with a plain-English explainer of what the proposal itself says,
+              then browse comments by theme. Comments close Aug 31, 2026 at 11:59pm ET.
             </p>
             <p>
-              Browse docket comments by theme, then draft a distinct comment with your
-              own LLM and file it on regulations.gov.{' '}
+              Draft a distinct comment with your own LLM and file it on regulations.gov.{' '}
               <Link
                 href="/nprm/about#disclaimer"
                 className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"

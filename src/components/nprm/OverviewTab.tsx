@@ -2,116 +2,272 @@
 
 import CountdownBadge from '@/components/nprm/CountdownBadge';
 import VolumeChart from '@/components/nprm/VolumeChart';
-import type { NprmLastCheck, NprmStats } from '@/lib/nprm/types';
+import type {
+  NprmComment,
+  NprmLastCheck,
+  NprmProposalSummary,
+  NprmStats,
+  NprmTheme,
+} from '@/lib/nprm/types';
 import {
   DOCKET_URL,
-  DOCUMENT_URL,
   FR_CITATION,
   RIN,
+  commentsSince,
   dailyVolume,
   formatLastPull,
 } from '@/lib/nprm/utils';
-import type { NprmComment, NprmTheme } from '@/lib/nprm/types';
 import { FEED_SHARE } from '@/lib/nprm/fetch';
 
 interface Props {
   stats: NprmStats;
   themes: NprmTheme[];
   comments: NprmComment[];
+  proposal: NprmProposalSummary | null;
   lastCheck: NprmLastCheck | null;
   feedSource: 'remote' | 'local';
+  onThemes: () => void;
   onWrite: () => void;
   onAbout: () => void;
 }
 
 export default function OverviewTab({
   stats,
+  themes,
   comments,
+  proposal,
   lastCheck,
   feedSource,
+  onThemes,
   onWrite,
   onAbout,
 }: Props) {
   const volume = dailyVolume(comments);
-  const fr =
-    lastCheck?.metadata?.federal_register_citation || FR_CITATION;
-  const rin = lastCheck?.metadata?.rin || RIN;
   const ends =
     stats.comment_period_ends ||
     lastCheck?.metadata?.comment_period_ends ||
+    proposal?.comment_deadline ||
     'Aug 31, 2026 11:59 PM EDT';
   const lastPullLabel = formatLastPull(stats.last_pull);
+  const sinceAug3 = commentsSince(comments, '2026-08-03');
+  const sourceUrl =
+    proposal?.source_url ||
+    'https://www.govinfo.gov/content/pkg/FR-2026-07-02/pdf/2026-13392.pdf';
+  const short = proposal?.short_summary;
+  const longThemes = proposal?.long_summary_by_theme ?? [];
 
   return (
     <div className="space-y-8 animate-[fadeIn_0.35s_ease-out]">
       <header className="space-y-4 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="min-w-0 space-y-2">
+          <div className="min-w-0 space-y-3 max-w-3xl">
             <p className="text-xs uppercase tracking-[0.18em] font-bold text-secondary">
-              What this NPRM covers
+              NPRM explainer
             </p>
             <h2 className="text-xl md:text-2xl font-bold text-primary leading-tight">
+              {short?.title || 'What USCIS proposes - in plain English'}
+            </h2>
+            <p className="text-sm sm:text-[0.95rem] text-neutral leading-relaxed">
+              {short?.text ||
+                'Plain-language summary of Docket USCIS-2026-0100 is loading from the public feed. Open the Federal Register PDF for the official text.'}
+            </p>
+            {short?.citations?.length ? (
+              <div className="flex flex-wrap gap-2">
+                {short.citations.map((c) => (
+                  <span
+                    key={c}
+                    className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 text-[11px] font-semibold text-neutral"
+                  >
+                    {c.replace(/^\[/, '').replace(/\]$/, '')}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+            <div className="flex flex-wrap gap-2 text-xs">
+              <span className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 font-semibold text-neutral">
+                FR Doc 2026-13392
+              </span>
+              <span className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 font-semibold text-neutral">
+                Vol 91 No 126
+              </span>
+              <span className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 font-semibold text-neutral">
+                July 2 2026
+              </span>
+              <span className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 font-semibold text-neutral">
+                RIN {RIN}
+              </span>
+              <span className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 font-semibold text-neutral">
+                {FR_CITATION}
+              </span>
+              <span className="inline-flex items-center rounded-md border border-secondary/40 bg-secondary/10 px-2.5 py-1 font-semibold text-secondary">
+                Comments due Aug 31 2026
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2 pt-1">
+              <a
+                href={sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-sm btn-primary text-primary-content"
+              >
+                Read full 358-page proposal PDF
+              </a>
               <a
                 href={DOCKET_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:underline underline-offset-4 decoration-secondary/40"
+                className="btn btn-sm btn-outline border-neutral/30"
               >
-                {stats.docket_id}
-              </a>
-            </h2>
-            <p className="text-sm text-neutral leading-relaxed max-w-2xl">
-              {lastCheck?.metadata?.document_title ||
-                'EB-5 Reform and Integrity Act of 2022; Ensuring the Integrity of the EB-5 Program; Automatic Revocation of Petitions for Immigrant Classification'}
-            </p>
-            <div className="flex flex-wrap gap-2 text-xs">
-              <span className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 font-semibold text-neutral">
-                {fr}
-              </span>
-              <span className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 font-semibold text-neutral">
-                RIN {rin}
-              </span>
-              <a
-                href={DOCUMENT_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center rounded-md border border-secondary/40 bg-secondary/10 px-2.5 py-1 font-semibold text-secondary hover:bg-secondary/15"
-              >
-                Read proposed rule ↗
+                Docket USCIS-2026-0100
               </a>
             </div>
+            {proposal?.plain_language_note ? (
+              <p className="text-xs text-neutral/80 leading-relaxed">
+                {proposal.plain_language_note}
+              </p>
+            ) : null}
           </div>
           <CountdownBadge endsLabel={ends} />
         </div>
       </header>
 
-      <div className="rounded-xl border-2 border-base-300 bg-base-100 px-4 py-4 sm:px-5 sm:py-5 shadow-soft flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-        <div>
-          <p className="text-[11px] uppercase tracking-wider text-neutral/70 font-bold">
-            Total comments
-          </p>
-          <p className="mt-1 text-4xl sm:text-5xl font-bold text-primary tabular-nums leading-none">
-            {stats.total_comments}
-          </p>
-        </div>
-        <div className="sm:text-right">
-          <p className="text-[11px] uppercase tracking-wider text-neutral/70 font-bold">
-            Last pull
-          </p>
-          <p className="mt-1 text-sm font-semibold text-neutral tabular-nums">
-            {lastPullLabel}
+      <section className="space-y-3" id="proposal-themes">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h3 className="text-lg font-bold text-primary">
+              What the proposal covers
+            </h3>
+            <p className="text-sm text-neutral mt-1 max-w-2xl leading-relaxed">
+              Twelve plain-language sections. Each paraphrases USCIS text and
+              cites the Federal Register page so you can verify.
+            </p>
+          </div>
+          <p className="text-xs font-semibold text-neutral/70">
+            {longThemes.length || 12} sections
           </p>
         </div>
+
+        <div className="space-y-2">
+          {longThemes.map((theme) => (
+            <details
+              key={theme.theme_id}
+              className="group rounded-xl border-2 border-base-300 bg-base-100 shadow-sm open:shadow-soft"
+            >
+              <summary className="cursor-pointer list-none px-4 py-3 sm:px-5 sm:py-3.5 flex items-start justify-between gap-3">
+                <span className="font-semibold text-primary text-sm sm:text-base leading-snug">
+                  {theme.title}
+                </span>
+                <span className="shrink-0 text-xs font-bold uppercase tracking-wider text-neutral/60 group-open:text-secondary mt-0.5">
+                  <span className="group-open:hidden">Open</span>
+                  <span className="hidden group-open:inline">Close</span>
+                </span>
+              </summary>
+              <div className="px-4 pb-4 sm:px-5 sm:pb-5 space-y-3 border-t border-base-300/80 pt-3">
+                <p className="text-sm text-neutral leading-relaxed">
+                  {theme.plain_text}
+                </p>
+                <details className="rounded-lg border border-base-300 bg-base-200/50">
+                  <summary className="cursor-pointer px-3 py-2 text-xs font-bold uppercase tracking-wider text-neutral/80">
+                    What USCIS actually said
+                  </summary>
+                  <p className="px-3 pb-3 text-sm text-neutral leading-relaxed">
+                    {theme.uscis_phrasing}
+                  </p>
+                </details>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 text-[11px] font-semibold text-neutral">
+                    {theme.citation.replace(/^\[/, '').replace(/\]$/, '')}
+                  </span>
+                  <a
+                    href={theme.source_link || sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center rounded-md border border-secondary/40 bg-secondary/10 px-2.5 py-1 text-[11px] font-semibold text-secondary hover:bg-secondary/15"
+                  >
+                    Open FR ↗
+                  </a>
+                </div>
+              </div>
+            </details>
+          ))}
+          {longThemes.length === 0 && (
+            <p className="text-sm text-neutral rounded-xl border-2 border-dashed border-base-300 p-4">
+              Proposal theme summaries are unavailable. Open the Federal Register
+              PDF above for the official text.
+            </p>
+          )}
+        </div>
+      </section>
+
+      <div className="flex flex-col sm:flex-row gap-2">
+        <button
+          type="button"
+          onClick={onThemes}
+          className="btn btn-primary text-primary-content shadow-soft"
+        >
+          See what others are saying
+        </button>
+        <button
+          type="button"
+          onClick={onWrite}
+          className="btn btn-accent text-accent-content shadow-soft"
+        >
+          Write your own comment
+        </button>
       </div>
 
-      <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
-        <div className="flex items-center justify-between gap-3 mb-4">
-          <h3 className="font-bold text-primary">Comment volume</h3>
-          <span className="text-xs font-medium text-neutral/70">
-            Daily bars + cumulative line
-          </span>
+      <section className="space-y-4" id="comment-stats">
+        <div>
+          <h3 className="text-lg font-bold text-primary">Comment tracker</h3>
+          <p className="text-sm text-neutral mt-1 leading-relaxed">
+            Live docket volume while you read the proposal itself above.
+          </p>
         </div>
-        <VolumeChart data={volume} />
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-xl border-2 border-base-300 bg-base-100 px-4 py-4 shadow-soft">
+            <p className="text-[11px] uppercase tracking-wider text-neutral/70 font-bold">
+              Total comments
+            </p>
+            <p className="mt-1 text-3xl font-bold text-primary tabular-nums leading-none">
+              {stats.total_comments}
+            </p>
+          </div>
+          <div className="rounded-xl border-2 border-base-300 bg-base-100 px-4 py-4 shadow-soft">
+            <p className="text-[11px] uppercase tracking-wider text-neutral/70 font-bold">
+              Since Aug 3
+            </p>
+            <p className="mt-1 text-3xl font-bold text-primary tabular-nums leading-none">
+              +{sinceAug3}
+            </p>
+          </div>
+          <div className="rounded-xl border-2 border-base-300 bg-base-100 px-4 py-4 shadow-soft">
+            <p className="text-[11px] uppercase tracking-wider text-neutral/70 font-bold">
+              Comment themes
+            </p>
+            <p className="mt-1 text-3xl font-bold text-primary tabular-nums leading-none">
+              {themes.length}
+            </p>
+          </div>
+          <div className="rounded-xl border-2 border-base-300 bg-base-100 px-4 py-4 shadow-soft">
+            <p className="text-[11px] uppercase tracking-wider text-neutral/70 font-bold">
+              Last pull
+            </p>
+            <p className="mt-1 text-sm font-semibold text-neutral tabular-nums leading-snug">
+              {lastPullLabel}
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <h4 className="font-bold text-primary">Comment volume</h4>
+            <span className="text-xs font-medium text-neutral/70">
+              Daily bars + cumulative line
+            </span>
+          </div>
+          <VolumeChart data={volume} />
+        </div>
       </section>
 
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between rounded-xl border-2 border-secondary/30 bg-secondary/10 px-4 py-4">
@@ -122,16 +278,7 @@ export default function OverviewTab({
             <span className="font-semibold">
               {feedSource === 'remote' ? 'live' : 'local seed'}
             </span>
-            . Docket{' '}
-            <a
-              href={DOCKET_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-secondary underline underline-offset-2"
-            >
-              regulations.gov/{stats.docket_id}
-            </a>
-            . Public data:{' '}
+            . Explainer cites FR Doc 2026-13392. Public data:{' '}
             <a
               href={FEED_SHARE}
               target="_blank"
@@ -143,22 +290,13 @@ export default function OverviewTab({
             .
           </p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2 shrink-0">
-          <button
-            type="button"
-            onClick={onWrite}
-            className="btn btn-accent text-accent-content shadow-soft"
-          >
-            Write a distinct comment
-          </button>
-          <button
-            type="button"
-            onClick={onAbout}
-            className="btn btn-outline border-neutral/30"
-          >
-            About & disclaimer
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={onAbout}
+          className="btn btn-outline border-neutral/30 shrink-0"
+        >
+          About & disclaimer
+        </button>
       </div>
     </div>
   );

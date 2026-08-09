@@ -1,6 +1,6 @@
 {
   "docket_id": "USCIS-2026-0100",
-  "retrieved": "2026-08-09 05:22 IST id+link+theme+ai_summary no body - fixed 0081",
+  "retrieved": "2026-08-09T07:57 IST plain-english rewrite 8th-grade id+link+theme+summary",
   "total": 48,
   "source": "regulations.gov via api.data.gov",
   "mode": "id_link_theme_summary_only",
@@ -12,7 +12,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0077",
       "theme_id": "bridge_financing",
       "theme_title": "Bridge Financing 204.407(e)(1)",
-      "ai_summary": "Intellex Capital LLC supports preserving bridge financing under 8 CFR 204.407(e)(1) and attaches a brief arguing bridge used to start construction before EB-5 capital is market standard. Requests clarification / change to the proposed change Citing 8 CFR 204.407(e)(1), 204.407(e)(1). and requests USCIS clarify transition or grandfather provision.",
+      "ai_summary": "Intellex Capital LLC is a firm that uses EB-5 money. They ask USCIS to keep allowing bridge loans that are later repaid with EB-5 capital. They say starting construction with a loan before EB-5 money arrives is normal business practice.",
       "type": "comments"
     },
     {
@@ -22,7 +22,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0081",
       "theme_id": "grandfather_retroactivity",
       "theme_title": "Grandfather Clause / Retroactivity",
-      "ai_summary": "Anonymous attaches a 656KB PDF titled 'Comment on USCIS-2026-0100 2026-13392'. Body placeholder is 'See attached file(s)'. Based on file size and citation of INA 203(b)(5) as amended by RIA March 15 2022 and 8 CFR 204.400(a), filing likely argues for lifecycle grandfather / transition relief for post-RIA investors. Full details in PDF on regulations.gov.",
+      "ai_summary": "An anonymous investor filed a large PDF. They ask USCIS to not apply new rules to people who already invested and to give full life-cycle protection from filing through green card.",
       "type": "comments"
     },
     {
@@ -32,7 +32,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0078",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Celona Asset Management submits a comment on redeployment and commercial viability, emphasizing investor protection and same-project safeguards. Comments on the proposed change and requests USCIS clarify transition or grandfather provision.",
+      "ai_summary": "Celona Asset Management is an investment manager. They wrote about moving investor money to another project if needed and ask for clear rules that protect investors and keep the project workable.",
       "type": "comments"
     },
     {
@@ -42,7 +42,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0079",
       "theme_id": "grandfather_retroactivity",
       "theme_title": "Grandfather Clause / Retroactivity",
-      "ai_summary": "Investor Ankit Dave argues applying new sustainment and TEA rules to I-526E filed in 2025 at 800k TEA after RIA March 15 2022 violates reliance and requests grandfathering tracked to RIA enactment not future effective date. Describes personal impact as EB-5 investor who relied on prior guidance when filing.",
+      "ai_summary": "Ankit Dave is an EB-5 investor who filed in 2025 for $800K in a TEA. He asks USCIS to add a clear rule that if you filed before the new rule starts, your case is judged by the old rules from I-526E all the way to I-829.",
       "type": "comments"
     },
     {
@@ -52,7 +52,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0080",
       "theme_id": "sustainment",
       "theme_title": "Sustainment Period - 2yr vs Job Creation",
-      "ai_summary": "Anonymous argues sustainment period of 2 years is insufficient for meaningful investment and job creation, citing Portugal ARI 5-year model and mixed investor concerns about at-risk vs money-back. Describes personal impact as EB-5 investor who relied on prior guidance when filing.",
+      "ai_summary": "An anonymous person wrote in. They say 2 years is too short for the money to stay and create real jobs and point to Portugal which needs 5 years. They also say many comments asking for money back come from one Yellowstone project.",
       "type": "comments"
     },
     {
@@ -62,7 +62,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0076",
       "theme_id": "definitional_asymmetry",
       "theme_title": "Definitional Asymmetry 204.432 vs 204.433",
-      "ai_summary": "Anonymous requests clarification / change to the provision Citing 204.432(d), 204.432. PUBLIC COMMENT - DHS Docket No. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "An anonymous person filed a long legal comment. They say the rule defines fraud words clearly but does not define national security or public safety words, and they say the rule quietly removes protections that let investors see and answer negative information.",
       "type": "comments"
     },
     {
@@ -72,7 +72,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0075",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Harry Saltzgaver comments on the EB-5 NPRM provision. Two points.",
+      "ai_summary": "Harry Saltzgaver wrote about infrastructure projects. He asks USCIS to give clearer examples of what counts as an infrastructure project and to let private builders, not just government agencies, approve financing deals.",
       "type": "comments"
     },
     {
@@ -82,7 +82,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0070",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Anonymous . raises concerns while partially supporting the provision Citing 8 CFR 204.407(e)(1)), 204.407(e)(1)). I am a conditional permanent resident who invested in the EB-5 program in good faith and whose project application and petition were approved by USCIS under the rules in effect at the time. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "An anonymous conditional green card holder wrote in. They say they invested under old rules and worry new bridge loan rules will be applied late at I-829. They ask USCIS to limit but not ban bridge loans, with at least 36 months to match real building times.",
       "type": "comments"
     },
     {
@@ -92,7 +92,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0071",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Anonymous Anonymous requests clarification / change to the provision Citing 8 CFR 204.407(e)(1)), 8 CFR 204.407(e)(3)(iv)). As a good-faith EB-5 investor whose project application and petition were approved by USCIS under the rules in effect at the time of my investment, I respectfully urge DHS to apply the substantive job. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "An anonymous investor whose project was already approved wrote in. They ask USCIS to apply the new job rules about bridge loans and visitor spending only to future investors, not to people already in the program.",
       "type": "comments"
     },
     {
@@ -102,7 +102,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0073",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Anonymous supports the provision Citing 8 CFR 204.407(e)(1)), 8 CFR 204.407(e). I submit this as a good-faith EB-5 investor who invested in reliance on a project application (Form I-956F) and petition (Form I-526E) that USCIS approved under the rules then in effect, and who has n. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "An anonymous investor who has not yet filed I-829 wrote in. They support program integrity but ask USCIS to make sure three new changes are not used to punish investors who already committed money and followed the old approved rules.",
       "type": "comments"
     },
     {
@@ -112,7 +112,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0069",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Anonymous supports the provision Citing 204.400(a), INA 203. PUBLIC COMMENT - DHS Docket No.",
+      "ai_summary": "An anonymous investor filed a full analysis with proposed text. They ask USCIS to judge people who filed before the final rule under the old job methods, TEA data, and evidence lists, and to not deny an investor if the regional center misses a new form.",
       "type": "comments"
     },
     {
@@ -122,7 +122,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0074",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Amit Bhadauria supports the EB-5 NPRM provision. I am submitting this comment as an individual EB-5 investor. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "Amit Bhadauria invested $800K into a rural Montana project in 2025. He supports the proposed 2-year sustainment starting when money is deployed and asks USCIS to keep that rule.",
       "type": "comments"
     },
     {
@@ -132,7 +132,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0072",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Anonymous requests clarification / change to the provision Citing 8 CFR 204.407(e), 204.407(e). DHS should expressly confirm that the new job-creation standards in proposed 8 CFR 204.407(e) &mdash; particularly the elimination of bridge financing and the &quot;but-for&quot; nexus requirement &md. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "An anonymous investor wrote in. They ask USCIS to clearly say the new job rules about bridge loans and but-for tests will not be used at I-829 for projects that were already approved under old rules.",
       "type": "comments"
     },
     {
@@ -142,7 +142,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0068",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Anonymous supports the provision Citing 8 CFR 204.407(c), 8 CFR 204.6(e). This comment addresses proposed 8 CFR 204.407(c) and 204.401, which appear to require EB-5 petitioners to document the lawful source of ALL capital in the NCE &mdash; including funds from non-petition. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "An anonymous investor wrote about source of funds paperwork. They say USCIS should not make them prove where every dollar in the company came from, including other investors not seeking visas, because that is not workable.",
       "type": "comments"
     },
     {
@@ -152,7 +152,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0067",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Lila Z opposes the provision Citing 8 CFR 216.6(d)(1), 8 CFR 204.410(c). COMMENT SUMMARY &mdash; Docket USCIS-2026-0100 This comment addresses two interconnected concerns with the proposed rule implementing the EB-5 Reform and Integrity Act of 2022: COMMENT ONE &mdash; Sus. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "Lila Z filed a comment with two main issues. She says the proposed 2-year rule creates two tracks that may treat rural and other investors unfairly, and she asks USCIS to make sustainment fair, clear, and not tied to visa backlogs.",
       "type": "comments"
     },
     {
@@ -162,7 +162,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0066",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "NIKHIL SP requests clarification / change to the EB-5 NPRM provision. Elimination of Repaid Bridge Financing as Qualifying Capital Prohibiting the use of EB-5 capital to repay bridge financing severely prejudices existing EB-5 applicants and Regional Centers (RCs) that . Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "Nikhil SP wrote about bridge loans. He says banning repaid bridge loans hurts existing applicants and regional centers who planned jobs and financing around long-time USCIS policy that allowed them.",
       "type": "comments"
     },
     {
@@ -172,7 +172,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0062",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "University Beach Cooperative District comments on the EB-5 NPRM provision. Comment Submitted by University Beach Cooperative District See attached file(s) EB5 Public Works Comment - University Beach Cooperative District.",
+      "ai_summary": "University Beach Cooperative District is a local public group in Texas. They filed a comment about public works and infrastructure projects and how EB-5 can support them, with details in their attached PDF.",
       "type": "comments"
     },
     {
@@ -182,7 +182,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0065",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Kaushik K raises concerns while partially supporting the EB-5 NPRM provision. I am submitting this comment to express my strong opposition to the provision within the proposed rule (Docket No. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "Kaushik K is an EB-5 investor. He says he supports integrity but strongly opposes removing bridge financing for job creation because it is needed to start projects early and was allowed before.",
       "type": "comments"
     },
     {
@@ -192,7 +192,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0064",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Anonymous comments on the EB-5 NPRM provision. As an existing investor in EB5, I find the clause about prohibiting the use of EB5 capital as a bridge loan concerning. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "An anonymous existing investor wrote in worried about bridge loans. They say applying a new ban to people who already invested could hurt their immigration case and cause money loss.",
       "type": "comments"
     },
     {
@@ -202,7 +202,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0063",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "University Beach Cooperative District comments on the EB-5 NPRM provision. Comment Submitted by University Beach Cooperative District See attached file(s) EB5 Public Works Comment - University Beach Cooperative District.",
+      "ai_summary": "University Beach Cooperative District filed another comment. They again discuss public works projects as qualifying infrastructure, with more detail in the attached file.",
       "type": "comments"
     },
     {
@@ -212,7 +212,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0061",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Visa Franchise supports the EB-5 NPRM provision. I write on behalf of Visa Franchise, which advises foreign nationals who invest in and personally operate U.S. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "Visa Franchise helps foreign nationals buy U.S. franchises. They say direct EB-5 investors who run one small business are different from large regional center pools and ask USCIS to keep rules practical for them.",
       "type": "comments"
     },
     {
@@ -222,7 +222,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0060",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Wright Goforth supports the provision Citing 8 CFR 204.401, 204.401. On behalf of Wright Goforth, please find attached our comment on the proposed rule, EB-5 Reform and Integrity Act of 2022; Ensuring the Integrity of the EB-5 Program (DHS Docket No.",
+      "ai_summary": "Wright Goforth is a law firm. They filed a comment asking USCIS to define more clearly what counts as an infrastructure project under the new rule.",
       "type": "comments"
     },
     {
@@ -232,7 +232,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0059",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Robert Green comments on the EB-5 NPRM provision. Comment Submitted by Robert Green See attached document for formal comments Green_EB5_NPRM_Comment_USCIS-2026-0100-2.",
+      "ai_summary": "Robert Green filed a formal comment. He says his full legal arguments are in the attached PDF on the government site.",
       "type": "comments"
     },
     {
@@ -242,7 +242,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0058",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Anonymous supports the provision Citing 204.410(b)(1), 204.407(c). Docket No. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "An anonymous immigration lawyer with 15 years of EB-5 work wrote in. They ask about material change and capital rules and say many H-1B professionals who invested in good faith should not be penalized for normal business changes.",
       "type": "comments"
     },
     {
@@ -252,7 +252,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0056",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Anonymous raises concerns while partially supporting the EB-5 NPRM provision. I am writing to submit a formal comment regarding the proposed rule implementing the EB-5 Reform and Integrity Act of 2022 (RIA), specifically concerning the definition and commencement trigger of the. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "An anonymous investor wrote about the 2-year sustainment clock. They say USCIS should clearly state the clock starts when capital is deployed to the job-creating company, and the rule should cover post-RIA regional center investors.",
       "type": "comments"
     },
     {
@@ -262,7 +262,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0057",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Anonymous supports the EB-5 NPRM provision. Comment on Proposed Rule Regarding Full-Time Employment I respectfully urge DHS to retain the current allowance for job-sharing arrangements within the definition of full-time employment. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "An anonymous person wrote about full-time jobs. They ask USCIS to keep allowing job sharing where two part-time workers count as one full-time job, because many small direct businesses rely on it.",
       "type": "comments"
     },
     {
@@ -272,7 +272,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0055",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Prashil Sureja supports the EB-5 NPRM provision. I am submitting this comment as an individual EB-5 investor. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "Prashil Sureja invested $800K into Yellowstone Club Phase II in Big Sky in 2025. He strongly supports the 2-year sustainment measured from deployment and asks USCIS to finalize that approach.",
       "type": "comments"
     },
     {
@@ -282,7 +282,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0053",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "N O raises concerns while partially supporting the EB-5 NPRM provision. I am submitting this comment in opposition to several aspects of the proposed rule implementing the EB-5 Reform and Integrity Act of 2022 (91 FR 40676, July 2, 2026). Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "N O is a commenter who opposes parts of the rule. They say giving DHS wide power to fine, suspend, or debar regional centers without clear checks could be abused and hurt good-faith investors.",
       "type": "comments"
     },
     {
@@ -292,7 +292,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0054",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Anonymous requests clarification / change to the EB-5 NPRM provision. This proposed change is going to hurt the US economy more than help since it will prevent from a lot of potential investors to invest capital in US markets and eventually hurt economic development and. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "An anonymous person says the change will hurt the U.S. economy. They worry it will keep many investors from putting money into U.S. markets and slow local growth.",
       "type": "comments"
     },
     {
@@ -302,7 +302,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0052",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Anonymous supports the EB-5 NPRM provision. Thank you for the opportunity to comment on this proposed rule implementing the EB-5 Reform and Integrity Act of 2022. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "An anonymous investor with a pending adjustment application thanked USCIS. They support stronger integrity and transparency and ask USCIS to protect good-faith investors as it updates the rules.",
       "type": "comments"
     },
     {
@@ -312,7 +312,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0048",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Jie Zhu supports the provision Citing 8 CFR 204.425(a)(2), 8 CFR 204.425(a)(6). Comment 1 &mdash; 8 CFR 204.425(a)(2): Define how the fund administrator&#39;s &quot;cosignature&quot; is executed.",
+      "ai_summary": "Jie Zhu wrote about fund administrators. He asks USCIS to explain how a fund administrator actually signs on bank accounts and approves transfers, like whether it needs a bank signature card or an electronic sign-off.",
       "type": "comments"
     },
     {
@@ -322,7 +322,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0050",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Anonymous supports the EB-5 NPRM provision. I strongly support the proposal to eliminate the use of repaid bridge financing as a basis for demonstrating EB-5 job creation. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "An anonymous person strongly supports ending repaid bridge financing. They say using EB-5 money just to repay an old loan is not what the program is for and can be abused.",
       "type": "comments"
     },
     {
@@ -332,7 +332,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0051",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Anonymous supports the EB-5 NPRM provision. I strongly support extending the EB-5 investment sustainment period beyond two years. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "An anonymous person strongly supports a sustainment period longer than 2 years. They say the program should reward long-term investment that creates lasting jobs, not just a quick path to a green card.",
       "type": "comments"
     },
     {
@@ -342,7 +342,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0049",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Anonymous supports the provision Citing 8 CFR 204.406., 204.406.. Dear USCIS/DHS, I am writing to urge DHS to increase the standard on priority date retention, regarding the proposed 8 CFR 204.406. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "An anonymous person wrote about keeping your place in line. They support protecting investors when a regional center closes through no fault of the investor, but say the new rule should set a fair standard for who gets to keep their priority date.",
       "type": "comments"
     },
     {
@@ -352,7 +352,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0047",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Rajasekar Chinnasmay requests clarification / change to the EB-5 NPRM provision. I invested $800,000 through a USCIS-designated regional center after the EB-5 Reform and Integrity Act. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "Rajasekar Chinnasmay invested $800K and his family already has conditional green cards. He says he relied on USCIS guidance that sustainment is about 2 years from deployment and asks USCIS to keep that promise.",
       "type": "comments"
     },
     {
@@ -362,7 +362,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0045",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Anonymous requests clarification / change to the EB-5 NPRM provision. Supplemental Comment Regarding the Meaning of &ldquo;Qualifying Investment&rdquo; Under INA Section 203(b)(5)(M) I respectfully submit this supplemental comment regarding DHS&rsquo;s proposed implemen. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "An anonymous investor filed a follow-up on what counts as a qualifying investment. They ask USCIS to explain how the law applies when a good-faith investor needs to amend or move to a new investment if the first project fails.",
       "type": "comments"
     },
     {
@@ -372,7 +372,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0039",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Sameer Mehta comments on the EB-5 NPRM provision. Please release my 800k in 2 years.",
+      "ai_summary": "Sameer Mehta is an investor. He asks USCIS to release his $800K after 2 years so he can use it to start a business and help the economy.",
       "type": "comments"
     },
     {
@@ -382,7 +382,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0037",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "LINNET JOSE comments on the EB-5 NPRM provision. The 2 year sustainment period makes sense, since that is a realistic time frame for creating jobs. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "Linnet Jose is an investor who put money in with a 2-year plan. She says 2 years makes sense for job creation and her family planned to use the returned money for kids' education.",
       "type": "comments"
     },
     {
@@ -392,7 +392,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0040",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Satya Vadapalli comments on the EB-5 NPRM provision. USCIS should adopt a clear rule that the EB-5 sustainment period ends two years after capital deployment. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "Satya Vadapalli is an investor. He asks USCIS to make a clear rule that sustainment ends 2 years after deployment. He says that treats people from all countries fairly even when visas are backed up.",
       "type": "comments"
     },
     {
@@ -402,7 +402,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0036",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Jenson Thottian requests clarification / change to the EB-5 NPRM provision. I am writing to express my strong opposition to any extension of the EB-5 sustainment period.As an immigrant investor, I committed $800,000 of my personal capital into a project in YellowStone Big Sky. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "Jenson Thottian invested $800K in Yellowstone Big Sky. He opposes making the sustainment period longer and says he chose this project because the rules clearly said 2 years.",
       "type": "comments"
     },
     {
@@ -412,7 +412,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0043",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Anonymous supports the EB-5 NPRM provision. As an individual EB-5 investor, I strongly support the proposed rule&rsquo;s codification of the two-year sustainment period measured from the date capital is fully deployed and made available to the . Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "An anonymous investor says he supports the 2-year sustainment rule starting when money reaches the job company. He invested expecting at least 2 years at risk, not an open-ended hold.",
       "type": "comments"
     },
     {
@@ -422,7 +422,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0041",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Anonymous requests clarification / change to the EB-5 NPRM provision. Dear Sir/Madam, I am an investor(invested $800,000 plus additional ~$50,000 in legal and USCIS Fee)in a project in YCII YellowStone, Montana. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "An anonymous investor put $800K plus about $50K in fees into Yellowstone Big Sky. He says his papers promised 2 years from deployment and asks USCIS not to change that after he relied on it.",
       "type": "comments"
     },
     {
@@ -432,7 +432,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0046",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Anonymous supports the provision Citing 8 CFR 204.401, 8 CFR 204.407.. Re: Proposed 8 CFR 204.401, Definition of &quot;Capital&quot; - Treatment of Trust Structures and Retirement-Account-Sourced Funds; Request for Transition Clarity Given the September 30, 2026 Grandfat. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "An anonymous investor wrote about trusts and retirement accounts. They ask if money from a trust or IRA counts as capital and ask USCIS to explain how the September 30 2026 grandfathering date applies.",
       "type": "comments"
     },
     {
@@ -442,7 +442,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0038",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Rama Tejaswini Thotapalli comments on the EB-5 NPRM provision. I chose to invest $800,000 in an EB-5 project in Montana because the two-year sustainment period provided clarity and confidence that my investment would not remain tied up indefinitely. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "Rama Tejaswini Thotapalli invested $800K in Montana because 2 years gave her confidence her money would not be locked forever. She says she might not have invested if the rule was open-ended, and notes long waits for Indian investors.",
       "type": "comments"
     },
     {
@@ -452,7 +452,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0044",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Anonymous raises concerns while partially supporting the EB-5 NPRM provision. INTRODUCTION This comment is submitted in strong SUPPORT of the Notice of Proposed Rulemaking (NPRM) regarding the EB&ndash;5 Regional Center Program (91 FR 40676). Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "An anonymous advocate wrote in strong support of the NPRM. They say the rule rightly cracks down on misuse by large operators and protects workers and program integrity.",
       "type": "comments"
     },
     {
@@ -462,7 +462,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0035",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Joydeep Das comments on the EB-5 NPRM provision. Eliminating the use of repaid bridge financing as a basis to demonstrate - This elimination will create tremendous problem for the existing EB5 visa applicants who has filed petition based on regional.",
+      "ai_summary": "Joydeep Das is an investor. He says ending bridge financing will create big problems for people who already filed, because regional centers built their project budgets and job plans around earlier USCIS filings.",
       "type": "comments"
     },
     {
@@ -472,7 +472,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0042",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Falguni Gandhi comments on the EB-5 NPRM provision. Please release my investment in 2 years.",
+      "ai_summary": "Falguni Gandhi is an investor. She asks USCIS to release her investment in 2 years so she can build a better life in the U.S. and says she trusted the RIA rules when she invested.",
       "type": "comments"
     },
     {
@@ -482,7 +482,7 @@
       "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0034",
       "theme_id": "program_integrity",
       "theme_title": "Program Integrity / Redeployment",
-      "ai_summary": "Anonymous requests clarification / change to the EB-5 NPRM provision. I respectfully submit this comment regarding the proposed implementation of protections for good-faith EB-5 investors, including the provisions related to INA section 203(b)(5)(M), amendments, subsequ. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "ai_summary": "An anonymous person wrote about protections for good-faith investors. They ask USCIS to clarify that someone who invested honestly can keep eligibility, amend, or move to a new investment if needed, and still remove conditions.",
       "type": "comments"
     }
   ]

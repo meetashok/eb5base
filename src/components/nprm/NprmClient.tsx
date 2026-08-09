@@ -128,6 +128,7 @@ export default function NprmClient({
             checkLog={data.checkLog}
             lastPull={data.stats.last_pull}
             totalComments={data.stats.total_comments}
+            proposal={data.proposal}
           />
         )}
         {active === 'overview' && (
@@ -135,8 +136,10 @@ export default function NprmClient({
             stats={data.stats}
             themes={data.themes}
             comments={data.comments}
+            proposal={data.proposal}
             lastCheck={data.lastCheck}
             feedSource={data.feedSource}
+            onThemes={() => setTab('themes')}
             onWrite={() => setTab('write')}
             onAbout={() => setTab('about')}
           />
