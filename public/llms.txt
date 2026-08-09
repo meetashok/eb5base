@@ -1,4 +1,4 @@
-# EB5 Base — llms.txt
+# EB5 Base - llms.txt
 # https://eb5base.com
 
 > Investor-built information tools for the EB-5 community. Not legal or financial advice. Not affiliated with USCIS or DHS.
@@ -9,7 +9,7 @@
 - [NPRM Summary](https://eb5base.com/nprm/summary): Section-by-section Current / Proposed / Impact notes with Federal Register citations.
 - [Comment builder](https://eb5base.com/nprm/write): Personalize a draft for regulations.gov (user submits manually).
 - [Status Update](https://eb5base.com/status): Structured EB-5 status message builder for community sharing.
-- [Case Tracker](https://eb5base.com/tracker): Coming soon — USCIS case tracking with privacy-first design.
+- [Case Tracker](https://eb5base.com/tracker): Coming soon. USCIS case tracking with privacy-first design.
 
 ## Official sources
 
