@@ -6,8 +6,7 @@ export const metadata = {
   title: 'Contact',
 };
 
-const FEEDBACK_EMAIL = 'feedback@eb5base.com';
-const HELLO_EMAIL = 'hello@eb5base.com';
+const CONTACT_EMAIL = 'hello@eb5base.com';
 
 export default function ContactPage() {
   return (
@@ -25,33 +24,28 @@ export default function ContactPage() {
       />
 
       <div className="max-w-2xl mx-auto px-4 py-10 space-y-6">
-        <section className="card-elevated p-8 text-center">
-          <h2 className="text-lg font-bold text-primary mb-2">Send feedback</h2>
-          <p className="text-neutral/70 mb-6 text-sm">
-            Bug reports, wrong project data, UX suggestions, especially during our public beta.
+        <section className="card-elevated p-8 text-center space-y-4">
+          <h2 className="text-lg font-bold text-primary">Email us</h2>
+          <p className="text-neutral/70 text-sm leading-relaxed max-w-md mx-auto">
+            Bug reports, corrections, UX suggestions, partnerships, account help, or anything
+            else. One inbox:{' '}
+            <a href={`mailto:${CONTACT_EMAIL}`} className="link link-secondary font-medium">
+              {CONTACT_EMAIL}
+            </a>
+            .
           </p>
           <a
-            href={`mailto:${FEEDBACK_EMAIL}?subject=EB5%20Base%20feedback`}
+            href={`mailto:${CONTACT_EMAIL}?subject=EB5%20Base%20inquiry`}
             className="btn btn-primary rounded-full"
           >
-            {FEEDBACK_EMAIL}
-          </a>
-        </section>
-
-        <section className="card-elevated p-8 text-center">
-          <h2 className="text-lg font-bold text-primary mb-2">General questions</h2>
-          <p className="text-neutral/70 mb-6 text-sm">
-            Partnerships, regional center verification, account help, or anything else.
-          </p>
-          <a href={`mailto:${HELLO_EMAIL}`} className="btn btn-outline rounded-full">
-            {HELLO_EMAIL}
+            {CONTACT_EMAIL}
           </a>
         </section>
 
         <p className="text-center text-sm text-neutral/50">
-          Signed in? See your contributions on{' '}
-          <Link href="/timeline" className="link link-secondary">
-            My Timeline
+          Prefer a form-free start? Open a mail draft from the button above, or visit{' '}
+          <Link href="/about" className="link link-secondary">
+            About
           </Link>
           .
         </p>

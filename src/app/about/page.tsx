@@ -90,7 +90,19 @@ export default function AboutPage() {
             About <BrandWordmark variant="on-light" className="text-[0.88em] sm:text-[0.95em]" />
           </span>
         }
-        subtitle="Information tools for the EB-5 community. We are in public beta. Your feedback helps us improve (feedback@eb5base.com)."
+        subtitle={
+          <p>
+            Information tools for the EB-5 community. We are in public beta. Your feedback helps
+            us improve (
+            <a
+              href="mailto:hello@eb5base.com"
+              className="font-semibold text-secondary underline underline-offset-2"
+            >
+              hello@eb5base.com
+            </a>
+            ).
+          </p>
+        }
       />
 
       <div className="max-w-4xl mx-auto px-4 py-10 space-y-6">
@@ -161,8 +173,8 @@ export default function AboutPage() {
               <p>
                 Feedback from investors shapes what we build next. If something is unclear or
                 missing, tell us at{' '}
-                <a href="mailto:feedback@eb5base.com" className="link link-secondary">
-                  feedback@eb5base.com
+                <a href="mailto:hello@eb5base.com" className="link link-secondary">
+                  hello@eb5base.com
                 </a>
                 .
               </p>

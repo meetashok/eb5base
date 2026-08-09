@@ -50,10 +50,10 @@ export default function Footer() {
               Contact
             </Link>
             <a
-              href="mailto:feedback@eb5base.com"
+              href="mailto:hello@eb5base.com"
               className="text-sm text-neutral/50 hover:text-primary transition-colors"
             >
-              Feedback
+              hello@eb5base.com
             </a>
           </div>
         </div>

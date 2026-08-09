@@ -1,6 +1,4 @@
-import Link from 'next/link';
-
-const FEEDBACK_EMAIL = 'feedback@eb5base.com';
+const CONTACT_EMAIL = 'hello@eb5base.com';
 
 export default function BetaBanner() {
   return (
@@ -8,9 +6,17 @@ export default function BetaBanner() {
       <span className="font-medium text-primary">Public beta</span>
       {'. '}
       We&apos;re improving quickly.{' '}
-      <Link href={`mailto:${FEEDBACK_EMAIL}`} className="link link-secondary font-medium">
+      <a
+        href={`mailto:${CONTACT_EMAIL}?subject=EB5%20Base%20feedback`}
+        className="link link-secondary font-medium"
+      >
         Send feedback
-      </Link>
+      </a>
+      {' ('}
+      <a href={`mailto:${CONTACT_EMAIL}`} className="link link-secondary font-medium">
+        {CONTACT_EMAIL}
+      </a>
+      ).
     </div>
   );
 }
