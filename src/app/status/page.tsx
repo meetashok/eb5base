@@ -6,7 +6,7 @@ import StatusUpdateEmbed from '@/components/StatusUpdateEmbed';
 export const metadata: Metadata = {
   title: 'Status Update',
   description:
-    'Draft a structured EB-5 status update for WhatsApp: milestones, preview, and one-click copy. All fields optional; drafts stay in your browser.',
+    'Draft a structured EB-5 status update for sharing with your community: milestones, live preview, and one-click copy. All fields optional; drafts stay in your browser.',
 };
 
 export default function StatusUpdatePage() {
@@ -14,12 +14,12 @@ export default function StatusUpdatePage() {
     <div>
       <PageHero
         eyebrow={<span>Status Update</span>}
-        title="Build your WhatsApp status update"
+        title="Build your EB-5 status for sharing with your community"
         subtitle={
           <p>
             Fill in the milestones that apply, preview the message live, and copy or share it with
-            your investor group. Part of <BrandWordmark variant="on-light" className="font-semibold" />{' '}
-            — same builder as{' '}
+            your investor group — including WhatsApp. Part of{' '}
+            <BrandWordmark variant="on-light" className="font-semibold" /> — same builder as{' '}
             <a
               href="https://bit.ly/eb5status"
               className="link link-secondary"
