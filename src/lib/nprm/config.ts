@@ -1,0 +1,15 @@
+import nprmConfig from '@/config/nprm.json';
+
+export const NPRM_CONFIG = nprmConfig;
+
+export const DOCKET_ID = nprmConfig.docketId;
+export const DOCUMENT_ID = nprmConfig.documentId;
+export const FR_CITATION = nprmConfig.frCitation;
+export const RIN = nprmConfig.rin;
+export const FR_HTML = nprmConfig.federalRegisterHtml;
+export const FR_PDF = nprmConfig.federalRegisterPdf;
+export const COMMENT_ON_URL = nprmConfig.regulationsGovComment;
+export const DOCKET_URL = nprmConfig.regulationsGovDocket;
+export const DOCUMENT_URL = nprmConfig.regulationsGovDocument;
+export const NPRM_LAST_UPDATED = nprmConfig.lastUpdated;
+export const COMMENT_PERIOD_END = new Date(nprmConfig.deadlineIso);

@@ -6,14 +6,19 @@ const TAB_META: Record<
   { title: string; description: string }
 > = {
   overview: {
-    title: 'NPRM Explainer - EB-5 Proposed Rule July 2026',
+    title: 'EB-5 NPRM 2026: Plain-English Guide to DHS Proposed Rule',
     description:
-      'Plain-English overview of USCIS Docket USCIS-2026-0100 (91 FR 40676). What the July 2026 EB-5 NPRM covers and how to verify it in the Federal Register.',
+      'DHS published a 358-page proposed rule on July 2, 2026 to implement the 2022 RIA. Comment deadline Aug 31, 2026. Plain-English summary, impact by investor type, and comment builder.',
+  },
+  summary: {
+    title: 'EB-5 NPRM Summary - Current vs Proposed',
+    description:
+      'Section-by-section plain-English notes on investment amounts, TEA, sustainment, good-faith protections, sanctions, and more. Cite the Federal Register.',
   },
   themes: {
-    title: 'NPRM Themes - What investors are debating',
+    title: 'NPRM Comment Themes That Move the Needle',
     description:
-      'Theme-by-theme views of the EB-5 Reform Act NPRM: grandfathering, sustainment, bridge financing, TEA, and program integrity.',
+      'Theme-by-theme guidance for commenting on the EB-5 Reform Act NPRM: sustainment, good faith, TEA, sanctions, and more.',
   },
   comments: {
     title: 'NPRM Comments (48) - Themes & Summaries',
@@ -21,9 +26,9 @@ const TAB_META: Record<
       'Browse AI summaries of comments filed on Docket USCIS-2026-0100. Verify each filing on regulations.gov. Information only.',
   },
   write: {
-    title: 'Write an NPRM comment',
+    title: 'Build My EB-5 NPRM Comment',
     description:
-      'Prompt builder to draft a distinct personal comment on the July 2026 EB-5 NPRM for filing on regulations.gov.',
+      'Personalize a draft comment on the July 2026 EB-5 NPRM. EB5 Base does not submit for you — file on regulations.gov.',
   },
   about: {
     title: 'About the NPRM Comment Guide',

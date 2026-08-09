@@ -100,10 +100,85 @@ export default async function TrackerLandingPage() {
             <Link href={startHref} className="btn btn-accent text-accent-content rounded-full px-8">
               {user ? 'Continue setup' : 'Get started'}
             </Link>
+            <Link href="/status" className="btn btn-outline rounded-full">
+              Use Status Update meanwhile
+            </Link>
             <Link href="/nprm" className="btn btn-ghost rounded-full">
               NPRM guide
             </Link>
           </div>
+        </section>
+
+        <section className="card-elevated p-6 md:p-8 space-y-4">
+          <div>
+            <p className="text-xs uppercase tracking-[0.22em] font-semibold text-secondary mb-2">
+              Waitlist
+            </p>
+            <h2 className="text-xl font-bold text-primary">Notify me when Case Tracker expands</h2>
+            <p className="text-sm text-neutral/70 mt-1 leading-relaxed">
+              Email us and we will add you to the notify list. No backend form yet — opens your mail
+              client.
+            </p>
+          </div>
+          <form
+            action="mailto:hello@eb5base.com?subject=Case%20Tracker%20notify%20me"
+            method="get"
+            className="flex flex-col sm:flex-row gap-2 max-w-lg"
+          >
+            <label className="sr-only" htmlFor="tracker-waitlist-email">
+              Email
+            </label>
+            <input
+              id="tracker-waitlist-email"
+              type="email"
+              name="body"
+              required
+              placeholder="you@example.com"
+              className="input input-bordered w-full"
+            />
+            <button type="submit" className="btn btn-primary text-primary-content shrink-0">
+              Notify me
+            </button>
+          </form>
+        </section>
+
+        <section className="card-elevated p-6 md:p-8 space-y-3">
+          <div>
+            <p className="text-xs uppercase tracking-[0.22em] font-semibold text-secondary mb-2">
+              Vision
+            </p>
+            <h2 className="text-xl font-bold text-primary">
+              Illustrative cohort insight (not live data)
+            </h2>
+            <p className="text-sm text-neutral/70 mt-1 leading-relaxed">
+              Example chart concept: median I-526E progress by filing quarter for India. Real
+              charts will use opt-in anonymized cohort data only.
+            </p>
+          </div>
+          <div
+            className="rounded-xl border border-dashed border-base-300 bg-base-200/40 p-4"
+            aria-hidden
+          >
+            <div className="flex items-end gap-2 h-28">
+              {[40, 55, 48, 62, 70, 58].map((h, i) => (
+                <div
+                  key={i}
+                  className="flex-1 rounded-t-md bg-secondary/40"
+                  style={{ height: `${h}%` }}
+                />
+              ))}
+            </div>
+            <p className="text-[11px] text-neutral/60 mt-2 text-center">
+              Illustrative, anonymized — not real adjudication stats
+            </p>
+          </div>
+          <p className="text-sm text-neutral/80">
+            While we build this, use{' '}
+            <Link href="/status" className="link link-secondary font-medium">
+              Status Update
+            </Link>{' '}
+            to share your timeline with your community.
+          </p>
         </section>
 
         <section className="card-elevated p-6 md:p-8 space-y-5">

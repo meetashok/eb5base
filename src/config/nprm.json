@@ -1,0 +1,23 @@
+{
+  "docketId": "USCIS-2026-0100",
+  "documentId": "USCIS-2026-0100-0001",
+  "frDoc": "2026-13392",
+  "frCitation": "91 FR 40676",
+  "rin": "1615-AC94",
+  "published": "2026-07-02",
+  "deadline": "2026-08-31",
+  "deadlineIso": "2026-08-31T23:59:00-04:00",
+  "lastUpdated": "2026-08-10",
+  "pageCount": 358,
+  "amounts": {
+    "tea": 800000,
+    "standard": 1050000,
+    "highEmployment": 1400000
+  },
+  "inflationDate": "2027-01-01",
+  "federalRegisterHtml": "https://www.federalregister.gov/d/2026-13392",
+  "federalRegisterPdf": "https://www.govinfo.gov/content/pkg/FR-2026-07-02/pdf/2026-13392.pdf",
+  "regulationsGovDocket": "https://www.regulations.gov/docket/USCIS-2026-0100",
+  "regulationsGovDocument": "https://www.regulations.gov/document/USCIS-2026-0100-0001",
+  "regulationsGovComment": "https://www.regulations.gov/commenton/USCIS-2026-0100-0001"
+}

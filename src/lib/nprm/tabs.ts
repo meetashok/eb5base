@@ -1,5 +1,6 @@
 export const NPRM_TABS = [
   { id: 'overview', label: 'Overview' },
+  { id: 'summary', label: 'Summary' },
   { id: 'themes', label: 'Themes' },
   { id: 'comments', label: 'Comments' },
   { id: 'write', label: 'Write' },

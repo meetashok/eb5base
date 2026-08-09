@@ -19,11 +19,26 @@ export default function ThemesTab({
   return (
     <div className="space-y-6 animate-[fadeIn_0.35s_ease-out]">
       <div>
-        <h2 className="text-xl font-bold text-primary">Six grounded themes</h2>
+        <h2 className="text-xl font-bold text-primary">
+          Comment Themes That Actually Move The Needle
+        </h2>
         <p className="text-sm text-neutral mt-1 max-w-2xl leading-relaxed">
-          Context and sample IDs come from real regulations.gov comments, not invented talking points.
-          Pick an opinion, then continue in Write.
+          Don&apos;t copy-paste. USCIS discounts form letters. Use our Write builder to
+          personalize with your dates. Context and sample IDs below come from real
+          regulations.gov comments.
         </p>
+      </div>
+
+      <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 space-y-2 text-sm text-neutral leading-relaxed">
+        <p className="font-bold text-primary">How to submit</p>
+        <ol className="list-decimal pl-5 space-y-1">
+          <li>Pick a theme and opinion below, then open Write.</li>
+          <li>Personalize with your filing date and story (we check length).</li>
+          <li>
+            Paste on regulations.gov, category: Investor / Family. You can submit
+            anonymous — do not include A-Number or address.
+          </li>
+        </ol>
       </div>
 
       <div className="grid md:grid-cols-2 gap-4">

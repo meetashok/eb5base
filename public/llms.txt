@@ -1,0 +1,26 @@
+# EB5 Base — llms.txt
+# https://eb5base.com
+
+> Investor-built information tools for the EB-5 community. Not legal or financial advice. Not affiliated with USCIS or DHS.
+
+## Primary tools
+
+- [NPRM Comment Guide](https://eb5base.com/nprm): Plain-English explainer of the July 2 2026 EB-5 NPRM (USCIS-2026-0100), impact matrix, themes, and comment builder. Comments due Aug 31 2026.
+- [NPRM Summary](https://eb5base.com/nprm/summary): Section-by-section Current / Proposed / Impact notes with Federal Register citations.
+- [Comment builder](https://eb5base.com/nprm/write): Personalize a draft for regulations.gov (user submits manually).
+- [Status Update](https://eb5base.com/status): Structured EB-5 status message builder for community sharing.
+- [Case Tracker](https://eb5base.com/tracker): Coming soon — USCIS case tracking with privacy-first design.
+
+## Official sources
+
+- Federal Register HTML: https://www.federalregister.gov/d/2026-13392
+- Federal Register PDF: https://www.govinfo.gov/content/pkg/FR-2026-07-02/pdf/2026-13392.pdf
+- Docket: https://www.regulations.gov/docket/USCIS-2026-0100
+- Comment form: https://www.regulations.gov/commenton/USCIS-2026-0100-0001
+
+## Legal
+
+- [Disclaimer](https://eb5base.com/disclaimer)
+- [Terms](https://eb5base.com/terms)
+- [Privacy](https://eb5base.com/privacy)
+- [About](https://eb5base.com/about)

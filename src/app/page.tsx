@@ -11,7 +11,7 @@ const TOOLS = [
   {
     href: '/nprm',
     title: 'NPRM Comment Guide',
-    body: 'Plain-English explainer of the July 2026 EB-5 proposed rule, 12 themes, and 48 public comments — comments close Aug 31.',
+    body: 'Plain-English explainer of the July 2026 EB-5 proposed rule, impact matrix, themes, and comment builder — comments close Aug 31.',
     cta: 'Read explainer — 5 min',
     comingSoon: false,
     primary: true,
@@ -31,6 +31,21 @@ const TOOLS = [
     cta: 'Preview Case Tracker',
     comingSoon: true,
     primary: false,
+  },
+];
+
+const FAQ = [
+  {
+    q: 'Is this legal advice?',
+    a: 'No. EB5 Base is information only — not legal or financial advice, and not affiliated with USCIS or DHS. Verify on the Federal Register and consult an immigration attorney.',
+  },
+  {
+    q: 'Who built this?',
+    a: 'Investors in the EB-5 community. The tools are community-built and investor-led, with open feedback at hello@eb5base.com.',
+  },
+  {
+    q: 'How do you make money?',
+    a: 'We do not. No ads, no referral fees, no RC promotions. The goal is shared clarity on rules and case progress.',
   },
 ];
 
@@ -57,7 +72,10 @@ export default function HomePage() {
             milestones, and helps you comment on policy before it finalizes. Focus: RIA
             implementation NPRM open until Aug 31 2026.
           </p>
-          <p className="mt-3 text-sm font-medium text-amber-800 max-w-xl mx-auto leading-relaxed">
+          <p className="mt-3 text-sm font-semibold text-primary max-w-xl mx-auto">
+            Built by investors, for investors. 0 ads, 0 referral fees.
+          </p>
+          <p className="mt-2 text-sm font-medium text-amber-800 max-w-xl mx-auto leading-relaxed">
             Nothing here is legal or financial advice.
           </p>
           <div className="flex flex-wrap gap-3 justify-center mt-8">
@@ -80,17 +98,16 @@ export default function HomePage() {
       </section>
 
       <section className="max-w-6xl mx-auto px-4 -mt-4 md:-mt-6 relative z-10">
-        <div className="rounded-xl border-2 border-base-300 bg-base-100 px-4 py-3 sm:px-5 sm:py-3.5 shadow-soft text-center sm:text-left">
-          <p className="text-xs sm:text-sm text-neutral leading-relaxed">
-            <span className="font-semibold text-primary">Docket USCIS-2026-0100</span>
-            <span className="text-neutral/40 mx-1.5">·</span>
+        <div className="rounded-xl border-2 border-amber-200 bg-amber-50 px-4 py-3 sm:px-5 sm:py-3.5 shadow-soft text-center sm:text-left">
+          <p className="text-xs sm:text-sm text-amber-950 leading-relaxed">
+            <span className="font-bold">Deadline alert:</span> EB-5 NPRM comments close{' '}
+            <span className="font-semibold">Aug 31, 2026</span>
+            <span className="text-amber-800/50 mx-1.5">·</span>
+            Docket USCIS-2026-0100
+            <span className="text-amber-800/50 mx-1.5">·</span>
             FR Doc 2026-13392
-            <span className="text-neutral/40 mx-1.5">·</span>
-            48 comments tracked
-            <span className="text-neutral/40 mx-1.5">·</span>
-            Last checked Aug 9 1:30pm IST
-            <span className="text-neutral/40 mx-1.5">·</span>
-            Source: regulations.gov via api.data.gov / live JSON feed (CORS)
+            <span className="text-amber-800/50 mx-1.5">·</span>
+            Source: regulations.gov via api.data.gov
           </p>
         </div>
       </section>
@@ -120,7 +137,11 @@ export default function HomePage() {
                       : 'text-neutral/70'
                 }`}
               >
-                {tool.comingSoon ? 'Coming soon' : tool.primary ? 'Urgent · Available now' : 'Available now'}
+                {tool.comingSoon
+                  ? 'Coming soon'
+                  : tool.primary
+                    ? 'Urgent · Available now'
+                    : 'Available now'}
               </p>
               <h3 className="text-xl font-bold text-primary">{tool.title}</h3>
               <p className="text-sm text-neutral/75 leading-relaxed mt-2 flex-1">{tool.body}</p>
@@ -148,15 +169,36 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="max-w-3xl mx-auto px-4 pb-12 space-y-4">
+        <h2 className="text-xl font-bold text-primary text-center">FAQ</h2>
+        <div className="space-y-3">
+          {FAQ.map((item) => (
+            <details
+              key={item.q}
+              className="rounded-xl border-2 border-base-300 bg-base-100 p-4 shadow-sm"
+            >
+              <summary className="cursor-pointer font-semibold text-primary text-sm sm:text-base focus-visible:outline focus-visible:outline-2 focus-visible:outline-secondary rounded">
+                {item.q}
+              </summary>
+              <p className="mt-2 text-sm text-neutral leading-relaxed">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
       <section className="max-w-6xl mx-auto px-4 pb-16 text-center">
         <p className="text-sm text-neutral/60 max-w-xl mx-auto leading-relaxed">
-          Questions or feedback?{' '}
+          Questions?{' '}
           <a href="mailto:hello@eb5base.com" className="link link-secondary font-medium">
             hello@eb5base.com
           </a>
           {' · '}
           <Link href="/about" className="link link-secondary font-medium">
             About EB5 Base
+          </Link>
+          {' · '}
+          <Link href="/disclaimer" className="link link-secondary font-medium">
+            Disclaimer
           </Link>
         </p>
       </section>

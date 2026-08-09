@@ -1,15 +1,18 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   DISTINCTNESS_WARNING,
   PROJECT_TYPE_OPTIONS,
 } from '@/lib/nprm/constants';
 import {
+  MIN_IMPACT_CHARS,
   PROMPT_DIVERSITY_NOTE,
   buildPersonalOnly,
   buildPrompt,
   canCopyPrompt,
+  isPersonalizedEnough,
+  templateSimilarity,
 } from '@/lib/nprm/prompt';
 import type {
   FormatGuideline,
@@ -30,6 +33,18 @@ interface Props {
 }
 
 const MAX_THEMES = 3;
+const DRAFT_KEY = 'eb5base_nprm_write_draft_v1';
+
+type GoatCounter = { count?: (opts: { path: string; title?: string; event?: boolean }) => void };
+
+function track(event: string) {
+  try {
+    const gc = (window as unknown as { goatcounter?: GoatCounter }).goatcounter;
+    gc?.count?.({ path: `event/${event}`, title: event, event: true });
+  } catch {
+    // ignore
+  }
+}
 
 export default function WriteTab({
   themes,
@@ -47,14 +62,65 @@ export default function WriteTab({
     i_526e_file_date: '',
     project_type: '',
     impact: '',
+    investor_type: '',
+    country: '',
   });
   const [length, setLength] = useState<LengthGuideline>('300_450');
   const [style, setStyle] = useState<StyleGuideline>('plain');
   const [format, setFormat] = useState<FormatGuideline>('paragraphs');
   const [copyMsg, setCopyMsg] = useState<string | null>(null);
+  const [privacyOk, setPrivacyOk] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
 
-  const ready = canCopyPrompt(personal);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as {
+          themeIds?: string[];
+          opinions?: Record<string, string>;
+          personal?: PersonalBlock;
+          length?: LengthGuideline;
+          style?: StyleGuideline;
+          format?: FormatGuideline;
+        };
+        if (parsed.themeIds?.length && initialThemeIds.length === 0) {
+          setThemeIds(parsed.themeIds.slice(0, MAX_THEMES));
+        }
+        if (parsed.opinions && Object.keys(initialOpinions).length === 0) {
+          setOpinions(parsed.opinions);
+        }
+        if (parsed.personal) {
+          setPersonal((p) => ({ ...p, ...parsed.personal }));
+        }
+        if (parsed.length) setLength(parsed.length);
+        if (parsed.style) setStyle(parsed.style);
+        if (parsed.format) setFormat(parsed.format);
+      }
+    } catch {
+      // ignore corrupt draft
+    }
+    setHydrated(true);
+    track('builder_started');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      localStorage.setItem(
+        DRAFT_KEY,
+        JSON.stringify({ themeIds, opinions, personal, length, style, format })
+      );
+    } catch {
+      // quota
+    }
+  }, [hydrated, themeIds, opinions, personal, length, style, format]);
+
+  const ready = canCopyPrompt(personal) && privacyOk && themeIds.length > 0;
   const impactLen = personal.impact.trim().length;
+  const personalized = isPersonalizedEnough(personal.impact);
+  const similarity = templateSimilarity(personal.impact);
 
   const prompt = useMemo(
     () =>
@@ -89,9 +155,12 @@ export default function WriteTab({
   }
 
   async function copyText(text: string, label: string) {
+    if (!ready) return;
     try {
       await navigator.clipboard.writeText(text);
       setCopyMsg(`${label} copied`);
+      track('builder_copied');
+      if (personalized) track('builder_personalized');
       window.setTimeout(() => setCopyMsg(null), 2000);
     } catch {
       setCopyMsg('Copy failed. Select the text manually.');
@@ -102,12 +171,12 @@ export default function WriteTab({
   return (
     <div className="space-y-4 animate-[fadeIn_0.35s_ease-out]">
       <div>
-        <h2 className="text-xl font-bold text-primary">Prompt Lab</h2>
+        <h2 className="text-xl font-bold text-primary">Build My Comment</h2>
         <p className="text-sm text-neutral mt-1 max-w-2xl leading-relaxed">
-          Deterministic prompt builder. No server LLM key. Paste into your own ChatGPT/Claude/Gemini, then paste the final draft into regulations.gov.
+          Personalize a draft for regulations.gov. We do not submit for you and we
+          do not store drafts on our servers — only in your browser (localStorage).
         </p>
         <p className="text-xs text-neutral/75 mt-2 font-mono leading-relaxed">
-          {/* Diversity math documented in lib/nprm/prompt.ts */}
           {PROMPT_DIVERSITY_NOTE}
         </p>
       </div>
@@ -118,6 +187,18 @@ export default function WriteTab({
       >
         {DISTINCTNESS_WARNING}
       </div>
+
+      {impactLen >= MIN_IMPACT_CHARS && !personalized ? (
+        <div
+          className="rounded-xl border-2 border-error/50 bg-error/10 px-3 py-3 text-sm text-error font-medium leading-relaxed"
+          role="alert"
+        >
+          Your comment looks too close to a template (
+          {Math.round(similarity * 100)}% overlap). Add 1-2 sentences about your
+          own case — why you chose EB-5, how long you have waited, what
+          redeployment cost you. DHS discounts form letters.
+        </div>
+      ) : null}
 
       <div className="grid lg:grid-cols-10 gap-5">
         <div className="lg:col-span-3 space-y-5">
@@ -194,7 +275,9 @@ export default function WriteTab({
               Step C: Personal block (required)
             </h3>
             <label className="form-control">
-              <span className="label-text text-xs">I-526E file date</span>
+              <span className="label-text text-xs">
+                When did you file or plan to file?
+              </span>
               <input
                 type="text"
                 className="input input-bordered input-sm"
@@ -207,6 +290,43 @@ export default function WriteTab({
                   }))
                 }
               />
+              <span className="label-text-alt text-[10px] text-neutral/70">
+                Personalizes your comment. Stored only in your browser.
+              </span>
+            </label>
+            <label className="form-control">
+              <span className="label-text text-xs">Investor type</span>
+              <select
+                className="select select-bordered select-sm"
+                value={personal.investor_type || ''}
+                onChange={(e) =>
+                  setPersonal((p) => ({
+                    ...p,
+                    investor_type: e.target.value as PersonalBlock['investor_type'],
+                  }))
+                }
+              >
+                <option value="">Select…</option>
+                <option value="pre_ria">Pre-RIA</option>
+                <option value="post_ria">Post-RIA 2022+</option>
+                <option value="future">Future filer</option>
+                <option value="family">Family</option>
+              </select>
+            </label>
+            <label className="form-control">
+              <span className="label-text text-xs">Country chargeability</span>
+              <select
+                className="select select-bordered select-sm"
+                value={personal.country || ''}
+                onChange={(e) =>
+                  setPersonal((p) => ({ ...p, country: e.target.value }))
+                }
+              >
+                <option value="">Select…</option>
+                <option value="India">India</option>
+                <option value="China">China</option>
+                <option value="ROW">Rest of World</option>
+              </select>
             </label>
             <label className="form-control">
               <span className="label-text text-xs">Project type</span>
@@ -230,23 +350,29 @@ export default function WriteTab({
             </label>
             <label className="form-control">
               <span className="label-text text-xs flex justify-between">
-                <span>Personal impact (1 to 2 lines)</span>
+                <span>Personal story (required)</span>
                 <span
                   className={
-                    impactLen >= 40 ? 'text-success' : 'text-warning'
+                    impactLen >= MIN_IMPACT_CHARS && personalized
+                      ? 'text-success'
+                      : 'text-warning'
                   }
                 >
-                  {impactLen}/40
+                  {impactLen}/{MIN_IMPACT_CHARS}
                 </span>
               </span>
               <textarea
-                className="textarea textarea-bordered text-sm min-h-24"
-                placeholder="e.g. Relocating family for school; capital already deployed; job change timed to I-829"
+                className="textarea textarea-bordered text-sm min-h-28"
+                placeholder="Why you chose EB-5, how long you have waited, what redeployment or RC issues cost you…"
                 value={personal.impact}
                 onChange={(e) =>
                   setPersonal((p) => ({ ...p, impact: e.target.value }))
                 }
               />
+              <span className="label-text-alt text-[10px] text-neutral/70">
+                Your comment needs personal facts. Example: wait time, capital
+                already deployed, school/job timing tied to I-829.
+              </span>
             </label>
           </section>
 
@@ -264,7 +390,7 @@ export default function WriteTab({
                     setLength((v) => (v === '150' ? '300_450' : '150'))
                   }
                 />
-                Length: 150 words (off = 300 to 450)
+                Length: ~150 words (off = 300 to 450)
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -292,6 +418,19 @@ export default function WriteTab({
               </label>
             </div>
           </section>
+
+          <label className="flex items-start gap-2 text-xs text-neutral cursor-pointer rounded-lg border border-base-300 p-3 bg-base-100">
+            <input
+              type="checkbox"
+              className="checkbox checkbox-sm mt-0.5"
+              checked={privacyOk}
+              onChange={(e) => setPrivacyOk(e.target.checked)}
+            />
+            <span>
+              I understand not to include A-Number, receipt number, or home
+              address in a public comment.
+            </span>
+          </label>
         </div>
 
         <div className="lg:col-span-7 space-y-3">
@@ -313,11 +452,11 @@ export default function WriteTab({
             <button
               type="button"
               className="btn btn-accent text-accent-content"
-              disabled={!ready || themeIds.length === 0}
+              disabled={!ready}
               title={
                 ready
                   ? 'Copy full prompt'
-                  : 'Fill file date, project type, and 40+ char impact first'
+                  : 'Complete personal block, privacy checkbox, and themes first'
               }
               onClick={() => copyText(prompt, 'Prompt')}
             >
@@ -337,6 +476,8 @@ export default function WriteTab({
               href={COMMENT_ON_URL}
               target="_blank"
               rel="noopener noreferrer"
+              data-goatcounter-click="nprm-regulations-gov"
+              onClick={() => track('regulations_gov_clicked')}
               className="btn btn-secondary shadow-glow-green sm:flex-1"
             >
               Open regulations.gov to paste your personal comment
@@ -345,14 +486,21 @@ export default function WriteTab({
 
           {!ready && (
             <p className="text-xs text-warning">
-              Copy stays disabled until I-526E date, project type, and impact (40+ characters) are filled. Fragments are not a finished letter.
+              Copy stays disabled until file date, project type, personal story (
+              {MIN_IMPACT_CHARS}+ characters, personalized), privacy checkbox, and
+              at least one theme are filled.
             </p>
           )}
 
+          <p className="text-xs text-neutral/75 leading-relaxed">
+            EB5 Base does NOT submit for you. Drafts stay in your browser unless
+            you copy them. This is not legal advice.
+          </p>
+
           <ul className="text-sm text-neutral space-y-1 leading-relaxed">
             <li>- Paste the prompt into your own LLM</li>
-            <li>- Edit the draft in your voice</li>
-            <li>- Paste the final comment on regulations.gov (we do not POST for you)</li>
+            <li>- Edit the draft in your voice (&gt;30% personal)</li>
+            <li>- Paste the final comment on regulations.gov</li>
             <li>- Consider a 30-minute counsel memo for your file</li>
           </ul>
         </div>

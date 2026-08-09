@@ -1,20 +1,19 @@
 import type { NprmComment, NprmTheme } from './types';
+import { COMMENT_PERIOD_END } from './config';
 
-export const DOCKET_ID = 'USCIS-2026-0100';
-export const DOCUMENT_ID = 'USCIS-2026-0100-0001';
-export const FR_CITATION = '91 FR 40676';
-export const RIN = '1615-AC94';
-
-export const COMMENT_PERIOD_END = new Date('2026-08-31T23:59:00-04:00');
-
-export const COMMENT_ON_URL =
-  'https://www.regulations.gov/commenton/USCIS-2026-0100-0001';
-
-export const DOCKET_URL =
-  'https://www.regulations.gov/docket/USCIS-2026-0100';
-
-export const DOCUMENT_URL =
-  'https://www.regulations.gov/document/USCIS-2026-0100-0001';
+export {
+  COMMENT_ON_URL,
+  COMMENT_PERIOD_END,
+  DOCKET_ID,
+  DOCKET_URL,
+  DOCUMENT_ID,
+  DOCUMENT_URL,
+  FR_CITATION,
+  FR_HTML,
+  FR_PDF,
+  NPRM_LAST_UPDATED,
+  RIN,
+} from './config';
 
 export function commentUrl(commentId: string): string {
   return `https://www.regulations.gov/comment/${commentId}`;
