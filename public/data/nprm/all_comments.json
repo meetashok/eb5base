@@ -1,678 +1,489 @@
 {
-  "retrieved": "2026-08-09",
+  "docket_id": "USCIS-2026-0100",
+  "retrieved": "2026-08-09 05:22 IST id+link+theme+ai_summary no body - fixed 0081",
   "total": 48,
+  "source": "regulations.gov via api.data.gov",
+  "mode": "id_link_theme_summary_only",
   "comments": [
     {
       "id": "USCIS-2026-0100-0077",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b9408f71",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-08-06T04:00:00Z",
-        "lastModifiedDate": "2026-08-06T16:57:30Z",
-        "title": "Comment Submitted by Intellex Capital LLC"
-      }
+      "title": "Comment Submitted by Intellex Capital LLC",
+      "postedDate": "2026-08-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0077",
+      "theme_id": "bridge_financing",
+      "theme_title": "Bridge Financing 204.407(e)(1)",
+      "ai_summary": "Intellex Capital LLC supports preserving bridge financing under 8 CFR 204.407(e)(1) and attaches a brief arguing bridge used to start construction before EB-5 capital is market standard. Requests clarification / change to the proposed change Citing 8 CFR 204.407(e)(1), 204.407(e)(1). and requests USCIS clarify transition or grandfather provision.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0081",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b9413855",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-08-06T04:00:00Z",
-        "lastModifiedDate": "2026-08-07T05:25:57Z",
-        "title": "Comment Submitted by Anonymous"
-      }
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-08-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0081",
+      "theme_id": "grandfather_retroactivity",
+      "theme_title": "Grandfather Clause / Retroactivity",
+      "ai_summary": "Anonymous attaches a 656KB PDF titled 'Comment on USCIS-2026-0100 2026-13392'. Body placeholder is 'See attached file(s)'. Based on file size and citation of INA 203(b)(5) as amended by RIA March 15 2022 and 8 CFR 204.400(a), filing likely argues for lifecycle grandfather / transition relief for post-RIA investors. Full details in PDF on regulations.gov.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0078",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b940a7d1",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-08-06T04:00:00Z",
-        "lastModifiedDate": "2026-08-06T16:58:06Z",
-        "title": "Comment Submitted by Celona Asset Management (USA) Limited"
-      }
+      "title": "Comment Submitted by Celona Asset Management (USA) Limited",
+      "postedDate": "2026-08-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0078",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Celona Asset Management submits a comment on redeployment and commercial viability, emphasizing investor protection and same-project safeguards. Comments on the proposed change and requests USCIS clarify transition or grandfather provision.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0079",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b940c7ec",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-08-06T04:00:00Z",
-        "lastModifiedDate": "2026-08-06T20:37:33Z",
-        "title": "Comment Submitted by Ankit Dave"
-      }
+      "title": "Comment Submitted by Ankit Dave",
+      "postedDate": "2026-08-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0079",
+      "theme_id": "grandfather_retroactivity",
+      "theme_title": "Grandfather Clause / Retroactivity",
+      "ai_summary": "Investor Ankit Dave argues applying new sustainment and TEA rules to I-526E filed in 2025 at 800k TEA after RIA March 15 2022 violates reliance and requests grandfathering tracked to RIA enactment not future effective date. Describes personal impact as EB-5 investor who relied on prior guidance when filing.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0080",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b941390a",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-08-06T04:00:00Z",
-        "lastModifiedDate": "2026-08-07T05:25:53Z",
-        "title": "Comment Submitted by Anonymous"
-      }
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-08-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0080",
+      "theme_id": "sustainment",
+      "theme_title": "Sustainment Period - 2yr vs Job Creation",
+      "ai_summary": "Anonymous argues sustainment period of 2 years is insufficient for meaningful investment and job creation, citing Portugal ARI 5-year model and mixed investor concerns about at-risk vs money-back. Describes personal impact as EB-5 investor who relied on prior guidance when filing.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0076",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93e9ac9",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-08-03T04:00:00Z",
-        "lastModifiedDate": "2026-08-03T21:48:24Z",
-        "title": "Comment Submitted by Anonymous"
-      }
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-08-03T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0076",
+      "theme_id": "definitional_asymmetry",
+      "theme_title": "Definitional Asymmetry 204.432 vs 204.433",
+      "ai_summary": "Anonymous requests clarification / change to the provision Citing 204.432(d), 204.432. PUBLIC COMMENT - DHS Docket No. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0075",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93e5d37",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-31T04:00:00Z",
-        "lastModifiedDate": "2026-07-31T22:11:21Z",
-        "title": "Comment Submitted by Harry Saltzgaver"
-      }
+      "title": "Comment Submitted by Harry Saltzgaver",
+      "postedDate": "2026-07-31T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0075",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Harry Saltzgaver comments on the EB-5 NPRM provision. Two points.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0070",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93c4c8d",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-27T04:00:00Z",
-        "lastModifiedDate": "2026-07-27T08:32:48Z",
-        "title": "Comment Submitted by Anonymous ."
-      }
+      "title": "Comment Submitted by Anonymous .",
+      "postedDate": "2026-07-27T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0070",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Anonymous . raises concerns while partially supporting the provision Citing 8 CFR 204.407(e)(1)), 204.407(e)(1)). I am a conditional permanent resident who invested in the EB-5 program in good faith and whose project application and petition were approved by USCIS under the rules in effect at the time. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0071",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93c4cc2",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-27T04:00:00Z",
-        "lastModifiedDate": "2026-07-27T08:32:48Z",
-        "title": "Comment Submitted by Anonymous Anonymous"
-      }
+      "title": "Comment Submitted by Anonymous Anonymous",
+      "postedDate": "2026-07-27T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0071",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Anonymous Anonymous requests clarification / change to the provision Citing 8 CFR 204.407(e)(1)), 8 CFR 204.407(e)(3)(iv)). As a good-faith EB-5 investor whose project application and petition were approved by USCIS under the rules in effect at the time of my investment, I respectfully urge DHS to apply the substantive job. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0073",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93c522a",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-27T04:00:00Z",
-        "lastModifiedDate": "2026-07-27T08:32:49Z",
-        "title": "Comment Submitted by Anonymous"
-      }
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-27T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0073",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Anonymous supports the provision Citing 8 CFR 204.407(e)(1)), 8 CFR 204.407(e). I submit this as a good-faith EB-5 investor who invested in reliance on a project application (Form I-956F) and petition (Form I-526E) that USCIS approved under the rules then in effect, and who has n. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0069",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93c472b",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-27T04:00:00Z",
-        "lastModifiedDate": "2026-07-27T08:32:48Z",
-        "title": "Comment Submitted by Anonymous"
-      }
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-27T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0069",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Anonymous supports the provision Citing 204.400(a), INA 203. PUBLIC COMMENT - DHS Docket No.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0074",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93c7399",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-27T04:00:00Z",
-        "lastModifiedDate": "2026-07-27T20:58:47Z",
-        "title": "Comment Submitted by Amit Bhadauria"
-      }
+      "title": "Comment Submitted by Amit Bhadauria",
+      "postedDate": "2026-07-27T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0074",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Amit Bhadauria supports the EB-5 NPRM provision. I am submitting this comment as an individual EB-5 investor. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0072",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93c5209",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-27T04:00:00Z",
-        "lastModifiedDate": "2026-07-27T08:32:49Z",
-        "title": "Comment Submitted by Anonymous"
-      }
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-27T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0072",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Anonymous requests clarification / change to the provision Citing 8 CFR 204.407(e), 204.407(e). DHS should expressly confirm that the new job-creation standards in proposed 8 CFR 204.407(e) &mdash; particularly the elimination of bridge financing and the &quot;but-for&quot; nexus requirement &md. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0068",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93c1013",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-24T04:00:00Z",
-        "lastModifiedDate": "2026-07-25T00:09:56Z",
-        "title": "Comment Submitted by Anonymous"
-      }
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-24T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0068",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Anonymous supports the provision Citing 8 CFR 204.407(c), 8 CFR 204.6(e). This comment addresses proposed 8 CFR 204.407(c) and 204.401, which appear to require EB-5 petitioners to document the lawful source of ALL capital in the NCE &mdash; including funds from non-petition. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0067",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93c0e17",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-24T04:00:00Z",
-        "lastModifiedDate": "2026-07-24T23:30:10Z",
-        "title": "Comment Submitted by Lila Z"
-      }
+      "title": "Comment Submitted by Lila Z",
+      "postedDate": "2026-07-24T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0067",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Lila Z opposes the provision Citing 8 CFR 216.6(d)(1), 8 CFR 204.410(c). COMMENT SUMMARY &mdash; Docket USCIS-2026-0100 This comment addresses two interconnected concerns with the proposed rule implementing the EB-5 Reform and Integrity Act of 2022: COMMENT ONE &mdash; Sus. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0066",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93bdf52",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-24T04:00:00Z",
-        "lastModifiedDate": "2026-07-24T15:42:09Z",
-        "title": "Comment Submitted by NIKHIL SP"
-      }
+      "title": "Comment Submitted by NIKHIL SP",
+      "postedDate": "2026-07-24T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0066",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "NIKHIL SP requests clarification / change to the EB-5 NPRM provision. Elimination of Repaid Bridge Financing as Qualifying Capital Prohibiting the use of EB-5 capital to repay bridge financing severely prejudices existing EB-5 applicants and Regional Centers (RCs) that . Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0062",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93bc5c9",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-23T04:00:00Z",
-        "lastModifiedDate": "2026-07-24T00:10:58Z",
-        "title": "Comment Submitted by University Beach Cooperative District"
-      }
+      "title": "Comment Submitted by University Beach Cooperative District",
+      "postedDate": "2026-07-23T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0062",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "University Beach Cooperative District comments on the EB-5 NPRM provision. Comment Submitted by University Beach Cooperative District See attached file(s) EB5 Public Works Comment - University Beach Cooperative District.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0065",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93bc1f9",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-23T04:00:00Z",
-        "lastModifiedDate": "2026-07-24T00:11:57Z",
-        "title": "Comment Submitted by Kaushik K"
-      }
+      "title": "Comment Submitted by Kaushik K",
+      "postedDate": "2026-07-23T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0065",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Kaushik K raises concerns while partially supporting the EB-5 NPRM provision. I am submitting this comment to express my strong opposition to the provision within the proposed rule (Docket No. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0064",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93bc23b",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-23T04:00:00Z",
-        "lastModifiedDate": "2026-07-24T00:11:39Z",
-        "title": "Comment Submitted by Anonymous"
-      }
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-23T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0064",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Anonymous comments on the EB-5 NPRM provision. As an existing investor in EB5, I find the clause about prohibiting the use of EB5 capital as a bridge loan concerning. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0063",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93bc5c7",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-23T04:00:00Z",
-        "lastModifiedDate": "2026-07-24T00:11:23Z",
-        "title": "Comment Submitted by University Beach Cooperative District"
-      }
+      "title": "Comment Submitted by University Beach Cooperative District",
+      "postedDate": "2026-07-23T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0063",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "University Beach Cooperative District comments on the EB-5 NPRM provision. Comment Submitted by University Beach Cooperative District See attached file(s) EB5 Public Works Comment - University Beach Cooperative District.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0061",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93ad81a",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-20T04:00:00Z",
-        "lastModifiedDate": "2026-07-20T21:36:30Z",
-        "title": "Comment Submitted by Visa Franchise"
-      }
+      "title": "Comment Submitted by Visa Franchise",
+      "postedDate": "2026-07-20T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0061",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Visa Franchise supports the EB-5 NPRM provision. I write on behalf of Visa Franchise, which advises foreign nationals who invest in and personally operate U.S. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0060",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93a9540",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-20T04:00:00Z",
-        "lastModifiedDate": "2026-07-20T10:58:24Z",
-        "title": "Comment Submitted by Wright Goforth"
-      }
+      "title": "Comment Submitted by Wright Goforth",
+      "postedDate": "2026-07-20T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0060",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Wright Goforth supports the provision Citing 8 CFR 204.401, 204.401. On behalf of Wright Goforth, please find attached our comment on the proposed rule, EB-5 Reform and Integrity Act of 2022; Ensuring the Integrity of the EB-5 Program (DHS Docket No.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0059",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93a618b",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-17T04:00:00Z",
-        "lastModifiedDate": "2026-07-17T15:49:08Z",
-        "title": "Comment Submitted by Robert Green"
-      }
+      "title": "Comment Submitted by Robert Green",
+      "postedDate": "2026-07-17T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0059",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Robert Green comments on the EB-5 NPRM provision. Comment Submitted by Robert Green See attached document for formal comments Green_EB5_NPRM_Comment_USCIS-2026-0100-2.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0058",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93a2ffe",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-16T04:00:00Z",
-        "lastModifiedDate": "2026-07-16T19:53:16Z",
-        "title": "Comment Submitted by Anonymous"
-      }
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-16T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0058",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Anonymous supports the provision Citing 204.410(b)(1), 204.407(c). Docket No. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0056",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b939814e",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-14T04:00:00Z",
-        "lastModifiedDate": "2026-07-14T15:34:11Z",
-        "title": "Comment Submitted by Anonymous"
-      }
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-14T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0056",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Anonymous raises concerns while partially supporting the EB-5 NPRM provision. I am writing to submit a formal comment regarding the proposed rule implementing the EB-5 Reform and Integrity Act of 2022 (RIA), specifically concerning the definition and commencement trigger of the. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0057",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b939bdf5",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-14T04:00:00Z",
-        "lastModifiedDate": "2026-07-14T15:34:12Z",
-        "title": "Comment Submitted by Anonymous"
-      }
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-14T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0057",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Anonymous supports the EB-5 NPRM provision. Comment on Proposed Rule Regarding Full-Time Employment I respectfully urge DHS to retain the current allowance for job-sharing arrangements within the definition of full-time employment. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0055",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93800ea",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-13T04:00:00Z",
-        "lastModifiedDate": "2026-07-13T08:05:51Z",
-        "title": "Comment Submitted by Prashil Sureja"
-      }
+      "title": "Comment Submitted by Prashil Sureja",
+      "postedDate": "2026-07-13T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0055",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Prashil Sureja supports the EB-5 NPRM provision. I am submitting this comment as an individual EB-5 investor. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0053",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93797de",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-10T04:00:00Z",
-        "lastModifiedDate": "2026-07-10T08:21:15Z",
-        "title": "Comment Submitted by N O"
-      }
+      "title": "Comment Submitted by N O",
+      "postedDate": "2026-07-10T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0053",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "N O raises concerns while partially supporting the EB-5 NPRM provision. I am submitting this comment in opposition to several aspects of the proposed rule implementing the EB-5 Reform and Integrity Act of 2022 (91 FR 40676, July 2, 2026). Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0054",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b9377c96",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-10T04:00:00Z",
-        "lastModifiedDate": "2026-07-10T16:00:03Z",
-        "title": "Comment Submitted by Anonymous"
-      }
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-10T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0054",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Anonymous requests clarification / change to the EB-5 NPRM provision. This proposed change is going to hurt the US economy more than help since it will prevent from a lot of potential investors to invest capital in US markets and eventually hurt economic development and. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0052",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b936df38",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-08T04:00:00Z",
-        "lastModifiedDate": "2026-07-08T15:59:01Z",
-        "title": "Comment Submitted by Anonymous"
-      }
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-08T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0052",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Anonymous supports the EB-5 NPRM provision. Thank you for the opportunity to comment on this proposed rule implementing the EB-5 Reform and Integrity Act of 2022. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0048",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b936b149",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-07T04:00:00Z",
-        "lastModifiedDate": "2026-07-07T11:46:46Z",
-        "title": "Comment Submitted by Jie Zhu"
-      }
+      "title": "Comment Submitted by Jie Zhu",
+      "postedDate": "2026-07-07T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0048",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Jie Zhu supports the provision Citing 8 CFR 204.425(a)(2), 8 CFR 204.425(a)(6). Comment 1 &mdash; 8 CFR 204.425(a)(2): Define how the fund administrator&#39;s &quot;cosignature&quot; is executed.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0050",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b936b9c9",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-07T04:00:00Z",
-        "lastModifiedDate": "2026-07-07T11:46:47Z",
-        "title": "Comment Submitted by Anonymous"
-      }
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-07T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0050",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Anonymous supports the EB-5 NPRM provision. I strongly support the proposal to eliminate the use of repaid bridge financing as a basis for demonstrating EB-5 job creation. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0051",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b936b9d2",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-07T04:00:00Z",
-        "lastModifiedDate": "2026-07-07T11:46:47Z",
-        "title": "Comment Submitted by Anonymous"
-      }
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-07T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0051",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Anonymous supports the EB-5 NPRM provision. I strongly support extending the EB-5 investment sustainment period beyond two years. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0049",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b936b97b",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-07T04:00:00Z",
-        "lastModifiedDate": "2026-07-07T11:46:47Z",
-        "title": "Comment Submitted by Anonymous"
-      }
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-07T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0049",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Anonymous supports the provision Citing 8 CFR 204.406., 204.406.. Dear USCIS/DHS, I am writing to urge DHS to increase the standard on priority date retention, regarding the proposed 8 CFR 204.406. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0047",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93698dc",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-07T04:00:00Z",
-        "lastModifiedDate": "2026-07-07T11:46:46Z",
-        "title": "Comment Submitted by Rajasekar Chinnasmay"
-      }
+      "title": "Comment Submitted by Rajasekar Chinnasmay",
+      "postedDate": "2026-07-07T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0047",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Rajasekar Chinnasmay requests clarification / change to the EB-5 NPRM provision. I invested $800,000 through a USCIS-designated regional center after the EB-5 Reform and Integrity Act. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0045",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b9367efc",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-06T04:00:00Z",
-        "lastModifiedDate": "2026-07-06T17:48:45Z",
-        "title": "Comment Submitted by Anonymous"
-      }
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0045",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Anonymous requests clarification / change to the EB-5 NPRM provision. Supplemental Comment Regarding the Meaning of &ldquo;Qualifying Investment&rdquo; Under INA Section 203(b)(5)(M) I respectfully submit this supplemental comment regarding DHS&rsquo;s proposed implemen. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0039",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b9364ae2",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-06T04:00:00Z",
-        "lastModifiedDate": "2026-07-06T09:15:29Z",
-        "title": "Comment Submitted by Sameer Mehta"
-      }
+      "title": "Comment Submitted by Sameer Mehta",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0039",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Sameer Mehta comments on the EB-5 NPRM provision. Please release my 800k in 2 years.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0037",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b9364537",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-06T04:00:00Z",
-        "lastModifiedDate": "2026-07-06T09:15:28Z",
-        "title": "Comment Submitted by LINNET JOSE"
-      }
+      "title": "Comment Submitted by LINNET JOSE",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0037",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "LINNET JOSE comments on the EB-5 NPRM provision. The 2 year sustainment period makes sense, since that is a realistic time frame for creating jobs. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0040",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b936637a",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-06T04:00:00Z",
-        "lastModifiedDate": "2026-07-06T09:15:29Z",
-        "title": "Comment Submitted by Satya Vadapalli"
-      }
+      "title": "Comment Submitted by Satya Vadapalli",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0040",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Satya Vadapalli comments on the EB-5 NPRM provision. USCIS should adopt a clear rule that the EB-5 sustainment period ends two years after capital deployment. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0036",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b9363cac",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-06T04:00:00Z",
-        "lastModifiedDate": "2026-07-06T09:15:28Z",
-        "title": "Comment Submitted by Jenson Thottian"
-      }
+      "title": "Comment Submitted by Jenson Thottian",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0036",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Jenson Thottian requests clarification / change to the EB-5 NPRM provision. I am writing to express my strong opposition to any extension of the EB-5 sustainment period.As an immigrant investor, I committed $800,000 of my personal capital into a project in YellowStone Big Sky. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0043",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b9366acf",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-06T04:00:00Z",
-        "lastModifiedDate": "2026-07-06T09:15:30Z",
-        "title": "Comment Submitted by Anonymous"
-      }
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0043",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Anonymous supports the EB-5 NPRM provision. As an individual EB-5 investor, I strongly support the proposed rule&rsquo;s codification of the two-year sustainment period measured from the date capital is fully deployed and made available to the . Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0041",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93663bf",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-06T04:00:00Z",
-        "lastModifiedDate": "2026-07-06T09:15:29Z",
-        "title": "Comment Submitted by Anonymous"
-      }
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0041",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Anonymous requests clarification / change to the EB-5 NPRM provision. Dear Sir/Madam, I am an investor(invested $800,000 plus additional ~$50,000 in legal and USCIS Fee)in a project in YCII YellowStone, Montana. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0046",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b936949c",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-06T04:00:00Z",
-        "lastModifiedDate": "2026-07-06T20:05:04Z",
-        "title": "Comment Submitted by Anonymous"
-      }
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0046",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Anonymous supports the provision Citing 8 CFR 204.401, 8 CFR 204.407.. Re: Proposed 8 CFR 204.401, Definition of &quot;Capital&quot; - Treatment of Trust Structures and Retirement-Account-Sourced Funds; Request for Transition Clarity Given the September 30, 2026 Grandfat. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0038",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93645b8",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-06T04:00:00Z",
-        "lastModifiedDate": "2026-07-06T09:15:28Z",
-        "title": "Comment Submitted by Rama Tejaswini  Thotapalli"
-      }
+      "title": "Comment Submitted by Rama Tejaswini  Thotapalli",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0038",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Rama Tejaswini Thotapalli comments on the EB-5 NPRM provision. I chose to invest $800,000 in an EB-5 project in Montana because the two-year sustainment period provided clarity and confidence that my investment would not remain tied up indefinitely. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0044",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b9367e5f",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-06T04:00:00Z",
-        "lastModifiedDate": "2026-07-06T09:15:30Z",
-        "title": "Comment Submitted by Anonymous"
-      }
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0044",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Anonymous raises concerns while partially supporting the EB-5 NPRM provision. INTRODUCTION This comment is submitted in strong SUPPORT of the Notice of Proposed Rulemaking (NPRM) regarding the EB&ndash;5 Regional Center Program (91 FR 40676). Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0035",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b9363447",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-06T04:00:00Z",
-        "lastModifiedDate": "2026-07-06T09:15:28Z",
-        "title": "Comment Submitted by Joydeep Das"
-      }
+      "title": "Comment Submitted by Joydeep Das",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0035",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Joydeep Das comments on the EB-5 NPRM provision. Eliminating the use of repaid bridge financing as a basis to demonstrate - This elimination will create tremendous problem for the existing EB5 visa applicants who has filed petition based on regional.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0042",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93666b7",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-06T04:00:00Z",
-        "lastModifiedDate": "2026-07-06T09:15:29Z",
-        "title": "Comment Submitted by Falguni Gandhi"
-      }
+      "title": "Comment Submitted by Falguni Gandhi",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0042",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Falguni Gandhi comments on the EB-5 NPRM provision. Please release my investment in 2 years.",
+      "type": "comments"
     },
     {
       "id": "USCIS-2026-0100-0034",
-      "type": "comments",
-      "attributes": {
-        "agencyId": "USCIS",
-        "objectId": "09000064b93631c2",
-        "documentType": "Public Submission",
-        "withdrawn": false,
-        "highlightedContent": "",
-        "postedDate": "2026-07-02T04:00:00Z",
-        "lastModifiedDate": "2026-07-02T20:11:12Z",
-        "title": "Comment Submitted by Anonymous"
-      }
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-02T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0034",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "Anonymous requests clarification / change to the EB-5 NPRM provision. I respectfully submit this comment regarding the proposed implementation of protections for good-faith EB-5 investors, including the provisions related to INA section 203(b)(5)(M), amendments, subsequ. Notes personal stake as EB-5 investor with filed petition and family reliance on prior rule.",
+      "type": "comments"
     }
   ]
 }

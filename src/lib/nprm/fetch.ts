@@ -1,12 +1,48 @@
 import type {
+  NprmComment,
   NprmCommentsEnvelope,
   NprmFeedIndex,
+  NprmFlatComment,
   NprmLastCheck,
   NprmPageData,
   NprmPromptNode,
   NprmStats,
   NprmTheme,
 } from './types';
+
+/** Accept nested regs.gov rows or flat Hatch theme/summary rows. */
+export function normalizeComment(
+  raw: NprmComment | NprmFlatComment
+): NprmComment {
+  const flat = raw as NprmFlatComment;
+  const nested = raw as NprmComment;
+  const attrs = { ...(flat.attributes || nested.attributes || {}) };
+
+  const title = flat.title ?? attrs.title;
+  const postedDate = flat.postedDate ?? attrs.postedDate;
+  const aiSummary =
+    flat.ai_summary ?? nested.aiSummary ?? attrs.aiSummary ?? undefined;
+  const themeId = flat.theme_id ?? nested.themeId;
+  const themeTitle = flat.theme_title ?? nested.themeTitle;
+  const sourceLink = flat.source_link ?? nested.sourceLink;
+  const originalText =
+    flat.comment ?? attrs.originalText ?? undefined;
+
+  if (title) attrs.title = title;
+  if (postedDate) attrs.postedDate = postedDate;
+  if (aiSummary) attrs.aiSummary = aiSummary;
+  if (originalText) attrs.originalText = originalText;
+
+  return {
+    id: raw.id,
+    type: raw.type,
+    attributes: attrs,
+    themeId,
+    themeTitle,
+    aiSummary,
+    sourceLink,
+  };
+}
 
 /**
  * Public share page (HTML shell):
@@ -188,9 +224,9 @@ export async function loadNprmPageData(): Promise<NprmPageData> {
     fetchNprm.checkLog().catch(() => null),
   ]);
 
-  const comments = allR.data.comments ?? [];
+  const comments = (allR.data.comments ?? []).map(normalizeComment);
   // Prefer last-check stubs when they carry richer attributes later.
-  const lastComments = lastR?.data.comments ?? [];
+  const lastComments = (lastR?.data.comments ?? []).map(normalizeComment);
   const byId = new Map(lastComments.map((c) => [c.id, c]));
   const merged = comments.map((c) => {
     const richer = byId.get(c.id);
@@ -198,6 +234,11 @@ export async function loadNprmPageData(): Promise<NprmPageData> {
     return {
       ...c,
       attributes: { ...c.attributes, ...richer.attributes },
+      // Keep theme/summary from all_comments when present; fill gaps from last-check.
+      themeId: c.themeId || richer.themeId,
+      themeTitle: c.themeTitle || richer.themeTitle,
+      aiSummary: c.aiSummary || richer.aiSummary,
+      sourceLink: c.sourceLink || richer.sourceLink,
     };
   });
 

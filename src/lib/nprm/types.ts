@@ -46,24 +46,55 @@ export interface NprmCommentAttributes {
   title?: string;
   /** Optional full original text when enrichment exists */
   originalText?: string;
-  /** Optional AI summary when enrichment exists */
+  /** Optional AI summary when enrichment exists (legacy nested shape) */
   aiSummary?: string;
 }
 
+/**
+ * Normalized comment. Hatch may publish either regs.gov nested `attributes`
+ * or a flat id+link+theme+ai_summary row; fetch normalizes both.
+ */
 export interface NprmComment {
   id: string;
   type?: string;
   attributes: NprmCommentAttributes;
+  /** Theme assignment from feed (separate from AI summary). */
+  themeId?: string;
+  themeTitle?: string;
+  /** Per-comment AI summary from feed (separate from theme). */
+  aiSummary?: string;
+  sourceLink?: string;
+}
+
+/** Raw flat row published by Hatch (id_link_theme_summary_only). */
+export interface NprmFlatComment {
+  id: string;
+  type?: string;
+  title?: string;
+  postedDate?: string;
+  source_link?: string;
+  theme_id?: string;
+  theme_title?: string;
+  ai_summary?: string;
+  comment?: string;
+  attributes?: NprmCommentAttributes;
 }
 
 export interface NprmCommentsEnvelope {
   retrieved?: string;
   total: number;
-  comments: NprmComment[];
+  docket_id?: string;
+  source?: string;
+  mode?: string;
+  comments: Array<NprmComment | NprmFlatComment>;
 }
 
 export interface NprmLastCheck {
-  metadata: {
+  retrieved?: string;
+  total?: number;
+  docket_id?: string;
+  source?: string;
+  metadata?: {
     docket_id: string;
     document_id: string;
     document_title: string;
@@ -77,7 +108,7 @@ export interface NprmLastCheck {
     dhs_docket_no?: string;
     data_retrieved?: string;
   };
-  comments: NprmComment[];
+  comments: Array<NprmComment | NprmFlatComment>;
 }
 
 export interface NprmFeedIndex {

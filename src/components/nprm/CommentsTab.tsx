@@ -3,10 +3,8 @@
 import { useMemo, useState } from 'react';
 import type { NprmComment, NprmTheme } from '@/lib/nprm/types';
 import {
-  buildCommentThemeIndex,
   commentUrl,
   formatShortDate,
-  groundedAiSummary,
   parsePoster,
 } from '@/lib/nprm/utils';
 
@@ -22,27 +20,35 @@ function commentNumber(id: string): number {
   return m ? Number(m[1]) : 0;
 }
 
+function themeLabel(
+  comment: NprmComment,
+  themes: NprmTheme[]
+): string | null {
+  if (comment.themeTitle) return comment.themeTitle;
+  if (comment.themeId) {
+    const match = themes.find((t) => t.id === comment.themeId);
+    if (match) return match.title;
+    return comment.themeId;
+  }
+  return null;
+}
+
 export default function CommentsTab({ comments, themes }: Props) {
   const [themeFilter, setThemeFilter] = useState<string>('all');
   const [posterFilter, setPosterFilter] = useState<PosterFilter>('all');
-
-  const themeIndex = useMemo(() => buildCommentThemeIndex(themes), [themes]);
 
   const filtered = useMemo(() => {
     const list = comments.filter((c) => {
       const { posterType } = parsePoster(c.attributes?.title);
       if (posterFilter !== 'all' && posterType !== posterFilter) return false;
-      if (themeFilter !== 'all') {
-        const ids = themeIndex.get(c.id) || [];
-        if (!ids.includes(themeFilter)) return false;
-      }
+      if (themeFilter !== 'all' && c.themeId !== themeFilter) return false;
       return true;
     });
     // Highest comment number first (later filings get higher IDs).
     return [...list].sort(
       (a, b) => commentNumber(b.id) - commentNumber(a.id)
     );
-  }, [comments, posterFilter, themeFilter, themeIndex]);
+  }, [comments, posterFilter, themeFilter]);
 
   const posterOptions: { id: PosterFilter; label: string }[] = [
     { id: 'all', label: 'All posters' },
@@ -71,9 +77,9 @@ export default function CommentsTab({ comments, themes }: Props) {
           Comments ({filtered.length})
         </h2>
         <p className="text-sm text-neutral mt-1 max-w-xl leading-relaxed">
-          Sorted by comment number (newest ID first). Full comment text lives on
-          regulations.gov. Theme filter only includes comments with grounded
-          sample IDs.
+          Sorted by comment number (newest ID first). Theme and AI summary come
+          from the feed as separate fields. Full comment text lives on
+          regulations.gov.
         </p>
       </div>
 
@@ -119,10 +125,9 @@ export default function CommentsTab({ comments, themes }: Props) {
       <ul className="space-y-3">
         {filtered.map((comment) => {
           const { poster } = parsePoster(comment.attributes?.title);
-          const ai =
-            comment.attributes?.aiSummary ||
-            groundedAiSummary(comment.id, themes);
-          const source = commentUrl(comment.id);
+          const theme = themeLabel(comment, themes);
+          const ai = comment.aiSummary || comment.attributes?.aiSummary;
+          const source = comment.sourceLink || commentUrl(comment.id);
 
           return (
             <li key={comment.id}>
@@ -146,29 +151,47 @@ export default function CommentsTab({ comments, themes }: Props) {
                   </p>
                 </header>
 
-                <div className="rounded-lg border-2 border-info/35 bg-info/5 p-3">
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-info mb-1.5">
-                    AI-generated summary
-                  </p>
-                  {ai ? (
-                    <p className="text-sm text-neutral leading-relaxed">{ai}</p>
-                  ) : (
-                    <p className="text-sm text-neutral leading-relaxed">
-                      No summary available for this comment yet.
+                <div className="grid gap-3 sm:grid-cols-1">
+                  <div className="rounded-lg border-2 border-base-300 bg-base-200/60 p-3">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-neutral/70 mb-1.5">
+                      Theme
                     </p>
-                  )}
-                  <p className="text-xs text-neutral mt-2 leading-relaxed">
-                    This summary may be incomplete or inaccurate. Please read the{' '}
-                    <a
-                      href={source}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-semibold text-secondary underline underline-offset-2"
-                    >
-                      original comment on regulations.gov
-                    </a>{' '}
-                    to verify.
-                  </p>
+                    {theme ? (
+                      <p className="text-sm font-semibold text-primary leading-snug">
+                        {theme}
+                      </p>
+                    ) : (
+                      <p className="text-sm text-neutral leading-relaxed">
+                        No theme assigned for this comment yet.
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="rounded-lg border-2 border-info/35 bg-info/5 p-3">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-info mb-1.5">
+                      AI-generated summary
+                    </p>
+                    {ai ? (
+                      <p className="text-sm text-neutral leading-relaxed">{ai}</p>
+                    ) : (
+                      <p className="text-sm text-neutral leading-relaxed">
+                        No summary available for this comment yet.
+                      </p>
+                    )}
+                    <p className="text-xs text-neutral mt-2 leading-relaxed">
+                      This summary may be incomplete or inaccurate. Please read
+                      the{' '}
+                      <a
+                        href={source}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-semibold text-secondary underline underline-offset-2"
+                      >
+                        original comment on regulations.gov
+                      </a>{' '}
+                      to verify.
+                    </p>
+                  </div>
                 </div>
               </article>
             </li>
@@ -178,7 +201,7 @@ export default function CommentsTab({ comments, themes }: Props) {
 
       {filtered.length === 0 && (
         <p className="text-sm text-neutral">
-          No comments match these filters. Theme filter only shows comments listed as sample_ids.
+          No comments match these filters.
         </p>
       )}
     </div>
