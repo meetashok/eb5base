@@ -12,6 +12,7 @@ const BYPASS_MAX_AGE_SEC = 60 * 60 * 24 * 30; // 30 days
 
 function isMaintenancePassthrough(pathname: string): boolean {
   return (
+    pathname === '/' ||
     pathname === '/maintenance' ||
     pathname === '/robots.txt' ||
     pathname === '/icon' ||
@@ -30,7 +31,11 @@ function isMaintenancePassthrough(pathname: string): boolean {
     pathname === '/about' ||
     pathname === '/privacy' ||
     pathname === '/terms' ||
-    pathname === '/contact'
+    pathname === '/contact' ||
+    pathname === '/login' ||
+    pathname.startsWith('/login/') ||
+    pathname === '/auth' ||
+    pathname.startsWith('/auth/')
   );
 }
 
