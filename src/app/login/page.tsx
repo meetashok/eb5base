@@ -34,6 +34,10 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const redirectParam = searchParams.get('redirect') || '/profile/setup';
+  const nextPath = redirectParam.startsWith('/') ? redirectParam : '/profile/setup';
+  const isTrackerFlow = nextPath.startsWith('/tracker');
+
   async function handleGoogleSignIn() {
     setLoading(true);
     setError(null);
@@ -42,7 +46,7 @@ function LoginForm() {
     const { error: err } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${origin}/auth/callback?next=${encodeURIComponent('/profile/setup')}`,
+        redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(nextPath)}`,
       },
     });
     if (err) {
@@ -64,7 +68,9 @@ function LoginForm() {
               Sign in to <BrandWordmark variant="on-light" className="text-[1.05em]" />
             </h1>
             <p className="text-neutral/60 mt-2">
-              Browse projects, confirm status, and contribute
+              {isTrackerFlow
+                ? 'Track your EB-5 cases with encrypted receipt storage'
+                : 'Browse projects, confirm status, and contribute'}
             </p>
           </div>
 

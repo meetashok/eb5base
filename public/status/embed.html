@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="eb5base">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Status Update Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script type="module" src="https://unpkg.com/cally"></script>
+  <style>
+    /* Design language aligned with EB5 Base (eb5base.com): navy, gold, forest, warm cream.
+       Custom theme names avoid DaisyUI's built-in light/dark :root:has(.theme-controller) overrides. */
+    :root,
+    [data-theme="eb5base"] {
+      color-scheme: light;
+      --color-base-100: #FFFFFF;
+      --color-base-200: #F3EFE8;
+      --color-base-300: #D4CBBC;
+      --color-base-content: #0A1628;
+      --color-primary: #0A1628;
+      --color-primary-content: #F5F1EA;
+      --color-secondary: #245041;
+      --color-secondary-content: #FFFFFF;
+      --color-accent: #B8922A;
+      --color-accent-content: #0A1628;
+      --color-success: #1DAA52;
+      --color-error: #9E3A3A;
+      --color-info: #3A5164;
+      --color-warning: #A86328;
+      --color-neutral: #1F2933;
+    }
+    [data-theme="eb5base-dark"] {
+      color-scheme: dark;
+      --color-base-100: #0F1C30;
+      --color-base-200: #0A1628;
+      --color-base-300: #1A2A3D;
+      --color-base-content: #FAF7F2;
+      --color-primary: #D4AF37;
+      --color-primary-content: #0A1628;
+      --color-secondary: #4A8F6E;
+      --color-secondary-content: #FFFFFF;
+      --color-accent: #D4AF37;
+      --color-accent-content: #0A1628;
+      --color-success: #25D366;
+      --color-error: #F87171;
+      --color-info: #D4AF37;
+      --color-warning: #B87333;
+      --color-neutral: #A8B6C4;
+    }
+    body {
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    }
+    .hero-glow {
+      background:
+        radial-gradient(ellipse 95% 60% at 50% -20%, rgba(212, 175, 55, 0.18), transparent 60%),
+        radial-gradient(ellipse 55% 45% at 95% 15%, rgba(184, 115, 51, 0.12), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 5% 75%, rgba(45, 90, 71, 0.12), transparent 55%),
+        radial-gradient(ellipse 40% 30% at 50% 100%, rgba(45, 90, 71, 0.08), transparent 50%),
+        linear-gradient(180deg, #e4dccf, #ebe4d8 35%, #f3efe8);
+    }
+    [data-theme="eb5base-dark"] .hero-glow {
+      background:
+        radial-gradient(ellipse 95% 60% at 50% -20%, rgba(212, 175, 55, 0.16), transparent 60%),
+        radial-gradient(ellipse 55% 45% at 95% 15%, rgba(184, 115, 51, 0.1), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 5% 75%, rgba(45, 90, 71, 0.18), transparent 55%),
+        linear-gradient(180deg, #060f1a, #0a1628 45%, #0f1c30);
+    }
+    .page-header-band {
+      position: relative;
+    }
+    .hero-eyebrow {
+      font-size: 0.75rem;
+      line-height: 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      color: var(--color-secondary);
+    }
+    .brand-lockup {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55rem;
+      flex-wrap: nowrap;
+      max-width: 100%;
+    }
+    .brand-logo {
+      width: 2.35rem;
+      height: 2.35rem;
+      flex-shrink: 0;
+      border-radius: 0.5rem;
+    }
+    @media (min-width: 640px) {
+      .brand-lockup {
+        gap: 0.75rem;
+      }
+      .brand-logo {
+        width: 3.25rem;
+        height: 3.25rem;
+      }
+    }
+    .brand-mark {
+      display: inline-flex;
+      align-items: baseline;
+      flex-wrap: nowrap;
+      justify-content: center;
+      column-gap: 0.28rem;
+      line-height: 1.05;
+      white-space: nowrap;
+    }
+    @media (max-width: 389px) {
+      .brand-mark {
+        white-space: normal;
+        flex-wrap: wrap;
+      }
+    }
+    .brand-eb5 {
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: color-mix(in oklch, var(--color-primary) 82%, transparent);
+    }
+    [data-theme="eb5base-dark"] .brand-eb5 {
+      color: color-mix(in oklch, var(--color-base-content) 82%, transparent);
+    }
+    .brand-product {
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--color-accent);
+    }
+    .brand-rest {
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--color-primary);
+    }
+    [data-theme="eb5base-dark"] .brand-rest {
+      color: var(--color-base-content);
+    }
+    .shadow-soft {
+      box-shadow: 0 4px 20px -4px rgba(10, 22, 40, 0.14), 0 2px 8px -2px rgba(10, 22, 40, 0.08);
+    }
+    .section-title {
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    .section-header {
+      margin: 0;
+      padding: 0.75rem 1.25rem;
+      border-radius: 0;
+      border-left-width: 4px;
+      border-left-style: solid;
+    }
+    .section-card {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+      transition: all 0.2s ease;
+    }
+    @media (min-width: 1024px) {
+      .section-card:hover {
+        transform: translateY(-1px);
+      }
+    }
+    [data-theme="eb5base-dark"] .section-card {
+      background: color-mix(in oklch, var(--color-base-100) 92%, transparent);
+      backdrop-filter: blur(12px);
+      border: 1px solid color-mix(in oklch, var(--color-accent) 28%, transparent);
+    }
+    [data-theme="eb5base"] .section-card {
+      background: #FFFFFF;
+      border: 1px solid var(--color-base-300);
+      box-shadow: 0 4px 20px -4px rgba(10, 22, 40, 0.12), 0 2px 8px -2px rgba(10, 22, 40, 0.06);
+    }
+    .section-header--info {
+      background: linear-gradient(
+        135deg,
+        rgba(184, 115, 51, 0.16),
+        rgba(212, 175, 55, 0.1)
+      );
+      border-left-width: 4px;
+      border-left-style: solid;
+      border-left-color: var(--color-accent);
+    }
+    .section-header--info .section-title {
+      color: var(--color-primary);
+    }
+    [data-theme="eb5base-dark"] .section-header--info .section-title {
+      color: var(--color-accent);
+    }
+    .section-header--neutral {
+      background: color-mix(in oklch, var(--color-neutral) 12%, transparent);
+      border-left-color: var(--color-neutral);
+    }
+    .section-header--neutral .section-title {
+      color: var(--color-neutral);
+    }
+    .section-header--success {
+      background: color-mix(in oklch, var(--color-secondary) 14%, transparent);
+      border-left-color: var(--color-secondary);
+    }
+    .section-header--success .section-title {
+      color: var(--color-secondary);
+    }
+    .field-row-label {
+      color: var(--color-base-content);
+    }
+    [data-theme="eb5base-dark"] .field-row-label {
+      color: color-mix(in oklch, var(--color-base-content) 96%, transparent);
+    }
+    [data-theme="eb5base-dark"] input::placeholder,
+    [data-theme="eb5base-dark"] textarea::placeholder {
+      color: color-mix(in oklch, var(--color-base-content) 48%, transparent);
+    }
+    .choice-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+      background: color-mix(in oklch, var(--color-base-content) 5%, transparent);
+      border: 1px solid color-mix(in oklch, var(--color-base-content) 32%, transparent);
+      color: var(--color-base-content);
+      opacity: 1;
+    }
+    .choice-btn.tooltip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .choice-btn:has(input:checked) {
+      background: color-mix(in oklch, var(--color-accent) 28%, transparent);
+      border-color: var(--color-accent);
+      color: var(--color-primary);
+      opacity: 1;
+      font-weight: 700;
+      box-shadow: 0 0 0 1px color-mix(in oklch, var(--color-accent) 65%, transparent),
+                  0 2px 10px color-mix(in oklch, var(--color-accent) 28%, transparent);
+    }
+    [data-theme="eb5base"] .choice-btn:has(input:checked) {
+      color: #0A1628;
+    }
+    [data-theme="eb5base-dark"] .choice-btn {
+      background: color-mix(in oklch, var(--color-base-content) 8%, transparent);
+      border-color: color-mix(in oklch, var(--color-base-content) 36%, transparent);
+      color: #FAF7F2;
+    }
+    [data-theme="eb5base-dark"] .choice-btn:has(input:checked) {
+      background: color-mix(in oklch, var(--color-accent) 30%, transparent);
+      color: #F5E6A8;
+    }
+    .choice-btn:active {
+      transform: scale(0.98);
+    }
+    .tooltip {
+      --tt-bg: #0A1628;
+      --tt-fg: #FAF7F2;
+      position: relative;
+      z-index: 50;
+    }
+    [data-theme="eb5base"] .tooltip {
+      --tt-bg: #0A1628;
+      --tt-fg: #FAF7F2;
+    }
+    /* DaisyUI v5 tooltips use [data-tip]:before / :after; force opaque, compact tips. */
+    .tooltip[data-tip]:before,
+    .tooltip > .tooltip-content {
+      background-color: var(--tt-bg) !important;
+      color: var(--tt-fg) !important;
+      font-size: 0.75rem !important;
+      line-height: 1.3 !important;
+      font-weight: 500 !important;
+      max-width: 16rem !important;
+      white-space: normal !important;
+      text-align: left !important;
+      padding: 0.4rem 0.55rem !important;
+      border-radius: 0.375rem !important;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28) !important;
+      z-index: 60 !important;
+      backdrop-filter: none !important;
+    }
+    .tooltip:after {
+      background-color: var(--tt-bg) !important;
+      z-index: 60 !important;
+    }
+    /* Keep choice buttons centered even when DaisyUI sets tooltip to inline-block. */
+    label.choice-btn.tooltip {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    /* Let tooltips escape section cards (DaisyUI tips are position:absolute). */
+    #status-form .section-card.overflow-hidden {
+      overflow: visible;
+    }
+    #status-form .section-card .card-body {
+      overflow: visible;
+    }
+    .section-progress {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55rem;
+      min-height: 1.25rem;
+    }
+    html, body {
+      overflow-x: clip;
+      max-width: 100%;
+    }
+    .page-shell {
+      width: 100%;
+      max-width: 72rem;
+      margin-inline: auto;
+      padding-inline: 1rem;
+      box-sizing: border-box;
+    }
+    #status-form,
+    main {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
+    .section-progress-dot {
+      width: 0.625rem;
+      height: 0.625rem;
+      border-radius: 999px;
+      border: 1.5px solid color-mix(in oklch, var(--color-base-content) 28%, transparent);
+      background: transparent;
+      transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .section-progress-dot.is-filled {
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+      transform: scale(1.15);
+      box-shadow: 0 0 0 3px color-mix(in oklch, var(--color-accent) 28%, transparent);
+    }
+    .help-tip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 0.875rem;
+      height: 0.875rem;
+      border-radius: 999px;
+      border: 1px solid color-mix(in oklch, var(--color-base-content) 42%, transparent);
+      font-size: 0.625rem;
+      font-weight: 700;
+      line-height: 1;
+      color: color-mix(in oklch, var(--color-base-content) 58%, transparent);
+      cursor: help;
+      flex-shrink: 0;
+      vertical-align: middle;
+    }
+    .help-tip:hover,
+    .help-tip:focus-visible {
+      color: var(--color-base-content);
+      border-color: color-mix(in oklch, var(--color-base-content) 70%, transparent);
+      outline: none;
+    }
+    .date-with-pending--stacked {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .date-with-pending--stacked .date-state-toggles {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 0.75rem;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      align-self: stretch;
+    }
+    .date-with-pending--stacked .date-input-wrap {
+      width: 100%;
+      align-self: stretch;
+    }
+    #share-tool-btn.is-copied {
+      color: var(--color-success);
+    }
+    .stats {
+      background: linear-gradient(
+        135deg,
+        rgba(184, 115, 51, 0.1),
+        rgba(212, 175, 55, 0.08) 45%,
+        color-mix(in oklch, var(--color-secondary) 6%, var(--color-base-100))
+      );
+      border: 1px solid color-mix(in oklch, var(--color-accent) 22%, transparent);
+      border-radius: 1rem;
+    }
+    #copy-btn,
+    #mobile-copy-btn {
+      background: linear-gradient(135deg, #0a1628, #1a3d32 50%, #0a1628);
+      color: #F5F1EA;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.025em;
+      padding: 0.875rem 2rem;
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      box-shadow: 0 4px 20px -4px rgba(10, 22, 40, 0.18), 0 2px 8px -2px rgba(10, 22, 40, 0.08);
+      transition: all 0.2s ease;
+      border-radius: 9999px;
+    }
+    #copy-btn:hover:not(:disabled),
+    #mobile-copy-btn:hover:not(:disabled) {
+      background: linear-gradient(135deg, #12243a, #245241 50%, #12243a);
+      box-shadow: 0 8px 32px -6px rgba(212, 175, 55, 0.35);
+      transform: translateY(-1px);
+    }
+    #copy-btn:disabled,
+    #mobile-copy-btn:disabled {
+      background: var(--color-base-300);
+      border-color: transparent;
+      box-shadow: none;
+      opacity: 0.5;
+      transform: none;
+    }
+    #copy-btn.is-copied,
+    #mobile-copy-btn.is-copied {
+      background: linear-gradient(135deg, #25D366 0%, #1DAA52 100%);
+      border-color: rgba(37, 211, 102, 0.4);
+      box-shadow: 0 4px 16px color-mix(in oklch, #25D366 30%, transparent);
+    }
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .card-animate {
+      animation: fadeSlideUp 0.4s ease both;
+    }
+    .card-animate-1 { animation-delay: 0ms; }
+    .card-animate-2 { animation-delay: 40ms; }
+    .card-animate-3 { animation-delay: 80ms; }
+    .card-animate-4 { animation-delay: 120ms; }
+    .card-animate-5 { animation-delay: 160ms; }
+    .card-animate-6 { animation-delay: 200ms; }
+    .card-animate-7 { animation-delay: 240ms; }
+    #preview-panel.preview-panel-enter {
+      animation: fadeSlideUp 0.25s ease both;
+    }
+    .conditional-reveal {
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .conditional-reveal.hidden {
+      display: none;
+    }
+    .whatsapp-bubble-wrap {
+      border-radius: 1rem;
+      background: color-mix(in oklch, #dcf8c6 18%, var(--color-base-100));
+      box-shadow: 0 4px 16px color-mix(in oklch, var(--color-base-content) 8%, transparent);
+    }
+    [data-theme="eb5base-dark"] .whatsapp-bubble-wrap {
+      background: linear-gradient(
+        145deg,
+        color-mix(in oklch, #25d366 12%, var(--color-base-100)),
+        color-mix(in oklch, #25d366 6%, var(--color-base-100))
+      );
+      border: 1px solid color-mix(in oklch, #25d366 18%, transparent);
+    }
+    [data-theme="eb5base"] .whatsapp-bubble-wrap {
+      background: color-mix(in oklch, #dcf8c6 45%, var(--color-base-100));
+      border: 1px solid color-mix(in oklch, var(--color-secondary) 18%, transparent);
+      box-shadow: 0 4px 20px -4px rgba(10, 22, 40, 0.08);
+    }
+    .whatsapp-bubble-wrap textarea {
+      font-size: 0.875rem;
+      line-height: 1.7;
+    }
+    #celebration-toast,
+    #restore-toast {
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      transform: scale(0.95);
+    }
+    #celebration-toast.is-visible,
+    #restore-toast.is-visible {
+      opacity: 1;
+      animation: toastBounce 0.4s ease both;
+    }
+    @keyframes toastBounce {
+      0% { transform: scale(0.95); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+    .field-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    @media (min-width: 640px) {
+      .field-row {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      .field-row-label {
+        width: 12.5rem;
+        padding-top: 0.625rem;
+      }
+      .field-row--center {
+        align-items: center;
+      }
+      .field-row--center .field-row-label {
+        padding-top: 0;
+      }
+    }
+    @media (min-width: 1024px) {
+      .field-row-label {
+        width: 13.5rem;
+      }
+    }
+    .field-row-label {
+      flex-shrink: 0;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    .field-row-control {
+      flex: 1;
+      min-width: 0;
+      overflow: visible;
+    }
+    .date-with-pending {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+    }
+    .date-with-pending .date-input-wrap {
+      flex: 1;
+      min-width: 0;
+    }
+    .date-with-pending .date-state-toggle {
+      flex-shrink: 0;
+    }
+    .date-input-wrap.is-disabled {
+      opacity: 0.55;
+      pointer-events: none;
+    }
+    calendar-date.cally::part(header) {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0.375rem;
+      width: 100%;
+      margin-bottom: 0.25rem;
+    }
+    calendar-select-month::part(select),
+    calendar-select-year::part(select) {
+      min-height: 2rem;
+      padding: 0.25rem 0.625rem;
+      border-radius: 0.375rem;
+      border: 1px solid color-mix(in oklch, var(--color-base-content) 20%, transparent);
+      background: var(--color-base-100);
+      color: var(--color-base-content);
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+      cursor: pointer;
+    }
+    calendar-select-month::part(select):focus,
+    calendar-select-year::part(select):focus {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 1px;
+    }
+    .page-footer-notes {
+      font-size: 0.75rem;
+      line-height: 1.4;
+      color: color-mix(in oklch, var(--color-base-content) 58%, transparent);
+    }
+    .form-control:has(.autocomplete-wrap) {
+      overflow: visible;
+    }
+    .card-body {
+      overflow: visible;
+    }
+    .autocomplete-wrap {
+      position: relative;
+      width: 100%;
+      overflow: visible;
+    }
+    .autocomplete-wrap:focus-within {
+      z-index: 40;
+    }
+    .autocomplete-list {
+      position: fixed;
+      inset: unset;
+      top: anchor(bottom);
+      left: anchor(left);
+      width: anchor-size(width);
+      margin-top: 4px;
+      z-index: 100;
+      max-height: min(16rem, calc(100vh - 6rem));
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
+      margin-bottom: 0;
+      padding: 0.25rem 0;
+      list-style: none;
+      border: 1px solid color-mix(in oklch, var(--color-base-content) 15%, transparent);
+      border-radius: 0.5rem;
+      background: var(--color-base-100);
+      box-shadow: 0 8px 24px color-mix(in oklch, var(--color-base-content) 12%, transparent);
+    }
+    @supports not (anchor-name: --test) {
+      .autocomplete-list {
+        top: auto;
+        left: auto;
+        width: auto;
+      }
+    }
+    #preview-panel {
+      display: none !important;
+    }
+    @media (min-width: 1024px) {
+      #preview-panel {
+        display: flex !important;
+      }
+    }
+    #preview-fab {
+      display: flex;
+      background: linear-gradient(135deg, #0a1628, #1a3d32 50%, #0a1628);
+      color: #F5F1EA;
+      font-weight: 600;
+      box-shadow: 0 4px 20px -4px rgba(10, 22, 40, 0.25), 0 0 0 1px rgba(212, 175, 55, 0.35);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      transition: all 0.2s ease;
+      z-index: 40;
+    }
+    #preview-fab:not(.hidden) {
+      display: flex !important;
+    }
+    #preview-fab:hover {
+      background: linear-gradient(135deg, #12243a, #245241 50%, #12243a);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px -6px rgba(212, 175, 55, 0.4);
+    }
+    @media (min-width: 1024px) {
+      #preview-fab {
+        display: none !important;
+      }
+    }
+    #preview-sheet {
+      position: fixed;
+      inset: auto 0 0 0;
+      width: 100%;
+      max-width: 100%;
+      max-height: 85vh;
+      height: min(85vh, 100%);
+      margin: 0;
+      border: none;
+      border-radius: 1rem 1rem 0 0;
+      padding: 0;
+      background: var(--color-base-100);
+      box-shadow: 0 -8px 32px color-mix(in oklch, var(--color-base-content) 15%, transparent);
+      z-index: 60;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    #preview-sheet.is-open,
+    #preview-sheet:popover-open {
+      display: flex;
+    }
+    #preview-sheet-close {
+      width: 2.75rem;
+      height: 2.75rem;
+      min-height: 2.75rem;
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+    #preview-sheet-body {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem 0.5rem;
+      overflow: hidden;
+    }
+    #preview-sheet-body .whatsapp-bubble-wrap {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    #preview-sheet-body #mobile-preview {
+      flex: 1 1 auto;
+      width: 100%;
+      min-height: 0;
+      height: 100%;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    #preview-sheet-body .preview-edit-hint {
+      flex: 0 0 auto;
+      margin: 0;
+    }
+    #preview-sheet-footer {
+      flex: 0 0 auto;
+      border-top: 1px solid color-mix(in oklch, var(--color-base-content) 10%, transparent);
+      background: var(--color-base-100);
+      padding: 0.5rem 1rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
+    }
+    #preview-sheet-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: color-mix(in oklch, var(--color-base-content) 30%, transparent);
+      z-index: 55;
+    }
+    #preview-sheet-backdrop.is-open {
+      display: block;
+    }
+    #preview-sheet::backdrop {
+      background: color-mix(in oklch, var(--color-base-content) 30%, transparent);
+    }
+    .clear-form-link {
+      font-size: 0.75rem;
+      color: color-mix(in oklch, var(--color-base-content) 50%, transparent);
+      text-decoration: underline;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+    .clear-form-link:hover {
+      color: var(--color-base-content);
+    }
+    .autocomplete-list.hidden {
+      display: none;
+    }
+    .autocomplete-option {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .autocomplete-option:hover,
+    .autocomplete-option.is-active {
+      background: color-mix(in oklch, var(--color-primary) 12%, transparent);
+    }
+  </style>
+  <style>
+    html, body { margin: 0; background: transparent; }
+    body { overflow-x: hidden; }
+    .page-shell { max-width: 72rem; margin: 0 auto; padding-left: 1rem; padding-right: 1rem; }
+  </style>
+</head>
+<body class="min-h-screen font-sans">
+
+<input type="checkbox" id="theme-toggle" value="eb5base" checked class="hidden" aria-hidden="true" tabindex="-1" />
+
+  <div class="page-shell py-6">
+    <header class="page-header-band text-center mb-6 relative">
+      <p class="text-sm text-base-content/70 text-center max-w-xl mx-auto mb-1">All fields optional. Preview updates as you fill what applies.</p>
+      <div
+        id="section-progress"
+        class="section-progress tooltip tooltip-bottom z-50 mt-4"
+        data-tip="Key Update, Case Basics, Biometrics, Adjudication, SOF"
+        role="img"
+        aria-label="Form section progress"
+      >
+        <span class="section-progress-dot" data-section="key-update" aria-hidden="true"></span>
+        <span class="section-progress-dot" data-section="case-basics" aria-hidden="true"></span>
+        <span class="section-progress-dot" data-section="biometrics" aria-hidden="true"></span>
+        <span class="section-progress-dot" data-section="adjudication" aria-hidden="true"></span>
+        <span class="section-progress-dot" data-section="sof" aria-hidden="true"></span>
+      </div>
+    </header>
+
+    <main class="flex flex-col lg:flex-row gap-4 w-full">
+      <form id="status-form" class="w-full flex-1 min-w-0 space-y-3" autocomplete="off">
+        <section class="section-card card card-border bg-base-100 shadow-soft card-animate card-animate-1">
+          <div class="section-header section-header--neutral">
+            <h2 class="section-title">Date Privacy</h2>
+          </div>
+          <div class="card-body gap-3 p-4 sm:p-5">
+            <div class="form-control w-full">
+              <div class="field-row field-row--center">
+                <span class="field-row-label" id="date-privacy-label">Date privacy</span>
+                <div class="field-row-control">
+                  <div class="join flex-wrap" role="radiogroup" aria-labelledby="date-privacy-label">
+                    <label class="choice-btn join-item btn btn-soft btn-primary min-h-11 justify-center">
+                      <input class="sr-only" type="radio" name="datePrivacy" id="date-privacy-exact" value="Exact dates" checked>
+                      Exact dates
+                    </label>
+                    <label class="choice-btn join-item btn btn-soft btn-primary min-h-11 justify-center">
+                      <input class="sr-only" type="radio" name="datePrivacy" id="date-privacy-months" value="Months only">
+                      Months only
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="text-xs text-base-content/65 leading-relaxed">Months only hides day-of-month for dates older than 7 days. Recent dates stay exact.</p>
+          </div>
+        </section>
+
+        <section class="section-card card card-border bg-base-100 shadow-soft card-animate card-animate-2">
+          <div class="section-header section-header--info">
+            <h2 class="section-title">Key Update</h2>
+          </div>
+          <div class="card-body gap-2 p-4 sm:p-5">
+            <div class="form-control w-full">
+              <div class="field-row">
+                <span class="field-row-label" id="key-update-label">What's the key update for your case at this time?</span>
+                <div class="field-row-control">
+                  <div class="flex flex-wrap gap-2" role="radiogroup" aria-labelledby="key-update-label">
+                    <label class="choice-btn btn btn-sm btn-soft btn-primary min-h-11">
+                      <input class="sr-only" type="radio" name="keyUpdate" id="key-update-eb5-filed" value="eb5-filed">
+                      EB5 filed
+                    </label>
+                    <label class="choice-btn btn btn-sm btn-soft btn-primary min-h-11 tooltip tooltip-top z-50" data-tip="EAD: work permit. AP: travel authorization.">
+                      <input class="sr-only" type="radio" name="keyUpdate" id="key-update-ead-ap" value="ead-ap-approval">
+                      EAD/AP approval
+                    </label>
+                    <label class="choice-btn btn btn-sm btn-soft btn-primary min-h-11 tooltip tooltip-top z-50" data-tip="Writ of Mandamus: a federal lawsuit to compel USCIS to act on a long-pending petition.">
+                      <input class="sr-only" type="radio" name="keyUpdate" id="key-update-wom" value="wom-filed">
+                      WOM filed
+                    </label>
+                    <label class="choice-btn btn btn-sm btn-soft btn-primary min-h-11 tooltip tooltip-top z-50" data-tip="The immigrant investor petition. I-526E is the post-RIA version filed after March 2022.">
+                      <input class="sr-only" type="radio" name="keyUpdate" id="key-update-i526" value="i526-approval">
+                      I-526 approval
+                    </label>
+                    <label class="choice-btn btn btn-sm btn-soft btn-primary min-h-11">
+                      <input class="sr-only" type="radio" name="keyUpdate" id="key-update-i485" value="i485-approval">
+                      I-485 approval
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-card card card-border bg-base-100 shadow-soft card-animate card-animate-3">
+          <div class="section-header section-header--info">
+            <h2 class="section-title">Case Basics</h2>
+          </div>
+          <div class="card-body gap-2 p-4 sm:p-5">
+            <div class="form-control w-full">
+              <div class="field-row">
+                <div class="field-row-label flex items-center gap-1.5">
+                  <label for="priority-date">Priority Date</label>
+                  <span class="tooltip tooltip-right z-50 max-w-xs" data-tip="The date USCIS received your I-526/I-526E petition, or your visa bulletin priority date. This anchors your processing timeline.">
+                    <button type="button" class="help-tip" aria-label="What is Priority Date?">?</button>
+                  </span>
+                </div>
+                <div class="field-row-control">
+                  <div class="w-full border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm focus-within:border-primary focus-within:shadow-md transition-[border-color,box-shadow] join min-h-11" style="anchor-name:--priority-date-anchor">
+                    <button type="button" class="join-item btn btn-ghost btn-square shrink-0 min-h-11 border-0 rounded-none" popovertarget="priority-date-popover" aria-label="Open calendar">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    </button>
+                    <input type="text" id="priority-date" class="join-item input w-full min-h-11 border-0 rounded-none bg-transparent px-3 focus:outline-none focus:ring-0 shadow-none grow w-full" placeholder="YYYY-MM-DD" autocomplete="off">
+                  </div>
+                  <div popover id="priority-date-popover" class="dropdown bg-base-100 rounded-box shadow-lg border border-base-300" style="position-anchor:--priority-date-anchor">
+                    <calendar-date class="cally" data-input-id="priority-date">
+                      <svg aria-label="Previous" class="fill-current size-4" slot="previous" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+                      <svg aria-label="Next" class="fill-current size-4" slot="next" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
+                      <calendar-month></calendar-month>
+                    </calendar-date>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-control w-full">
+              <div class="field-row">
+                <div class="field-row-label flex items-center gap-1.5">
+                  <label for="i956f-approval">I-956F Approval Date</label>
+                  <span class="tooltip tooltip-right z-50 max-w-xs" data-tip="USCIS approval of the regional center's project filing. Required before investors in that project can be adjudicated.">
+                    <button type="button" class="help-tip" aria-label="What is I-956F?">?</button>
+                  </span>
+                </div>
+                <div class="field-row-control">
+                  <div class="date-with-pending date-with-pending--stacked">
+                    <div class="date-state-toggles" role="group" aria-label="I-956F approval state">
+                      <label class="choice-btn btn btn-sm btn-soft btn-primary min-h-10">
+                        <input class="sr-only" type="checkbox" id="i956f-pending">
+                        Pending
+                      </label>
+                      <label class="choice-btn btn btn-sm btn-soft btn-primary min-h-10">
+                        <input class="sr-only" type="checkbox" id="i956f-approved-before-pd">
+                        Approved before PD
+                      </label>
+                    </div>
+                    <div class="date-input-wrap" id="i956f-approval-wrap">
+                      <div class="w-full border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm focus-within:border-primary focus-within:shadow-md transition-[border-color,box-shadow] join min-h-11" style="anchor-name:--i956f-approval-anchor">
+                        <button type="button" class="join-item btn btn-ghost btn-square shrink-0 min-h-11 border-0 rounded-none" popovertarget="i956f-approval-popover" aria-label="Open calendar">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </button>
+                        <input type="text" id="i956f-approval" class="join-item input w-full min-h-11 border-0 rounded-none bg-transparent px-3 focus:outline-none focus:ring-0 shadow-none grow w-full" placeholder="YYYY-MM-DD" autocomplete="off">
+                      </div>
+                      <div popover id="i956f-approval-popover" class="dropdown bg-base-100 rounded-box shadow-lg border border-base-300" style="position-anchor:--i956f-approval-anchor">
+                        <calendar-date class="cally" data-input-id="i956f-approval">
+                          <svg aria-label="Previous" class="fill-current size-4" slot="previous" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+                          <svg aria-label="Next" class="fill-current size-4" slot="next" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
+                          <calendar-month></calendar-month>
+                        </calendar-date>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-control w-full">
+              <div class="field-row">
+                <div class="field-row-label flex items-center gap-1.5" id="project-category-label">
+                  <span>Project Category</span>
+                  <span class="tooltip tooltip-right z-50 max-w-xs" data-tip="TEA: Targeted Employment Area. A rural or high-unemployment area that qualifies for the lower $800K investment amount.">
+                    <button type="button" class="help-tip" aria-label="What is TEA?">?</button>
+                  </span>
+                </div>
+                <div class="field-row-control">
+                  <div class="flex flex-wrap gap-2" role="group" aria-labelledby="project-category-label">
+                    <label class="choice-btn btn btn-sm btn-soft btn-primary min-h-11">
+                      <input class="sr-only" type="checkbox" name="projectCategory" id="cat-rural" value="Rural">
+                      Rural
+                    </label>
+                    <label class="choice-btn btn btn-sm btn-soft btn-primary min-h-11 tooltip tooltip-top z-50" data-tip="High Unemployment Area. A geographic area with unemployment at 150%+ of the national average, qualifying as a TEA.">
+                      <input class="sr-only" type="checkbox" name="projectCategory" id="cat-hua" value="HUA">
+                      HUA
+                    </label>
+                    <label class="choice-btn btn btn-sm btn-soft btn-primary min-h-11 tooltip tooltip-top z-50" data-tip="Infrastructure project. A specific category of EB-5 project.">
+                      <input class="sr-only" type="checkbox" name="projectCategory" id="cat-infra" value="Infra">
+                      Infra
+                    </label>
+                    <label class="choice-btn btn btn-sm btn-soft btn-primary min-h-11 tooltip tooltip-top z-50" data-tip="Direct investment: an EB-5 investment made directly into a commercial enterprise, not through a regional center.">
+                      <input class="sr-only" type="checkbox" name="projectCategory" id="cat-direct" value="Direct">
+                      Direct
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-control w-full">
+              <div class="field-row">
+                <div class="field-row-label flex items-center gap-1.5">
+                  <label for="regional-center">Regional Center</label>
+                  <span class="tooltip tooltip-right z-50 max-w-xs" data-tip="Regional Center: a USCIS-designated entity that sponsors EB-5 projects and pools investor capital.">
+                    <button type="button" class="help-tip" aria-label="What is a Regional Center?">?</button>
+                  </span>
+                </div>
+                <div class="field-row-control">
+                  <div class="autocomplete-wrap" style="anchor-name:--regional-center-anchor">
+                    <div class="w-full border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm focus-within:border-primary focus-within:shadow-md transition-[border-color,box-shadow]">
+                      <input type="text" id="regional-center" name="regionalCenter" class="input w-full min-h-11 border-0 rounded-none bg-transparent px-3 focus:outline-none focus:ring-0 shadow-none" placeholder="e.g. Trust Us Rural Regional Center" autocomplete="off">
+                    </div>
+                    <ul id="regional-center-suggestions" class="autocomplete-list hidden" role="listbox" aria-label="Regional center suggestions" style="position-anchor:--regional-center-anchor"></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-control w-full">
+              <div class="field-row">
+                <label class="field-row-label" for="project-name">Project Name</label>
+                <div class="field-row-control">
+                  <div class="w-full border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm focus-within:border-primary focus-within:shadow-md transition-[border-color,box-shadow]">
+                    <input type="text" id="project-name" name="projectName" class="input w-full min-h-11 border-0 rounded-none bg-transparent px-3 focus:outline-none focus:ring-0 shadow-none" placeholder="e.g. Luxury Tower (opens any day now...)" autocomplete="off">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-control w-full">
+              <div class="field-row">
+                <label class="field-row-label" for="attorney">Immigration Attorney</label>
+                <div class="field-row-control">
+                  <div class="autocomplete-wrap" style="anchor-name:--attorney-anchor">
+                    <div class="w-full border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm focus-within:border-primary focus-within:shadow-md transition-[border-color,box-shadow]">
+                      <input type="text" id="attorney" name="attorney" class="input w-full min-h-11 border-0 rounded-none bg-transparent px-3 focus:outline-none focus:ring-0 shadow-none" placeholder="e.g. Billable Hours Unlimited LLP" autocomplete="off">
+                    </div>
+                    <ul id="attorney-suggestions" class="autocomplete-list hidden" role="listbox" aria-label="Immigration attorney suggestions" style="position-anchor:--attorney-anchor"></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-control w-full">
+              <div class="field-row field-row--center">
+                <span class="field-row-label" id="used-agent-label">Used Agent</span>
+                <div class="field-row-control">
+                  <div class="join" role="radiogroup" aria-labelledby="used-agent-label">
+                    <label class="choice-btn join-item btn btn-soft btn-primary min-h-11 min-w-20 justify-center">
+                      <input class="sr-only" type="radio" name="usedAgent" id="used-agent-yes" value="Yes">
+                      Yes
+                    </label>
+                    <label class="choice-btn join-item btn btn-soft btn-primary min-h-11 min-w-20 justify-center">
+                      <input class="sr-only" type="radio" name="usedAgent" id="used-agent-no" value="No">
+                      No
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="agent-name-wrap" class="form-control w-full hidden conditional-reveal">
+              <div class="field-row">
+                <label class="field-row-label" for="agent-name">Agent Name</label>
+                <div class="field-row-control">
+                  <div class="w-full border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm focus-within:border-primary focus-within:shadow-md transition-[border-color,box-shadow]">
+                    <input type="text" id="agent-name" name="agentName" class="input w-full min-h-11 border-0 rounded-none bg-transparent px-3 focus:outline-none focus:ring-0 shadow-none" placeholder="Agent or firm name" autocomplete="off">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-card card card-border bg-base-100 shadow-soft card-animate card-animate-4">
+          <div class="section-header section-header--info">
+            <h2 class="section-title">Biometrics &amp; Travel Documents</h2>
+          </div>
+          <div class="card-body gap-2 p-4 sm:p-5">
+            <div class="form-control w-full">
+              <div class="field-row field-row--center">
+                <div class="field-row-label flex items-center gap-1.5" id="application-location-label">
+                  <span>Service Center</span>
+                  <span class="tooltip tooltip-right z-50 max-w-xs" data-tip="The USCIS office processing your petition. WAC = California, LIN = Nebraska, SRC = Texas, MSC = Missouri.">
+                    <button type="button" class="help-tip" aria-label="What is a Service Center?">?</button>
+                  </span>
+                </div>
+                <div class="field-row-control">
+                  <div class="join flex-wrap" role="radiogroup" aria-labelledby="application-location-label">
+                    <label class="choice-btn join-item btn btn-soft btn-primary min-h-11 min-w-16 justify-center">
+                      <input class="sr-only" type="radio" name="applicationLocation" id="app-loc-wac" value="WAC">
+                      WAC
+                    </label>
+                    <label class="choice-btn join-item btn btn-soft btn-primary min-h-11 min-w-16 justify-center">
+                      <input class="sr-only" type="radio" name="applicationLocation" id="app-loc-lin" value="LIN">
+                      LIN
+                    </label>
+                    <label class="choice-btn join-item btn btn-soft btn-primary min-h-11 min-w-16 justify-center">
+                      <input class="sr-only" type="radio" name="applicationLocation" id="app-loc-src" value="SRC">
+                      SRC
+                    </label>
+                    <label class="choice-btn join-item btn btn-soft btn-primary min-h-11 min-w-16 justify-center">
+                      <input class="sr-only" type="radio" name="applicationLocation" id="app-loc-msc" value="MSC">
+                      MSC
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-control w-full">
+              <div class="field-row">
+                <label class="field-row-label" for="biometric-notice">Biometric Notice Date</label>
+                <div class="field-row-control">
+                  <div class="date-with-pending">
+                    <label class="label cursor-pointer gap-1.5 date-state-toggle py-0">
+                      <input type="checkbox" class="checkbox checkbox-sm pending-date-toggle" id="biometric-notice-pending" data-date-id="biometric-notice" data-wrap-id="biometric-notice-wrap">
+                      <span class="label-text text-sm whitespace-nowrap">Pending</span>
+                    </label>
+                    <div class="date-input-wrap" id="biometric-notice-wrap">
+                      <div class="w-full border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm focus-within:border-primary focus-within:shadow-md transition-[border-color,box-shadow] join min-h-11" style="anchor-name:--biometric-notice-anchor">
+                        <button type="button" class="join-item btn btn-ghost btn-square shrink-0 min-h-11 border-0 rounded-none" popovertarget="biometric-notice-popover" aria-label="Open calendar">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </button>
+                        <input type="text" id="biometric-notice" class="join-item input w-full min-h-11 border-0 rounded-none bg-transparent px-3 focus:outline-none focus:ring-0 shadow-none grow w-full" placeholder="YYYY-MM-DD" autocomplete="off">
+                      </div>
+                      <div popover id="biometric-notice-popover" class="dropdown bg-base-100 rounded-box shadow-lg border border-base-300" style="position-anchor:--biometric-notice-anchor">
+                        <calendar-date class="cally" data-input-id="biometric-notice">
+                          <svg aria-label="Previous" class="fill-current size-4" slot="previous" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+                          <svg aria-label="Next" class="fill-current size-4" slot="next" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
+                          <calendar-month></calendar-month>
+                        </calendar-date>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-control w-full">
+              <div class="field-row">
+                <div class="field-row-label flex items-center gap-1.5">
+                  <label for="ead-approval">EAD Approval Date</label>
+                  <span class="tooltip tooltip-right z-50 max-w-xs" data-tip="Employment Authorization Document. A work permit issued while your green card application is pending.">
+                    <button type="button" class="help-tip" aria-label="What is EAD?">?</button>
+                  </span>
+                </div>
+                <div class="field-row-control">
+                  <div class="date-with-pending">
+                    <label class="label cursor-pointer gap-1.5 date-state-toggle py-0">
+                      <input type="checkbox" class="checkbox checkbox-sm pending-date-toggle" id="ead-approval-pending" data-date-id="ead-approval" data-wrap-id="ead-approval-wrap">
+                      <span class="label-text text-sm whitespace-nowrap">Pending</span>
+                    </label>
+                    <div class="date-input-wrap" id="ead-approval-wrap">
+                      <div class="w-full border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm focus-within:border-primary focus-within:shadow-md transition-[border-color,box-shadow] join min-h-11" style="anchor-name:--ead-approval-anchor">
+                        <button type="button" class="join-item btn btn-ghost btn-square shrink-0 min-h-11 border-0 rounded-none ead-approval-trigger" popovertarget="ead-approval-popover" aria-label="Open calendar">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </button>
+                        <input type="text" id="ead-approval" class="join-item input w-full min-h-11 border-0 rounded-none bg-transparent px-3 focus:outline-none focus:ring-0 shadow-none grow w-full" placeholder="YYYY-MM-DD" autocomplete="off">
+                      </div>
+                      <div popover id="ead-approval-popover" class="dropdown bg-base-100 rounded-box shadow-lg border border-base-300" style="position-anchor:--ead-approval-anchor">
+                        <calendar-date class="cally" data-input-id="ead-approval">
+                          <svg aria-label="Previous" class="fill-current size-4" slot="previous" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+                          <svg aria-label="Next" class="fill-current size-4" slot="next" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
+                          <calendar-month></calendar-month>
+                        </calendar-date>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-control w-full">
+              <div class="field-row">
+                <div class="field-row-label flex items-center gap-1.5">
+                  <label for="ap-approval">AP Approval Date</label>
+                  <span class="tooltip tooltip-right z-50 max-w-xs" data-tip="Advance Parole: travel authorization that lets you leave and re-enter the US while your adjustment of status is pending.">
+                    <button type="button" class="help-tip" aria-label="What is AP?">?</button>
+                  </span>
+                </div>
+                <div class="field-row-control">
+                  <div class="date-with-pending">
+                    <label class="label cursor-pointer gap-1.5 date-state-toggle py-0">
+                      <input type="checkbox" class="checkbox checkbox-sm pending-date-toggle" id="ap-approval-pending" data-date-id="ap-approval" data-wrap-id="ap-approval-wrap">
+                      <span class="label-text text-sm whitespace-nowrap">Pending</span>
+                    </label>
+                    <div class="date-input-wrap" id="ap-approval-wrap">
+                      <div class="w-full border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm focus-within:border-primary focus-within:shadow-md transition-[border-color,box-shadow] join min-h-11" style="anchor-name:--ap-approval-anchor">
+                        <button type="button" class="join-item btn btn-ghost btn-square shrink-0 min-h-11 border-0 rounded-none ap-approval-trigger" popovertarget="ap-approval-popover" aria-label="Open calendar">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </button>
+                        <input type="text" id="ap-approval" class="join-item input w-full min-h-11 border-0 rounded-none bg-transparent px-3 focus:outline-none focus:ring-0 shadow-none grow w-full" placeholder="YYYY-MM-DD" autocomplete="off">
+                      </div>
+                      <div popover id="ap-approval-popover" class="dropdown bg-base-100 rounded-box shadow-lg border border-base-300" style="position-anchor:--ap-approval-anchor">
+                        <calendar-date class="cally" data-input-id="ap-approval">
+                          <svg aria-label="Previous" class="fill-current size-4" slot="previous" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+                          <svg aria-label="Next" class="fill-current size-4" slot="next" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
+                          <calendar-month></calendar-month>
+                        </calendar-date>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="combo-card-wrap" class="form-control w-full hidden conditional-reveal">
+              <div class="field-row field-row--center">
+                <div class="field-row-label flex items-center gap-1.5" id="combo-card-label">
+                  <span>Combo Card</span>
+                  <span class="tooltip tooltip-right z-50 max-w-xs" data-tip="A single card that serves as both EAD (work permit) and AP (travel document).">
+                    <button type="button" class="help-tip" aria-label="What is a Combo Card?">?</button>
+                  </span>
+                </div>
+                <div class="field-row-control">
+                  <div class="join" id="combo-card" role="radiogroup" aria-labelledby="combo-card-label">
+                    <button type="button" class="join-item btn btn-soft btn-primary min-h-11 min-w-24" data-value="No" data-btn-color="primary" aria-pressed="false">No</button>
+                    <button type="button" class="join-item btn btn-soft btn-primary min-h-11 min-w-24" data-value="Yes" data-btn-color="primary" aria-pressed="false">Yes</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-card card card-border bg-base-100 shadow-soft card-animate card-animate-5">
+          <div class="section-header section-header--info">
+            <h2 class="section-title">Adjudication &amp; Mandamus</h2>
+          </div>
+          <div class="card-body gap-2 p-4 sm:p-5">
+            <div class="form-control w-full">
+              <div class="field-row">
+                <div class="field-row-label flex items-center gap-1.5">
+                  <label for="i526-date">I-526 Adjudication Date</label>
+                  <span class="tooltip tooltip-right z-50 max-w-xs" data-tip="The immigrant investor petition. I-526E is the post-RIA (Reform and Integrity Act) version filed after March 2022.">
+                    <button type="button" class="help-tip" aria-label="What is I-526 / I-526E?">?</button>
+                  </span>
+                </div>
+                <div class="field-row-control">
+                  <div class="date-with-pending">
+                    <label class="label cursor-pointer gap-1.5 date-state-toggle py-0">
+                      <input type="checkbox" class="checkbox checkbox-sm pending-date-toggle" id="i526-date-pending" data-date-id="i526-date" data-wrap-id="i526-date-wrap">
+                      <span class="label-text text-sm whitespace-nowrap">Pending</span>
+                    </label>
+                    <div class="date-input-wrap" id="i526-date-wrap">
+                      <div class="w-full border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm focus-within:border-primary focus-within:shadow-md transition-[border-color,box-shadow] join min-h-11" style="anchor-name:--i526-date-anchor">
+                        <button type="button" class="join-item btn btn-ghost btn-square shrink-0 min-h-11 border-0 rounded-none" popovertarget="i526-date-popover" aria-label="Open calendar">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </button>
+                        <input type="text" id="i526-date" class="join-item input w-full min-h-11 border-0 rounded-none bg-transparent px-3 focus:outline-none focus:ring-0 shadow-none grow w-full" placeholder="YYYY-MM-DD" autocomplete="off">
+                      </div>
+                      <div popover id="i526-date-popover" class="dropdown bg-base-100 rounded-box shadow-lg border border-base-300" style="position-anchor:--i526-date-anchor">
+                        <calendar-date class="cally" data-input-id="i526-date">
+                          <svg aria-label="Previous" class="fill-current size-4" slot="previous" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+                          <svg aria-label="Next" class="fill-current size-4" slot="next" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
+                          <calendar-month></calendar-month>
+                        </calendar-date>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="i526-status-wrap" class="form-control w-full hidden conditional-reveal">
+              <div class="field-row">
+                <div class="field-row-label flex items-center gap-1.5">
+                  <span>I-526 Adjudication</span>
+                </div>
+                <div class="field-row-control">
+                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full" role="radiogroup" aria-label="I-526 Adjudication" id="i526-status-group">
+                    <label class="choice-btn btn btn-soft btn-primary min-h-11 justify-center">
+                      <input class="sr-only" type="radio" name="i526Status" value="Approved" checked>
+                      Approved
+                    </label>
+                    <label class="choice-btn btn btn-soft btn-primary min-h-11 justify-center tooltip tooltip-top z-50" data-tip="Request for Evidence. USCIS is asking for additional documentation before making a decision on your petition.">
+                      <input class="sr-only" type="radio" name="i526Status" value="RFE">
+                      RFE
+                    </label>
+                    <label class="choice-btn btn btn-soft btn-primary min-h-11 justify-center tooltip tooltip-top z-50" data-tip="Notice of Intent to Deny. A warning that USCIS plans to deny your petition, giving you a chance to respond.">
+                      <input class="sr-only" type="radio" name="i526Status" value="NOID">
+                      NOID
+                    </label>
+                    <label class="choice-btn btn btn-soft btn-primary min-h-11 justify-center">
+                      <input class="sr-only" type="radio" name="i526Status" value="Denied">
+                      Denied
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="i526-reason-wrap" class="form-control w-full hidden conditional-reveal">
+              <div class="field-row">
+                <label class="field-row-label" for="i526-reason" id="i526-reason-label">Reason</label>
+                <div class="field-row-control">
+                  <div class="w-full border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm focus-within:border-primary focus-within:shadow-md transition-[border-color,box-shadow]">
+                    <input type="text" id="i526-reason" name="i526Reason" class="input w-full min-h-11 border-0 rounded-none bg-transparent px-3 focus:outline-none focus:ring-0 shadow-none" placeholder="e.g. Source of funds documentation" autocomplete="off">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-control w-full">
+              <div class="field-row">
+                <div class="field-row-label flex items-center gap-1.5">
+                  <label for="wom-date">WOM Filing Date</label>
+                  <span class="tooltip tooltip-right z-50 max-w-xs" data-tip="Writ of Mandamus: a federal lawsuit to compel USCIS to act on a long-pending petition.">
+                    <button type="button" class="help-tip" aria-label="What is WOM?">?</button>
+                  </span>
+                </div>
+                <div class="field-row-control">
+                  <div class="date-with-pending">
+                    <label class="label cursor-pointer gap-1.5 date-state-toggle py-0">
+                      <input type="checkbox" class="checkbox checkbox-sm pending-date-toggle" id="wom-date-not-filed" data-date-id="wom-date" data-wrap-id="wom-date-wrap">
+                      <span class="label-text text-sm whitespace-nowrap">Not filed</span>
+                    </label>
+                    <div class="date-input-wrap" id="wom-date-wrap">
+                      <div class="w-full border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm focus-within:border-primary focus-within:shadow-md transition-[border-color,box-shadow] join min-h-11" style="anchor-name:--wom-date-anchor">
+                        <button type="button" class="join-item btn btn-ghost btn-square shrink-0 min-h-11 border-0 rounded-none" popovertarget="wom-date-popover" aria-label="Open calendar">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </button>
+                        <input type="text" id="wom-date" class="join-item input w-full min-h-11 border-0 rounded-none bg-transparent px-3 focus:outline-none focus:ring-0 shadow-none grow w-full" placeholder="YYYY-MM-DD" autocomplete="off">
+                      </div>
+                      <div popover id="wom-date-popover" class="dropdown bg-base-100 rounded-box shadow-lg border border-base-300" style="position-anchor:--wom-date-anchor">
+                        <calendar-date class="cally" data-input-id="wom-date">
+                          <svg aria-label="Previous" class="fill-current size-4" slot="previous" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+                          <svg aria-label="Next" class="fill-current size-4" slot="next" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
+                          <calendar-month></calendar-month>
+                        </calendar-date>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="wom-details-wrap" class="space-y-2 hidden conditional-reveal">
+              <div class="form-control w-full">
+                <div class="field-row">
+                  <div class="field-row-label">WOM Filing <span class="font-normal text-base-content/60">(tap all that apply)</span></div>
+                  <div class="field-row-control">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full">
+                      <label class="choice-btn btn btn-soft btn-primary btn-sm w-full min-h-11 justify-center">
+                        <input class="sr-only" type="checkbox" name="wom" id="wom-526" value="I-526">
+                        I-526
+                      </label>
+                      <label class="choice-btn btn btn-soft btn-primary btn-sm w-full min-h-11 justify-center">
+                        <input class="sr-only" type="checkbox" name="wom" id="wom-485" value="I-485">
+                        I-485
+                      </label>
+                      <label class="choice-btn btn btn-soft btn-primary btn-sm w-full min-h-11 justify-center">
+                        <input class="sr-only" type="checkbox" name="wom" id="wom-ead" value="EAD">
+                        EAD
+                      </label>
+                      <label class="choice-btn btn btn-soft btn-primary btn-sm w-full min-h-11 justify-center">
+                        <input class="sr-only" type="checkbox" name="wom" id="wom-ap" value="AP">
+                        AP
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-control w-full">
+                <div class="field-row field-row--center">
+                  <div class="field-row-label" id="wom-counsel-label">WOM Counsel</div>
+                  <div class="field-row-control">
+                    <div class="join w-full max-w-xs" role="radiogroup" aria-labelledby="wom-counsel-label">
+                      <label class="choice-btn join-item btn btn-soft btn-primary min-h-11 flex-1 justify-center">
+                        <input class="sr-only" type="radio" name="womCounsel" id="wom-counsel-attorney" value="Attorney">
+                        Attorney
+                      </label>
+                      <label class="choice-btn join-item btn btn-soft btn-primary min-h-11 flex-1 justify-center">
+                        <input class="sr-only" type="radio" name="womCounsel" id="wom-counsel-prose" value="Pro se">
+                        Pro se
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="wom-attorney-name-wrap" class="form-control w-full hidden conditional-reveal">
+                <div class="field-row">
+                  <label class="field-row-label" for="wom-attorney-name">WOM Attorney Name</label>
+                  <div class="field-row-control">
+                    <div class="autocomplete-wrap" style="anchor-name:--wom-attorney-anchor">
+                      <div class="w-full border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm focus-within:border-primary focus-within:shadow-md transition-[border-color,box-shadow]">
+                        <input type="text" id="wom-attorney-name" class="input w-full min-h-11 border-0 rounded-none bg-transparent px-3 focus:outline-none focus:ring-0 shadow-none" placeholder="Attorney or firm name" autocomplete="off">
+                      </div>
+                      <ul id="wom-attorney-name-suggestions" class="autocomplete-list hidden" role="listbox" aria-label="WOM attorney suggestions" style="position-anchor:--wom-attorney-anchor"></ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-control w-full">
+                <div class="field-row">
+                  <label class="field-row-label" for="wom-court">Court Where WOM Is Filed</label>
+                  <div class="field-row-control">
+                    <div class="w-full border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm focus-within:border-primary focus-within:shadow-md transition-[border-color,box-shadow]">
+                      <input type="text" id="wom-court" class="input w-full min-h-11 border-0 rounded-none bg-transparent px-3 focus:outline-none focus:ring-0 shadow-none" placeholder="e.g. U.S. District Court, District of Columbia">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-control w-full">
+                <div class="field-row field-row--center">
+                  <span class="field-row-label flex items-center gap-1.5" id="wom-status-label">
+                    <span>WOM Status</span>
+                    <span class="tooltip tooltip-right z-50 max-w-xs" data-tip="MTD: Motion to Dismiss. The government's response asking the court to throw out a WOM lawsuit.">
+                      <button type="button" class="help-tip" aria-label="What is MTD?">?</button>
+                    </span>
+                  </span>
+                  <div class="field-row-control">
+                    <div class="join flex-wrap" role="radiogroup" aria-labelledby="wom-status-label">
+                      <label class="choice-btn join-item btn btn-soft btn-primary min-h-11 justify-center">
+                        <input class="sr-only" type="radio" name="womStatus" id="wom-status-progress" value="In progress">
+                        In progress
+                      </label>
+                      <label class="choice-btn join-item btn btn-soft btn-primary min-h-11 justify-center">
+                        <input class="sr-only" type="radio" name="womStatus" id="wom-status-mtd" value="MTD">
+                        MTD
+                      </label>
+                      <label class="choice-btn join-item btn btn-soft btn-primary min-h-11 justify-center">
+                        <input class="sr-only" type="radio" name="womStatus" id="wom-status-resolved" value="Resolved">
+                        Resolved
+                      </label>
+                      <label class="choice-btn join-item btn btn-soft btn-primary min-h-11 justify-center">
+                        <input class="sr-only" type="radio" name="womStatus" id="wom-status-dismissed" value="Dismissed">
+                        Dismissed
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="wom-resolution-wrap" class="form-control w-full hidden conditional-reveal">
+                <div class="field-row">
+                  <label class="field-row-label" for="wom-resolution-date" id="wom-resolution-date-label">WOM Resolution Date</label>
+                  <div class="field-row-control">
+                    <div class="date-input-wrap" id="wom-resolution-date-wrap">
+                      <div class="w-full border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm focus-within:border-primary focus-within:shadow-md transition-[border-color,box-shadow] join min-h-11" style="anchor-name:--wom-resolution-date-anchor">
+                        <button type="button" class="join-item btn btn-ghost btn-square shrink-0 min-h-11 border-0 rounded-none" popovertarget="wom-resolution-date-popover" aria-label="Open calendar">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </button>
+                        <input type="text" id="wom-resolution-date" class="join-item input w-full min-h-11 border-0 rounded-none bg-transparent px-3 focus:outline-none focus:ring-0 shadow-none grow w-full" placeholder="YYYY-MM-DD" autocomplete="off">
+                      </div>
+                      <div popover id="wom-resolution-date-popover" class="dropdown bg-base-100 rounded-box shadow-lg border border-base-300" style="position-anchor:--wom-resolution-date-anchor">
+                        <calendar-date class="cally" data-input-id="wom-resolution-date">
+                          <svg aria-label="Previous" class="fill-current size-4" slot="previous" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+                          <svg aria-label="Next" class="fill-current size-4" slot="next" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
+                          <calendar-month></calendar-month>
+                        </calendar-date>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-control w-full">
+              <div class="field-row">
+                <label class="field-row-label" for="i485-date">I-485 Adjudication Date</label>
+                <div class="field-row-control">
+                  <div class="date-with-pending">
+                    <label class="label cursor-pointer gap-1.5 date-state-toggle py-0">
+                      <input type="checkbox" class="checkbox checkbox-sm pending-date-toggle" id="i485-date-pending" data-date-id="i485-date" data-wrap-id="i485-date-wrap">
+                      <span class="label-text text-sm whitespace-nowrap">Pending</span>
+                    </label>
+                    <div class="date-input-wrap" id="i485-date-wrap">
+                      <div class="w-full border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm focus-within:border-primary focus-within:shadow-md transition-[border-color,box-shadow] join min-h-11" style="anchor-name:--i485-date-anchor">
+                        <button type="button" class="join-item btn btn-ghost btn-square shrink-0 min-h-11 border-0 rounded-none" popovertarget="i485-date-popover" aria-label="Open calendar">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </button>
+                        <input type="text" id="i485-date" class="join-item input w-full min-h-11 border-0 rounded-none bg-transparent px-3 focus:outline-none focus:ring-0 shadow-none grow w-full" placeholder="YYYY-MM-DD" autocomplete="off">
+                      </div>
+                      <div popover id="i485-date-popover" class="dropdown bg-base-100 rounded-box shadow-lg border border-base-300" style="position-anchor:--i485-date-anchor">
+                        <calendar-date class="cally" data-input-id="i485-date">
+                          <svg aria-label="Previous" class="fill-current size-4" slot="previous" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+                          <svg aria-label="Next" class="fill-current size-4" slot="next" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
+                          <calendar-month></calendar-month>
+                        </calendar-date>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-card card card-border bg-base-100 shadow-soft card-animate card-animate-6">
+          <div class="section-header section-header--info">
+            <h2 class="section-title">SOF Composition</h2>
+          </div>
+          <div class="card-body gap-2 p-4 sm:p-5">
+            <div class="form-control w-full">
+              <div class="field-row">
+                <div class="field-row-label flex items-center gap-1.5">
+                  <span>Source of Funds</span>
+                  <span class="tooltip tooltip-right z-50 max-w-xs" data-tip="Source of Funds: documentation proving where your investment capital came from (savings, property sale, gift, loan, etc.). Select all that apply.">
+                    <button type="button" class="help-tip" aria-label="What is SOF?">?</button>
+                  </span>
+                </div>
+                <div class="field-row-control">
+                  <div class="flex flex-wrap gap-2">
+                    <label class="choice-btn btn btn-sm btn-soft btn-primary">
+                      <input class="sr-only" type="checkbox" name="sof" id="sof-savings" value="Cash from savings">
+                      Cash from savings
+                    </label>
+
+                    <label class="choice-btn btn btn-sm btn-soft btn-primary">
+                      <input class="sr-only" type="checkbox" name="sof" id="sof-equity" value="Equity sale">
+                      Equity sale
+                    </label>
+
+                    <label class="choice-btn btn btn-sm btn-soft btn-primary">
+                      <input class="sr-only" type="checkbox" name="sof" id="sof-sbloc" value="Margin loan / SBLOC">
+                      Margin loan / SBLOC
+                    </label>
+
+                    <label class="choice-btn btn btn-sm btn-soft btn-primary">
+                      <input class="sr-only" type="checkbox" name="sof" id="sof-heloc" value="HELOC">
+                      HELOC
+                    </label>
+
+                    <label class="choice-btn btn btn-sm btn-soft btn-primary">
+                      <input class="sr-only" type="checkbox" name="sof" id="sof-sdira" value="SDIRA">
+                      SDIRA
+                    </label>
+
+                    <label class="choice-btn btn btn-sm btn-soft btn-primary">
+                      <input class="sr-only" type="checkbox" name="sof" id="sof-401k" value="401k loan">
+                      401k loan
+                    </label>
+
+                    <label class="choice-btn btn btn-sm btn-soft btn-primary">
+                      <input class="sr-only" type="checkbox" name="sof" id="sof-personal-loan" value="Personal loan">
+                      Personal loan
+                    </label>
+
+                    <label class="choice-btn btn btn-sm btn-soft btn-primary">
+                      <input class="sr-only" type="checkbox" name="sof" id="sof-gift" value="Gift from friends / family">
+                      Gift from friends / family
+                    </label>
+
+                    <label class="choice-btn btn btn-sm btn-soft btn-primary">
+                      <input class="sr-only" type="checkbox" name="sof" id="sof-india" value="Funds from India">
+                      Funds from India
+                    </label>
+
+                    <label class="choice-btn btn btn-sm btn-soft btn-primary">
+                      <input class="sr-only" type="checkbox" name="sof" id="sof-other" value="Other">
+                      Other
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <div id="sof-sbloc-detail-wrap" class="form-control w-full hidden conditional-reveal">
+                <div class="field-row">
+                  <label class="field-row-label" for="sof-sbloc-detail">Margin Loan / SBLOC: Provider Name</label>
+                  <div class="field-row-control">
+                    <div class="w-full border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm focus-within:border-primary focus-within:shadow-md transition-[border-color,box-shadow]">
+                      <input type="text" id="sof-sbloc-detail" class="input w-full min-h-11 border-0 rounded-none bg-transparent px-3 focus:outline-none focus:ring-0 shadow-none" placeholder="e.g. Morgan Stanley">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="sof-heloc-detail-wrap" class="form-control w-full hidden conditional-reveal">
+                <div class="field-row">
+                  <label class="field-row-label" for="sof-heloc-detail">HELOC: Provider Name</label>
+                  <div class="field-row-control">
+                    <div class="w-full border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm focus-within:border-primary focus-within:shadow-md transition-[border-color,box-shadow]">
+                      <input type="text" id="sof-heloc-detail" class="input w-full min-h-11 border-0 rounded-none bg-transparent px-3 focus:outline-none focus:ring-0 shadow-none" placeholder="e.g. Chase">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="sof-sdira-detail-wrap" class="form-control w-full hidden conditional-reveal">
+                <div class="field-row">
+                  <label class="field-row-label" for="sof-sdira-detail">SDIRA: Custodian Name</label>
+                  <div class="field-row-control">
+                    <div class="w-full border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm focus-within:border-primary focus-within:shadow-md transition-[border-color,box-shadow]">
+                      <input type="text" id="sof-sdira-detail" class="input w-full min-h-11 border-0 rounded-none bg-transparent px-3 focus:outline-none focus:ring-0 shadow-none" placeholder="e.g. Equity Trust">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="sof-personal-loan-detail-wrap" class="form-control w-full hidden conditional-reveal">
+                <div class="field-row">
+                  <label class="field-row-label" for="sof-personal-loan-detail">Personal Loan: From Where</label>
+                  <div class="field-row-control">
+                    <div class="w-full border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm focus-within:border-primary focus-within:shadow-md transition-[border-color,box-shadow]">
+                      <input type="text" id="sof-personal-loan-detail" class="input w-full min-h-11 border-0 rounded-none bg-transparent px-3 focus:outline-none focus:ring-0 shadow-none" placeholder="e.g. family member, bank name">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="sof-other-detail-wrap" class="form-control w-full hidden conditional-reveal">
+                <div class="field-row">
+                  <label class="field-row-label" for="sof-other-detail">Other SOF Detail</label>
+                  <div class="field-row-control">
+                    <div class="w-full border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm focus-within:border-primary focus-within:shadow-md transition-[border-color,box-shadow]">
+                      <input type="text" id="sof-other-detail" class="input w-full min-h-11 border-0 rounded-none bg-transparent px-3 focus:outline-none focus:ring-0 shadow-none" placeholder="Describe your other source of funds">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </form>
+
+      <section id="preview-panel" class="section-card card card-border bg-base-100 shadow-soft overflow-hidden lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto lg:flex lg:flex-col lg:flex-[0.85] min-w-0 w-full card-animate card-animate-7" aria-labelledby="preview-heading">
+        <div class="section-header section-header--success">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <h2 id="preview-heading" class="section-title">Live Preview</h2>
+              <p class="text-xs text-base-content/65 mt-1 flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                Live share preview
+              </p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <button type="button" id="clear-form-btn" class="btn btn-ghost btn-sm border border-base-content/20">Clear form</button>
+              <button type="button" id="refresh-preview" class="btn btn-ghost btn-sm hidden" hidden>Refresh from form</button>
+            </div>
+          </div>
+        </div>
+        <div class="card-body gap-4 lg:flex lg:flex-col lg:flex-1 lg:min-h-0">
+          <div class="stats stats-vertical sm:stats-horizontal shadow w-full stats">
+            <div class="stat py-3 px-4">
+              <div class="stat-title text-xs">Key update</div>
+              <div id="stat-key-update" class="stat-value text-sm font-semibold">—</div>
+            </div>
+            <div class="stat py-3 px-4">
+              <div class="stat-title text-xs">From PD</div>
+              <div id="stat-days-pd" class="stat-value text-sm font-semibold">—</div>
+            </div>
+            <div class="stat py-3 px-4">
+              <div class="stat-title text-xs">Sections filled</div>
+              <div id="stat-fields-filled" class="stat-value text-sm font-semibold">0</div>
+            </div>
+          </div>
+
+          <div class="whatsapp-bubble-wrap flex flex-col flex-1 min-h-56 lg:min-h-0 focus-within:ring-2 focus-within:ring-[#25d366]/40 transition-shadow">
+            <textarea
+              id="preview"
+              class="textarea w-full flex-1 border-0 rounded-2xl bg-transparent px-4 py-3 focus:outline-none focus:ring-0 shadow-none resize-none min-h-56 lg:min-h-[12.5rem] lg:overflow-hidden"
+              rows="14"
+              placeholder="Your status update will appear here..."
+              aria-label="Status update message preview"
+            ></textarea>
+          </div>
+
+          <p class="text-sm text-base-content/60 -mt-1 mb-0">Edit freely. Changes here won't update the form.</p>
+
+          <div class="flex items-center gap-3 flex-wrap mt-auto">
+            <button type="button" id="copy-btn" class="btn w-full min-h-11 gap-2" disabled>
+              Copy status
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="page-footer-notes mt-8 w-full">
+      <div class="grid grid-cols-1 lg:grid-cols-[1fr_1.6fr] gap-6 text-left">
+        <div class="space-y-1 text-sm text-base-content/60">
+          <p class="font-medium text-base-content/70">Share</p>
+          <button type="button" id="share-tool-btn" class="clear-form-link text-left underline hover:text-base-content/80">
+            Share this tool
+          </button>
+          <p class="text-xs text-base-content/60">eb5base.com/status · bit.ly/eb5status</p>
+        </div>
+        <div class="space-y-1.5 text-sm text-base-content/60 text-left">
+          <p>This is a static page. Your draft is saved locally in your browser and is never sent to a server.</p>
+          <p>
+            <button type="button" id="clear-form-btn-footer" class="clear-form-link sm:hidden">Clear form</button>
+          </p>
+          <p>
+            Open source on
+            <a class="underline hover:text-base-content/70" href="https://github.com/meetashok/eb5status" target="_blank" rel="noopener noreferrer">GitHub</a>.
+            Contributions and pull requests welcome.
+          </p>
+          <p>
+            Have feedback?
+            <a class="underline hover:text-base-content/70" href="mailto:hello@eb5base.com?subject=EB5%20Status%20Update%20Builder%20feedback">Send it here</a>
+            or ping me on WhatsApp if you have my number.
+          </p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <button type="button" id="preview-fab" class="fixed bottom-6 right-6 z-40 items-center gap-2 rounded-full px-5 py-3 hidden" aria-label="Open preview">
+    Preview
+    <span id="fab-field-count" class="badge badge-sm bg-white/20 text-white border-0">0</span>
+  </button>
+
+  <div id="preview-sheet-backdrop" aria-hidden="true"></div>
+
+  <div id="preview-sheet" popover="manual" role="dialog" aria-labelledby="mobile-preview-heading">
+    <div class="section-header section-header--success flex items-center justify-between gap-3 px-4 py-3 shrink-0">
+      <h2 id="mobile-preview-heading" class="section-title">Live Preview</h2>
+      <button type="button" id="preview-sheet-close" class="btn btn-ghost btn-circle" aria-label="Close preview">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.25" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div id="preview-sheet-body">
+      <div class="whatsapp-bubble-wrap">
+        <textarea
+          id="mobile-preview"
+          class="textarea w-full border-0 rounded-2xl bg-transparent px-4 py-3 focus:outline-none focus:ring-0 shadow-none resize-none"
+          placeholder="Your status update will appear here..."
+          aria-label="Mobile status update preview"
+        ></textarea>
+      </div>
+      <p class="preview-edit-hint text-sm text-base-content/60">Edit freely. Changes here won't update the form.</p>
+    </div>
+    <div id="preview-sheet-footer">
+      <button type="button" id="mobile-copy-btn" class="btn w-full min-h-12 gap-2" disabled>
+        Share status
+      </button>
+    </div>
+  </div>
+
+  <div id="celebration-toast" class="toast toast-top toast-center z-50 pointer-events-none opacity-0" role="status" aria-live="polite" aria-hidden="true">
+    <div class="alert alert-success shadow-lg max-w-md">
+      <span id="celebration-toast-text"></span>
+    </div>
+  </div>
+
+  <div id="restore-toast" class="toast toast-top toast-center z-50 pointer-events-none opacity-0" role="status" aria-live="polite" aria-hidden="true">
+    <div class="alert alert-info shadow-lg">
+      <span>Restored your previous draft</span>
+    </div>
+  </div>
+
+  <dialog id="clear-form-modal" class="modal">
+    <div class="modal-box">
+      <h3 class="font-bold text-lg">Clear form?</h3>
+      <p class="py-3 text-base-content/70">This will reset all fields and remove your saved draft from this browser.</p>
+      <div class="modal-action">
+        <form method="dialog" class="flex gap-2">
+          <button type="submit" class="btn btn-ghost">Cancel</button>
+          <button type="button" id="clear-form-confirm" class="btn btn-error text-white">Clear form</button>
+        </form>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button type="submit" aria-label="Close">close</button>
+    </form>
+  </dialog>
+
+  
+  <script src="/status/app.js"></script>
+</body>
+</html>

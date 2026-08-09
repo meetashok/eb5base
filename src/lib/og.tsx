@@ -43,7 +43,7 @@ async function loadLogoDataUrl() {
 }
 
 async function loadJakartaFont(weight: 500 | 600 | 700) {
-  // Request TTF (not woff2) — @vercel/og / Satori only parse OpenType/TrueType.
+  // Request TTF (not woff2) - @vercel/og / Satori only parse OpenType/TrueType.
   const css = await fetch(
     `https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@${weight}&display=swap`,
     {

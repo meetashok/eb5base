@@ -7,7 +7,7 @@ import { avatarFromAuthUser } from '@/lib/profile-avatar';
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  // Default to setup; the setup page sends completed profiles home
+  // Default to directory profile setup; Case Tracker login passes /tracker/... via `next`
   let next = searchParams.get('next') ?? '/profile/setup';
   if (!next.startsWith('/')) next = '/profile/setup';
 
@@ -17,54 +17,81 @@ export async function GET(request: Request) {
     );
   }
 
-  if (code) {
-    const cookieStore = cookies();
-    const { url, key } = getSupabaseConfig();
-    const forwardedHost = request.headers.get('x-forwarded-host');
-    const redirectUrl =
-      process.env.NODE_ENV === 'development'
-        ? `${origin}${next}`
-        : forwardedHost
-          ? `https://${forwardedHost}${next}`
-          : `${origin}${next}`;
+  if (!code) {
+    return NextResponse.redirect(`${origin}/login?error=auth`);
+  }
 
-    const redirectResponse = NextResponse.redirect(redirectUrl);
+  const cookieStore = cookies();
+  const { url, key } = getSupabaseConfig();
+  const forwardedHost = request.headers.get('x-forwarded-host');
 
-    const supabase = createServerClient(
-      url,
-      key,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll();
-          },
-          setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              cookieStore.set(name, value, options);
-              redirectResponse.cookies.set(name, value, options);
-            });
-          },
-        },
-      }
-    );
+  const buildUrl = (path: string) =>
+    process.env.NODE_ENV === 'development'
+      ? `${origin}${path}`
+      : forwardedHost
+        ? `https://${forwardedHost}${path}`
+        : `${origin}${path}`;
 
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      const avatar = avatarFromAuthUser(user);
-      if (user && avatar) {
-        await supabase.from('profiles').update({ avatar_url: avatar }).eq('id', user.id);
-      }
-      return redirectResponse;
-    }
+  const redirectResponse = NextResponse.redirect(buildUrl(next));
 
+  const supabase = createServerClient(url, key, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll();
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value, options }) => {
+          cookieStore.set(name, value, options);
+          redirectResponse.cookies.set(name, value, options);
+        });
+      },
+    },
+  });
+
+  const { error } = await supabase.auth.exchangeCodeForSession(code);
+  if (error) {
     console.error('OAuth exchange failed:', error.message);
     return NextResponse.redirect(
       `${origin}/login?error=${encodeURIComponent(error.message)}`
     );
   }
 
-  return NextResponse.redirect(`${origin}/login?error=auth`);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    const avatar = avatarFromAuthUser(user);
+    if (avatar) {
+      await supabase.from('profiles').update({ avatar_url: avatar }).eq('id', user.id);
+    }
+
+    const isTrackerFlow = next.startsWith('/tracker');
+    if (isTrackerFlow) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('onboarding_complete')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      let resolvedNext = next;
+      if (profile?.onboarding_complete) {
+        if (next === '/tracker/onboarding' || next.startsWith('/tracker/onboarding')) {
+          resolvedNext = '/tracker/timeline';
+        }
+      } else {
+        resolvedNext = '/tracker/onboarding';
+      }
+
+      if (resolvedNext !== next) {
+        const finalResponse = NextResponse.redirect(buildUrl(resolvedNext));
+        redirectResponse.cookies.getAll().forEach((c) => {
+          finalResponse.cookies.set(c.name, c.value);
+        });
+        return finalResponse;
+      }
+    }
+  }
+
+  return redirectResponse;
 }

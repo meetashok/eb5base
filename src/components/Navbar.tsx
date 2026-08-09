@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import Logo from '@/components/Logo';
-import AuthGateLink from '@/components/AuthGateLink';
 import type { User } from '@supabase/supabase-js';
 import type { Profile } from '@/lib/types';
 import { resolveProfileAvatar } from '@/lib/profile-avatar';
@@ -62,35 +61,42 @@ export default function Navbar() {
     router.refresh();
   }
 
-  const navLink = (href: string, label: string, hint?: string) => (
-    <Link
-      href={href}
-      data-add-project-hint={hint}
-      className={`px-3 py-2 text-sm font-medium transition-all duration-150 hover:text-accent ${
-        pathname === href || (href !== '/' && pathname.startsWith(href))
-          ? 'text-accent'
-          : 'text-primary-content/90'
-      }`}
-    >
-      {label}
-    </Link>
-  );
-
-  const authNavLink = (href: string, label: string, hint?: string) => (
-    <AuthGateLink
-      href={href}
-      data-add-project-hint={hint}
-      className={`px-3 py-2 text-sm font-medium transition-all duration-150 hover:text-accent ${
-        pathname === href || (href !== '/' && pathname.startsWith(href))
-          ? 'text-accent'
-          : 'text-primary-content/90'
-      }`}
-    >
-      {label}
-    </AuthGateLink>
-  );
+  const navLink = (href: string, label: string, exact = false) => {
+    const active = exact
+      ? pathname === href
+      : pathname === href || (href !== '/' && pathname.startsWith(href));
+    return (
+      <Link
+        href={href}
+        className={`px-2 lg:px-3 py-2 text-sm font-medium whitespace-nowrap transition-all duration-150 hover:text-accent ${
+          active ? 'text-accent' : 'text-primary-content/90'
+        }`}
+      >
+        {label}
+      </Link>
+    );
+  };
 
   const avatarUrl = resolveProfileAvatar(profile, user);
+  const onboarded = Boolean(profile?.onboarding_complete);
+  const caseTrackerHref = onboarded ? '/tracker/timeline' : '/tracker';
+
+  const mainLinks = (
+    <>
+      {navLink('/status', 'Status Update')}
+      {navLink(caseTrackerHref, 'Case Tracker')}
+      {onboarded && (
+        <>
+          {navLink('/tracker/timeline', 'Timeline')}
+          {navLink('/tracker/insights', 'Insights')}
+          {navLink('/tracker/settings', 'Settings')}
+        </>
+      )}
+      {navLink('/nprm', 'NPRM')}
+      {navLink('/resources', 'Resources')}
+      {navLink('/about', 'About')}
+    </>
+  );
 
   return (
     <header className="sticky top-0 z-50 bg-nav-gradient text-primary-content shadow-nav">
@@ -109,12 +115,8 @@ export default function Navbar() {
           </Link>
         </div>
 
-        <div className="navbar-center hidden md:flex gap-1">
-          {navLink('/projects', 'Browse')}
-          {navLink('/rc', 'Regional Centers')}
-          {user && authNavLink('/timeline', 'My Timeline')}
-          {authNavLink('/projects/add', 'Add Project', 'nav')}
-          {navLink('/about', 'About')}
+        <div className="navbar-center hidden md:flex flex-wrap justify-center gap-0.5">
+          {mainLinks}
         </div>
 
         <div className="navbar-end gap-2">
@@ -145,6 +147,11 @@ export default function Navbar() {
                 <li>
                   <Link href="/profile">Profile</Link>
                 </li>
+                {onboarded && (
+                  <li>
+                    <Link href="/tracker/settings">Case Tracker settings</Link>
+                  </li>
+                )}
                 {profile?.is_admin && (
                   <li>
                     <Link href="/admin">Approvals</Link>
@@ -178,11 +185,7 @@ export default function Navbar() {
 
       {menuOpen && (
         <div className="md:hidden border-t border-primary-content/20 px-4 pb-4 flex flex-col">
-          {navLink('/projects', 'Browse')}
-          {navLink('/rc', 'Regional Centers')}
-          {user && authNavLink('/timeline', 'My Timeline')}
-          {authNavLink('/projects/add', 'Add Project', 'nav')}
-          {navLink('/about', 'About')}
+          {mainLinks}
         </div>
       )}
     </header>

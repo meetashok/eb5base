@@ -5,12 +5,14 @@ import {
   isValidMaintenanceBypassToken,
   MAINTENANCE_BYPASS_COOKIE,
 } from '@/lib/maintenance';
+import { isNprmTabId, nprmTabHref } from '@/lib/nprm/tabs';
 import { updateSession } from '@/lib/supabase-middleware';
 
 const BYPASS_MAX_AGE_SEC = 60 * 60 * 24 * 30; // 30 days
 
 function isMaintenancePassthrough(pathname: string): boolean {
   return (
+    pathname === '/' ||
     pathname === '/maintenance' ||
     pathname === '/robots.txt' ||
     pathname === '/icon' ||
@@ -18,8 +20,47 @@ function isMaintenancePassthrough(pathname: string): boolean {
     pathname === '/opengraph-image' ||
     pathname.startsWith('/opengraph-image/') ||
     pathname === '/twitter-image' ||
-    pathname.startsWith('/twitter-image/')
+    pathname.startsWith('/twitter-image/') ||
+    // Public tools that should stay reachable during the directory pause.
+    pathname === '/nprm' ||
+    pathname.startsWith('/nprm/') ||
+    pathname === '/nrpm' ||
+    pathname.startsWith('/nrpm/') ||
+    pathname === '/tracker' ||
+    pathname.startsWith('/tracker/') ||
+    pathname === '/status' ||
+    pathname.startsWith('/status/') ||
+    pathname === '/eb5status' ||
+    pathname.startsWith('/eb5status/') ||
+    pathname === '/about' ||
+    pathname === '/resources' ||
+    pathname.startsWith('/resources/') ||
+    pathname === '/privacy' ||
+    pathname === '/terms' ||
+    pathname === '/contact' ||
+    pathname === '/login' ||
+    pathname.startsWith('/login/') ||
+    pathname === '/auth' ||
+    pathname.startsWith('/auth/')
   );
+}
+
+/** Legacy ?tab=comments → /nprm/comments (no leftover query). */
+function redirectLegacyNprmTab(request: NextRequest): NextResponse | null {
+  const { pathname } = request.nextUrl;
+  if (pathname !== '/nprm' && pathname !== '/nprm/' && pathname !== '/nrpm' && pathname !== '/nrpm/') {
+    return null;
+  }
+  const tab = request.nextUrl.searchParams.get('tab');
+  if (!isNprmTabId(tab)) return null;
+
+  const url = request.nextUrl.clone();
+  url.pathname = nprmTabHref(tab);
+  url.searchParams.delete('tab');
+  if (!url.searchParams.toString()) {
+    url.search = '';
+  }
+  return NextResponse.redirect(url);
 }
 
 function setBypassCookie(response: NextResponse, secret: string, request: NextRequest) {
@@ -33,6 +74,9 @@ function setBypassCookie(response: NextResponse, secret: string, request: NextRe
 }
 
 export async function middleware(request: NextRequest) {
+  const legacyTab = redirectLegacyNprmTab(request);
+  if (legacyTab) return legacyTab;
+
   if (isMaintenanceMode()) {
     const { pathname } = request.nextUrl;
     const secret = getMaintenanceBypassSecret();
@@ -58,7 +102,7 @@ export async function middleware(request: NextRequest) {
       return updateSession(request);
     }
 
-    // Public: maintenance page + metadata images only.
+    // Public: maintenance page + metadata images + NPRM tracker only.
     if (isMaintenancePassthrough(pathname)) {
       return NextResponse.next();
     }

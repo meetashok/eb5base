@@ -12,7 +12,7 @@ export interface SimilarProject {
   rc_brands?: { id?: string; name?: string | null; slug?: string | null } | null;
   regional_centers?: { name?: string | null } | null;
   location_state?: string | null;
-  /** @deprecated display helper — prefer rc_brands.name */
+  /** @deprecated display helper - prefer rc_brands.name */
   regional_center?: string | null;
 }
 

@@ -1,0 +1,489 @@
+{
+  "docket_id": "USCIS-2026-0100",
+  "retrieved": "2026-08-09T07:57 IST plain-english rewrite 8th-grade id+link+theme+summary",
+  "total": 48,
+  "source": "regulations.gov via api.data.gov",
+  "mode": "id_link_theme_summary_only",
+  "comments": [
+    {
+      "id": "USCIS-2026-0100-0077",
+      "title": "Comment Submitted by Intellex Capital LLC",
+      "postedDate": "2026-08-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0077",
+      "theme_id": "bridge_financing",
+      "theme_title": "Bridge Financing 204.407(e)(1)",
+      "ai_summary": "This comment asks to keep allowing bridge loans that are later repaid with EB-5 money. It says starting construction with a short-term loan before EB-5 money arrives is normal.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0081",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-08-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0081",
+      "theme_id": "grandfather_retroactivity",
+      "theme_title": "Grandfather Clause / Retroactivity",
+      "ai_summary": "This comment filed as a large PDF. It asks for full life-cycle protection from I-526E filing through I-829, so new rules are not applied to people who already invested.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0078",
+      "title": "Comment Submitted by Celona Asset Management (USA) Limited",
+      "postedDate": "2026-08-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0078",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment is about moving investor money to a new project if needed. It asks for clear redeployment rules that protect investors and keep projects workable.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0079",
+      "title": "Comment Submitted by Ankit Dave",
+      "postedDate": "2026-08-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0079",
+      "theme_id": "grandfather_retroactivity",
+      "theme_title": "Grandfather Clause / Retroactivity",
+      "ai_summary": "This comment asks for a clear grandfather rule. It says if you filed before the new rule starts, your case should be judged by the old rules from filing through green card.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0080",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-08-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0080",
+      "theme_id": "sustainment",
+      "theme_title": "Sustainment Period - 2yr vs Job Creation",
+      "ai_summary": "This comment says 2 years is too short for money to stay invested and create real jobs, pointing to Portugal which uses 5 years. It also says many refund requests come from one project.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0076",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-08-03T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0076",
+      "theme_id": "definitional_asymmetry",
+      "theme_title": "Definitional Asymmetry 204.432 vs 204.433",
+      "ai_summary": "This comment says the rule defines fraud clearly but leaves national security and public safety undefined. It also says the rule removes a chance for investors to see and answer negative information.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0075",
+      "title": "Comment Submitted by Harry Saltzgaver",
+      "postedDate": "2026-07-31T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0075",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment is about infrastructure projects. It asks for clearer examples of what counts and asks to let private builders, not just government, approve financing deals.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0070",
+      "title": "Comment Submitted by Anonymous .",
+      "postedDate": "2026-07-27T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0070",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment is from someone with a conditional green card. It worries new bridge loan rules could be applied late at I-829 and suggests limiting, not banning, bridge loans with at least 36 months to match building times.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0071",
+      "title": "Comment Submitted by Anonymous Anonymous",
+      "postedDate": "2026-07-27T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0071",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment is from an investor in an already-approved project. It asks to apply new job rules about bridge loans and visitor spending only to future investors.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0073",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-27T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0073",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment supports program integrity but asks to make sure three new changes are not used to punish investors who already put money in and followed the old approved rules.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0069",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-27T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0069",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment includes a full analysis and proposed text. It asks to judge people who filed before the final rule under old job methods, TEA data, and evidence lists, and not deny an investor if the regional center misses a new form.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0074",
+      "title": "Comment Submitted by Amit Bhadauria",
+      "postedDate": "2026-07-27T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0074",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment supports the proposed 2-year sustainment clock starting when money is deployed to the job-creating company and asks to keep that rule.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0072",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-27T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0072",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment asks to clearly say new job rules about bridge loans and but-for tests will not be used at I-829 for projects that were already approved under old rules.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0068",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-24T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0068",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment is about source of funds paperwork. It says asking to prove where every dollar in the company came from, including other investors not seeking visas, is not workable.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0067",
+      "title": "Comment Submitted by Lila Z",
+      "postedDate": "2026-07-24T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0067",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment says the proposed 2-year rule creates two tracks that may treat rural and other investors unfairly, and asks to make sustainment fair, clear, and not tied to visa backlogs.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0066",
+      "title": "Comment Submitted by NIKHIL SP",
+      "postedDate": "2026-07-24T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0066",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment is about bridge loans. It says banning repaid bridge loans hurts existing applicants and regional centers who planned jobs and financing around long-time policy that allowed them.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0062",
+      "title": "Comment Submitted by University Beach Cooperative District",
+      "postedDate": "2026-07-23T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0062",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment is about public works and infrastructure projects and how EB-5 can support them, with details in the attached PDF.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0065",
+      "title": "Comment Submitted by Kaushik K",
+      "postedDate": "2026-07-23T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0065",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment supports integrity but opposes removing bridge financing for job creation, saying it is needed to start projects early and was allowed before.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0064",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-23T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0064",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment worries a new ban on bridge financing applied to people who already invested could hurt immigration cases and cause money loss.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0063",
+      "title": "Comment Submitted by University Beach Cooperative District",
+      "postedDate": "2026-07-23T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0063",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment is about public works projects as qualifying infrastructure, with more detail in the attached file.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0061",
+      "title": "Comment Submitted by Visa Franchise",
+      "postedDate": "2026-07-20T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0061",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment says direct investors who run one small business are different from large regional center pools and asks to keep rules practical for them.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0060",
+      "title": "Comment Submitted by Wright Goforth",
+      "postedDate": "2026-07-20T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0060",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment asks to define more clearly what counts as an infrastructure project under the new rule.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0059",
+      "title": "Comment Submitted by Robert Green",
+      "postedDate": "2026-07-17T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0059",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment includes formal legal arguments with details in the attached PDF on the government site.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0058",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-16T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0058",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment is from an experienced EB-5 practitioner. It asks about material change and capital rules and says many professionals who invested in good faith should not be penalized for normal business changes.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0056",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-14T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0056",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment is about the 2-year sustainment clock. It asks to clearly state the clock starts when capital is deployed to the job-creating company.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0057",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-14T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0057",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment asks to keep allowing job sharing where two part-time workers count as one full-time job, because many small businesses rely on it.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0055",
+      "title": "Comment Submitted by Prashil Sureja",
+      "postedDate": "2026-07-13T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0055",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment strongly supports 2-year sustainment measured from deployment and asks to finalize that approach.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0053",
+      "title": "Comment Submitted by N O",
+      "postedDate": "2026-07-10T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0053",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment opposes parts of the rule. It worries broad power to fine, suspend, or debar regional centers without clear checks could hurt good-faith investors.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0054",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-10T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0054",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment worries the change will hurt the U.S. economy by keeping investors from putting money into U.S. markets.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0052",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-08T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0052",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment thanks USCIS and supports stronger integrity and transparency while asking to protect good-faith investors.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0048",
+      "title": "Comment Submitted by Jie Zhu",
+      "postedDate": "2026-07-07T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0048",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment asks how a fund administrator actually signs on bank accounts and approves transfers, such as whether it needs a bank signature card.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0050",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-07T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0050",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment strongly supports ending repaid bridge financing, saying using EB-5 money just to repay an old loan is not what the program is for.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0051",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-07T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0051",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment strongly supports a sustainment period longer than 2 years, saying the program should reward long-term investment that creates lasting jobs.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0049",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-07T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0049",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment is about keeping your place in line when a regional center closes. It supports protecting investors but asks for a fair standard for priority date retention.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0047",
+      "title": "Comment Submitted by Rajasekar Chinnasmay",
+      "postedDate": "2026-07-07T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0047",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment is from someone who relied on guidance that sustainment is about 2 years from deployment and asks to keep that standard.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0045",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0045",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment is about what counts as a qualifying investment and asks how the law applies when an investor needs to amend or move to a new investment if the first project fails.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0039",
+      "title": "Comment Submitted by Sameer Mehta",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0039",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment asks to release funds after 2 years to use them to start a business and help the economy.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0037",
+      "title": "Comment Submitted by LINNET JOSE",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0037",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment says 2 years makes sense for job creation and notes family plans to use returned money for education.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0040",
+      "title": "Comment Submitted by Satya Vadapalli",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0040",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment asks for a clear rule that sustainment ends 2 years after deployment, saying that treats people from all countries fairly even with visa backlogs.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0036",
+      "title": "Comment Submitted by Jenson Thottian",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0036",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment opposes making sustainment longer, saying the project was chosen because rules clearly said 2 years.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0043",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0043",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment supports a 2-year sustainment rule starting when money reaches the job company, expecting at least 2 years at risk, not open-ended.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0041",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0041",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment says papers promised 2 years from deployment and asks not to change that after relying on it.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0046",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0046",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment asks if money from a trust or retirement account counts as capital and asks how the grandfathering date applies.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0038",
+      "title": "Comment Submitted by Rama Tejaswini  Thotapalli",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0038",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment says 2 years gave confidence money would not be locked forever, noting long waits for some investors.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0044",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0044",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment strongly supports the proposal, saying it cracks down on misuse by large operators and protects workers and program integrity.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0035",
+      "title": "Comment Submitted by Joydeep Das",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0035",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment says ending bridge financing will create problems for people who already filed, because budgets and job plans were built around earlier filings.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0042",
+      "title": "Comment Submitted by Falguni Gandhi",
+      "postedDate": "2026-07-06T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0042",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment asks to release the investment in 2 years to build a better life in the U.S., noting reliance on rules at the time of investing.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0034",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-07-02T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0034",
+      "theme_id": "program_integrity",
+      "theme_title": "Program Integrity / Redeployment",
+      "ai_summary": "This comment asks to clarify protections for good-faith investors, so someone who invested honestly can keep eligibility, amend, or move investment if needed.",
+      "type": "comments"
+    }
+  ]
+}

@@ -78,7 +78,7 @@ export async function isVerifiedRcRepForBrand(
   return Boolean(data);
 }
 
-/** Admin or verified RC rep for this project — skip moderation queue. */
+/** Admin or verified RC rep for this project - skip moderation queue. */
 export async function shouldAutoApproveProjectAction(
   supabase: SupabaseClient,
   userId: string,
@@ -88,7 +88,7 @@ export async function shouldAutoApproveProjectAction(
   return isVerifiedRcRepForProject(supabase, userId, project);
 }
 
-/** Admin or verified RC rep for this brand — skip moderation queue. */
+/** Admin or verified RC rep for this brand - skip moderation queue. */
 export async function shouldAutoApproveBrandAction(
   supabase: SupabaseClient,
   userId: string,
