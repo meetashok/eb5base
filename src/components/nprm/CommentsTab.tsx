@@ -88,7 +88,7 @@ export default function CommentsTab({ comments, themes }: Props) {
           <p className="text-[11px] uppercase tracking-wider font-bold text-neutral/70 mb-1.5">
             Theme
           </p>
-          <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by theme">
+          <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter by theme">
             {themeOptions.map((opt) => (
               <button
                 key={opt.id}
@@ -104,9 +104,9 @@ export default function CommentsTab({ comments, themes }: Props) {
         </div>
         <div>
           <p className="text-[11px] uppercase tracking-wider font-bold text-neutral/70 mb-1.5">
-            Poster
+            Poster type
           </p>
-          <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by poster type">
+          <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter by poster type">
             {posterOptions.map((opt) => (
               <button
                 key={opt.id}
