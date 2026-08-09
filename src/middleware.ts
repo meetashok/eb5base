@@ -33,6 +33,8 @@ function isMaintenancePassthrough(pathname: string): boolean {
     pathname === '/eb5status' ||
     pathname.startsWith('/eb5status/') ||
     pathname === '/about' ||
+    pathname === '/resources' ||
+    pathname.startsWith('/resources/') ||
     pathname === '/privacy' ||
     pathname === '/terms' ||
     pathname === '/contact' ||

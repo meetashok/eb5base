@@ -109,6 +109,7 @@ export default function Navbar() {
             </>
           )}
           {navLink('/nprm', 'NPRM')}
+          {navLink('/resources', 'Resources')}
           {navLink('/about', 'About')}
         </div>
 
@@ -188,6 +189,7 @@ export default function Navbar() {
             </>
           )}
           {navLink('/nprm', 'NPRM')}
+          {navLink('/resources', 'Resources')}
           {navLink('/about', 'About')}
         </div>
       )}

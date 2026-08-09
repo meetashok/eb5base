@@ -32,6 +32,12 @@ export default function Footer() {
               NPRM
             </Link>
             <Link
+              href="/resources"
+              className="text-sm text-neutral/50 hover:text-primary transition-colors"
+            >
+              Resources
+            </Link>
+            <Link
               href="/about"
               className="text-sm text-neutral/50 hover:text-primary transition-colors"
             >

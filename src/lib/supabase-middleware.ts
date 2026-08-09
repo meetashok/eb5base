@@ -20,6 +20,7 @@ function isPublicPath(pathname: string): boolean {
     [
       '/',
       '/about',
+      '/resources',
       '/login',
       '/signup',
       '/privacy',
@@ -39,6 +40,7 @@ function isPublicPath(pathname: string): boolean {
   if (pathname.startsWith('/auth')) return true;
   if (pathname.startsWith('/nprm/') || pathname.startsWith('/nrpm')) return true;
   if (pathname.startsWith('/status/') || pathname.startsWith('/eb5status/')) return true;
+  if (pathname.startsWith('/resources/')) return true;
 
   // Brand browse/detail public; add form is public (auth gated client-side)
   if (pathname.startsWith('/rc/')) {
