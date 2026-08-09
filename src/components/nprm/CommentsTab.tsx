@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import type { NprmComment, NprmTheme } from '@/lib/nprm/types';
 import {
   commentUrl,
+  formatLastPull,
   formatShortDate,
   parsePoster,
 } from '@/lib/nprm/utils';
@@ -13,6 +14,7 @@ type PosterFilter = 'all' | 'anonymous' | 'named' | 'org';
 interface Props {
   comments: NprmComment[];
   themes: NprmTheme[];
+  lastPull?: string;
 }
 
 function commentNumber(id: string): number {

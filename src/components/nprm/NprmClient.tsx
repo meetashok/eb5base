@@ -112,7 +112,11 @@ export default function NprmClient({
           />
         )}
         {active === 'comments' && (
-          <CommentsTab comments={data.comments} themes={data.themes} />
+          <CommentsTab
+            comments={data.comments}
+            themes={data.themes}
+            lastPull={data.stats.last_pull}
+          />
         )}
         {active === 'write' && (
           <WriteTab
