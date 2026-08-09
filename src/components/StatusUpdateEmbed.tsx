@@ -26,7 +26,9 @@ export default function StatusUpdateEmbed() {
 
     function syncHeight() {
       try {
-        const doc = iframe.contentDocument;
+        const el = iframeRef.current;
+        if (!el) return;
+        const doc = el.contentDocument;
         if (!doc?.body) return;
         const next = Math.max(
           doc.body.scrollHeight,
