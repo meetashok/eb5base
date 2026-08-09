@@ -35,9 +35,14 @@ function themeLabel(
   return null;
 }
 
-export default function CommentsTab({ comments, themes }: Props) {
+export default function CommentsTab({
+  comments,
+  themes,
+  lastPull,
+}: Props) {
   const [themeFilter, setThemeFilter] = useState<string>('all');
   const [posterFilter, setPosterFilter] = useState<PosterFilter>('all');
+  const lastPullLabel = formatLastPull(lastPull);
 
   const filtered = useMemo(() => {
     const list = comments.filter((c) => {
@@ -74,14 +79,19 @@ export default function CommentsTab({ comments, themes }: Props) {
 
   return (
     <div className="space-y-6 animate-[fadeIn_0.35s_ease-out]">
-      <div>
+      <div className="space-y-2 max-w-2xl">
         <h2 className="text-xl font-bold text-primary">
           Comments ({filtered.length})
         </h2>
-        <p className="text-sm text-neutral mt-1 max-w-xl leading-relaxed">
-          Sorted by comment number (newest ID first). Theme and AI summary come
-          from the feed as separate fields. Full comment text lives on
-          regulations.gov.
+        <p className="text-sm text-neutral leading-relaxed">
+          This page summarizes comments submitted so far on Docket
+          USCIS-2026-0100. For the full comment text, open the linked filing on
+          regulations.gov. Comments are sorted by comment number, newest ID
+          first. Data as of last pull: {lastPullLabel}.
+        </p>
+        <p className="text-xs leading-relaxed text-amber-800 bg-amber-50 border border-amber-200/80 rounded-md px-2.5 py-1.5">
+          Warning: this list may be incomplete. Latest data pulled as of{' '}
+          {lastPullLabel}. Check regulations.gov for any newer filings.
         </p>
       </div>
 
