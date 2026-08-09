@@ -4,7 +4,7 @@ import { BrandWordmark } from '@/components/Logo';
 export const metadata = {
   title: 'EB5 Base - Information for EB-5 investors',
   description:
-    'Community-built information tools for EB-5 investors: NPRM comment guide and case tracker (coming soon). Not legal advice.',
+    'Community-built information tools for EB-5 investors: NPRM comment guide and encrypted case tracker. Not legal advice.',
 };
 
 const TOOLS = [
@@ -18,10 +18,10 @@ const TOOLS = [
   },
   {
     href: '/tracker',
-    eyebrow: 'Coming soon',
+    eyebrow: 'Available now',
     title: 'Case Tracker',
     body: 'Track USCIS case status for your petitions, get notified on changes, and learn from anonymized cohort insights without exposing receipt numbers to other investors or on EB5 Base.',
-    cta: 'Preview Case Tracker',
+    cta: 'Open Case Tracker',
     primary: false,
   },
 ];

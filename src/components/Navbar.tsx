@@ -61,20 +61,25 @@ export default function Navbar() {
     router.refresh();
   }
 
-  const navLink = (href: string, label: string) => (
-    <Link
-      href={href}
-      className={`px-3 py-2 text-sm font-medium transition-all duration-150 hover:text-accent ${
-        pathname === href || (href !== '/' && pathname.startsWith(href))
-          ? 'text-accent'
-          : 'text-primary-content/90'
-      }`}
-    >
-      {label}
-    </Link>
-  );
+  const navLink = (href: string, label: string, exact = false) => {
+    const active = exact
+      ? pathname === href
+      : pathname === href || (href !== '/' && pathname.startsWith(href));
+    return (
+      <Link
+        href={href}
+        className={`px-3 py-2 text-sm font-medium transition-all duration-150 hover:text-accent ${
+          active ? 'text-accent' : 'text-primary-content/90'
+        }`}
+      >
+        {label}
+      </Link>
+    );
+  };
 
   const avatarUrl = resolveProfileAvatar(profile, user);
+  const onboarded = Boolean(profile?.onboarding_complete);
+  const caseTrackerHref = onboarded ? '/tracker/timeline' : '/tracker';
 
   return (
     <header className="sticky top-0 z-50 bg-nav-gradient text-primary-content shadow-nav">
@@ -94,7 +99,14 @@ export default function Navbar() {
         </div>
 
         <div className="navbar-center hidden md:flex gap-1">
-          {navLink('/tracker', 'Case Tracker')}
+          {navLink(caseTrackerHref, 'Case Tracker')}
+          {onboarded && (
+            <>
+              {navLink('/tracker/timeline', 'Timeline')}
+              {navLink('/tracker/insights', 'Insights')}
+              {navLink('/tracker/settings', 'Settings')}
+            </>
+          )}
           {navLink('/nprm', 'NPRM')}
           {navLink('/about', 'About')}
         </div>
@@ -127,6 +139,11 @@ export default function Navbar() {
                 <li>
                   <Link href="/profile">Profile</Link>
                 </li>
+                {onboarded && (
+                  <li>
+                    <Link href="/tracker/settings">Case Tracker settings</Link>
+                  </li>
+                )}
                 {profile?.is_admin && (
                   <li>
                     <Link href="/admin">Approvals</Link>
@@ -160,7 +177,14 @@ export default function Navbar() {
 
       {menuOpen && (
         <div className="md:hidden border-t border-primary-content/20 px-4 pb-4 flex flex-col">
-          {navLink('/tracker', 'Case Tracker')}
+          {navLink(caseTrackerHref, 'Case Tracker')}
+          {onboarded && (
+            <>
+              {navLink('/tracker/timeline', 'Timeline')}
+              {navLink('/tracker/insights', 'Insights')}
+              {navLink('/tracker/settings', 'Settings')}
+            </>
+          )}
           {navLink('/nprm', 'NPRM')}
           {navLink('/about', 'About')}
         </div>

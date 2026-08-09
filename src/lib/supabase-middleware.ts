@@ -17,13 +17,25 @@ function isStaticOrApi(pathname: string): boolean {
 /** Browse + auth pages - no login required. */
 function isPublicPath(pathname: string): boolean {
   if (
-    ['/', '/about', '/login', '/signup', '/privacy', '/terms', '/contact', '/rc', '/regional-centers'].includes(
-      pathname
-    )
+    [
+      '/',
+      '/about',
+      '/login',
+      '/signup',
+      '/privacy',
+      '/terms',
+      '/contact',
+      '/rc',
+      '/regional-centers',
+      '/tracker',
+      '/nprm',
+      '/maintenance',
+    ].includes(pathname)
   ) {
     return true;
   }
   if (pathname.startsWith('/auth')) return true;
+  if (pathname.startsWith('/nprm/') || pathname.startsWith('/nrpm')) return true;
 
   // Brand browse/detail public; add form is public (auth gated client-side)
   if (pathname.startsWith('/rc/')) {
@@ -46,6 +58,19 @@ function isPublicPath(pathname: string): boolean {
   }
 
   return false;
+}
+
+function isTrackerAppPath(pathname: string): boolean {
+  return (
+    pathname.startsWith('/tracker/timeline') ||
+    pathname.startsWith('/tracker/insights') ||
+    pathname.startsWith('/tracker/settings') ||
+    pathname.startsWith('/tracker/onboarding')
+  );
+}
+
+function isTrackerOnboardingPath(pathname: string): boolean {
+  return pathname === '/tracker/onboarding' || pathname.startsWith('/tracker/onboarding/');
 }
 
 function needsProfileSetup(profile: { profile_completed?: boolean | null; role?: string | null } | null): boolean {
@@ -107,6 +132,33 @@ export async function updateSession(request: NextRequest) {
     loginUrl.pathname = '/login';
     loginUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(loginUrl);
+  }
+
+  // Case Tracker app: gate on case-tracker onboarding, not directory profile setup.
+  if (isTrackerAppPath(pathname)) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('onboarding_complete')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    const onboardingComplete = Boolean(profile?.onboarding_complete);
+
+    if (!onboardingComplete && !isTrackerOnboardingPath(pathname)) {
+      const setupUrl = request.nextUrl.clone();
+      setupUrl.pathname = '/tracker/onboarding';
+      setupUrl.search = '';
+      return NextResponse.redirect(setupUrl);
+    }
+
+    if (onboardingComplete && isTrackerOnboardingPath(pathname)) {
+      const timelineUrl = request.nextUrl.clone();
+      timelineUrl.pathname = '/tracker/timeline';
+      timelineUrl.search = '';
+      return NextResponse.redirect(timelineUrl);
+    }
+
+    return supabaseResponse;
   }
 
   if (isAuthOnlyPath(pathname)) {

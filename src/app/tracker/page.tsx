@@ -1,11 +1,13 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import PageHero from '@/components/PageHero';
 import { BrandWordmark } from '@/components/Logo';
+import { createClient } from '@/lib/supabase-server';
 
 export const metadata = {
   title: 'Case Tracker',
   description:
-    'EB-5 Case Tracker: follow USCIS updates for your petitions. Coming soon. Receipt numbers stay private from other investors and from EB5 Base staff views.',
+    'EB-5 Case Tracker: follow USCIS updates for your petitions. Receipt numbers stay private from other investors and from EB5 Base staff views.',
 };
 
 const FEATURES = [
@@ -50,18 +52,33 @@ function CheckItem({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function TrackerComingSoonPage() {
+export const dynamic = 'force-dynamic';
+
+export default async function TrackerLandingPage() {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('onboarding_complete')
+      .eq('id', user.id)
+      .maybeSingle();
+    if (profile?.onboarding_complete) {
+      redirect('/tracker/timeline');
+    }
+  }
+
+  const startHref = user
+    ? '/tracker/onboarding'
+    : '/login?redirect=/tracker/onboarding';
+
   return (
     <div>
       <PageHero
-        eyebrow={
-          <span className="inline-flex flex-wrap items-center gap-2">
-            <span>Case Tracker</span>
-            <span className="inline-flex items-center rounded-md border border-amber-300 bg-amber-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-900 normal-case">
-              Coming soon
-            </span>
-          </span>
-        }
+        eyebrow={<span>Case Tracker</span>}
         title="Your immigration timeline, encrypted and up to date"
         subtitle={
           <p>
@@ -73,24 +90,18 @@ export default function TrackerComingSoonPage() {
       />
 
       <div className="max-w-4xl mx-auto px-4 py-10 space-y-6">
-        <section className="rounded-2xl border-2 border-amber-200/80 bg-amber-50/70 p-6 md:p-8 space-y-4 shadow-soft">
-          <p className="text-xs uppercase tracking-[0.22em] font-semibold text-amber-900">
-            Status
+        <section className="card-elevated p-6 md:p-8 space-y-4 text-center">
+          <h2 className="text-xl md:text-2xl font-bold text-primary">Ready to track your cases?</h2>
+          <p className="text-sm text-neutral/70 max-w-xl mx-auto leading-relaxed">
+            Sign in, add encrypted receipt numbers, and check status from one place. Local and demo
+            environments use a stub USCIS mode until live credentials are configured.
           </p>
-          <h2 className="text-xl md:text-2xl font-bold text-primary">Coming soon</h2>
-          <p className="text-sm text-neutral/80 leading-relaxed">
-            The Case Tracker product design is ready. Sign-in, case polling, and alerts are not
-            live yet. Check back here, or use the NPRM guide while we finish launch work.
-          </p>
-          <div className="flex flex-wrap gap-2 pt-1">
-            <span className="btn btn-sm btn-disabled rounded-full px-5 normal-case">
-              Case Tracker not open yet
-            </span>
-            <Link href="/nprm" className="btn btn-sm btn-primary rounded-full px-5">
-              Open NPRM guide
+          <div className="flex flex-wrap gap-2 justify-center pt-1">
+            <Link href={startHref} className="btn btn-accent text-accent-content rounded-full px-8">
+              {user ? 'Continue setup' : 'Get started'}
             </Link>
-            <Link href="/about" className="btn btn-sm btn-ghost rounded-full">
-              About EB5 Base
+            <Link href="/nprm" className="btn btn-ghost rounded-full">
+              NPRM guide
             </Link>
           </div>
         </section>
@@ -98,7 +109,7 @@ export default function TrackerComingSoonPage() {
         <section className="card-elevated p-6 md:p-8 space-y-5">
           <div>
             <p className="text-xs uppercase tracking-[0.22em] font-semibold text-secondary mb-2">
-              What it will do
+              What it does
             </p>
             <h2 className="text-xl md:text-2xl font-bold text-primary">
               Built for EB-5 investors
@@ -146,17 +157,6 @@ export default function TrackerComingSoonPage() {
             </Link>
             .
           </p>
-        </section>
-
-        <section className="card-elevated p-6 md:p-8 text-center space-y-3">
-          <h2 className="text-xl font-bold text-primary">Launching soon</h2>
-          <p className="text-sm text-neutral/70 max-w-xl mx-auto leading-relaxed">
-            When Case Tracker opens, you will sign in, add your cases, and get status updates
-            from one place. Until then, this page is a preview only.
-          </p>
-          <Link href="/nprm" className="btn btn-accent text-accent-content rounded-full px-8 mt-2">
-            Use the NPRM guide for now
-          </Link>
         </section>
       </div>
     </div>

@@ -1,4 +1,14 @@
-import type { F956Status, ProjectType, SubscriptionStatus, TeaDesignation } from './types';
+import type {
+  Classification,
+  F956Status,
+  FormType,
+  I956FStatus,
+  NotifyMode,
+  ProjectType,
+  SubscriptionStatus,
+  TeaDesignation,
+  WomStatus,
+} from './types';
 
 export const US_STATES = [
   { code: 'AL', name: 'Alabama' },
@@ -96,6 +106,46 @@ export const SUBSCRIPTION_OPTIONS: { value: SubscriptionStatus; label: string }[
   { value: 'closed', label: 'Closed' },
   { value: 'unknown', label: 'Unknown' },
 ];
+
+export const RECEIPT_PREFIXES = ['IOE', 'SRC', 'MSC', 'LIN', 'EAC', 'WAC', 'NBC'] as const;
+
+export const FORM_TYPES: FormType[] = ['I-526E', 'I-485', 'I-131', 'I-765'];
+
+export const PRIMARY_FORM_TYPES: FormType[] = ['I-526E', 'I-485', 'I-131', 'I-765'];
+
+export const DERIVATIVE_FORM_TYPES: FormType[] = ['I-485', 'I-131', 'I-765'];
+
+export const CLASSIFICATION_OPTIONS: { value: Classification; label: string }[] = [
+  { value: 'rural', label: 'Rural' },
+  { value: 'hua', label: 'HUA' },
+  { value: 'both', label: 'Both' },
+];
+
+export const I956F_STATUS_OPTIONS: { value: I956FStatus; label: string }[] = [
+  { value: 'approved', label: 'Approved' },
+  { value: 'pending', label: 'Pending' },
+  { value: 'unknown', label: 'Unknown' },
+];
+
+export const WOM_STATUS_OPTIONS: { value: WomStatus; label: string }[] = [
+  { value: 'filed', label: 'Filed' },
+  { value: 'hearing_scheduled', label: 'Hearing Scheduled' },
+  { value: 'decided_favorable', label: 'Decided - Favorable' },
+  { value: 'decided_unfavorable', label: 'Decided - Unfavorable' },
+  { value: 'settled', label: 'Settled' },
+  { value: 'dismissed', label: 'Dismissed' },
+];
+
+export const NOTIFY_MODE_OPTIONS: { value: NotifyMode; label: string }[] = [
+  { value: 'immediate', label: 'Immediate' },
+  { value: 'digest', label: 'Daily digest' },
+];
+
+export const INSIGHTS_MIN_USERS = 5;
+
+export const SITE_URL = 'https://eb5base.com';
+
+export const CONTACT_EMAIL = 'hello@eb5base.com';
 
 export const CONTACT_ROLES = ['Sales', 'Owner', 'Manager', 'Legal', 'Other'] as const;
 
