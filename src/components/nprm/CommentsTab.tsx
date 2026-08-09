@@ -63,7 +63,7 @@ export default function CommentsTab({ comments, themes }: Props) {
   ];
 
   function filterBtnClass(active: boolean) {
-    return `btn btn-sm border-2 ${
+    return `btn btn-xs h-7 min-h-0 px-2.5 border ${
       active
         ? 'btn-primary text-primary-content border-primary'
         : 'btn-ghost bg-base-100 border-base-300 text-neutral hover:border-secondary/50'
