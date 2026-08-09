@@ -33,7 +33,7 @@ export default function MaintenancePage() {
             NPRM comment guide
           </Link>
           <Link href="/tracker" className="btn btn-outline rounded-full px-6">
-            Case tracker (coming soon)
+            Case Tracker (coming soon)
           </Link>
           <Link href="/about" className="btn btn-ghost rounded-full px-6">
             About

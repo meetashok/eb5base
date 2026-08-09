@@ -17,7 +17,7 @@ export default function Footer() {
               href="/tracker"
               className="text-sm text-neutral/50 hover:text-primary transition-colors"
             >
-              Tracker
+              Case Tracker
             </Link>
             <Link
               href="/nprm"

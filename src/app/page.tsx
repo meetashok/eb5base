@@ -19,9 +19,9 @@ const TOOLS = [
   {
     href: '/tracker',
     eyebrow: 'Coming soon',
-    title: 'EB-5 Case Tracker',
-    body: 'Track USCIS case status for your petitions, get notified on changes, and learn from anonymized cohort insights. Preview the product while we finish launch.',
-    cta: 'Preview tracker',
+    title: 'Case Tracker',
+    body: 'Track USCIS case status for your petitions, get notified on changes, and learn from anonymized cohort insights without exposing receipt numbers to other investors or on EB5 Base.',
+    cta: 'Preview Case Tracker',
     primary: false,
   },
 ];

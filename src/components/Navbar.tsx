@@ -94,7 +94,7 @@ export default function Navbar() {
         </div>
 
         <div className="navbar-center hidden md:flex gap-1">
-          {navLink('/tracker', 'Tracker')}
+          {navLink('/tracker', 'Case Tracker')}
           {navLink('/nprm', 'NPRM')}
           {navLink('/about', 'About')}
         </div>
@@ -160,7 +160,7 @@ export default function Navbar() {
 
       {menuOpen && (
         <div className="md:hidden border-t border-primary-content/20 px-4 pb-4 flex flex-col">
-          {navLink('/tracker', 'Tracker')}
+          {navLink('/tracker', 'Case Tracker')}
           {navLink('/nprm', 'NPRM')}
           {navLink('/about', 'About')}
         </div>
