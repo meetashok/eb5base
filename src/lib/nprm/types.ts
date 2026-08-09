@@ -132,7 +132,7 @@ export interface NprmProposalThemeSummary {
   theme_id: string;
   title: string;
   plain_text: string;
-  uscis_phrasing: string;
+  uscis_phrasing?: string;
   citation: string;
   source_link: string;
 }
@@ -146,6 +146,9 @@ export interface NprmProposalSummary {
   plain_language_note: string;
   short_summary: NprmProposalShortSummary;
   long_summary_by_theme: NprmProposalThemeSummary[];
+  /** Optional educational blocks from Hatch; not required for Overview. */
+  why_comment?: unknown;
+  why_participate?: unknown;
 }
 
 export type ProjectTypeOption = 'rural' | 'tea_hua' | 'infrastructure' | 'mixed';

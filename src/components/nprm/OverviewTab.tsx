@@ -161,14 +161,16 @@ export default function OverviewTab({
                 <p className="text-sm text-neutral leading-relaxed">
                   {theme.plain_text}
                 </p>
-                <details className="rounded-lg border border-base-300 bg-base-200/50">
-                  <summary className="cursor-pointer px-3 py-2 text-xs font-bold uppercase tracking-wider text-neutral/80">
-                    What USCIS actually said
-                  </summary>
-                  <p className="px-3 pb-3 text-sm text-neutral leading-relaxed">
-                    {theme.uscis_phrasing}
-                  </p>
-                </details>
+                {theme.uscis_phrasing ? (
+                  <details className="rounded-lg border border-base-300 bg-base-200/50">
+                    <summary className="cursor-pointer px-3 py-2 text-xs font-bold uppercase tracking-wider text-neutral/80">
+                      What USCIS actually said
+                    </summary>
+                    <p className="px-3 pb-3 text-sm text-neutral leading-relaxed">
+                      {theme.uscis_phrasing}
+                    </p>
+                  </details>
+                ) : null}
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 text-[11px] font-semibold text-neutral">
                     {theme.citation.replace(/^\[/, '').replace(/\]$/, '')}
