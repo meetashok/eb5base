@@ -1,24 +1,21 @@
 import { cookies } from 'next/headers';
 
 /**
- * When enabled, every public URL serves the maintenance page
- * (including /projects, /rc, /about, etc.).
+ * Optional site-wide maintenance gate for the project directory.
  *
- * Default: ON. Set MAINTENANCE_MODE=false to restore the directory for everyone.
- *
- * Private unlock (owner + counsel): set MAINTENANCE_BYPASS_SECRET and visit
- * https://eb5base.com/?access=YOUR_SECRET once. A cookie keeps access open.
- * Public visitors without the cookie still see the maintenance page.
+ * Default: OFF (site is public). Set MAINTENANCE_MODE=true to show the pause
+ * page on non-passthrough routes. Private unlock: MAINTENANCE_BYPASS_SECRET
+ * and visit /?access=YOUR_SECRET once (cookie lasts 30 days).
  */
 /** Cookie set after a valid ?access= unlock (also mirrored as eb5base_access=1). */
 export const MAINTENANCE_BYPASS_COOKIE = 'eb5_maint_bypass';
 
-/** Public-facing access flag from the site review (non-secret marker). */
+/** Public-facing access flag (non-secret marker). */
 export const EB5BASE_ACCESS_COOKIE = 'eb5base_access';
 
 export function isMaintenanceMode(): boolean {
   const raw = process.env.MAINTENANCE_MODE?.trim().toLowerCase();
-  if (raw == null || raw === '') return true;
+  if (raw == null || raw === '') return false;
   return raw === 'true' || raw === '1' || raw === 'yes' || raw === 'on';
 }
 

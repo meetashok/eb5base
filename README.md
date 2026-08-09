@@ -36,11 +36,11 @@ See [docs/PRIVATE_ACCESS.md](docs/PRIVATE_ACCESS.md).
 
 ## Maintenance mode
 
-The site defaults to a public maintenance page (all routes, including `/rc` and `/projects`).
+The site is public by default.
 
-- Leave `MAINTENANCE_MODE` unset, or set `MAINTENANCE_MODE=true`, to keep the directory offline for the public.
-- Set `MAINTENANCE_BYPASS_SECRET` and open `/?access=YOUR_SECRET` for private access.
-- Set `MAINTENANCE_MODE=false` only when you want the directory public again.
+- Leave `MAINTENANCE_MODE` unset, or set `MAINTENANCE_MODE=false`, for open access.
+- Set `MAINTENANCE_MODE=true` only if you need to pause the directory again.
+- With maintenance on, set `MAINTENANCE_BYPASS_SECRET` and open `/?access=YOUR_SECRET` for private unlock.
 
 ## Notes
 

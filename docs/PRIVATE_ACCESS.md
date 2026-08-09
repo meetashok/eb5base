@@ -1,15 +1,21 @@
 # Private access while public sees maintenance
 
+Use this only when you intentionally pause the directory again.
+
 Goal:
 - **Public** → branded maintenance page (no Cloudflare login wall)
 - **You + counsel** → open the real directory with one link (cookie lasts 30 days)
 
-Cloudflare Access on `eb5base.com` is **not** what we want for this. If you already enabled it, disable or delete that Access application so the public hits the maintenance page directly.
+Cloudflare Access on `eb5base.com` is **not** required. If you already enabled it, disable or delete that Access application so the public hits the site (or maintenance page) directly.
 
-## Setup
+## Current default
 
-1. Keep `MAINTENANCE_MODE` on (unset or `true`).
-2. In Vercel (or your host), add a long random secret:
+The app ships with **maintenance off** (`MAINTENANCE_MODE` unset or `false`). The site is open to everyone — no `?access=` code needed.
+
+## Re-enable a private pause
+
+1. Set `MAINTENANCE_MODE=true` in Vercel (or your host).
+2. Add a long random secret:
 
 ```bash
 MAINTENANCE_BYPASS_SECRET=some-long-random-string
@@ -22,7 +28,7 @@ MAINTENANCE_BYPASS_SECRET=some-long-random-string
 https://eb5base.com/?access=some-long-random-string
 ```
 
-Opening that link once sets an httpOnly cookie. After that, normal browsing on `eb5base.com` works for that browser. Public visitors without the cookie still see the pause page.
+Opening that link once sets an httpOnly cookie. After that, normal browsing on `eb5base.com` works for that browser. Public visitors without the cookie still see the pause page (except allowlisted public tools in middleware).
 
 ## Counsel invite (copy/paste)
 
@@ -36,11 +42,7 @@ Opening that link once sets an httpOnly cookie. After that, normal browsing on `
 2. Open the app that protects `eb5base.com`
 3. **Delete** it, or disable it
 
-After that, `https://eb5base.com` should show the maintenance page with **no** Cloudflare email prompt.
+## Restore / keep public access
 
-## Restore public access later
-
-When counsel says it is okay:
-
-1. Set `MAINTENANCE_MODE=false` and redeploy, **or** remove `MAINTENANCE_BYPASS_SECRET` and turn maintenance off.
+1. Set `MAINTENANCE_MODE=false` (or remove the variable) and redeploy.
 2. You do not need Cloudflare Access unless you want it for another reason.
