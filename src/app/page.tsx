@@ -41,14 +41,13 @@ export default function HomePage() {
           }}
         />
         <div className="max-w-6xl mx-auto px-4 py-16 md:py-24 text-center relative">
-          <p className="hero-eyebrow mb-4">
-            <BrandWordmark variant="on-light" className="font-semibold text-[1.05em]" />
-          </p>
+          <p className="hero-eyebrow mb-4">Community-built · Investor-led</p>
           <h1 className="text-4xl md:text-5xl font-bold hero-headline tracking-tight text-balance">
-            Clarity for every step of your EB-5 journey
+            Information tools for EB-5 investors
           </h1>
           <p className="mt-4 text-base md:text-lg text-neutral/70 max-w-2xl mx-auto leading-relaxed">
-            Practical tools to follow the rules, share case progress, and track what matters.
+            <BrandWordmark variant="on-light" className="font-semibold" /> helps potential and
+            existing investors make sense of EB-5 rules and case progress.
           </p>
           <p className="mt-3 text-sm font-medium text-amber-800 max-w-xl mx-auto leading-relaxed">
             Nothing here is legal or financial advice.
