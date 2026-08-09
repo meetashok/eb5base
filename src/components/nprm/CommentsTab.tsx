@@ -160,7 +160,7 @@ export default function CommentsTab({ comments, themes }: Props) {
 
                 <div className="space-y-1.5">
                   <p className="text-[11px] font-bold uppercase tracking-wider text-neutral/70">
-                    AI-generated summary
+                    AI generated summary
                   </p>
                   {ai ? (
                     <p className="text-sm text-neutral leading-relaxed">{ai}</p>
