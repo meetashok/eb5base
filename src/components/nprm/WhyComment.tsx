@@ -18,7 +18,6 @@ export default function WhyComment({
   why: NprmProposalWhyComment;
 }) {
   const title = plainDash(why.title || 'Why should an investor comment?');
-  const deadline = why.deadline || '2026-08-31';
   const reasons = why.reasons || [];
 
   return (
