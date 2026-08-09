@@ -13,18 +13,21 @@ const TOOLS = [
     title: 'Status Update',
     body: 'Draft a structured EB-5 status update from your milestones, preview it live, and share it with your community.',
     cta: 'Open Status Update',
+    comingSoon: false,
   },
   {
     href: '/nprm',
     title: 'NPRM Comment Guide',
     body: 'Plain-English explainer of the July 2026 EB-5 proposed rule, comment themes, and a prompt builder for regulations.gov.',
     cta: 'Open NPRM guide',
+    comingSoon: false,
   },
   {
     href: '/tracker',
     title: 'Case Tracker',
     body: 'Track USCIS case status for your petitions, get notified on changes, and learn from anonymized cohort insights.',
-    cta: 'Open Case Tracker',
+    cta: 'Preview Case Tracker',
+    comingSoon: true,
   },
 ];
 
@@ -59,8 +62,14 @@ export default function HomePage() {
             <Link href="/nprm" className="btn btn-outline rounded-full px-6">
               NPRM Comment Guide
             </Link>
-            <Link href="/tracker" className="btn btn-outline rounded-full px-6">
+            <Link
+              href="/tracker"
+              className="btn btn-outline rounded-full px-6 gap-2"
+            >
               Case Tracker
+              <span className="badge badge-sm rounded-full border-amber-300 bg-amber-50 text-amber-900 font-semibold normal-case tracking-normal">
+                Coming soon
+              </span>
             </Link>
           </div>
         </div>
@@ -80,8 +89,12 @@ export default function HomePage() {
               key={tool.href}
               className="rounded-2xl border-2 border-base-300 bg-base-100 p-6 shadow-soft flex flex-col text-left"
             >
-              <p className="text-[11px] uppercase tracking-wider font-bold mb-2 text-secondary">
-                Available now
+              <p
+                className={`text-[11px] uppercase tracking-wider font-bold mb-2 ${
+                  tool.comingSoon ? 'text-amber-800' : 'text-secondary'
+                }`}
+              >
+                {tool.comingSoon ? 'Coming soon' : 'Available now'}
               </p>
               <h3 className="text-xl font-bold text-primary">{tool.title}</h3>
               <p className="text-sm text-neutral/75 leading-relaxed mt-2 flex-1">{tool.body}</p>
