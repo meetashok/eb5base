@@ -68,7 +68,7 @@ export default function Navbar() {
     return (
       <Link
         href={href}
-        className={`px-3 py-2 text-sm font-medium transition-all duration-150 hover:text-accent ${
+        className={`px-2 lg:px-3 py-2 text-sm font-medium whitespace-nowrap transition-all duration-150 hover:text-accent ${
           active ? 'text-accent' : 'text-primary-content/90'
         }`}
       >
@@ -80,6 +80,23 @@ export default function Navbar() {
   const avatarUrl = resolveProfileAvatar(profile, user);
   const onboarded = Boolean(profile?.onboarding_complete);
   const caseTrackerHref = onboarded ? '/tracker/timeline' : '/tracker';
+
+  const mainLinks = (
+    <>
+      {navLink('/status', 'Status Update')}
+      {navLink(caseTrackerHref, 'Case Tracker')}
+      {onboarded && (
+        <>
+          {navLink('/tracker/timeline', 'Timeline')}
+          {navLink('/tracker/insights', 'Insights')}
+          {navLink('/tracker/settings', 'Settings')}
+        </>
+      )}
+      {navLink('/nprm', 'NPRM')}
+      {navLink('/resources', 'Resources')}
+      {navLink('/about', 'About')}
+    </>
+  );
 
   return (
     <header className="sticky top-0 z-50 bg-nav-gradient text-primary-content shadow-nav">
@@ -98,19 +115,8 @@ export default function Navbar() {
           </Link>
         </div>
 
-        <div className="navbar-center hidden md:flex gap-1">
-          {navLink('/status', 'Status Update')}
-          {navLink(caseTrackerHref, 'Case Tracker')}
-          {onboarded && (
-            <>
-              {navLink('/tracker/timeline', 'Timeline')}
-              {navLink('/tracker/insights', 'Insights')}
-              {navLink('/tracker/settings', 'Settings')}
-            </>
-          )}
-          {navLink('/nprm', 'NPRM')}
-          {navLink('/resources', 'Resources')}
-          {navLink('/about', 'About')}
+        <div className="navbar-center hidden md:flex flex-wrap justify-center gap-0.5">
+          {mainLinks}
         </div>
 
         <div className="navbar-end gap-2">
@@ -179,18 +185,7 @@ export default function Navbar() {
 
       {menuOpen && (
         <div className="md:hidden border-t border-primary-content/20 px-4 pb-4 flex flex-col">
-          {navLink('/status', 'Status Update')}
-          {navLink(caseTrackerHref, 'Case Tracker')}
-          {onboarded && (
-            <>
-              {navLink('/tracker/timeline', 'Timeline')}
-              {navLink('/tracker/insights', 'Insights')}
-              {navLink('/tracker/settings', 'Settings')}
-            </>
-          )}
-          {navLink('/nprm', 'NPRM')}
-          {navLink('/resources', 'Resources')}
-          {navLink('/about', 'About')}
+          {mainLinks}
         </div>
       )}
     </header>
