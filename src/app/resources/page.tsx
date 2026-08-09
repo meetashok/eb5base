@@ -62,9 +62,6 @@ export default function ResourcesPage() {
             </li>
           ))}
         </ul>
-        <p className="text-xs text-neutral/50 pt-4 leading-relaxed">
-          More resources will be added here over time.
-        </p>
       </div>
     </div>
   );
