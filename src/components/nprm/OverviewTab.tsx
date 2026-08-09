@@ -7,13 +7,11 @@ import type {
   NprmLastCheck,
   NprmProposalSummary,
   NprmStats,
-  NprmTheme,
 } from '@/lib/nprm/types';
 import {
   DOCKET_URL,
   FR_CITATION,
   RIN,
-  commentsSince,
   dailyVolume,
   formatLastPull,
 } from '@/lib/nprm/utils';
@@ -21,7 +19,6 @@ import { FEED_SHARE } from '@/lib/nprm/fetch';
 
 interface Props {
   stats: NprmStats;
-  themes: NprmTheme[];
   comments: NprmComment[];
   proposal: NprmProposalSummary | null;
   lastCheck: NprmLastCheck | null;
@@ -33,7 +30,6 @@ interface Props {
 
 export default function OverviewTab({
   stats,
-  themes,
   comments,
   proposal,
   lastCheck,
@@ -49,7 +45,6 @@ export default function OverviewTab({
     proposal?.comment_deadline ||
     'Aug 31, 2026 11:59 PM EDT';
   const lastPullLabel = formatLastPull(stats.last_pull);
-  const sinceAug3 = commentsSince(comments, '2026-08-03');
   const sourceUrl =
     proposal?.source_url ||
     'https://www.govinfo.gov/content/pkg/FR-2026-07-02/pdf/2026-13392.pdf';
@@ -220,43 +215,12 @@ export default function OverviewTab({
         <div>
           <h3 className="text-lg font-bold text-primary">Comment tracker</h3>
           <p className="text-sm text-neutral mt-1 leading-relaxed">
-            Live docket volume while you read the proposal itself above.
+            <span className="font-semibold text-primary tabular-nums">
+              {stats.total_comments} comments
+            </span>
+            <span className="text-neutral/50 mx-1.5">·</span>
+            Last pull {lastPullLabel}
           </p>
-        </div>
-
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-xl border-2 border-base-300 bg-base-100 px-4 py-4 shadow-soft">
-            <p className="text-[11px] uppercase tracking-wider text-neutral/70 font-bold">
-              Total comments
-            </p>
-            <p className="mt-1 text-3xl font-bold text-primary tabular-nums leading-none">
-              {stats.total_comments}
-            </p>
-          </div>
-          <div className="rounded-xl border-2 border-base-300 bg-base-100 px-4 py-4 shadow-soft">
-            <p className="text-[11px] uppercase tracking-wider text-neutral/70 font-bold">
-              Since Aug 3
-            </p>
-            <p className="mt-1 text-3xl font-bold text-primary tabular-nums leading-none">
-              +{sinceAug3}
-            </p>
-          </div>
-          <div className="rounded-xl border-2 border-base-300 bg-base-100 px-4 py-4 shadow-soft">
-            <p className="text-[11px] uppercase tracking-wider text-neutral/70 font-bold">
-              Comment themes
-            </p>
-            <p className="mt-1 text-3xl font-bold text-primary tabular-nums leading-none">
-              {themes.length}
-            </p>
-          </div>
-          <div className="rounded-xl border-2 border-base-300 bg-base-100 px-4 py-4 shadow-soft">
-            <p className="text-[11px] uppercase tracking-wider text-neutral/70 font-bold">
-              Last pull
-            </p>
-            <p className="mt-1 text-sm font-semibold text-neutral tabular-nums leading-snug">
-              {lastPullLabel}
-            </p>
-          </div>
         </div>
 
         <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">

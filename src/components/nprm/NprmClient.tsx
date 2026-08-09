@@ -138,7 +138,6 @@ export default function NprmClient({
         {active === 'overview' && (
           <OverviewTab
             stats={data.stats}
-            themes={data.themes}
             comments={data.comments}
             proposal={data.proposal}
             lastCheck={data.lastCheck}
