@@ -131,8 +131,8 @@ export default function CommentsTab({ comments, themes }: Props) {
 
           return (
             <li key={comment.id}>
-              <article className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-3">
-                <header className="space-y-1">
+              <article className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-2.5">
+                <header className="space-y-1.5">
                   <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                     <a
                       href={source}
@@ -146,52 +146,42 @@ export default function CommentsTab({ comments, themes }: Props) {
                       ({poster})
                     </span>
                   </div>
-                  <p className="text-xs font-medium text-neutral/75">
-                    Submitted {formatShortDate(comment.attributes?.postedDate)}
-                  </p>
-                </header>
-
-                <div className="grid gap-3 sm:grid-cols-1">
-                  <div className="rounded-lg border-2 border-base-300 bg-base-200/60 p-3">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-neutral/70 mb-1.5">
-                      Theme
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+                    <p className="text-xs font-medium text-neutral/75">
+                      Submitted {formatShortDate(comment.attributes?.postedDate)}
                     </p>
                     {theme ? (
-                      <p className="text-sm font-semibold text-primary leading-snug">
+                      <span className="inline-flex max-w-full items-center rounded-md border border-secondary/35 bg-secondary/10 px-2 py-0.5 text-[11px] font-semibold text-secondary leading-snug">
                         {theme}
-                      </p>
-                    ) : (
-                      <p className="text-sm text-neutral leading-relaxed">
-                        No theme assigned for this comment yet.
-                      </p>
-                    )}
+                      </span>
+                    ) : null}
                   </div>
+                </header>
 
-                  <div className="rounded-lg border-2 border-info/35 bg-info/5 p-3">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-info mb-1.5">
-                      AI-generated summary
+                <div className="space-y-1.5">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-neutral/70">
+                    AI-generated summary
+                  </p>
+                  {ai ? (
+                    <p className="text-sm text-neutral leading-relaxed">{ai}</p>
+                  ) : (
+                    <p className="text-sm text-neutral leading-relaxed">
+                      No summary available for this comment yet.
                     </p>
-                    {ai ? (
-                      <p className="text-sm text-neutral leading-relaxed">{ai}</p>
-                    ) : (
-                      <p className="text-sm text-neutral leading-relaxed">
-                        No summary available for this comment yet.
-                      </p>
-                    )}
-                    <p className="text-xs text-neutral mt-2 leading-relaxed">
-                      This summary may be incomplete or inaccurate. Please read
-                      the{' '}
-                      <a
-                        href={source}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-semibold text-secondary underline underline-offset-2"
-                      >
-                        original comment on regulations.gov
-                      </a>{' '}
-                      to verify.
-                    </p>
-                  </div>
+                  )}
+                  <p className="text-xs leading-relaxed text-amber-800 bg-amber-50 border border-amber-200/80 rounded-md px-2.5 py-1.5">
+                    This summary may be incomplete or inaccurate. Please read
+                    the{' '}
+                    <a
+                      href={source}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold text-amber-900 underline underline-offset-2"
+                    >
+                      original comment on regulations.gov
+                    </a>{' '}
+                    to verify.
+                  </p>
                 </div>
               </article>
             </li>
