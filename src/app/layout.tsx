@@ -61,11 +61,19 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="eb5base">
       <body className={`${jakarta.variable} font-sans antialiased min-h-screen flex flex-col`}>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:rounded-md focus:bg-base-100 focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-primary focus:shadow-soft focus:outline focus:outline-2 focus:outline-secondary"
+        >
+          Skip to content
+        </a>
         <ToastProvider>
           <AuthPromptProvider>
             <BetaBanner />
             <Navbar />
-            <main className="flex-1 page-enter">{children}</main>
+            <main id="main-content" className="flex-1 page-enter" tabIndex={-1}>
+              {children}
+            </main>
             <Footer />
           </AuthPromptProvider>
         </ToastProvider>

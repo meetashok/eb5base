@@ -15,6 +15,7 @@ import {
   RIN,
   dailyVolume,
   formatLastPull,
+  plainDash,
 } from '@/lib/nprm/utils';
 import { FEED_SHARE } from '@/lib/nprm/fetch';
 
@@ -25,8 +26,29 @@ interface Props {
   lastCheck: NprmLastCheck | null;
   feedSource: 'remote' | 'local';
   onThemes: () => void;
+  onComments: () => void;
   onWrite: () => void;
   onAbout: () => void;
+}
+
+function Chevron({ open }: { open?: boolean }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className={`h-5 w-5 shrink-0 text-neutral/50 transition-transform ${
+        open ? 'rotate-180' : ''
+      }`}
+      aria-hidden
+    >
+      <path
+        fillRule="evenodd"
+        d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
 }
 
 export default function OverviewTab({
@@ -36,6 +58,7 @@ export default function OverviewTab({
   lastCheck,
   feedSource,
   onThemes,
+  onComments,
   onWrite,
   onAbout,
 }: Props) {
@@ -49,6 +72,7 @@ export default function OverviewTab({
   const sourceUrl =
     proposal?.source_url ||
     'https://www.govinfo.gov/content/pkg/FR-2026-07-02/pdf/2026-13392.pdf';
+  const frHtml = 'https://www.federalregister.gov/d/2026-13392';
   const short = proposal?.short_summary;
   const longThemes = proposal?.long_summary_by_theme ?? [];
   const whyComment = proposal?.why_comment || proposal?.why_participate;
@@ -62,21 +86,25 @@ export default function OverviewTab({
               NPRM explainer
             </p>
             <h2 className="text-xl md:text-2xl font-bold text-primary leading-tight">
-              {short?.title || 'What USCIS proposes - in plain English'}
+              {short?.title ? plainDash(short.title) : 'What USCIS proposes - in plain English'}
             </h2>
             <p className="text-sm sm:text-[0.95rem] text-neutral leading-relaxed">
-              {short?.text ||
-                'Plain-language summary of Docket USCIS-2026-0100 is loading from the public feed. Open the Federal Register PDF for the official text.'}
+              {short?.text
+                ? plainDash(short.text)
+                : 'Plain-language summary of Docket USCIS-2026-0100 is loading from the public feed. Open the Federal Register PDF for the official text.'}
             </p>
             {short?.citations?.length ? (
               <div className="flex flex-wrap gap-2">
                 {short.citations.map((c) => (
-                  <span
+                  <a
                     key={c}
-                    className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 text-[11px] font-semibold text-neutral"
+                    href={frHtml}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 text-[11px] font-semibold text-neutral hover:border-secondary/50 hover:text-secondary"
                   >
-                    {c.replace(/^\[/, '').replace(/\]$/, '')}
-                  </span>
+                    {plainDash(c.replace(/^\[/, '').replace(/\]$/, ''))}
+                  </a>
                 ))}
               </div>
             ) : null}
@@ -97,7 +125,7 @@ export default function OverviewTab({
                 {FR_CITATION}
               </span>
               <span className="inline-flex items-center rounded-md border border-secondary/40 bg-secondary/10 px-2.5 py-1 font-semibold text-secondary">
-                Comments due Aug 31 2026
+                {stats.total_comments} comments tracked · last pull {lastPullLabel}
               </span>
             </div>
             <div className="flex flex-wrap gap-2 pt-1">
@@ -110,6 +138,14 @@ export default function OverviewTab({
                 Read full 358-page proposal PDF
               </a>
               <a
+                href={frHtml}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-sm btn-outline border-neutral/30"
+              >
+                Federal Register HTML
+              </a>
+              <a
                 href={DOCKET_URL}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -119,16 +155,14 @@ export default function OverviewTab({
               </a>
             </div>
             {proposal?.plain_language_note ? (
-              <p className="text-xs text-neutral/80 leading-relaxed">
-                {proposal.plain_language_note}
+              <p className="text-xs text-neutral/80 leading-relaxed rounded-md border border-amber-200/80 bg-amber-50 px-2.5 py-1.5 text-amber-900">
+                {plainDash(proposal.plain_language_note)}
               </p>
             ) : null}
           </div>
           <CountdownBadge endsLabel={ends} />
         </div>
       </header>
-
-      {whyComment ? <WhyComment why={whyComment} /> : null}
 
       <section className="space-y-3" id="proposal-themes">
         <div className="flex flex-wrap items-end justify-between gap-3">
@@ -152,18 +186,22 @@ export default function OverviewTab({
               key={theme.theme_id}
               className="group rounded-xl border-2 border-base-300 bg-base-100 shadow-sm open:shadow-soft"
             >
-              <summary className="cursor-pointer list-none px-4 py-3 sm:px-5 sm:py-3.5 flex items-start justify-between gap-3">
+              <summary className="cursor-pointer list-none px-4 py-3 sm:px-5 sm:py-3.5 flex items-start justify-between gap-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary rounded-xl">
                 <span className="font-semibold text-primary text-sm sm:text-base leading-snug">
-                  {theme.title}
+                  {plainDash(theme.title)}
                 </span>
-                <span className="shrink-0 text-xs font-bold uppercase tracking-wider text-neutral/60 group-open:text-secondary mt-0.5">
-                  <span className="group-open:hidden">Open</span>
-                  <span className="hidden group-open:inline">Close</span>
+                <span className="mt-0.5 shrink-0" aria-hidden>
+                  <span className="group-open:hidden">
+                    <Chevron />
+                  </span>
+                  <span className="hidden group-open:inline">
+                    <Chevron open />
+                  </span>
                 </span>
               </summary>
               <div className="px-4 pb-4 sm:px-5 sm:pb-5 space-y-3 border-t border-base-300/80 pt-3">
                 <p className="text-sm text-neutral leading-relaxed">
-                  {theme.plain_text}
+                  {plainDash(theme.plain_text)}
                 </p>
                 {theme.uscis_phrasing ? (
                   <details className="rounded-lg border border-base-300 bg-base-200/50">
@@ -171,16 +209,16 @@ export default function OverviewTab({
                       What USCIS actually said
                     </summary>
                     <p className="px-3 pb-3 text-sm text-neutral leading-relaxed">
-                      {theme.uscis_phrasing}
+                      {plainDash(theme.uscis_phrasing)}
                     </p>
                   </details>
                 ) : null}
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 text-[11px] font-semibold text-neutral">
-                    {theme.citation.replace(/^\[/, '').replace(/\]$/, '')}
+                    {plainDash(theme.citation.replace(/^\[/, '').replace(/\]$/, ''))}
                   </span>
                   <a
-                    href={theme.source_link || sourceUrl}
+                    href={theme.source_link || frHtml}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center rounded-md border border-secondary/40 bg-secondary/10 px-2.5 py-1 text-[11px] font-semibold text-secondary hover:bg-secondary/15"
@@ -199,6 +237,14 @@ export default function OverviewTab({
           )}
         </div>
       </section>
+
+      {whyComment ? (
+        <WhyComment
+          why={whyComment}
+          onThemes={onThemes}
+          onComments={onComments}
+        />
+      ) : null}
 
       <div className="flex flex-col sm:flex-row gap-2">
         <button
@@ -248,7 +294,7 @@ export default function OverviewTab({
             <span className="font-semibold">
               {feedSource === 'remote' ? 'live' : 'local seed'}
             </span>
-            . Explainer cites FR Doc 2026-13392. Public data:{' '}
+            . Explainer cites FR Doc 2026-13392. Public JSON (CORS):{' '}
             <a
               href={FEED_SHARE}
               target="_blank"

@@ -7,6 +7,7 @@ import {
 
 const FTC_PARTICIPATION =
   'https://www.ftc.gov/news-events/topics/competition-enforcement/public-participation';
+const FR_HTML = 'https://www.federalregister.gov/d/2026-13392';
 
 function citeLabel(raw: string): string {
   return plainDash(raw.replace(/^\[/, '').replace(/\]$/, ''));
@@ -14,8 +15,12 @@ function citeLabel(raw: string): string {
 
 export default function WhyComment({
   why,
+  onThemes,
+  onComments,
 }: {
   why: NprmProposalWhyComment;
+  onThemes?: () => void;
+  onComments?: () => void;
 }) {
   const title = plainDash(why.title || 'Why should an investor comment?');
   const reasons = why.reasons || [];
@@ -39,12 +44,15 @@ export default function WhyComment({
           {why.citations_intro?.length ? (
             <div className="flex flex-wrap gap-2">
               {why.citations_intro.map((c) => (
-                <span
+                <a
                   key={c}
-                  className="inline-flex items-center rounded-md border border-base-300 bg-base-100 px-2 py-0.5 text-[10px] font-semibold text-neutral/80"
+                  href={FR_HTML}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center rounded-md border border-base-300 bg-base-100 px-2 py-0.5 text-[10px] font-semibold text-neutral/80 hover:border-secondary/50 hover:text-secondary"
                 >
                   {citeLabel(c)}
-                </span>
+                </a>
               ))}
             </div>
           ) : null}
@@ -62,7 +70,7 @@ export default function WhyComment({
         </a>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {reasons.map((reason) => (
           <article
             key={reason.id}
@@ -77,17 +85,49 @@ export default function WhyComment({
             {reason.citations?.length ? (
               <div className="flex flex-wrap gap-1.5 pt-0.5">
                 {reason.citations.map((c) => (
-                  <span
+                  <a
                     key={c}
-                    className="inline-flex items-center rounded-md border border-base-300 bg-base-200/70 px-2 py-0.5 text-[10px] font-medium text-neutral/75"
+                    href={FR_HTML}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center rounded-md border border-base-300 bg-base-200/70 px-2 py-0.5 text-[10px] font-medium text-neutral/75 hover:border-secondary/50 hover:text-secondary"
                   >
                     {citeLabel(c)}
-                  </span>
+                  </a>
                 ))}
               </div>
             ) : null}
           </article>
         ))}
+      </div>
+
+      <div className="flex flex-col sm:flex-row flex-wrap gap-2">
+        {onThemes ? (
+          <button
+            type="button"
+            onClick={onThemes}
+            className="btn btn-sm btn-outline border-neutral/30"
+          >
+            Read 12 themes →
+          </button>
+        ) : null}
+        {onComments ? (
+          <button
+            type="button"
+            onClick={onComments}
+            className="btn btn-sm btn-outline border-neutral/30"
+          >
+            Browse comments →
+          </button>
+        ) : null}
+        <a
+          href={COMMENT_ON_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn btn-sm btn-primary text-primary-content"
+        >
+          File on regulations.gov (3 min)
+        </a>
       </div>
 
       {why.how_it_works ? (

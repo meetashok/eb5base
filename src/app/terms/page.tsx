@@ -17,7 +17,7 @@ export default function TermsPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
       <h1 className="text-3xl font-bold text-primary mb-2">Terms of Service</h1>
-      <p className="text-sm text-neutral/50 mb-8">Last updated: July 11, 2026</p>
+      <p className="text-sm text-neutral/50 mb-8">Last updated: August 10, 2026</p>
 
       <div className="space-y-10">
         <Section title="Agreement">
@@ -42,9 +42,11 @@ export default function TermsPage() {
 
         <Section title="What EB5 Base is">
           <p>
-            EB5 Base is a community-maintained directory of EB-5 regional center projects. The
-            site helps investors browse projects, confirm subscription status, and share factual
-            information with the community.
+            EB5 Base provides informational tools for EB-5 investors, including a
+            plain-language NPRM explainer and comment guide, a status update
+            builder for sharing milestones with the community, and a forthcoming
+            case tracker. Some directory features remain paused while we review
+            legal and compliance questions.
           </p>
           <p>{DISCLAIMER}</p>
         </Section>

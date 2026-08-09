@@ -51,6 +51,7 @@ export default function StatusUpdateEmbed() {
 
   return (
     <div className="w-full pb-8">
+      <p className="sr-only">Loading status builder…</p>
       <iframe
         ref={iframeRef}
         title="EB-5 Status Update Builder"

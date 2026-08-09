@@ -24,8 +24,9 @@ export default function MaintenancePage() {
           Project directory is offline
         </h1>
         <p className="mt-4 text-base md:text-lg text-neutral/70 leading-relaxed">
-          We took the project directory offline while we review legal and compliance
-          questions with counsel. Other EB5 Base tools below remain available.
+          We paused public listings in Aug 2026 pending counsel review. Other EB5 Base
+          tools below remain available. If you need a 100–200 investor feedback cohort,
+          email us — we will share an ETA when listings can return.
         </p>
 
         <div className="mt-8 flex flex-col sm:flex-row gap-2 justify-center">

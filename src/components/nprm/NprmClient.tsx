@@ -143,6 +143,7 @@ export default function NprmClient({
             lastCheck={data.lastCheck}
             feedSource={data.feedSource}
             onThemes={() => setTab('themes')}
+            onComments={() => setTab('comments')}
             onWrite={() => setTab('write')}
             onAbout={() => setTab('about')}
           />
