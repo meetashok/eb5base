@@ -7,6 +7,7 @@ import {
   formatLastPull,
   formatShortDate,
   parsePoster,
+  plainDash,
 } from '@/lib/nprm/utils';
 
 type PosterFilter = 'all' | 'anonymous' | 'named' | 'org';
@@ -20,6 +21,11 @@ interface Props {
 function commentNumber(id: string): number {
   const m = id.match(/(\d+)$/);
   return m ? Number(m[1]) : 0;
+}
+
+function shortId(id: string): string {
+  const m = id.match(/(\d+)$/);
+  return m ? `#${m[1]}` : id;
 }
 
 function themeLabel(
@@ -42,31 +48,63 @@ export default function CommentsTab({
 }: Props) {
   const [themeFilter, setThemeFilter] = useState<string>('all');
   const [posterFilter, setPosterFilter] = useState<PosterFilter>('all');
+  const [query, setQuery] = useState('');
   const lastPullLabel = formatLastPull(lastPull);
 
+  const themeOptions = useMemo(() => {
+    const counts = new Map<string, { id: string; label: string; count: number }>();
+    for (const c of comments) {
+      const id = c.themeId || 'unknown';
+      const label = themeLabel(c, themes) || id;
+      const prev = counts.get(id);
+      if (prev) prev.count += 1;
+      else counts.set(id, { id, label, count: 1 });
+    }
+    return [
+      { id: 'all', label: `All themes (${comments.length})` },
+      ...Array.from(counts.values())
+        .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label))
+        .map((t) => ({ id: t.id, label: `${t.label} (${t.count})` })),
+    ];
+  }, [comments, themes]);
+
   const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
     const list = comments.filter((c) => {
       const { posterType } = parsePoster(c.attributes?.title);
       if (posterFilter !== 'all' && posterType !== posterFilter) return false;
-      if (themeFilter !== 'all' && c.themeId !== themeFilter) return false;
+      if (themeFilter !== 'all' && (c.themeId || 'unknown') !== themeFilter) {
+        return false;
+      }
+      if (q) {
+        const ai = (c.aiSummary || c.attributes?.aiSummary || '').toLowerCase();
+        const title = (c.attributes?.title || '').toLowerCase();
+        const id = c.id.toLowerCase();
+        const theme = (themeLabel(c, themes) || '').toLowerCase();
+        if (
+          !ai.includes(q) &&
+          !title.includes(q) &&
+          !id.includes(q) &&
+          !theme.includes(q)
+        ) {
+          return false;
+        }
+      }
       return true;
     });
-    // Highest comment number first (later filings get higher IDs).
-    return [...list].sort(
-      (a, b) => commentNumber(b.id) - commentNumber(a.id)
-    );
-  }, [comments, posterFilter, themeFilter]);
+    return [...list].sort((a, b) => {
+      const dateA = a.attributes?.postedDate || '';
+      const dateB = b.attributes?.postedDate || '';
+      if (dateA !== dateB) return dateB.localeCompare(dateA);
+      return commentNumber(b.id) - commentNumber(a.id);
+    });
+  }, [comments, posterFilter, query, themeFilter, themes]);
 
   const posterOptions: { id: PosterFilter; label: string }[] = [
     { id: 'all', label: 'All posters' },
     { id: 'anonymous', label: 'Anonymous' },
     { id: 'named', label: 'Named person' },
     { id: 'org', label: 'Organization' },
-  ];
-
-  const themeOptions = [
-    { id: 'all', label: 'All themes' },
-    ...themes.map((t) => ({ id: t.id, label: t.title })),
   ];
 
   function filterBtnClass(active: boolean) {
@@ -81,21 +119,53 @@ export default function CommentsTab({
     <div className="space-y-6 animate-[fadeIn_0.35s_ease-out]">
       <div className="space-y-2 max-w-2xl">
         <h2 className="text-xl font-bold text-primary">
-          Comments ({filtered.length})
+          Comments ({filtered.length}
+          {filtered.length !== comments.length ? ` of ${comments.length}` : ''})
         </h2>
         <p className="text-sm text-neutral leading-relaxed">
-          This page summarizes comments submitted so far on Docket
-          USCIS-2026-0100. For the full comment text, open the linked filing on
-          regulations.gov. Comments are sorted by comment number, newest ID
-          first. Data as of last pull: {lastPullLabel}.
+          Summaries of comments filed on Docket USCIS-2026-0100. Sorted by
+          posted date, newest first. Data as of last pull: {lastPullLabel}.
         </p>
         <p className="text-xs leading-relaxed text-amber-800 bg-amber-50 border border-amber-200/80 rounded-md px-2.5 py-1.5">
-          Warning: this list may be incomplete. Latest data pulled as of{' '}
-          {lastPullLabel}. Check regulations.gov for any newer filings.
+          AI summaries are for browsing only and may be incomplete. Always verify
+          against the original filing on regulations.gov (Verify link on each
+          card). This list may lag newer filings after {lastPullLabel}. Source:
+          regulations.gov via api.data.gov.
         </p>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-3 sticky top-[7.5rem] z-30 -mx-1 px-1 py-2 bg-base-100/95 backdrop-blur-sm border-b border-base-300/60">
+        <div>
+          <label
+            htmlFor="nprm-comment-search"
+            className="text-[11px] uppercase tracking-wider font-bold text-neutral/70 mb-1.5 block"
+          >
+            Search
+          </label>
+          <div className="flex flex-wrap gap-2 items-center">
+            <input
+              id="nprm-comment-search"
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Keyword, ID, or theme (e.g. bridge, sustainment)"
+              className="input input-sm input-bordered w-full max-w-md bg-base-100 focus:outline-secondary"
+            />
+            {(themeFilter !== 'all' || posterFilter !== 'all' || query) && (
+              <button
+                type="button"
+                className="btn btn-xs btn-ghost"
+                onClick={() => {
+                  setThemeFilter('all');
+                  setPosterFilter('all');
+                  setQuery('');
+                }}
+              >
+                Clear filters
+              </button>
+            )}
+          </div>
+        </div>
         <div>
           <p className="text-[11px] uppercase tracking-wider font-bold text-neutral/70 mb-1.5">
             Theme
@@ -145,7 +215,10 @@ export default function CommentsTab({
             <li key={comment.id}>
               <article className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-2.5">
                 <header className="space-y-1.5">
-                  <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <span className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2 py-0.5 font-mono text-[11px] font-bold text-neutral">
+                      {shortId(comment.id)}
+                    </span>
                     <a
                       href={source}
                       target="_blank"
@@ -164,9 +237,17 @@ export default function CommentsTab({
                     </p>
                     {theme ? (
                       <span className="inline-flex max-w-full items-center rounded-md border border-secondary/35 bg-secondary/10 px-2 py-0.5 text-[11px] font-semibold text-secondary leading-snug">
-                        {theme}
+                        {plainDash(theme)}
                       </span>
                     ) : null}
+                    <a
+                      href={source}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] font-semibold text-secondary underline underline-offset-2"
+                    >
+                      Verify ↗
+                    </a>
                   </div>
                 </header>
 
@@ -175,25 +256,14 @@ export default function CommentsTab({
                     AI generated summary
                   </p>
                   {ai ? (
-                    <p className="text-sm text-neutral leading-relaxed">{ai}</p>
+                    <p className="text-sm text-neutral leading-relaxed">
+                      {plainDash(ai)}
+                    </p>
                   ) : (
                     <p className="text-sm text-neutral leading-relaxed">
                       No summary available for this comment yet.
                     </p>
                   )}
-                  <p className="text-xs leading-relaxed text-amber-800 bg-amber-50 border border-amber-200/80 rounded-md px-2.5 py-1.5">
-                    This summary may be incomplete or inaccurate. Please read
-                    the{' '}
-                    <a
-                      href={source}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-semibold text-amber-900 underline underline-offset-2"
-                    >
-                      original comment on regulations.gov
-                    </a>{' '}
-                    to verify.
-                  </p>
                 </div>
               </article>
             </li>
@@ -202,10 +272,16 @@ export default function CommentsTab({
       </ul>
 
       {filtered.length === 0 && (
-        <p className="text-sm text-neutral">
-          No comments match these filters.
+        <p className="text-sm text-neutral rounded-xl border-2 border-dashed border-base-300 p-4">
+          No comments match that filter. Clear filters to see all filings.
         </p>
       )}
+
+      <p className="text-xs text-neutral/70 leading-relaxed border-t border-base-300 pt-4">
+        Source: regulations.gov via api.data.gov · Live feed · Titles from
+        regulations.gov · Last pull {lastPullLabel}. Official filings may be newer —
+        always check the docket.
+      </p>
     </div>
   );
 }

@@ -20,9 +20,14 @@ export function commentUrl(commentId: string): string {
   return `https://www.regulations.gov/comment/${commentId}`;
 }
 
-/** Strip em/en dashes from feed copy for display (site style rule). */
+/** Strip em/en dashes and leaked citation artifacts from feed copy. */
 export function plainDash(text: string): string {
-  return text.replace(/\u2014|\u2013/g, '-');
+  return text
+    .replace(/\u2014|\u2013/g, '-')
+    .replace(/【[^】]*】/g, '')
+    .replace(/\u2020/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
 }
 
 export function parsePoster(title?: string): {
@@ -145,12 +150,19 @@ export function formatShortDate(iso?: string): string {
   if (!iso) return 'n/a';
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso.slice(0, 10);
-  return d.toLocaleDateString('en-US', {
+  const date = d.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
     timeZone: 'UTC',
   });
+  const time = d.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    timeZone: 'UTC',
+  });
+  return `${date} · ${time} UTC`;
 }
 
 export function countdownParts(now = new Date()): {

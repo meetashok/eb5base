@@ -2,25 +2,27 @@ import Link from 'next/link';
 import { BrandWordmark } from '@/components/Logo';
 
 export const metadata = {
-  title: 'EB5 Base - Information for EB-5 investors',
+  title: 'EB5 Base - Home',
   description:
-    'Practical tools for EB-5 investors: status update builder, NPRM comment guide, and case tracker. Nothing here is legal or financial advice.',
+    'Investor-built tools for EB-5: plain-English NPRM explainer (comments due Aug 31 2026), status update builder, and forthcoming case tracker. Nothing here is legal or financial advice.',
 };
 
 const TOOLS = [
+  {
+    href: '/nprm',
+    title: 'NPRM Comment Guide',
+    body: 'Plain-English explainer of the July 2026 EB-5 proposed rule, 12 themes, and 48 public comments — comments close Aug 31.',
+    cta: 'Read explainer — 5 min',
+    comingSoon: false,
+    primary: true,
+  },
   {
     href: '/status',
     title: 'Status Update',
     body: 'Draft a structured EB-5 status update from your milestones, preview it live, and share it with your community.',
     cta: 'Open Status Update',
     comingSoon: false,
-  },
-  {
-    href: '/nprm',
-    title: 'NPRM Comment Guide',
-    body: 'Plain-English explainer of the July 2026 EB-5 proposed rule, comment themes, and a prompt builder for regulations.gov.',
-    cta: 'Open NPRM guide',
-    comingSoon: false,
+    primary: false,
   },
   {
     href: '/tracker',
@@ -28,6 +30,7 @@ const TOOLS = [
     body: 'Track USCIS case status for your petitions, get notified on changes, and learn from anonymized cohort insights.',
     cta: 'Preview Case Tracker',
     comingSoon: true,
+    primary: false,
   },
 ];
 
@@ -49,18 +52,20 @@ export default function HomePage() {
             Information tools for EB-5 investors
           </h1>
           <p className="mt-4 text-base md:text-lg text-neutral/70 max-w-2xl mx-auto leading-relaxed">
-            <BrandWordmark variant="on-light" className="font-semibold" /> helps potential and
-            existing investors make sense of EB-5 rules and case progress.
+            <BrandWordmark variant="on-light" className="font-semibold" /> is a free,
+            investor-built library that translates USCIS rules into plain English, tracks case
+            milestones, and helps you comment on policy before it finalizes. Focus: RIA
+            implementation NPRM open until Aug 31 2026.
           </p>
           <p className="mt-3 text-sm font-medium text-amber-800 max-w-xl mx-auto leading-relaxed">
             Nothing here is legal or financial advice.
           </p>
           <div className="flex flex-wrap gap-3 justify-center mt-8">
+            <Link href="/nprm" className="btn btn-primary text-primary-content rounded-full px-6">
+              Read NPRM explainer
+            </Link>
             <Link href="/status" className="btn btn-outline rounded-full px-6">
               Status Update
-            </Link>
-            <Link href="/nprm" className="btn btn-outline rounded-full px-6">
-              NPRM Comment Guide
             </Link>
             <span className="relative inline-flex">
               <Link href="/tracker" className="btn btn-outline rounded-full px-6">
@@ -71,6 +76,22 @@ export default function HomePage() {
               </span>
             </span>
           </div>
+        </div>
+      </section>
+
+      <section className="max-w-6xl mx-auto px-4 -mt-4 md:-mt-6 relative z-10">
+        <div className="rounded-xl border-2 border-base-300 bg-base-100 px-4 py-3 sm:px-5 sm:py-3.5 shadow-soft text-center sm:text-left">
+          <p className="text-xs sm:text-sm text-neutral leading-relaxed">
+            <span className="font-semibold text-primary">Docket USCIS-2026-0100</span>
+            <span className="text-neutral/40 mx-1.5">·</span>
+            FR Doc 2026-13392
+            <span className="text-neutral/40 mx-1.5">·</span>
+            48 comments tracked
+            <span className="text-neutral/40 mx-1.5">·</span>
+            Last checked Aug 9 1:30pm IST
+            <span className="text-neutral/40 mx-1.5">·</span>
+            Source: regulations.gov via api.data.gov / live JSON feed (CORS)
+          </p>
         </div>
       </section>
 
@@ -86,23 +107,42 @@ export default function HomePage() {
           {TOOLS.map((tool) => (
             <article
               key={tool.href}
-              className="rounded-2xl border-2 border-base-300 bg-base-100 p-6 shadow-soft flex flex-col text-left"
+              className={`rounded-2xl border-2 bg-base-100 p-6 shadow-soft flex flex-col text-left ${
+                tool.primary ? 'border-secondary/50 ring-1 ring-secondary/20' : 'border-base-300'
+              }`}
             >
               <p
                 className={`text-[11px] uppercase tracking-wider font-bold mb-2 ${
-                  tool.comingSoon ? 'text-amber-800' : 'text-secondary'
+                  tool.comingSoon
+                    ? 'text-amber-900'
+                    : tool.primary
+                      ? 'text-secondary'
+                      : 'text-neutral/70'
                 }`}
               >
-                {tool.comingSoon ? 'Coming soon' : 'Available now'}
+                {tool.comingSoon ? 'Coming soon' : tool.primary ? 'Urgent · Available now' : 'Available now'}
               </p>
               <h3 className="text-xl font-bold text-primary">{tool.title}</h3>
               <p className="text-sm text-neutral/75 leading-relaxed mt-2 flex-1">{tool.body}</p>
-              <Link
-                href={tool.href}
-                className="btn btn-sm btn-outline rounded-full mt-5 self-start"
-              >
-                {tool.cta}
-              </Link>
+              {tool.comingSoon ? (
+                <a
+                  href="mailto:hello@eb5base.com?subject=Case%20Tracker%20notify%20me"
+                  className="btn btn-sm btn-outline rounded-full mt-5 self-start border-neutral/30"
+                >
+                  Notify me
+                </a>
+              ) : (
+                <Link
+                  href={tool.href}
+                  className={`btn btn-sm rounded-full mt-5 self-start ${
+                    tool.primary
+                      ? 'btn-primary text-primary-content'
+                      : 'btn-outline'
+                  }`}
+                >
+                  {tool.cta}
+                </Link>
+              )}
             </article>
           ))}
         </div>

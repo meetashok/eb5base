@@ -9,12 +9,21 @@ import type { User } from '@supabase/supabase-js';
 import type { Profile } from '@/lib/types';
 import { resolveProfileAvatar } from '@/lib/profile-avatar';
 
+const TOOLS_LINKS = [
+  { href: '/', label: 'Home', match: 'exact' as const },
+  { href: '/nprm', label: 'NPRM Explainer', match: 'nprm-overview' as const },
+  { href: '/nprm/comments', label: 'Comments', match: 'prefix' as const },
+  { href: '/status', label: 'Status Update', match: 'prefix' as const },
+  { href: '/about', label: 'About', match: 'prefix' as const },
+] as const;
+
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -52,6 +61,7 @@ export default function Navbar() {
 
   useEffect(() => {
     setMenuOpen(false);
+    setToolsOpen(false);
   }, [pathname]);
 
   async function handleSignOut() {
@@ -61,18 +71,30 @@ export default function Navbar() {
     router.refresh();
   }
 
-  const navLink = (href: string, label: string, exact = false) => {
-    const active = exact
-      ? pathname === href
-      : pathname === href || (href !== '/' && pathname.startsWith(href));
+  const isActive = (href: string, match: 'exact' | 'prefix' | 'nprm-overview' = 'prefix') => {
+    if (match === 'exact') return pathname === href;
+    if (match === 'nprm-overview') {
+      return pathname === '/nprm' || pathname === '/nprm/';
+    }
+    return pathname === href || (href !== '/' && pathname.startsWith(href));
+  };
+
+  const navLink = (href: string, label: string, match: 'exact' | 'prefix' = 'prefix') => {
+    const active = isActive(href, match);
     return (
       <Link
         href={href}
-        className={`px-2 lg:px-3 py-2 text-sm font-medium whitespace-nowrap transition-all duration-150 hover:text-accent ${
+        className={`relative px-2 lg:px-3 py-2 text-sm font-medium whitespace-nowrap transition-all duration-150 hover:text-accent ${
           active ? 'text-accent' : 'text-primary-content/90'
         }`}
       >
         {label}
+        {active ? (
+          <span
+            className="absolute left-2 right-2 lg:left-3 lg:right-3 -bottom-0.5 h-0.5 rounded-full bg-accent"
+            aria-hidden
+          />
+        ) : null}
       </Link>
     );
   };
@@ -80,9 +102,11 @@ export default function Navbar() {
   const avatarUrl = resolveProfileAvatar(profile, user);
   const onboarded = Boolean(profile?.onboarding_complete);
   const caseTrackerHref = onboarded ? '/tracker/timeline' : '/tracker';
+  const toolsActive = TOOLS_LINKS.some((l) => isActive(l.href, l.match));
 
   const mainLinks = (
     <>
+      {navLink('/nprm', 'NPRM')}
       {navLink('/status', 'Status Update')}
       {navLink(caseTrackerHref, 'Case Tracker')}
       {onboarded && (
@@ -92,7 +116,6 @@ export default function Navbar() {
           {navLink('/tracker/settings', 'Settings')}
         </>
       )}
-      {navLink('/nprm', 'NPRM')}
       {navLink('/resources', 'Resources')}
       {navLink('/about', 'About')}
     </>
@@ -101,7 +124,7 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-nav-gradient text-primary-content shadow-nav">
       <div className="navbar max-w-6xl mx-auto px-4 min-h-16">
-        <div className="navbar-start">
+        <div className="navbar-start gap-1">
           <Link href="/" className="hover:opacity-90 transition-opacity inline-flex items-center gap-2">
             <Logo
               size={36}
@@ -115,7 +138,48 @@ export default function Navbar() {
           </Link>
         </div>
 
-        <div className="navbar-center hidden md:flex flex-wrap justify-center gap-0.5">
+        <div className="navbar-center hidden md:flex flex-wrap justify-center items-center gap-0.5">
+          <div className="relative">
+            <button
+              type="button"
+              className={`relative px-2 lg:px-3 py-2 text-sm font-medium whitespace-nowrap transition-all duration-150 hover:text-accent ${
+                toolsActive || toolsOpen ? 'text-accent' : 'text-primary-content/90'
+              }`}
+              aria-expanded={toolsOpen}
+              aria-haspopup="menu"
+              onClick={() => setToolsOpen((o) => !o)}
+            >
+              Tools
+              {(toolsActive || toolsOpen) && (
+                <span
+                  className="absolute left-2 right-2 lg:left-3 lg:right-3 -bottom-0.5 h-0.5 rounded-full bg-accent"
+                  aria-hidden
+                />
+              )}
+            </button>
+            {toolsOpen && (
+              <ul
+                role="menu"
+                className="absolute left-0 top-full mt-1 z-[60] min-w-[12rem] rounded-lg border border-base-300 bg-base-100 text-neutral shadow-soft py-1"
+              >
+                {TOOLS_LINKS.map((item) => (
+                  <li key={item.href} role="none">
+                    <Link
+                      role="menuitem"
+                      href={item.href}
+                      className={`block px-3 py-2 text-sm hover:bg-base-200 ${
+                        isActive(item.href, item.match)
+                          ? 'font-semibold text-secondary'
+                          : ''
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
           {mainLinks}
         </div>
 
@@ -174,6 +238,7 @@ export default function Navbar() {
             type="button"
             className="btn btn-ghost btn-sm md:hidden"
             aria-label="Toggle menu"
+            aria-expanded={menuOpen}
             onClick={() => setMenuOpen((o) => !o)}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -185,6 +250,23 @@ export default function Navbar() {
 
       {menuOpen && (
         <div className="md:hidden border-t border-primary-content/20 px-4 pb-4 flex flex-col">
+          <p className="text-[10px] uppercase tracking-wider font-bold text-primary-content/50 mt-2 mb-1">
+            Tools
+          </p>
+          {TOOLS_LINKS.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`px-2 py-2 text-sm font-medium ${
+                isActive(item.href, item.match) ? 'text-accent' : 'text-primary-content/90'
+              }`}
+            >
+              {item.label}
+            </Link>
+          ))}
+          <p className="text-[10px] uppercase tracking-wider font-bold text-primary-content/50 mt-3 mb-1">
+            More
+          </p>
           {mainLinks}
         </div>
       )}

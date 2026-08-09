@@ -10,7 +10,11 @@ import { cookies } from 'next/headers';
  * https://eb5base.com/?access=YOUR_SECRET once. A cookie keeps access open.
  * Public visitors without the cookie still see the maintenance page.
  */
+/** Cookie set after a valid ?access= unlock (also mirrored as eb5base_access=1). */
 export const MAINTENANCE_BYPASS_COOKIE = 'eb5_maint_bypass';
+
+/** Public-facing access flag from the site review (non-secret marker). */
+export const EB5BASE_ACCESS_COOKIE = 'eb5base_access';
 
 export function isMaintenanceMode(): boolean {
   const raw = process.env.MAINTENANCE_MODE?.trim().toLowerCase();

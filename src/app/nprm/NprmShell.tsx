@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
 import PageHero from '@/components/PageHero';
+import { ListSkeleton } from '@/components/LoadingSkeleton';
 import NprmClient from '@/components/nprm/NprmClient';
 import { loadNprmPageData } from '@/lib/nprm/fetch';
 import type { NprmTabId } from '@/lib/nprm/tabs';
@@ -48,8 +49,7 @@ export default async function NprmShell({ tab }: { tab: NprmTabId }) {
       <Suspense
         fallback={
           <div className="max-w-6xl mx-auto px-4 py-12">
-            <div className="skeleton-shimmer h-10 w-full max-w-xl mb-6" />
-            <div className="skeleton-shimmer h-64 w-full" />
+            <ListSkeleton count={3} />
           </div>
         }
       >

@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import {
+  EB5BASE_ACCESS_COOKIE,
   getMaintenanceBypassSecret,
   isMaintenanceMode,
   isValidMaintenanceBypassToken,
@@ -63,10 +64,19 @@ function redirectLegacyNprmTab(request: NextRequest): NextResponse | null {
   return NextResponse.redirect(url);
 }
 
-function setBypassCookie(response: NextResponse, secret: string, request: NextRequest) {
+function setBypassCookies(response: NextResponse, secret: string, request: NextRequest) {
+  const secure = request.nextUrl.protocol === 'https:';
   response.cookies.set(MAINTENANCE_BYPASS_COOKIE, secret, {
     httpOnly: true,
-    secure: request.nextUrl.protocol === 'https:',
+    secure,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: BYPASS_MAX_AGE_SEC,
+  });
+  // Non-httpOnly marker so client/share flows can see unlock state (review: eb5base_access=1).
+  response.cookies.set(EB5BASE_ACCESS_COOKIE, '1', {
+    httpOnly: false,
+    secure,
     sameSite: 'lax',
     path: '/',
     maxAge: BYPASS_MAX_AGE_SEC,
@@ -86,7 +96,7 @@ export async function middleware(request: NextRequest) {
       isValidMaintenanceBypassToken(accessParam) ||
       isValidMaintenanceBypassToken(bypassCookie);
 
-    // One-click unlock for owner/counsel: ?access=SECRET → set cookie, strip param.
+    // One-click unlock for owner/counsel: ?access=SECRET → set cookies, strip param.
     if (secret && isValidMaintenanceBypassToken(accessParam)) {
       const url = request.nextUrl.clone();
       url.searchParams.delete('access');
@@ -94,7 +104,7 @@ export async function middleware(request: NextRequest) {
         url.search = '';
       }
       const response = NextResponse.redirect(url);
-      setBypassCookie(response, secret, request);
+      setBypassCookies(response, secret, request);
       return response;
     }
 
@@ -102,7 +112,7 @@ export async function middleware(request: NextRequest) {
       return updateSession(request);
     }
 
-    // Public: maintenance page + metadata images + NPRM tracker only.
+    // Public: maintenance page + metadata images + NPRM / status / tracker tools.
     if (isMaintenancePassthrough(pathname)) {
       return NextResponse.next();
     }
