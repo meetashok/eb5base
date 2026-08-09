@@ -137,6 +137,25 @@ export interface NprmProposalThemeSummary {
   source_link: string;
 }
 
+export interface NprmProposalWhyReason {
+  id: string;
+  title: string;
+  text: string;
+  citations?: string[];
+  plain?: boolean;
+}
+
+export interface NprmProposalWhyComment {
+  title: string;
+  deadline?: string;
+  intro: string;
+  citations_intro?: string[];
+  reasons: NprmProposalWhyReason[];
+  how_it_works?: string;
+  what_to_include?: string[];
+  note?: string;
+}
+
 export interface NprmProposalSummary {
   docket_id: string;
   source_document: string;
@@ -146,9 +165,8 @@ export interface NprmProposalSummary {
   plain_language_note: string;
   short_summary: NprmProposalShortSummary;
   long_summary_by_theme: NprmProposalThemeSummary[];
-  /** Optional educational blocks from Hatch; not required for Overview. */
-  why_comment?: unknown;
-  why_participate?: unknown;
+  why_comment?: NprmProposalWhyComment;
+  why_participate?: NprmProposalWhyComment;
 }
 
 export type ProjectTypeOption = 'rural' | 'tea_hua' | 'infrastructure' | 'mixed';

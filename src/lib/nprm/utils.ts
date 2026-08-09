@@ -20,6 +20,11 @@ export function commentUrl(commentId: string): string {
   return `https://www.regulations.gov/comment/${commentId}`;
 }
 
+/** Strip em/en dashes from feed copy for display (site style rule). */
+export function plainDash(text: string): string {
+  return text.replace(/\u2014|\u2013/g, '-');
+}
+
 export function parsePoster(title?: string): {
   poster: string;
   posterType: 'anonymous' | 'named' | 'org';

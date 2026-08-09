@@ -2,6 +2,7 @@
 
 import CountdownBadge from '@/components/nprm/CountdownBadge';
 import VolumeChart from '@/components/nprm/VolumeChart';
+import WhyComment from '@/components/nprm/WhyComment';
 import type {
   NprmComment,
   NprmLastCheck,
@@ -50,6 +51,7 @@ export default function OverviewTab({
     'https://www.govinfo.gov/content/pkg/FR-2026-07-02/pdf/2026-13392.pdf';
   const short = proposal?.short_summary;
   const longThemes = proposal?.long_summary_by_theme ?? [];
+  const whyComment = proposal?.why_comment || proposal?.why_participate;
 
   return (
     <div className="space-y-8 animate-[fadeIn_0.35s_ease-out]">
@@ -125,6 +127,8 @@ export default function OverviewTab({
           <CountdownBadge endsLabel={ends} />
         </div>
       </header>
+
+      {whyComment ? <WhyComment why={whyComment} /> : null}
 
       <section className="space-y-3" id="proposal-themes">
         <div className="flex flex-wrap items-end justify-between gap-3">
