@@ -4,33 +4,27 @@ import { BrandWordmark } from '@/components/Logo';
 export const metadata = {
   title: 'EB5 Base - Information for EB-5 investors',
   description:
-    'Community-built information tools for EB-5 investors: status update builder, NPRM comment guide, and case tracker. Not legal advice.',
+    'Practical tools for EB-5 investors: status update builder, NPRM comment guide, and case tracker. Nothing here is legal or financial advice.',
 };
 
 const TOOLS = [
   {
     href: '/status',
-    eyebrow: 'Available now',
     title: 'Status Update',
-    body: 'Draft a structured EB-5 WhatsApp status update from your milestones, preview it live, and copy or share it. Same tool as bit.ly/eb5status, now on EB5 Base.',
+    body: 'Draft a structured EB-5 status update from your milestones, preview it live, and share it with your community.',
     cta: 'Open Status Update',
-    primary: true,
   },
   {
     href: '/nprm',
-    eyebrow: 'Available now',
     title: 'NPRM Comment Guide',
-    body: 'Plain-English explainer of the July 2026 EB-5 proposed rule, comment themes, and a prompt builder to help you file a distinct comment on regulations.gov.',
+    body: 'Plain-English explainer of the July 2026 EB-5 proposed rule, comment themes, and a prompt builder for regulations.gov.',
     cta: 'Open NPRM guide',
-    primary: true,
   },
   {
     href: '/tracker',
-    eyebrow: 'Available now',
     title: 'Case Tracker',
-    body: 'Track USCIS case status for your petitions, get notified on changes, and learn from anonymized cohort insights without exposing receipt numbers to other investors or on EB5 Base.',
+    body: 'Track USCIS case status for your petitions, get notified on changes, and learn from anonymized cohort insights.',
     cta: 'Open Case Tracker',
-    primary: false,
   },
 ];
 
@@ -47,17 +41,20 @@ export default function HomePage() {
           }}
         />
         <div className="max-w-6xl mx-auto px-4 py-16 md:py-24 text-center relative">
-          <p className="hero-eyebrow mb-4">Community-built · Investor-led</p>
+          <p className="hero-eyebrow mb-4">
+            <BrandWordmark variant="on-light" className="font-semibold text-[1.05em]" />
+          </p>
           <h1 className="text-4xl md:text-5xl font-bold hero-headline tracking-tight text-balance">
-            Information tools for EB-5 investors
+            Clarity for every step of your EB-5 journey
           </h1>
           <p className="mt-4 text-base md:text-lg text-neutral/70 max-w-2xl mx-auto leading-relaxed">
-            <BrandWordmark variant="on-light" className="font-semibold" /> helps potential and
-            existing investors make sense of EB-5 rules and case progress. Free to read. Not
-            legal advice.
+            Practical tools to follow the rules, share case progress, and track what matters.
+          </p>
+          <p className="mt-3 text-sm font-medium text-amber-800 max-w-xl mx-auto leading-relaxed">
+            Nothing here is legal or financial advice.
           </p>
           <div className="flex flex-wrap gap-3 justify-center mt-8">
-            <Link href="/status" className="btn btn-primary rounded-full px-6">
+            <Link href="/status" className="btn btn-outline rounded-full px-6">
               Status Update
             </Link>
             <Link href="/nprm" className="btn btn-outline rounded-full px-6">
@@ -84,22 +81,14 @@ export default function HomePage() {
               key={tool.href}
               className="rounded-2xl border-2 border-base-300 bg-base-100 p-6 shadow-soft flex flex-col text-left"
             >
-              <p
-                className={`text-[11px] uppercase tracking-wider font-bold mb-2 ${
-                  tool.primary ? 'text-secondary' : 'text-amber-800'
-                }`}
-              >
-                {tool.eyebrow}
+              <p className="text-[11px] uppercase tracking-wider font-bold mb-2 text-secondary">
+                Available now
               </p>
               <h3 className="text-xl font-bold text-primary">{tool.title}</h3>
               <p className="text-sm text-neutral/75 leading-relaxed mt-2 flex-1">{tool.body}</p>
               <Link
                 href={tool.href}
-                className={`btn btn-sm rounded-full mt-5 self-start ${
-                  tool.primary
-                    ? 'btn-primary text-primary-content'
-                    : 'btn-outline border-amber-300 text-amber-950 hover:bg-amber-50'
-                }`}
+                className="btn btn-sm btn-outline rounded-full mt-5 self-start"
               >
                 {tool.cta}
               </Link>
