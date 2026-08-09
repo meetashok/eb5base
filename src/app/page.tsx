@@ -62,15 +62,14 @@ export default function HomePage() {
             <Link href="/nprm" className="btn btn-outline rounded-full px-6">
               NPRM Comment Guide
             </Link>
-            <Link
-              href="/tracker"
-              className="btn btn-outline rounded-full px-6 gap-2"
-            >
-              Case Tracker
-              <span className="badge badge-sm rounded-full border-amber-300 bg-amber-50 text-amber-900 font-semibold normal-case tracking-normal">
-                Coming soon
+            <span className="relative inline-flex">
+              <Link href="/tracker" className="btn btn-outline rounded-full px-6">
+                Case Tracker
+              </Link>
+              <span className="pointer-events-none absolute -top-2 -right-1 rounded-md border border-amber-300 bg-amber-50 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-900 leading-none shadow-sm">
+                Soon
               </span>
-            </Link>
+            </span>
           </div>
         </div>
       </section>
