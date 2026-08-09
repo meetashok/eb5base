@@ -18,8 +18,8 @@ export default function StatusUpdatePage() {
         subtitle={
           <p>
             Fill in the milestones that apply, preview the message live, and copy or share it with
-            your investor group — including WhatsApp. Part of{' '}
-            <BrandWordmark variant="on-light" className="font-semibold" /> — same builder as{' '}
+            your investor group, including WhatsApp. Part of{' '}
+            <BrandWordmark variant="on-light" className="font-semibold" />, same builder as{' '}
             <a
               href="https://bit.ly/eb5status"
               className="link link-secondary"
@@ -54,7 +54,7 @@ export default function StatusUpdatePage() {
             deployed to JCE · No personal identifiers shared.
           </p>
           <p className="text-xs text-neutral/70">
-            Empty forms feel intimidating — start from your real milestones in the builder below.
+            Empty forms feel intimidating. Start from your real milestones in the builder below.
             Drafts stay in your browser.
           </p>
         </aside>

@@ -93,7 +93,7 @@ export interface CaseRow {
   created_at: string;
 }
 
-/** Case with decrypted receipt — only returned to the owning user via server APIs */
+/** Case with decrypted receipt, only returned to the owning user via server APIs */
 export interface CaseWithReceipt extends Omit<CaseRow, 'receipt_number_encrypted'> {
   receipt_number: string;
   receipt_number_masked: string;

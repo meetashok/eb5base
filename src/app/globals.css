@@ -6,6 +6,7 @@
   --investor-win: #ecfdf5;
   --watch: #fffbeb;
   --risk: #fef2f2;
+  --site-sticky-offset: 7rem;
 }
 
 html {

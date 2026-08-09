@@ -12,6 +12,44 @@ const nextConfig = {
         destination: '/nprm/:path*',
         permanent: true,
       },
+      {
+        source: '/status-update',
+        destination: '/status',
+        permanent: true,
+      },
+      {
+        source: '/case-tracker',
+        destination: '/tracker',
+        permanent: true,
+      },
+    ];
+  },
+  async headers() {
+    return [
+      {
+        source: '/admin/:path*',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
+      },
+      {
+        source: '/maintenance',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
+      },
+      {
+        source: '/login',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
+      },
+      {
+        source: '/login/:path*',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
+      },
+      {
+        source: '/auth/:path*',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
+      },
+      {
+        source: '/((?!admin|maintenance|login|auth).*)',
+        headers: [{ key: 'X-Robots-Tag', value: 'index, follow' }],
+      },
     ];
   },
 };

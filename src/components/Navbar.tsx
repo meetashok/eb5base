@@ -123,7 +123,7 @@ export default function Navbar() {
   );
 
   return (
-    <header className="sticky top-0 z-50 bg-nav-gradient text-primary-content shadow-nav">
+    <header className="bg-nav-gradient text-primary-content shadow-nav">
       <div className="navbar max-w-6xl mx-auto px-4 min-h-16">
         <div className="navbar-start gap-1">
           <Link href="/" className="hover:opacity-90 transition-opacity inline-flex items-center gap-2">

@@ -28,7 +28,7 @@ const TAB_META: Record<
   write: {
     title: 'Build My EB-5 NPRM Comment',
     description:
-      'Personalize a draft comment on the July 2026 EB-5 NPRM. EB5 Base does not submit for you — file on regulations.gov.',
+      'Personalize a draft comment on the July 2026 EB-5 NPRM. EB5 Base does not submit for you. File on regulations.gov.',
   },
   about: {
     title: 'About the NPRM Comment Guide',

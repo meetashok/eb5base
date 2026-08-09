@@ -71,7 +71,7 @@ const SECTIONS: {
     current: 'Integrity measures exist under RIA; penalty detail has been thin in regulation.',
     proposed:
       'Expanded audits, site visits, tiered penalties up to 10% of capital invested, example $10K late annual statement fines, suspension/termination/debarment.',
-    why: 'Stronger RC oversight can protect investors — but cost pressures may shrink the pool of small RCs.',
+    why: 'Stronger RC oversight can protect investors, but cost pressures may shrink the pool of small RCs.',
     risk: '87% of RCs are small entities; fixed compliance costs land hardest on single-project sponsors.',
     page: 'FR Doc 2026-13392 (sanctions)',
   },
@@ -139,7 +139,7 @@ export default function SummaryTab() {
       <div className="lg:grid lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-8 items-start">
         <nav
           aria-label="Summary sections"
-          className="hidden lg:block sticky top-[8.5rem] space-y-1 text-sm"
+          className="hidden lg:block sticky top-[calc(var(--site-sticky-offset)+3.5rem)] space-y-1 text-sm"
         >
           {SECTIONS.map((s) => (
             <a

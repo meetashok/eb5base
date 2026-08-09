@@ -24,6 +24,7 @@ import type {
   StyleGuideline,
 } from '@/lib/nprm/types';
 import { COMMENT_ON_URL } from '@/lib/nprm/utils';
+import { useToast } from '@/components/Toast';
 
 interface Props {
   themes: NprmTheme[];
@@ -52,6 +53,7 @@ export default function WriteTab({
   initialThemeIds = [],
   initialOpinions = {},
 }: Props) {
+  const { toast } = useToast();
   const [themeIds, setThemeIds] = useState<string[]>(() =>
     initialThemeIds.slice(0, MAX_THEMES)
   );
@@ -159,6 +161,7 @@ export default function WriteTab({
     try {
       await navigator.clipboard.writeText(text);
       setCopyMsg(`${label} copied`);
+      toast('Copied for regulations.gov', 'success');
       track('builder_copied');
       if (personalized) track('builder_personalized');
       window.setTimeout(() => setCopyMsg(null), 2000);
@@ -174,7 +177,7 @@ export default function WriteTab({
         <h2 className="text-xl font-bold text-primary">Build My Comment</h2>
         <p className="text-sm text-neutral mt-1 max-w-2xl leading-relaxed">
           Personalize a draft for regulations.gov. We do not submit for you and we
-          do not store drafts on our servers — only in your browser (localStorage).
+          do not store drafts on our servers, only in your browser (localStorage).
         </p>
         <p className="text-xs text-neutral/75 mt-2 font-mono leading-relaxed">
           {PROMPT_DIVERSITY_NOTE}
@@ -195,7 +198,7 @@ export default function WriteTab({
         >
           Your comment looks too close to a template (
           {Math.round(similarity * 100)}% overlap). Add 1-2 sentences about your
-          own case — why you chose EB-5, how long you have waited, what
+          own case: why you chose EB-5, how long you have waited, what
           redeployment cost you. DHS discounts form letters.
         </div>
       ) : null}

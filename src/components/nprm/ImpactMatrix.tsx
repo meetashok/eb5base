@@ -1,3 +1,10 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+
+export type InvestorFilter = 'all' | 'pre_ria' | 'post_ria' | 'future';
+
 const ROWS: {
   topic: string;
   preRia: string;
@@ -117,36 +124,95 @@ function ToneDot({ tone }: { tone: 'win' | 'watch' | 'risk' | 'neutral' }) {
   );
 }
 
-export default function ImpactMatrix() {
+function parseInvestor(raw: string | null): InvestorFilter {
+  if (raw === 'pre_ria' || raw === 'post_ria' || raw === 'future') return raw;
+  return 'all';
+}
+
+const FILTERS: { id: InvestorFilter; label: string }[] = [
+  { id: 'all', label: 'All' },
+  { id: 'pre_ria', label: 'Filed before Mar 2022' },
+  { id: 'post_ria', label: 'Filed after Mar 2022' },
+  { id: 'future', label: 'Planning to file' },
+];
+
+export default function ImpactMatrix({
+  initialInvestor,
+}: {
+  initialInvestor?: InvestorFilter;
+}) {
+  const searchParams = useSearchParams();
+  const [filter, setFilter] = useState<InvestorFilter>(
+    initialInvestor || 'all'
+  );
+
+  useEffect(() => {
+    const fromUrl = parseInvestor(searchParams.get('investor'));
+    if (fromUrl !== 'all') setFilter(fromUrl);
+  }, [searchParams]);
+
+  const showPre = filter === 'all' || filter === 'pre_ria';
+  const showPost = filter === 'all' || filter === 'post_ria';
+  const showFuture = filter === 'all' || filter === 'future';
+
   return (
     <section className="space-y-3" id="impact-matrix">
-      <div>
-        <h3 className="text-lg font-bold text-primary">
-          How Does This Affect Me? Impact Matrix
-        </h3>
-        <p className="text-sm text-neutral mt-1 leading-relaxed max-w-3xl">
-          Compare Pre-RIA, Post-RIA, and future filers. Green = investor win,
-          amber = watch, red = cost/risk. JCE = job-creating entity; NCE = new
-          commercial enterprise.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+        <div>
+          <h3 className="text-lg font-bold text-primary">
+            How Does This Affect Me? Impact Matrix
+          </h3>
+          <p className="text-sm text-neutral mt-1 leading-relaxed max-w-3xl">
+            Compare Pre-RIA, Post-RIA, and future filers. Green = investor win,
+            amber = watch, red = cost/risk. JCE = job-creating entity; NCE = new
+            commercial enterprise.
+          </p>
+        </div>
+        <div
+          className="flex flex-wrap gap-1.5"
+          role="group"
+          aria-label="Filter by filing era"
+        >
+          {FILTERS.map((f) => (
+            <button
+              key={f.id}
+              type="button"
+              aria-pressed={filter === f.id}
+              onClick={() => setFilter(f.id)}
+              className={`btn btn-xs h-7 min-h-0 px-2.5 border ${
+                filter === f.id
+                  ? 'btn-primary text-primary-content border-primary'
+                  : 'btn-ghost bg-base-100 border-base-300'
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="overflow-x-auto rounded-xl border-2 border-base-300 bg-base-100 shadow-soft">
-        <table className="min-w-[64rem] w-full text-left text-xs sm:text-sm border-collapse">
+        <table className="min-w-[40rem] w-full text-left text-xs sm:text-sm border-collapse">
           <thead>
             <tr className="bg-base-200/80 text-primary">
               <th className="sticky left-0 z-10 bg-base-200 px-3 py-2.5 font-bold border-b border-base-300 min-w-[9rem]">
                 Topic
               </th>
-              <th className="px-3 py-2.5 font-bold border-b border-base-300 min-w-[12rem]">
-                Filed BEFORE Mar 2022 (Pre-RIA)
-              </th>
-              <th className="px-3 py-2.5 font-bold border-b border-base-300 min-w-[12rem]">
-                Filed AFTER Mar 2022 (Post-RIA)
-              </th>
-              <th className="px-3 py-2.5 font-bold border-b border-base-300 min-w-[12rem]">
-                Plan to file in future
-              </th>
+              {showPre ? (
+                <th className="px-3 py-2.5 font-bold border-b border-base-300 min-w-[12rem]">
+                  Filed BEFORE Mar 2022 (Pre-RIA)
+                </th>
+              ) : null}
+              {showPost ? (
+                <th className="px-3 py-2.5 font-bold border-b border-base-300 min-w-[12rem] ring-2 ring-inset ring-secondary/40">
+                  Filed AFTER Mar 2022 (Post-RIA)
+                </th>
+              ) : null}
+              {showFuture ? (
+                <th className="px-3 py-2.5 font-bold border-b border-base-300 min-w-[12rem]">
+                  Plan to file in future
+                </th>
+              ) : null}
               <th className="px-3 py-2.5 font-bold border-b border-base-300 min-w-[10rem]">
                 What to comment on
               </th>
@@ -173,15 +239,21 @@ export default function ImpactMatrix() {
                       <span>{row.topic}</span>
                     </span>
                   </th>
-                  <td className="px-3 py-2.5 text-neutral leading-relaxed border-b border-base-300/80">
-                    {row.preRia}
-                  </td>
-                  <td className="px-3 py-2.5 text-neutral leading-relaxed border-b border-base-300/80">
-                    {row.postRia}
-                  </td>
-                  <td className="px-3 py-2.5 text-neutral leading-relaxed border-b border-base-300/80">
-                    {row.future}
-                  </td>
+                  {showPre ? (
+                    <td className="px-3 py-2.5 text-neutral leading-relaxed border-b border-base-300/80">
+                      {row.preRia}
+                    </td>
+                  ) : null}
+                  {showPost ? (
+                    <td className="px-3 py-2.5 text-neutral leading-relaxed border-b border-base-300/80">
+                      {row.postRia}
+                    </td>
+                  ) : null}
+                  {showFuture ? (
+                    <td className="px-3 py-2.5 text-neutral leading-relaxed border-b border-base-300/80">
+                      {row.future}
+                    </td>
+                  ) : null}
                   <td className="px-3 py-2.5 text-neutral leading-relaxed border-b border-base-300/80 font-medium">
                     {row.comment}
                   </td>
