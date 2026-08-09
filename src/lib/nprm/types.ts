@@ -179,6 +179,8 @@ export interface PersonalBlock {
   i_526e_file_date: string;
   project_type: ProjectTypeOption | '';
   impact: string;
+  investor_type?: '' | 'pre_ria' | 'post_ria' | 'future' | 'family';
+  country?: string;
 }
 
 export interface PromptGuidelines {

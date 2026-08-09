@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --investor-win: #ecfdf5;
+  --watch: #fffbeb;
+  --risk: #fef2f2;
+}
+
 html {
   scroll-behavior: smooth;
 }

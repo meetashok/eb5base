@@ -6,8 +6,10 @@ export default function robots(): MetadataRoute.Robots {
     return {
       rules: {
         userAgent: '*',
-        disallow: '/',
+        allow: ['/', '/nprm', '/nprm/', '/status', '/tracker', '/about', '/disclaimer'],
+        disallow: ['/admin', '/projects', '/rc'],
       },
+      sitemap: 'https://eb5base.com/sitemap.xml',
     };
   }
 
@@ -15,6 +17,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
+      disallow: ['/admin', '/api/'],
     },
+    sitemap: 'https://eb5base.com/sitemap.xml',
   };
 }

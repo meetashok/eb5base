@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import AboutTab from '@/components/nprm/AboutTab';
 import CommentsTab from '@/components/nprm/CommentsTab';
 import OverviewTab from '@/components/nprm/OverviewTab';
+import SummaryTab from '@/components/nprm/SummaryTab';
 import ThemesTab from '@/components/nprm/ThemesTab';
 import WriteTab from '@/components/nprm/WriteTab';
 import type { NprmPageData } from '@/lib/nprm/types';
@@ -67,7 +68,7 @@ export default function NprmClient({
 
   return (
     <div className="pb-16">
-      <div className="border-b-2 border-base-300 bg-base-100 sticky top-16 z-40 shadow-sm">
+      <div className="border-b-2 border-base-300 bg-base-100 sticky top-[6.75rem] z-30 shadow-sm">
         <div className="max-w-6xl mx-auto px-4">
           <div
             role="tablist"
@@ -103,6 +104,7 @@ export default function NprmClient({
         role="tabpanel"
         aria-labelledby={`nprm-tab-${active}`}
       >
+        {active === 'summary' && <SummaryTab />}
         {active === 'themes' && (
           <ThemesTab
             themes={data.themes}
@@ -145,6 +147,7 @@ export default function NprmClient({
             onThemes={() => setTab('themes')}
             onComments={() => setTab('comments')}
             onWrite={() => setTab('write')}
+            onSummary={() => setTab('summary')}
             onAbout={() => setTab('about')}
           />
         )}

@@ -38,6 +38,7 @@ function isMaintenancePassthrough(pathname: string): boolean {
     pathname.startsWith('/resources/') ||
     pathname === '/privacy' ||
     pathname === '/terms' ||
+    pathname === '/disclaimer' ||
     pathname === '/contact' ||
     pathname === '/login' ||
     pathname.startsWith('/login/') ||

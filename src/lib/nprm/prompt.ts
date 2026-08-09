@@ -120,6 +120,16 @@ export function buildPrompt(input: {
   const projectLabel = personal.project_type
     ? PROJECT_TYPE_LABELS[personal.project_type]
     : '(project type)';
+  const investorLabel =
+    personal.investor_type === 'pre_ria'
+      ? 'Pre-RIA'
+      : personal.investor_type === 'post_ria'
+        ? 'Post-RIA'
+        : personal.investor_type === 'future'
+          ? 'Future filer'
+          : personal.investor_type === 'family'
+            ? 'Family'
+            : '(investor type)';
 
   return [
     '[Docket USCIS-2026-0100]',
@@ -132,8 +142,10 @@ export function buildPrompt(input: {
     stanceLines.length ? stanceLines.join('\n') : '(pick an opinion per theme)',
     '',
     `Filed: ${personal.i_526e_file_date || '(I-526E file month/year)'}`,
+    `Investor type: ${investorLabel}`,
+    `Country: ${personal.country || '(chargeability)'}`,
     `Type: ${projectLabel}`,
-    `Impact: ${personal.impact || '(personal impact, at least 40 characters)'}`,
+    `Impact: ${personal.impact || `(personal story, at least ${MIN_IMPACT_CHARS} characters)`}`,
     '',
     `Guidelines: ${styleLabel}, ${lengthLabel}, ${formatLabel}`,
     '',
@@ -145,17 +157,66 @@ export function buildPersonalOnly(personal: PersonalBlock): string {
   const projectLabel = personal.project_type
     ? PROJECT_TYPE_LABELS[personal.project_type]
     : '';
+  const investor =
+    personal.investor_type === 'pre_ria'
+      ? 'Pre-RIA'
+      : personal.investor_type === 'post_ria'
+        ? 'Post-RIA'
+        : personal.investor_type === 'future'
+          ? 'Future filer'
+          : personal.investor_type === 'family'
+            ? 'Family'
+            : '';
   return [
     `I-526E filed: ${personal.i_526e_file_date}`,
+    investor ? `Investor type: ${investor}` : '',
+    personal.country ? `Country chargeability: ${personal.country}` : '',
     `Project type: ${projectLabel}`,
     `Impact: ${personal.impact}`,
-  ].join('\n');
+  ]
+    .filter(Boolean)
+    .join('\n');
+}
+
+/** Minimum personal story length for copy (review: 100 chars). */
+export const MIN_IMPACT_CHARS = 100;
+
+/**
+ * Word-overlap similarity of user impact vs a generic template.
+ * Returns 0..1 where 1 = identical bag of words.
+ */
+export function templateSimilarity(impact: string): number {
+  const template =
+    'my i-526e filed still waiting capital repaid but forced to redeploy to project i did not choose please finalize the two year sustainment rule as proposed';
+  const tokenize = (s: string) =>
+    new Set(
+      s
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .split(/\s+/)
+        .filter((w) => w.length > 2)
+    );
+  const a = tokenize(impact);
+  const b = tokenize(template);
+  if (a.size === 0) return 1;
+  let overlap = 0;
+  Array.from(a).forEach((w) => {
+    if (b.has(w)) overlap += 1;
+  });
+  return overlap / Math.max(a.size, 1);
+}
+
+/** True when user has edited enough that form-letter risk is low. */
+export function isPersonalizedEnough(impact: string): boolean {
+  if (impact.trim().length < MIN_IMPACT_CHARS) return false;
+  return templateSimilarity(impact) <= 0.7;
 }
 
 export function canCopyPrompt(personal: PersonalBlock): boolean {
   return (
     personal.i_526e_file_date.trim().length > 0 &&
     personal.project_type !== '' &&
-    personal.impact.trim().length >= 40
+    personal.impact.trim().length >= MIN_IMPACT_CHARS &&
+    isPersonalizedEnough(personal.impact)
   );
 }

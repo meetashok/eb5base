@@ -1,6 +1,7 @@
 'use client';
 
-import CountdownBadge from '@/components/nprm/CountdownBadge';
+import CountdownBanner from '@/components/nprm/CountdownBanner';
+import ImpactMatrix from '@/components/nprm/ImpactMatrix';
 import VolumeChart from '@/components/nprm/VolumeChart';
 import WhyComment from '@/components/nprm/WhyComment';
 import type {
@@ -12,6 +13,9 @@ import type {
 import {
   DOCKET_URL,
   FR_CITATION,
+  FR_HTML,
+  FR_PDF,
+  NPRM_LAST_UPDATED,
   RIN,
   dailyVolume,
   formatLastPull,
@@ -28,6 +32,7 @@ interface Props {
   onThemes: () => void;
   onComments: () => void;
   onWrite: () => void;
+  onSummary: () => void;
   onAbout: () => void;
 }
 
@@ -51,6 +56,25 @@ function Chevron({ open }: { open?: boolean }) {
   );
 }
 
+const METRICS = [
+  {
+    title: '358 Pages',
+    body: 'DHS proposal to update 8 CFR Parts 204, 205, 216, 235 to implement RIA',
+  },
+  {
+    title: '$800K / $1.05M / $1.4M NEW',
+    body: 'TEA/infra stays $800K, standard stays $1.05M, new high-employment tier $1.4M. All amounts adjust for inflation Jan 1, 2027 and every 5 years.',
+  },
+  {
+    title: '2-Year Sustainment',
+    body: 'Capital must stay at risk for minimum 2 years from date made available to JCE, not for entire conditional residency. DHS expects redeployment to become rare.',
+  },
+  {
+    title: 'Good Faith Protection',
+    body: 'If RC terminated/debarred, 180-day window to re-associate, priority date retained. If you completed 2 years + job creation, no need to re-invest.',
+  },
+];
+
 export default function OverviewTab({
   stats,
   comments,
@@ -60,6 +84,7 @@ export default function OverviewTab({
   onThemes,
   onComments,
   onWrite,
+  onSummary,
   onAbout,
 }: Props) {
   const volume = dailyVolume(comments);
@@ -67,12 +92,9 @@ export default function OverviewTab({
     stats.comment_period_ends ||
     lastCheck?.metadata?.comment_period_ends ||
     proposal?.comment_deadline ||
-    'Aug 31, 2026 11:59 PM EDT';
+    'August 31, 2026 · 11:59pm ET';
   const lastPullLabel = formatLastPull(stats.last_pull);
-  const sourceUrl =
-    proposal?.source_url ||
-    'https://www.govinfo.gov/content/pkg/FR-2026-07-02/pdf/2026-13392.pdf';
-  const frHtml = 'https://www.federalregister.gov/d/2026-13392';
+  const sourceUrl = proposal?.source_url || FR_PDF;
   const short = proposal?.short_summary;
   const longThemes = proposal?.long_summary_by_theme ?? [];
   const whyComment = proposal?.why_comment || proposal?.why_participate;
@@ -80,89 +102,152 @@ export default function OverviewTab({
   return (
     <div className="space-y-8 animate-[fadeIn_0.35s_ease-out]">
       <header className="space-y-4 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="min-w-0 space-y-3 max-w-3xl">
-            <p className="text-xs uppercase tracking-[0.18em] font-bold text-secondary">
-              NPRM explainer
-            </p>
-            <h2 className="text-xl md:text-2xl font-bold text-primary leading-tight">
-              {short?.title ? plainDash(short.title) : 'What USCIS proposes - in plain English'}
-            </h2>
-            <p className="text-sm sm:text-[0.95rem] text-neutral leading-relaxed">
-              {short?.text
-                ? plainDash(short.text)
-                : 'Plain-language summary of Docket USCIS-2026-0100 is loading from the public feed. Open the Federal Register PDF for the official text.'}
-            </p>
-            {short?.citations?.length ? (
-              <div className="flex flex-wrap gap-2">
-                {short.citations.map((c) => (
-                  <a
-                    key={c}
-                    href={frHtml}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 text-[11px] font-semibold text-neutral hover:border-secondary/50 hover:text-secondary"
-                  >
-                    {plainDash(c.replace(/^\[/, '').replace(/\]$/, ''))}
-                  </a>
-                ))}
-              </div>
-            ) : null}
-            <div className="flex flex-wrap gap-2 text-xs">
-              <span className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 font-semibold text-neutral">
-                FR Doc 2026-13392
-              </span>
-              <span className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 font-semibold text-neutral">
-                Vol 91 No 126
-              </span>
-              <span className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 font-semibold text-neutral">
-                July 2 2026
-              </span>
-              <span className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 font-semibold text-neutral">
-                RIN {RIN}
-              </span>
-              <span className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 font-semibold text-neutral">
-                {FR_CITATION}
-              </span>
-              <span className="inline-flex items-center rounded-md border border-secondary/40 bg-secondary/10 px-2.5 py-1 font-semibold text-secondary">
-                {stats.total_comments} comments tracked · last pull {lastPullLabel}
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-2 pt-1">
-              <a
-                href={sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-sm btn-primary text-primary-content"
-              >
-                Read full 358-page proposal PDF
-              </a>
-              <a
-                href={frHtml}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-sm btn-outline border-neutral/30"
-              >
-                Federal Register HTML
-              </a>
-              <a
-                href={DOCKET_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-sm btn-outline border-neutral/30"
-              >
-                Docket USCIS-2026-0100
-              </a>
-            </div>
-            {proposal?.plain_language_note ? (
-              <p className="text-xs text-neutral/80 leading-relaxed rounded-md border border-amber-200/80 bg-amber-50 px-2.5 py-1.5 text-amber-900">
-                {plainDash(proposal.plain_language_note)}
-              </p>
-            ) : null}
-          </div>
-          <CountdownBadge endsLabel={ends} />
+        <p className="text-xs uppercase tracking-[0.18em] font-bold text-secondary">
+          DHS Notice of Proposed Rulemaking · July 2, 2026
+        </p>
+        <h2 className="text-xl md:text-2xl font-bold text-primary leading-tight">
+          The EB-5 Proposed Rule is Here
+        </h2>
+        <p className="text-sm sm:text-[0.95rem] text-neutral leading-relaxed max-w-3xl">
+          EB5 Base is breaking down the 358-page rule that finally codifies the
+          EB-5 Reform and Integrity Act of 2022 into regulation. This is not
+          final. DHS is taking public comments for 60 days through August 31,
+          2026.
+        </p>
+        {short?.text ? (
+          <p className="text-sm text-neutral/80 leading-relaxed max-w-3xl">
+            {plainDash(short.text)}
+          </p>
+        ) : null}
+        <CountdownBanner endsLabel={ends} />
+        <div className="flex flex-wrap gap-2 pt-1">
+          <button
+            type="button"
+            onClick={onWrite}
+            data-goatcounter-click="nprm-build-comment"
+            className="btn btn-primary text-primary-content"
+          >
+            Build My Comment
+          </button>
+          <button
+            type="button"
+            onClick={onSummary}
+            className="btn btn-outline border-neutral/30"
+          >
+            Read 10-min Summary
+          </button>
+          <a
+            href={sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-ghost btn-sm"
+          >
+            Full PDF
+          </a>
+          <a
+            href={FR_HTML}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-ghost btn-sm"
+          >
+            Federal Register HTML
+          </a>
+          <a
+            href={DOCKET_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-ghost btn-sm"
+          >
+            Docket USCIS-2026-0100
+          </a>
+        </div>
+        <p className="text-xs text-neutral/75 leading-relaxed">
+          Last updated: {NPRM_LAST_UPDATED} · Sources:{' '}
+          <a
+            href={FR_HTML}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-secondary underline underline-offset-2"
+          >
+            Federal Register NPRM
+          </a>
+          ,{' '}
+          <a
+            href={DOCKET_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-secondary underline underline-offset-2"
+          >
+            regulations.gov docket
+          </a>
+          . Community-built · Investor-led. Not legal advice.
+        </p>
+        <div className="flex flex-wrap gap-2 text-xs">
+          <span className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 font-semibold text-neutral">
+            FR Doc 2026-13392 · {FR_CITATION} · RIN {RIN}
+          </span>
+          <span className="inline-flex items-center rounded-md border border-secondary/40 bg-secondary/10 px-2.5 py-1 font-semibold text-secondary">
+            {stats.total_comments} comments tracked · last pull {lastPullLabel}
+          </span>
         </div>
       </header>
+
+      <section className="grid sm:grid-cols-2 gap-3">
+        {METRICS.map((m) => (
+          <article
+            key={m.title}
+            className="rounded-xl border-2 border-base-300 bg-base-100 p-4 shadow-sm space-y-1.5"
+          >
+            <h3 className="text-base font-bold text-primary leading-snug">
+              {m.title}
+            </h3>
+            <p className="text-sm text-neutral leading-relaxed">{m.body}</p>
+          </article>
+        ))}
+      </section>
+
+      <section className="space-y-3 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
+        <h3 className="text-lg font-bold text-primary">
+          In 60 seconds: What&apos;s actually new vs. what&apos;s just being written
+          down?
+        </h3>
+        <p className="text-sm text-neutral leading-relaxed">
+          Much of the rule just writes into regulation what Congress already
+          decided in 2022.
+        </p>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <p className="text-xs uppercase tracking-wider font-bold text-secondary">
+              Truly NEW from DHS
+            </p>
+            <ol className="list-decimal pl-5 space-y-1.5 text-sm text-neutral leading-relaxed">
+              <li>High Employment Area $1.4M tier</li>
+              <li>Formal 2-year sustainment rule - ends lifetime redeployment debate</li>
+              <li>
+                Tiered sanctions regime - fines up to 10% of capital, $10K example
+                for late annual statement
+              </li>
+              <li>Form I-527 - new form for good-faith investors whose RC was terminated</li>
+              <li>
+                Promoter registration - direct and third-party promoters must be
+                registered
+              </li>
+            </ol>
+          </div>
+          <div className="space-y-2">
+            <p className="text-xs uppercase tracking-wider font-bold text-neutral/70">
+              Codification of what you already live with
+            </p>
+            <p className="text-sm text-neutral leading-relaxed">
+              RIA integrity measures, audits/site visits, fund administration, TEA
+              adjudication by USCIS (not states), priority date retention,
+              automatic revocation + investor protections.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <ImpactMatrix />
 
       <section className="space-y-3" id="proposal-themes">
         <div className="flex flex-wrap items-end justify-between gap-3">
@@ -171,8 +256,8 @@ export default function OverviewTab({
               What the proposal covers
             </h3>
             <p className="text-sm text-neutral mt-1 max-w-2xl leading-relaxed">
-              Twelve plain-language sections. Each paraphrases USCIS text and
-              cites the Federal Register page so you can verify.
+              Twelve plain-language sections. Each paraphrases USCIS text and cites
+              the Federal Register page so you can verify.
             </p>
           </div>
           <p className="text-xs font-semibold text-neutral/70">
@@ -215,10 +300,12 @@ export default function OverviewTab({
                 ) : null}
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 text-[11px] font-semibold text-neutral">
-                    {plainDash(theme.citation.replace(/^\[/, '').replace(/\]$/, ''))}
+                    {plainDash(
+                      theme.citation.replace(/^\[/, '').replace(/\]$/, '')
+                    )}
                   </span>
                   <a
-                    href={theme.source_link || frHtml}
+                    href={theme.source_link || FR_HTML}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center rounded-md border border-secondary/40 bg-secondary/10 px-2.5 py-1 text-[11px] font-semibold text-secondary hover:bg-secondary/15"
@@ -250,9 +337,9 @@ export default function OverviewTab({
         <button
           type="button"
           onClick={onThemes}
-          className="btn btn-primary text-primary-content shadow-soft"
+          className="btn btn-outline border-neutral/30"
         >
-          See what others are saying
+          See comment themes
         </button>
         <button
           type="button"

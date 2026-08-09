@@ -20,8 +20,9 @@ export default function PrivacyPage() {
       <div className="space-y-10">
         <Section title="Overview">
           <p>
-            EB5 Base (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) operates a community
-            directory of EB-5 regional center projects. This Privacy Policy explains what information
+            EB5 Base (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) operates information
+            tools for EB-5 investors (NPRM guide, status update, forthcoming case tracker) and a
+            community directory that may be paused. This Privacy Policy explains what information
             we collect, how we use it, and the choices you have.
           </p>
           <p>
@@ -30,6 +31,11 @@ export default function PrivacyPage() {
               Terms of Service
             </a>
             .
+          </p>
+          <p>
+            NPRM comment drafts and Status Update fields stay in your browser (localStorage) unless
+            you copy them elsewhere. We do not collect A-numbers. Optional email for a Case Tracker
+            waitlist is only sent if you choose to email us.
           </p>
         </Section>
 
