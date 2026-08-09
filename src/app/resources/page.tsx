@@ -30,7 +30,7 @@ export default function ResourcesPage() {
         title="Reference links for EB-5 investors"
         subtitle={
           <p>
-            Community-curated FAQ documents and related materials. These are third-party resources —
+            Community-curated FAQ documents and related materials. These are third-party resources,
             not legal advice.
           </p>
         }
