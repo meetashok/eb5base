@@ -99,7 +99,8 @@ export default function OverviewTab({
         />
         <p className="nprm-tldr">
           TLDR: This is a draft of new EB-5 house rules. It is not final. You can
-          tell the agency what you think before the deadline.
+          tell the agency what you think before the deadline. Your comment can
+          influence what gets finalized.
         </p>
         <p>
           Think of EB-5 as an apartment building. Congress passed a big renovation
