@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import GlossaryTerm from '@/components/nprm/GlossaryTerm';
+import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 
 export type InvestorFilter = 'all' | 'pre_ria' | 'post_ria' | 'future';
 
@@ -205,17 +206,17 @@ export default function ImpactMatrix({
   return (
     <section className="space-y-3 nprm-prose" id="impact-matrix">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-        <div>
-          <h3 className="text-base font-bold text-primary">
-            How does this affect me?
-          </h3>
-          <p className="text-sm text-neutral mt-1 leading-relaxed max-w-3xl">
+        <NprmSectionHeading
+          eyebrow="Impact"
+          title="How does this affect me?"
+        >
+          <p className="text-sm text-neutral leading-relaxed max-w-3xl">
             Plain English first. Green = investor win, amber = watch, red =
             cost/risk. Hover terms like{' '}
             <GlossaryTerm term="TEA" /> or <GlossaryTerm term="JCE" /> for
             definitions.
           </p>
-        </div>
+        </NprmSectionHeading>
         <div
           className="flex flex-wrap gap-1.5"
           role="group"

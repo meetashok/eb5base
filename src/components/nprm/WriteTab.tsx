@@ -21,6 +21,7 @@ import type {
   StyleGuideline,
 } from '@/lib/nprm/types';
 import { COMMENT_ON_URL } from '@/lib/nprm/utils';
+import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import { useToast } from '@/components/Toast';
 
 interface Props {
@@ -245,9 +246,12 @@ export default function WriteTab({
 
   return (
     <div className="space-y-4 animate-[fadeIn_0.35s_ease-out]">
-      <div>
-        <h2 className="text-lg font-bold text-primary">Build My Comment</h2>
-        <p className="text-sm text-neutral mt-1 max-w-2xl leading-relaxed">
+      <NprmSectionHeading
+        as="h2"
+        eyebrow="Write"
+        title="Build my comment"
+      >
+        <p className="text-sm text-neutral leading-relaxed max-w-2xl">
           Use this page to personalize a draft for{' '}
           <a
             href={COMMENT_ON_URL}
@@ -260,7 +264,7 @@ export default function WriteTab({
           . We do not submit the comment for you. You will need to file it
           yourself on that site when you are ready.
         </p>
-      </div>
+      </NprmSectionHeading>
 
       <div
         className="rounded-xl border-2 border-warning/50 bg-warning/15 px-3 py-3 text-sm text-neutral font-medium leading-relaxed"
@@ -284,14 +288,16 @@ export default function WriteTab({
       <div className="space-y-5">
         <section className="space-y-2 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
           <div className="flex flex-wrap items-end justify-between gap-2">
-            <div>
-              <h3 className="text-sm font-semibold text-primary">
-                Step A: Themes (max {MAX_THEMES})
-              </h3>
+            <NprmSectionHeading
+              as="h3"
+              eyebrow="Step A"
+              title={`Themes (max ${MAX_THEMES})`}
+              titleClassName="text-sm font-semibold text-primary leading-snug"
+            >
               <p className="text-xs text-neutral leading-relaxed">
                 Select a theme, then choose your view under it.
               </p>
-            </div>
+            </NprmSectionHeading>
             <p className="text-xs text-neutral/70">
               {themeIds.length}/{MAX_THEMES} selected
             </p>
@@ -357,15 +363,17 @@ export default function WriteTab({
         </section>
 
         <section className="space-y-3 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
-          <div>
-            <h3 className="text-sm font-semibold text-primary">
-              Step B: Personal block (optional)
-            </h3>
-            <p className="text-xs text-neutral mt-1 leading-relaxed">
+          <NprmSectionHeading
+            as="h3"
+            eyebrow="Step B"
+            title="Personal block (optional)"
+            titleClassName="text-sm font-semibold text-primary leading-snug"
+          >
+            <p className="text-xs text-neutral leading-relaxed">
               Optional, but a few personal details make your comment count as
               distinct. Stored only in your browser.
             </p>
-          </div>
+          </NprmSectionHeading>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <label className="form-control sm:col-span-2 lg:col-span-1">
               <span className="label-text text-xs">
@@ -446,9 +454,12 @@ export default function WriteTab({
         </section>
 
         <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft space-y-2">
-          <h3 className="text-sm font-semibold text-primary">
-            Step C: Guidelines
-          </h3>
+          <NprmSectionHeading
+            as="h3"
+            eyebrow="Step C"
+            title="Guidelines"
+            titleClassName="text-sm font-semibold text-primary leading-snug"
+          />
           <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -491,9 +502,12 @@ export default function WriteTab({
         <div className="space-y-3">
           <div className="rounded-xl border border-base-300 bg-primary text-primary-content p-4 sm:p-5">
             <div className="flex items-center justify-between gap-2 mb-3">
-              <h3 className="text-sm font-semibold text-accent">
-                Deterministic prompt preview
-              </h3>
+              <NprmSectionHeading
+                as="h3"
+                eyebrow="Preview"
+                title="Deterministic prompt"
+                titleClassName="text-sm font-semibold text-accent leading-snug"
+              />
               {copyMsg && (
                 <span className="text-xs text-accent">{copyMsg}</span>
               )}
@@ -570,9 +584,12 @@ export default function WriteTab({
           )}
 
           <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-3">
-            <h3 className="text-sm font-semibold text-primary">
-              What to do after you copy
-            </h3>
+            <NprmSectionHeading
+              as="h3"
+              eyebrow="Next"
+              title="What to do after you copy"
+              titleClassName="text-sm font-semibold text-primary leading-snug"
+            />
             <ol className="list-decimal pl-5 text-sm text-neutral space-y-1.5 leading-relaxed">
               <li>Paste the prompt into your own LLM</li>
               <li>Edit the draft in your voice (aim for more than 30% personal)</li>
