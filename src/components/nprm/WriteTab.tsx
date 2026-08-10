@@ -556,8 +556,9 @@ export default function WriteTab({
 
           {!ready && (
             <p className="text-xs text-warning">
-              Copy stays disabled until you select at least one theme and check
-              the privacy box. Personal details are optional but recommended.
+              Copy stays disabled until you select at least one theme and accept
+              the disclaimer next to the copy buttons. Personal details are
+              optional but recommended.
             </p>
           )}
 
