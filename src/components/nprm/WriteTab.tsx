@@ -323,20 +323,17 @@ export default function WriteTab({
                       : 'border-base-300 bg-base-100'
                   } ${disabled ? 'opacity-50' : ''}`}
                 >
-                  <label
-                    className={`flex items-start gap-2 text-sm font-medium ${
+                  <button
+                    type="button"
+                    aria-pressed={checked}
+                    disabled={disabled}
+                    onClick={() => toggleTheme(t.id)}
+                    className={`w-full text-left text-sm font-medium leading-snug rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary ${
                       checked ? 'text-primary' : 'text-neutral'
                     } ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                   >
-                    <input
-                      type="checkbox"
-                      className="checkbox checkbox-sm mt-0.5 shrink-0"
-                      checked={checked}
-                      disabled={disabled}
-                      onChange={() => toggleTheme(t.id)}
-                    />
-                    <span className="leading-snug">{t.title}</span>
-                  </label>
+                    {t.title}
+                  </button>
                   {checked ? (
                     <fieldset className="mt-2 space-y-1 border-t border-secondary/20 pt-2">
                       <legend className="text-[11px] font-bold uppercase tracking-wider text-secondary/90 px-0.5">
