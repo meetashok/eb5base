@@ -445,15 +445,19 @@ export default function WriteTab({
             </span>
             <textarea
               className="textarea textarea-bordered text-sm min-h-24"
-              placeholder="Why you chose EB-5, how long you have waited, what redeployment or RC issues cost you"
+              placeholder="e.g. 4 years in the queue; child turns 21 before I-829; capital stuck in redeployment"
               value={personal.impact}
               onChange={(e) =>
                 setPersonal((p) => ({ ...p, impact: e.target.value }))
               }
             />
-            <span className="label-text-alt text-[10px] text-neutral/70">
-              A short personal fact helps. Example: wait time, capital already
-              deployed, school or job timing tied to I-829.
+            <span className="label-text-alt text-[10px] sm:text-[11px] text-neutral/70 leading-relaxed mt-1">
+              Helpful examples: years waiting in the visa queue; capital already
+              invested; a child’s age, school, or aging-out risk; job or
+              work-authorization timing tied to I-829; redeployment or
+              regional-center disruption that hit you; project timelines that
+              clash with a 2-year sustainment clock. Skip A-numbers, receipt
+              numbers, and home addresses.
             </span>
           </label>
         </section>
