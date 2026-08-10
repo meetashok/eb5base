@@ -13,6 +13,23 @@ const CRAWLER_AGENTS = [
   'Applebot',
 ];
 
+/** Keep /api/crawl-test crawlable; do not blanket-disallow /api/. */
+const DISALLOW = ['/admin/', '/api/private/'];
+
+const PUBLIC_ALLOW = [
+  '/',
+  '/nprm',
+  '/nprm/',
+  '/status',
+  '/tracker',
+  '/about',
+  '/debug',
+  '/debug/',
+  '/robots.txt',
+  '/sitemap.xml',
+  '/api/crawl-test',
+];
+
 export default function robots(): MetadataRoute.Robots {
   const sitemap = 'https://eb5base.com/sitemap.xml';
 
@@ -21,32 +38,12 @@ export default function robots(): MetadataRoute.Robots {
       rules: [
         {
           userAgent: '*',
-          allow: [
-            '/',
-            '/nprm',
-            '/nprm/',
-            '/status',
-            '/tracker',
-            '/about',
-            '/debug',
-            '/robots.txt',
-            '/sitemap.xml',
-          ],
-          disallow: ['/admin', '/projects', '/rc', '/api/', '/_next/'],
+          allow: PUBLIC_ALLOW,
+          disallow: DISALLOW,
         },
         {
           userAgent: CRAWLER_AGENTS,
-          allow: [
-            '/',
-            '/nprm',
-            '/nprm/',
-            '/status',
-            '/tracker',
-            '/about',
-            '/debug',
-            '/robots.txt',
-            '/sitemap.xml',
-          ],
+          allow: PUBLIC_ALLOW,
         },
       ],
       sitemap,
@@ -58,7 +55,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin', '/api/', '/_next/'],
+        disallow: DISALLOW,
       },
       {
         userAgent: CRAWLER_AGENTS,

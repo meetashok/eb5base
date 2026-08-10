@@ -4,7 +4,7 @@ export const metadata = {
   title: 'NPRM plain summary (debug)',
   description:
     'Plain HTML NPRM explainer for crawler and readability testing. Not linked from main nav.',
-  robots: { index: false, follow: false },
+  robots: { index: true, follow: true },
 };
 
 export default function NprmPlainDebugPage() {

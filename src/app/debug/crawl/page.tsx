@@ -27,6 +27,8 @@ const ROUTES: { href: string; title: string }[] = [
   { href: '/llms.txt', title: 'llms.txt' },
   { href: '/debug', title: 'Debug ping' },
   { href: '/debug/plain', title: 'NPRM plain summary (debug)' },
+  { href: '/debug/text', title: 'NPRM ultra-plain text (debug)' },
+  { href: '/api/crawl-test', title: 'Crawl-test JSON API' },
 ];
 
 export default function CrawlDebugPage() {

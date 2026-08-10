@@ -24,6 +24,7 @@ function isMaintenancePassthrough(pathname: string): boolean {
     pathname === '/llms.txt' ||
     pathname === '/debug' ||
     pathname.startsWith('/debug/') ||
+    pathname === '/api/crawl-test' ||
     pathname === '/icon' ||
     pathname.startsWith('/icon/') ||
     pathname === '/opengraph-image' ||
@@ -104,6 +105,7 @@ function isCrawlFriendlyPublicPath(pathname: string): boolean {
     pathname === '/llms.txt' ||
     pathname === '/debug' ||
     pathname.startsWith('/debug/') ||
+    pathname === '/api/crawl-test' ||
     pathname === '/nprm' ||
     pathname.startsWith('/nprm/') ||
     pathname === '/nrpm' ||
