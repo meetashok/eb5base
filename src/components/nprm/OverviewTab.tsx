@@ -273,7 +273,7 @@ export default function OverviewTab({
             </span>
           </div>
           <VolumeChart data={volume} />
-          <p className="text-[11px] text-neutral/60 leading-snug -mt-2">
+          <p className="text-[10px] text-neutral/55 leading-snug -mt-2">
             Last pull {lastPullLabel}
           </p>
           <div className="flex flex-col sm:flex-row flex-wrap gap-2 pt-1">
