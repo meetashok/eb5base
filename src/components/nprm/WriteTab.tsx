@@ -249,7 +249,7 @@ export default function WriteTab({
       <NprmSectionHeading
         as="h2"
         eyebrow="Write"
-        title="Build my comment"
+        title="Build My Comment"
       >
         <p className="text-sm text-neutral leading-relaxed max-w-2xl">
           Use this page to personalize a draft for{' '}

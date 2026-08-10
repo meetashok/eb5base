@@ -117,10 +117,10 @@ export default function ThemesTab({
                 {selected && (
                   <button
                     type="button"
-                    className="btn btn-sm btn-secondary mt-1"
+                    className="btn btn-sm btn-primary text-primary-content mt-1"
                     onClick={() => onWriteWithTheme(theme.id, selected)}
                   >
-                    Use in Write tab
+                    Build My Comment
                   </button>
                 )}
               </div>

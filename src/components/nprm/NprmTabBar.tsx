@@ -16,12 +16,12 @@ function tabClass(selected: boolean, emphasize = false): string {
   if (selected) {
     return `shrink-0 px-3 sm:px-3.5 md:px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary ${
       emphasize
-        ? 'bg-accent text-accent-content shadow-soft'
+        ? 'bg-secondary text-secondary-content shadow-soft'
         : 'bg-primary text-primary-content shadow-soft'
     }`;
   }
   if (emphasize) {
-    return 'shrink-0 px-3 sm:px-3.5 md:px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent text-accent-content bg-accent/90 hover:bg-accent shadow-soft ring-1 ring-accent/40';
+    return 'shrink-0 px-3 sm:px-3.5 md:px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary text-secondary-content bg-secondary hover:bg-secondary/90 shadow-soft ring-1 ring-secondary/40';
   }
   return 'shrink-0 px-3 sm:px-3.5 md:px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary text-neutral bg-base-200/80 hover:bg-base-300 hover:text-primary';
 }
@@ -180,10 +180,10 @@ export default function NprmTabBar({
                       className={`w-full text-left px-3 py-2.5 text-sm font-semibold rounded-lg ${
                         selected
                           ? emphasize
-                            ? 'bg-accent text-accent-content'
+                            ? 'bg-secondary text-secondary-content'
                             : 'bg-primary text-primary-content'
                           : emphasize
-                            ? 'text-accent-content bg-accent/90 hover:bg-accent'
+                            ? 'text-secondary-content bg-secondary hover:bg-secondary/90'
                             : 'text-neutral hover:bg-base-200'
                       }`}
                       onClick={() => {
