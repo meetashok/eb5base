@@ -146,7 +146,11 @@ export default function AboutTab({
         <h2 className="text-xl font-bold text-primary">How to file</h2>
         <ol className="list-decimal list-inside space-y-2 text-sm text-neutral leading-relaxed">
           <li>Build a prompt in the Write tab (personal block required).</li>
-          <li>Paste into your own LLM and draft in your voice.</li>
+          <li>
+            Write the comment in your own words. You can draft it yourself, or
+            optionally paste the prompt into your own LLM and edit the result into
+            your voice. An LLM is not required.
+          </li>
           <li>
             Open{' '}
             <a
