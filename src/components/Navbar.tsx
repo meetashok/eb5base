@@ -89,20 +89,34 @@ export default function Navbar() {
 
   const avatarUrl = resolveProfileAvatar(profile, user);
   const onboarded = Boolean(profile?.onboarding_complete);
-  const caseTrackerHref = onboarded ? '/tracker/timeline' : '/tracker';
+
+  const caseTrackerActive = isActive('/tracker');
+  const caseTrackerLink = (
+    <Link
+      href="/tracker"
+      aria-current={caseTrackerActive ? 'page' : undefined}
+      className={`relative px-2 lg:px-3 py-2 text-sm font-medium whitespace-nowrap transition-all duration-150 hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent rounded-sm inline-flex items-center gap-1.5 ${
+        caseTrackerActive ? 'text-accent' : 'text-primary-content/90'
+      }`}
+    >
+      <span>Case Tracker</span>
+      <span className="rounded px-1 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-accent/20 text-accent leading-none">
+        Soon
+      </span>
+      {caseTrackerActive ? (
+        <span
+          className="absolute left-2 right-2 lg:left-3 lg:right-3 -bottom-0.5 h-0.5 rounded-full bg-accent"
+          aria-hidden
+        />
+      ) : null}
+    </Link>
+  );
 
   const mainLinks = (
     <>
       {navLink('/nprm', 'NPRM')}
       {navLink('/status', 'Status Update')}
-      {navLink(caseTrackerHref, 'Case Tracker')}
-      {onboarded && (
-        <>
-          {navLink('/tracker/timeline', 'Timeline')}
-          {navLink('/tracker/insights', 'Insights')}
-          {navLink('/tracker/settings', 'Settings')}
-        </>
-      )}
+      {caseTrackerLink}
       {navLink('/resources', 'Resources')}
       {navLink('/about', 'About')}
     </>

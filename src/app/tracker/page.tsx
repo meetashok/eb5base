@@ -72,14 +72,10 @@ export default async function TrackerLandingPage() {
     }
   }
 
-  const startHref = user
-    ? '/tracker/onboarding'
-    : '/login?redirect=/tracker/onboarding';
-
   return (
     <div>
       <PageHero
-        eyebrow={<span>Case Tracker</span>}
+        eyebrow={<span>Case Tracker · Coming soon</span>}
         title="Your immigration timeline, encrypted and up to date"
         subtitle={
           <p>
@@ -92,15 +88,20 @@ export default async function TrackerLandingPage() {
 
       <div className="max-w-4xl mx-auto px-4 py-10 space-y-6">
         <section className="card-elevated p-6 md:p-8 space-y-4 text-center">
-          <h2 className="text-xl md:text-2xl font-bold text-primary">Ready to track your cases?</h2>
+          <h2 className="text-xl md:text-2xl font-bold text-primary">
+            Case Tracker is coming soon
+          </h2>
           <p className="text-sm text-neutral/70 max-w-xl mx-auto leading-relaxed">
-            Sign in, add encrypted receipt numbers, and check status from one place. Local and demo
-            environments use a stub USCIS mode until live credentials are configured.
+            We are finishing encrypted receipt tracking, alerts, and cohort insights. Join the
+            waitlist below and use Status Update meanwhile to share milestones with your community.
           </p>
           <div className="flex flex-wrap gap-2 justify-center pt-1">
-            <Link href={startHref} className="btn btn-accent text-accent-content rounded-full px-8">
-              {user ? 'Continue setup' : 'Get started'}
-            </Link>
+            <span
+              className="btn btn-accent text-accent-content rounded-full px-8 opacity-80 cursor-not-allowed pointer-events-none"
+              aria-disabled="true"
+            >
+              Coming soon
+            </span>
             <Link href="/status" className="btn btn-outline rounded-full">
               Use Status Update meanwhile
             </Link>
