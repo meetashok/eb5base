@@ -376,7 +376,7 @@ export default function WriteTab({
           >
             <p className="text-xs text-neutral leading-relaxed">
               Optional, but a few personal details make your comment count as
-              distinct. Stored only in your browser.
+              distinct.
             </p>
           </NprmSectionHeading>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
