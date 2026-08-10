@@ -91,45 +91,6 @@ export default function NprmClient({
 
   return (
     <div className="pb-16">
-      <nav
-        aria-label="Breadcrumb"
-        className="max-w-6xl mx-auto px-4 pt-4 text-xs sm:text-sm text-neutral/70"
-      >
-        <ol className="flex flex-wrap items-center gap-1.5">
-          <li>
-            <Link href="/" className="hover:text-secondary underline-offset-2 hover:underline">
-              Home
-            </Link>
-          </li>
-          <li aria-hidden className="opacity-50">
-            /
-          </li>
-          <li>
-            <button
-              type="button"
-              onClick={() => setTab('overview')}
-              className="hover:text-secondary underline-offset-2 hover:underline"
-            >
-              NPRM
-            </button>
-          </li>
-          {active !== 'overview' ? (
-            <>
-              <li aria-hidden className="opacity-50">
-                /
-              </li>
-              <li className="font-semibold text-primary" aria-current="page">
-                {current}
-              </li>
-            </>
-          ) : (
-            <li className="sr-only" aria-current="page">
-              Overview
-            </li>
-          )}
-        </ol>
-      </nav>
-
       <PageHero
         eyebrow={
           <a
@@ -173,6 +134,45 @@ export default function NprmClient({
           </div>
         }
       />
+
+      <nav
+        aria-label="Breadcrumb"
+        className="max-w-6xl mx-auto px-4 pt-4 pb-1 text-xs sm:text-sm text-neutral/70"
+      >
+        <ol className="flex flex-wrap items-center gap-1.5">
+          <li>
+            <Link href="/" className="hover:text-secondary underline-offset-2 hover:underline">
+              Home
+            </Link>
+          </li>
+          <li aria-hidden className="opacity-50">
+            /
+          </li>
+          <li>
+            <button
+              type="button"
+              onClick={() => setTab('overview')}
+              className="hover:text-secondary underline-offset-2 hover:underline"
+            >
+              NPRM
+            </button>
+          </li>
+          {active !== 'overview' ? (
+            <>
+              <li aria-hidden className="opacity-50">
+                /
+              </li>
+              <li className="font-semibold text-primary" aria-current="page">
+                {current}
+              </li>
+            </>
+          ) : (
+            <li className="sr-only" aria-current="page">
+              Overview
+            </li>
+          )}
+        </ol>
+      </nav>
 
       <div className="border-b border-base-300/80 bg-base-100">
         <div className="max-w-6xl mx-auto px-4">
