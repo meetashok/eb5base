@@ -265,15 +265,19 @@ export default function WriteTab({
       </NprmSectionHeading>
 
       <div
-        className="rounded-xl border-2 border-warning/50 bg-warning/15 px-3 py-3 text-sm text-neutral font-medium leading-relaxed"
+        className="rounded-xl border-2 border-warning/50 bg-warning/15 px-3 py-3 text-sm text-neutral leading-relaxed space-y-1"
         role="status"
       >
-        If 500 people paste the same paragraph, <GlossaryTerm term="USCIS" />{' '}
-        counts it as 1. Your personal story makes it distinct.{' '}
-        <GlossaryTerm term="GAO" /> notes that mass mailing campaigns can yield
-        thousands of duplicate comments that agencies may post individually, as
-        attachments, or as a count. <GlossaryTerm term="OIRA" /> tooling has
-        distilled about 300k comments down to about 30k distinct ones.
+        <p className="font-semibold text-primary">
+          Your comment needs to be unique
+        </p>
+        <p className="font-medium">
+          If 500 people paste the same paragraph, <GlossaryTerm term="USCIS" />{' '}
+          counts it as one. Agencies use tools like those noted by{' '}
+          <GlossaryTerm term="GAO" /> and <GlossaryTerm term="OIRA" /> that can
+          distill thousands of comments into a much smaller set of distinct ones.
+          Add your personal story so yours stands alone.
+        </p>
       </div>
 
       {impactLen >= MIN_IMPACT_CHARS && !personalized ? (
