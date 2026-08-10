@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useCallback, useEffect, useState, useTransition } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import AboutTab from '@/components/nprm/AboutTab';
@@ -18,6 +19,10 @@ import {
 
 export type { NprmTabId } from '@/lib/nprm/tabs';
 export { isNprmTabId, NPRM_TABS, nprmTabHref } from '@/lib/nprm/tabs';
+
+function tabLabel(tab: NprmTabId): string {
+  return NPRM_TABS.find((t) => t.id === tab)?.label || 'Overview';
+}
 
 export default function NprmClient({
   data,
@@ -66,8 +71,52 @@ export default function NprmClient({
     setTab('write');
   };
 
+  const current = tabLabel(active);
+
   return (
     <div className="pb-16">
+      <nav
+        aria-label="Breadcrumb"
+        className="max-w-6xl mx-auto px-4 pt-4 pb-1 text-xs sm:text-sm text-neutral/70"
+      >
+        <ol className="flex flex-wrap items-center gap-1.5">
+          <li>
+            <Link
+              href="/"
+              className="hover:text-secondary underline-offset-2 hover:underline"
+            >
+              Home
+            </Link>
+          </li>
+          <li aria-hidden className="opacity-50">
+            /
+          </li>
+          <li>
+            <button
+              type="button"
+              onClick={() => setTab('overview')}
+              className="hover:text-secondary underline-offset-2 hover:underline"
+            >
+              NPRM
+            </button>
+          </li>
+          {active !== 'overview' ? (
+            <>
+              <li aria-hidden className="opacity-50">
+                /
+              </li>
+              <li className="font-semibold text-primary" aria-current="page">
+                {current}
+              </li>
+            </>
+          ) : (
+            <li className="sr-only" aria-current="page">
+              Overview
+            </li>
+          )}
+        </ol>
+      </nav>
+
       <div className="border-b border-base-300/80 bg-base-100">
         <div className="max-w-6xl mx-auto px-4">
           <ol className="flex flex-wrap gap-x-3 gap-y-1 py-2 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-neutral/60">
