@@ -31,7 +31,9 @@ export const COMMENT_GUIDANCE = [
   {
     id: 'tips',
     label: 'Tips PDF',
-    title: 'Tips for submitting effective comments',
-    url: 'https://www.fs.usda.gov/geology/includes/minerals/locatableminerals/TipsSubmittingEffectiveComments.pdf',
+    title: 'Tips for submitting effective comments (federal guidance)',
+    // Served locally: USDA/regulations.gov hosts for this public-domain PDF are
+    // intermittently blocked or 404 for many visitors.
+    url: '/docs/tips-for-submitting-effective-comments.pdf',
   },
 ] as const;
