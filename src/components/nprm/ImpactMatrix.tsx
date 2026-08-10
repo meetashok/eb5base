@@ -206,11 +206,7 @@ export default function ImpactMatrix({
     <section className="space-y-3 nprm-prose" id="impact-matrix">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div>
-          <p className="nprm-tldr">
-            TLDR: This draft decides when you can get money back, what happens
-            if your center closes, and how much future investors pay.
-          </p>
-          <h3 className="text-base font-bold text-primary mt-2">
+          <h3 className="text-base font-bold text-primary">
             How does this affect me?
           </h3>
           <p className="text-sm text-neutral mt-1 leading-relaxed max-w-3xl">
