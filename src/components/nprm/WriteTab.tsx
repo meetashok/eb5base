@@ -479,19 +479,6 @@ export default function WriteTab({
               </label>
             </div>
           </section>
-
-          <label className="flex items-start gap-2 text-xs text-neutral cursor-pointer rounded-lg border border-base-300 p-3 bg-base-100">
-            <input
-              type="checkbox"
-              className="checkbox checkbox-sm mt-0.5"
-              checked={privacyOk}
-              onChange={(e) => setPrivacyOk(e.target.checked)}
-            />
-            <span>
-              I understand not to include A-Number, receipt number, or home
-              address in a public comment.
-            </span>
-          </label>
         </div>
 
         <div className="lg:col-span-7 space-y-3">
@@ -509,6 +496,23 @@ export default function WriteTab({
             </pre>
           </div>
 
+          <label className="flex items-start gap-2.5 text-xs sm:text-sm text-neutral cursor-pointer rounded-lg border-2 border-base-300 p-3 sm:p-3.5 bg-base-100 leading-relaxed">
+            <input
+              type="checkbox"
+              className="checkbox checkbox-sm mt-0.5 shrink-0"
+              checked={privacyOk}
+              onChange={(e) => setPrivacyOk(e.target.checked)}
+            />
+            <span>
+              I understand that I must not include my A-Number, receipt number,
+              home address, or other sensitive personal identifiers in a public
+              comment. By using this prompt, I am acting in my own capacity. EB5
+              Base does not submit comments for me and is not liable or
+              responsible for any comment I eventually file on regulations.gov
+              or elsewhere. This tool is information only, not legal advice.
+            </span>
+          </label>
+
           <div className="flex flex-col sm:flex-row flex-wrap gap-2">
             <button
               type="button"
@@ -517,7 +521,7 @@ export default function WriteTab({
               title={
                 ready
                   ? 'Copy full prompt'
-                  : 'Select at least one theme and check the privacy box first'
+                  : 'Select at least one theme and accept the disclaimer first'
               }
               onClick={() => copyText(prompt, 'Prompt')}
             >
