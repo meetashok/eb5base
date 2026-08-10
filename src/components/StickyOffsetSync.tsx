@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 
-/** Measures #site-chrome (nav + trust bar) and sets --site-sticky-offset for nested stickies. */
+/** Measures sticky #site-chrome (nav) and sets --site-sticky-offset for nested stickies. */
 export default function StickyOffsetSync() {
   useEffect(() => {
     const el = document.getElementById('site-chrome');

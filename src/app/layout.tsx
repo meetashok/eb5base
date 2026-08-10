@@ -90,9 +90,9 @@ export default function RootLayout({
             <BetaBanner />
             <div id="site-chrome" className="sticky top-0 z-50">
               <Navbar />
-              <TrustDisclaimerBar />
             </div>
             <StickyOffsetSync />
+            <TrustDisclaimerBar />
             <main id="main-content" className="flex-1 page-enter" tabIndex={-1}>
               {children}
             </main>

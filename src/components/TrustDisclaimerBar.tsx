@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import { DOCKET_URL, FR_HTML } from '@/lib/nprm/config';
 
-/** Sticky trust strip under the nav. Always visible site-wide. */
+/** Trust strip under the nav. Scrolls away with the page (not sticky). */
 export default function TrustDisclaimerBar() {
   return (
-    <div className="border-b border-amber-200/80 bg-amber-50/95 backdrop-blur-sm text-amber-950">
+    <div className="border-b border-amber-200/80 bg-amber-50 text-amber-950">
       <div className="max-w-6xl mx-auto px-4 py-1.5 text-[11px] sm:text-xs leading-snug text-center sm:text-left">
         EB5 Base is not affiliated with USCIS or DHS. Not legal or financial advice. Based on
         public Federal Register documents. Verify on{' '}
