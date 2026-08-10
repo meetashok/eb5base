@@ -28,6 +28,7 @@ export const GLOSSARY: Record<string, string> = {
   'I-526': 'The older EB-5 immigrant petition form (often used for direct or pre-RIA filings).',
   'I-527': 'New form for investors whose regional center was terminated and who need to re-associate.',
   'I-829': 'Petition to remove conditions on permanent residence after the conditional green card period.',
+  CGC: 'Conditional Green Card: the temporary 2-year permanent residence you get after an approved EB-5 petition and visa (or adjustment), before I-829 removes conditions.',
   RC: 'Regional Center: the approved EB-5 program sponsor for your project.',
   APA: 'Administrative Procedure Act: the law that requires agencies to take and respond to public comments on rules.',
 };
