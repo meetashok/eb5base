@@ -55,9 +55,6 @@ const TOOLS = [
   },
 ];
 
-const TRUST_SNAPSHOT =
-  '48 comments tracked · Last checked Aug 9, 2026, 1:30 PM IST · Docket USCIS-2026-0100';
-
 export default function HomePage() {
   return (
     <div>
