@@ -21,7 +21,6 @@ import {
   FR_CITATION,
   FR_HTML,
   FR_PDF,
-  NPRM_LAST_UPDATED,
   RIN,
   dailyVolume,
   formatLastPull,
@@ -206,7 +205,7 @@ export default function OverviewTab({
           </div>
         </div>
         <p className="text-xs text-neutral/75 leading-relaxed">
-          Last updated: {NPRM_LAST_UPDATED}. Not legal advice.{' '}
+          Comment data as of {lastPullLabel}. Not legal advice.{' '}
           <span className="nprm-legal-ref">
             FR Doc 2026-13392 · {FR_CITATION} · RIN {RIN}
           </span>

@@ -253,8 +253,15 @@ export async function loadNprmPageData(): Promise<NprmPageData> {
     };
   });
 
+  // stats.json can lag all_comments.json after a Hatch republish (e.g. 48 vs 49).
+  // Treat the loaded comment list as the source of truth for counts.
+  const stats = {
+    ...statsR.data,
+    total_comments: merged.length || statsR.data.total_comments,
+  };
+
   return {
-    stats: statsR.data,
+    stats,
     themes: orderThemesForDisplay(themesR.data),
     promptTree: promptsR.data,
     comments: merged,

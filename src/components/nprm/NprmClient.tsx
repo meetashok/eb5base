@@ -22,7 +22,7 @@ import {
   DOCKET_URL,
   FR_HTML,
   FR_PDF,
-  NPRM_LAST_UPDATED,
+  formatLastPull,
 } from '@/lib/nprm/utils';
 
 export type { NprmTabId } from '@/lib/nprm/tabs';
@@ -32,7 +32,7 @@ const TAB_DOCUMENT_TITLE: Record<NprmTabId, string> = {
   overview: 'EB-5 NPRM 2026: Plain-English Guide to DHS Proposed Rule',
   summary: 'EB-5 NPRM Summary - Current vs Proposed',
   themes: 'NPRM Comment Themes That Move the Needle',
-  comments: 'NPRM Comments (48) - Themes & Summaries',
+  comments: 'NPRM Comments - Themes & Summaries',
   write: 'Build My EB-5 NPRM Comment',
   about: 'About the NPRM Comment Guide',
 };
@@ -135,7 +135,7 @@ export default function NprmClient({
               of 2022. Comments close August 31, 2026.
             </p>
             <p>
-              Last data updated: {NPRM_LAST_UPDATED} ·{' '}
+              Comment data as of {formatLastPull(data.stats.last_pull)} ·{' '}
               <a
                 href={FR_HTML}
                 target="_blank"

@@ -21,7 +21,7 @@ const TAB_META: Record<
       'Theme-by-theme guidance for commenting on the EB-5 Reform Act NPRM: sustainment, good faith, TEA, sanctions, and more.',
   },
   comments: {
-    title: 'NPRM Comments (48) - Themes & Summaries',
+    title: 'NPRM Comments - Themes & Summaries',
     description:
       'Browse AI summaries of comments filed on Docket USCIS-2026-0100. Verify each filing on regulations.gov. Information only.',
   },
