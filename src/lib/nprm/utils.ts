@@ -8,6 +8,7 @@ import type {
 import { COMMENT_PERIOD_END } from './config';
 
 export {
+  COMMENT_GUIDANCE,
   COMMENT_ON_URL,
   COMMENT_PERIOD_END,
   DOCKET_ID,

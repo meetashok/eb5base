@@ -16,7 +16,7 @@ import type {
   PersonalBlock,
   StyleGuideline,
 } from '@/lib/nprm/types';
-import { COMMENT_ON_URL } from '@/lib/nprm/utils';
+import { COMMENT_GUIDANCE, COMMENT_ON_URL } from '@/lib/nprm/utils';
 import GlossaryTerm, {
   GlossaryText,
 } from '@/components/nprm/GlossaryTerm';
@@ -34,6 +34,36 @@ const MAX_THEMES = 3;
 const DRAFT_KEY = 'eb5base_nprm_write_draft_v1';
 /** Browser/URL length guard for LLM ?q= prefill links. */
 const LLM_PREFILL_MAX_CHARS = 3500;
+
+const PERSONAL_STORY_EXAMPLES = [
+  'years waiting (ex: 5 years since I-526E filing)',
+  'capital already invested and at risk (approx amount and year, not account numbers)',
+  'teen at risk of aging out before I-829 (no school name or full name)',
+  'job or work-authorization timing tied to conditional residency',
+  'redeployment or regional-center disruption you experienced',
+  'project timeline that does not fit a 2-year sustainment window',
+] as const;
+
+function GuidanceLinks({ className = '' }: { className?: string }) {
+  return (
+    <span className={className}>
+      {COMMENT_GUIDANCE.map((g, i) => (
+        <span key={g.id}>
+          {i > 0 ? <span className="text-neutral/40"> · </span> : null}
+          <a
+            href={g.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={g.title}
+            className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+          >
+            {g.label}
+          </a>
+        </span>
+      ))}
+    </span>
+  );
+}
 
 const LLM_LINKS = [
   {
@@ -340,7 +370,10 @@ export default function WriteTab({
           counts it as one. Agencies use tools like those noted by{' '}
           <GlossaryTerm term="GAO" /> and <GlossaryTerm term="OIRA" /> that can
           distill thousands of comments into a much smaller set of distinct ones.
-          Add your personal story so yours stands alone.
+          Federal guidance says a constructive, detailed comment with your own
+          experience is more useful than identical form letters. Add your personal
+          story so yours stands alone. See why:{' '}
+          <GuidanceLinks />.
         </p>
       </div>
 
@@ -450,7 +483,9 @@ export default function WriteTab({
           >
             <p className="text-xs text-neutral leading-relaxed">
               Optional, but a few personal details make your comment count as
-              distinct.
+              distinct. Federal agencies ask for constructive, detailed comments
+              and say relevant personal experience helps reviewers. See why:{' '}
+              <GuidanceLinks />.
             </p>
           </NprmSectionHeading>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -519,15 +554,51 @@ export default function WriteTab({
             </span>
             <textarea
               className="textarea textarea-bordered text-sm min-h-24"
-              placeholder="e.g. 4 years in the queue; child turns 21 before I-829; capital stuck in redeployment"
+              placeholder="e.g. 5 years since I-526E filing; teen at risk of aging out before I-829; capital at risk since 2023"
               value={personal.impact}
               onChange={(e) =>
                 setPersonal((p) => ({ ...p, impact: e.target.value }))
               }
             />
-            <span className="label-text-alt text-[10px] sm:text-[11px] text-neutral/70 leading-relaxed mt-1">
-              <GlossaryText text="Helpful examples: years waiting in the visa queue; capital already invested; a child’s age, school, or aging-out risk; job or work-authorization timing tied to I-829; redeployment or regional-center disruption that hit you; project timelines that clash with a 2-year sustainment clock. Skip A-numbers, receipt numbers, and home addresses." />
-            </span>
+            <div className="mt-1.5 space-y-1.5 text-[10px] sm:text-[11px] text-neutral/80 leading-relaxed">
+              <p>
+                Adding your story helps. Agencies say one detailed personal
+                comment outweighs many identical form letters. See why:{' '}
+                <GuidanceLinks />.
+              </p>
+              <p>
+                Helpful examples (keep them anonymized):{' '}
+                {PERSONAL_STORY_EXAMPLES.map((ex, i) => (
+                  <span key={ex}>
+                    {i > 0 ? '; ' : null}
+                    <GlossaryText text={ex} />
+                  </span>
+                ))}
+                .
+              </p>
+              <ul className="list-disc pl-4 space-y-0.5 text-neutral/75">
+                <li>
+                  Tie the story to a rule cite (ex:{' '}
+                  <GlossaryText text="8 CFR 204.408" /> sustainment).
+                </li>
+                <li>
+                  Keep years and approx amounts; drop identifiers (no A-number,
+                  receipt number, DOB, school name, employer name, or child full
+                  name).
+                </li>
+                <li>
+                  End with what you want <GlossaryTerm term="USCIS" /> to keep or
+                  change.
+                </li>
+              </ul>
+              <p className="text-neutral/70">
+                Comments are posted publicly on regulations.gov as submitted,
+                including any personal information you provide. Limit personal
+                info. Do not include SSN, DOB, A-number, receipt number,
+                passport, bank account, school name, employer name, or a
+                child&apos;s full name.
+              </p>
+            </div>
           </label>
         </section>
 
