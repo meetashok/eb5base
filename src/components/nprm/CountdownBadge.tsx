@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { countdownParts } from '@/lib/nprm/utils';
 
 export default function CountdownBadge({ endsLabel }: { endsLabel: string }) {
-  const [label, setLabel] = useState(() => countdownParts().label);
-  const [expired, setExpired] = useState(() => countdownParts().expired);
+  const [label, setLabel] = useState<string | null>(null);
+  const [expired, setExpired] = useState(false);
 
   useEffect(() => {
     const tick = () => {
@@ -26,7 +26,9 @@ export default function CountdownBadge({ endsLabel }: { endsLabel: string }) {
           : 'bg-accent/20 border-accent/50 text-primary'
       }`}
     >
-      <span className="font-bold tabular-nums tracking-tight">{label}</span>
+      <span className="font-bold tabular-nums tracking-tight" aria-live="polite">
+        {label ?? (expired ? 'Comment window closed' : 'Counting down')}
+      </span>
       <span className="text-xs font-medium text-neutral">Closes {endsLabel}</span>
     </div>
   );

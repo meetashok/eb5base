@@ -4,9 +4,12 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { countdownParts } from '@/lib/nprm/utils';
 
+type Parts = ReturnType<typeof countdownParts>;
+
 /** Live comment-deadline countdown for the homepage alert strip. */
 export default function HomeDeadlineCountdown() {
-  const [parts, setParts] = useState(() => countdownParts());
+  // Start null so SSR and the first client paint match (no Date.now() during hydrate).
+  const [parts, setParts] = useState<Parts | null>(null);
 
   useEffect(() => {
     const tick = () => setParts(countdownParts());
@@ -15,7 +18,7 @@ export default function HomeDeadlineCountdown() {
     return () => window.clearInterval(id);
   }, []);
 
-  if (parts.expired) {
+  if (parts?.expired) {
     return (
       <div className="space-y-1" role="status">
         <p className="text-sm sm:text-base font-bold text-amber-950">
@@ -35,9 +38,18 @@ export default function HomeDeadlineCountdown() {
         <p className="text-[11px] uppercase tracking-wider font-bold text-amber-900/80">
           Comment deadline
         </p>
-        <p className="text-lg sm:text-xl font-bold tabular-nums tracking-tight text-amber-950">
-          {parts.preciseLabel}
-          <span className="sr-only"> remaining</span>
+        <p
+          className="text-lg sm:text-xl font-bold tabular-nums tracking-tight text-amber-950 min-h-[1.75rem]"
+          aria-live="polite"
+        >
+          {parts ? (
+            <>
+              {parts.preciseLabel}
+              <span className="sr-only"> remaining</span>
+            </>
+          ) : (
+            <span>Until August 31, 2026</span>
+          )}
         </p>
         <p className="text-xs sm:text-sm text-amber-950/80 leading-relaxed">
           until comments close August 31, 2026. Weigh in while the window is
@@ -46,7 +58,7 @@ export default function HomeDeadlineCountdown() {
       </div>
       <Link
         href="/nprm"
-        className="btn btn-sm btn-primary text-primary-content shrink-0 self-start sm:self-center"
+        className="btn btn-sm btn-primary text-primary-content shrink-0 self-center"
       >
         Read explainer
       </Link>

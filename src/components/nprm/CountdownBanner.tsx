@@ -9,8 +9,8 @@ export default function CountdownBanner({
 }: {
   endsLabel?: string;
 }) {
-  const [label, setLabel] = useState(() => countdownParts().label);
-  const [expired, setExpired] = useState(() => countdownParts().expired);
+  const [label, setLabel] = useState<string | null>(null);
+  const [expired, setExpired] = useState(false);
 
   useEffect(() => {
     const tick = () => {
@@ -36,7 +36,9 @@ export default function CountdownBanner({
           {expired ? 'Comment window closed' : `Comment deadline: ${endsLabel}`}
         </p>
         {!expired ? (
-          <p className="text-xs font-medium opacity-90">{label} remaining · 60-day window</p>
+          <p className="text-xs font-medium opacity-90" aria-live="polite">
+            {label ? `${label} remaining · 60-day window` : '60-day comment window'}
+          </p>
         ) : null}
       </div>
       <a
