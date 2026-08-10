@@ -26,7 +26,7 @@ export default function TrustDisclaimerBar() {
           regulations.gov
         </a>
         {' · '}
-        <Link href="/disclaimer" className="font-semibold underline underline-offset-2">
+        <Link href="/about#disclaimer" className="font-semibold underline underline-offset-2">
           Full disclaimer
         </Link>
         .

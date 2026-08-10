@@ -21,7 +21,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/tracker',
     '/case-tracker',
     '/about',
-    '/disclaimer',
   ];
 
   const full = [

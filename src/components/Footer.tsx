@@ -32,7 +32,7 @@ export default function Footer() {
               Privacy
             </Link>
             <Link
-              href="/disclaimer"
+              href="/about#disclaimer"
               className="text-sm text-neutral/50 hover:text-primary transition-colors"
             >
               Disclaimer

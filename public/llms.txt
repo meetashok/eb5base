@@ -20,7 +20,7 @@
 
 ## Legal
 
-- [Disclaimer](https://eb5base.com/disclaimer)
+- [Disclaimer](https://eb5base.com/about#disclaimer)
 - [Terms](https://eb5base.com/terms)
 - [Privacy](https://eb5base.com/privacy)
 - [About](https://eb5base.com/about)

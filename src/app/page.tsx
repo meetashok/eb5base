@@ -173,7 +173,7 @@ export default function HomePage() {
             About EB5 Base
           </Link>
           {' · '}
-          <Link href="/disclaimer" className="link link-secondary font-medium">
+          <Link href="/about#disclaimer" className="link link-secondary font-medium">
             Disclaimer
           </Link>
         </p>

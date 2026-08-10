@@ -1,12 +1,14 @@
 import Link from 'next/link';
 import { DISCLAIMER } from '@/lib/constants';
+import { DOCKET_URL, FR_HTML } from '@/lib/nprm/config';
 import PageHero from '@/components/PageHero';
 import { BrandWordmark } from '@/components/Logo';
+import ScrollToHash from '@/components/ScrollToHash';
 
 export const metadata = {
   title: 'About',
   description:
-    'About EB5 Base: information tools for the EB-5 investor community. Not legal advice.',
+    'About EB5 Base: information tools for the EB-5 investor community. Disclaimer: not legal or financial advice, not affiliated with USCIS or DHS.',
 };
 
 function SectionHeading({
@@ -83,6 +85,7 @@ function CheckItem({ children }: { children: React.ReactNode }) {
 export default function AboutPage() {
   return (
     <div>
+      <ScrollToHash id="disclaimer" />
       <PageHero
         eyebrow="Community-built · Investor-led"
         title={
@@ -228,11 +231,48 @@ export default function AboutPage() {
           </a>
         </section>
 
-        <section className="card-elevated p-6 md:p-8 space-y-4">
-          <SectionHeading eyebrow="Disclaimer" title="Legal" titleClassName="text-xl" />
-          <p className="text-sm text-neutral/80 leading-relaxed">{DISCLAIMER}</p>
+        <section
+          id="disclaimer"
+          className="card-elevated p-6 md:p-8 space-y-4 scroll-mt-28"
+        >
+          <SectionHeading
+            eyebrow="Disclaimer"
+            title="Not legal or financial advice"
+            titleClassName="text-xl"
+            subtitle="Read this before relying on any tool or summary on EB5 Base."
+          />
+          <div className="space-y-3 text-sm text-neutral/80 leading-relaxed">
+            <p>
+              EB5 Base is not affiliated with USCIS, DHS, or any government agency. Nothing on
+              this site is legal or financial advice. Information is based on public Federal
+              Register documents and regulations.gov filings. Always verify on{' '}
+              <a
+                href={FR_HTML}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="link link-secondary font-medium"
+              >
+                the Federal Register
+              </a>{' '}
+              and{' '}
+              <a
+                href={DOCKET_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="link link-secondary font-medium"
+              >
+                regulations.gov
+              </a>
+              , and consult a licensed immigration attorney for your situation.
+            </p>
+            <p>{DISCLAIMER}</p>
+            <p>
+              EB5 Base does not submit comments to regulations.gov on your behalf. Drafts built
+              here stay in your browser unless you choose to copy and file them yourself.
+            </p>
+          </div>
           <p className="text-sm text-neutral/80">
-            Read our full{' '}
+            Also see our{' '}
             <Link href="/terms" className="link link-secondary">
               Terms of Service
             </Link>{' '}

@@ -106,7 +106,7 @@ export default async function NprmShell({ tab }: { tab: NprmTabId }) {
               </a>
               {' · '}
               <Link
-                href="/disclaimer"
+                href="/about#disclaimer"
                 className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
               >
                 Not legal advice

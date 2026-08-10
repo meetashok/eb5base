@@ -22,6 +22,11 @@ const nextConfig = {
         destination: '/tracker',
         permanent: true,
       },
+      {
+        source: '/disclaimer',
+        destination: '/about#disclaimer',
+        permanent: true,
+      },
     ];
   },
   async headers() {

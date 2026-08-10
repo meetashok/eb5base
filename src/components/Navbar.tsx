@@ -15,7 +15,6 @@ const TOOLS_LINKS = [
   { href: '/nprm/comments', label: 'Comments', match: 'prefix' as const },
   { href: '/status', label: 'Status Update', match: 'prefix' as const },
   { href: '/about', label: 'About', match: 'prefix' as const },
-  { href: '/disclaimer', label: 'Disclaimer', match: 'prefix' as const },
 ] as const;
 
 export default function Navbar() {

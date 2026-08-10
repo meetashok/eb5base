@@ -20,12 +20,12 @@ export default function robots(): MetadataRoute.Robots {
       rules: [
         {
           userAgent: '*',
-          allow: ['/', '/nprm', '/nprm/', '/status', '/tracker', '/about', '/disclaimer', '/debug'],
+          allow: ['/', '/nprm', '/nprm/', '/status', '/tracker', '/about', '/debug'],
           disallow: ['/admin', '/projects', '/rc', '/api/'],
         },
         {
           userAgent: CRAWLER_AGENTS,
-          allow: ['/', '/nprm', '/nprm/', '/status', '/tracker', '/about', '/disclaimer', '/debug'],
+          allow: ['/', '/nprm', '/nprm/', '/status', '/tracker', '/about', '/debug'],
         },
       ],
       sitemap,

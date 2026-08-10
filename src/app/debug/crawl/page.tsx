@@ -19,7 +19,7 @@ const ROUTES: { href: string; title: string }[] = [
   { href: '/status', title: 'Status Update' },
   { href: '/tracker', title: 'Case Tracker' },
   { href: '/about', title: 'About' },
-  { href: '/disclaimer', title: 'Disclaimer' },
+  { href: '/about#disclaimer', title: 'Disclaimer (About)' },
   { href: '/privacy', title: 'Privacy' },
   { href: '/terms', title: 'Terms' },
   { href: '/resources', title: 'Resources' },
