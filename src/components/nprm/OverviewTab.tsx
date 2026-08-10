@@ -210,10 +210,10 @@ export default function OverviewTab({
           title="Do I need to do something before the deadline?"
         />
         <p>
-          <strong>If you already filed:</strong> You do not have to comment, but
-          commenting can help protect your investment. If the 2-year rule is
-          finalized, you may get capital back sooner. If good-faith protections
-          are strengthened, you are safer if your regional center fails.
+          <strong>If you already filed:</strong> Commenting can help protect
+          your investment. If the 2-year rule is finalized, you may get capital
+          back sooner. If good-faith protections are strengthened, you are safer
+          if your regional center fails.
         </p>
         <p>
           <strong>If you plan to file:</strong> Pay attention. Investment amounts
