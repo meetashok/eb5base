@@ -149,11 +149,25 @@ export default function WriteTab({
   );
 
   function toggleTheme(id: string) {
-    setThemeIds((prev) => {
-      if (prev.includes(id)) return prev.filter((x) => x !== id);
-      if (prev.length >= MAX_THEMES) return prev;
-      return [...prev, id];
-    });
+    const removing = themeIds.includes(id);
+    if (removing) {
+      setThemeIds((prev) => prev.filter((x) => x !== id));
+      setOpinions((ops) => {
+        const next = { ...ops };
+        delete next[id];
+        return next;
+      });
+      return;
+    }
+    if (themeIds.length >= MAX_THEMES) return;
+    setThemeIds((prev) => [...prev, id]);
+    const theme = themes.find((t) => t.id === id);
+    const firstOpinion = theme?.opinions[0]?.id;
+    if (firstOpinion) {
+      setOpinions((ops) =>
+        ops[id] ? ops : { ...ops, [id]: firstOpinion }
+      );
+    }
   }
 
   async function copyText(text: string, label: string) {
@@ -209,73 +223,72 @@ export default function WriteTab({
             <h3 className="text-sm font-semibold text-primary">
               Step A: Themes (max {MAX_THEMES})
             </h3>
+            <p className="text-xs text-neutral leading-relaxed">
+              Select a theme, then choose your view right under it.
+            </p>
             <div className="space-y-2">
               {themes.map((t) => {
                 const checked = themeIds.includes(t.id);
                 const disabled = !checked && themeIds.length >= MAX_THEMES;
                 return (
-                  <label
+                  <div
                     key={t.id}
-                    className={`flex items-start gap-2 text-sm rounded-lg border-2 px-3 py-2.5 cursor-pointer font-medium ${
+                    className={`rounded-lg border-2 px-3 py-2.5 ${
                       checked
-                        ? 'border-secondary bg-secondary/15 text-primary'
-                        : 'border-base-300 bg-base-100 text-neutral'
-                    } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        ? 'border-secondary bg-secondary/15'
+                        : 'border-base-300 bg-base-100'
+                    } ${disabled ? 'opacity-50' : ''}`}
                   >
-                    <input
-                      type="checkbox"
-                      className="checkbox checkbox-sm mt-0.5"
-                      checked={checked}
-                      disabled={disabled}
-                      onChange={() => toggleTheme(t.id)}
-                    />
-                    <span>{t.title}</span>
-                  </label>
+                    <label
+                      className={`flex items-start gap-2 text-sm font-medium ${
+                        checked ? 'text-primary' : 'text-neutral'
+                      } ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                    >
+                      <input
+                        type="checkbox"
+                        className="checkbox checkbox-sm mt-0.5"
+                        checked={checked}
+                        disabled={disabled}
+                        onChange={() => toggleTheme(t.id)}
+                      />
+                      <span>{t.title}</span>
+                    </label>
+                    {checked ? (
+                      <fieldset className="mt-2.5 ml-6 space-y-1.5 border-t border-secondary/20 pt-2.5">
+                        <legend className="text-[11px] font-bold uppercase tracking-wider text-secondary/90 px-0.5">
+                          Your view
+                        </legend>
+                        {t.opinions.map((op) => (
+                          <label
+                            key={op.id}
+                            className="flex items-start gap-2 text-sm cursor-pointer text-neutral font-normal"
+                          >
+                            <input
+                              type="radio"
+                              name={`opinion-${t.id}`}
+                              className="radio radio-sm mt-0.5"
+                              checked={opinions[t.id] === op.id}
+                              onChange={() =>
+                                setOpinions((prev) => ({
+                                  ...prev,
+                                  [t.id]: op.id,
+                                }))
+                              }
+                            />
+                            <span>{op.label}</span>
+                          </label>
+                        ))}
+                      </fieldset>
+                    ) : null}
+                  </div>
                 );
               })}
             </div>
           </section>
 
-          <section className="space-y-3">
-            <h3 className="text-sm font-semibold text-primary">
-              Step B: Opinion per theme
-            </h3>
-            {themeIds.length === 0 && (
-              <p className="text-xs text-neutral">Select a theme first.</p>
-            )}
-            {themeIds.map((tid) => {
-              const theme = themes.find((t) => t.id === tid);
-              if (!theme) return null;
-              return (
-                <fieldset key={tid} className="space-y-1.5">
-                  <legend className="text-xs font-semibold text-neutral">
-                    {theme.title}
-                  </legend>
-                  {theme.opinions.map((op) => (
-                    <label
-                      key={op.id}
-                      className="flex items-start gap-2 text-sm cursor-pointer"
-                    >
-                      <input
-                        type="radio"
-                        name={`opinion-${tid}`}
-                        className="radio radio-sm mt-0.5"
-                        checked={opinions[tid] === op.id}
-                        onChange={() =>
-                          setOpinions((prev) => ({ ...prev, [tid]: op.id }))
-                        }
-                      />
-                      <span>{op.label}</span>
-                    </label>
-                  ))}
-                </fieldset>
-              );
-            })}
-          </section>
-
           <section className="space-y-2">
             <h3 className="text-sm font-semibold text-primary">
-              Step C: Personal block (required)
+              Step B: Personal block (required)
             </h3>
             <label className="form-control">
               <span className="label-text text-xs">
@@ -381,7 +394,7 @@ export default function WriteTab({
 
           <section className="space-y-2">
             <h3 className="text-sm font-semibold text-primary">
-              Step D: Guidelines
+              Step C: Guidelines
             </h3>
             <div className="space-y-2 text-sm">
               <label className="flex items-center gap-2 cursor-pointer">
