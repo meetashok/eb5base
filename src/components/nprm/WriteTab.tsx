@@ -672,7 +672,10 @@ export default function WriteTab({
                   regulations.gov
                 </a>
               </li>
-              <li>Consider a 30-minute counsel memo for your file</li>
+              <li>
+                Optional: ask your immigration attorney to review the draft
+                before you file
+              </li>
             </ol>
             <p className="text-xs text-neutral/75 leading-relaxed">
               EB5 Base does not submit for you. Drafts stay in your browser unless
