@@ -758,6 +758,22 @@
     html, body { margin: 0; background: transparent; }
     body { overflow-x: hidden; }
     .page-shell { max-width: 72rem; margin: 0 auto; padding-left: 1rem; padding-right: 1rem; }
+    /* Desktop embed: scroll inside the iframe so lg:sticky Live Preview stays on screen. */
+    @media (min-width: 1024px) {
+      html, body {
+        height: 100%;
+      }
+      body {
+        overflow-y: auto;
+      }
+      .page-shell {
+        min-height: 100%;
+        padding-bottom: 1.5rem;
+      }
+      #preview-panel {
+        top: 1rem;
+      }
+    }
   </style>
 </head>
 <body class="min-h-screen font-sans">
@@ -1633,7 +1649,10 @@
           <button type="button" id="share-tool-btn" class="clear-form-link text-left underline hover:text-base-content/80">
             Share this tool
           </button>
-          <p class="text-xs text-base-content/60">eb5base.com/status · bit.ly/eb5status</p>
+          <p class="text-xs text-base-content/60">
+            Shares <span class="font-medium text-base-content/70">eb5base.com/status</span>
+            · previous version at bit.ly/eb5status
+          </p>
         </div>
         <div class="space-y-1.5 text-sm text-base-content/60 text-left">
           <p>This is a static page. Your draft is saved locally in your browser and is never sent to a server.</p>
@@ -1644,11 +1663,6 @@
             Open source on
             <a class="underline hover:text-base-content/70" href="https://github.com/meetashok/eb5status" target="_blank" rel="noopener noreferrer">GitHub</a>.
             Contributions and pull requests welcome.
-          </p>
-          <p>
-            Have feedback?
-            <a class="underline hover:text-base-content/70" href="mailto:hello@eb5base.com?subject=EB5%20Status%20Update%20Builder%20feedback">Send it here</a>
-            or ping me on WhatsApp if you have my number.
           </p>
         </div>
       </div>
