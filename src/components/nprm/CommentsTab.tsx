@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { GlossaryText } from '@/components/nprm/GlossaryTerm';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
+import { FEED_SHARE } from '@/lib/nprm/fetch';
 import type { NprmComment, NprmTheme } from '@/lib/nprm/types';
 import {
   commentUrl,
@@ -18,6 +19,10 @@ interface Props {
   comments: NprmComment[];
   themes: NprmTheme[];
   lastPull?: string;
+  source?: string;
+  totalComments?: number;
+  feedSource?: 'remote' | 'local';
+  onAbout?: () => void;
 }
 
 function commentNumber(id: string): number {
@@ -47,6 +52,10 @@ export default function CommentsTab({
   comments,
   themes,
   lastPull,
+  source,
+  totalComments,
+  feedSource = 'local',
+  onAbout,
 }: Props) {
   const [themeFilter, setThemeFilter] = useState<string>('all');
   const [posterFilter, setPosterFilter] = useState<PosterFilter>('all');
@@ -307,18 +316,42 @@ export default function CommentsTab({
         </p>
       )}
 
-      <div className="rounded-xl border-2 border-secondary/30 bg-secondary/10 px-4 py-4 space-y-1">
-        <NprmSectionHeading
-          as="h3"
-          eyebrow="Trust"
-          title="Source and feed status"
-          titleClassName="text-sm font-bold text-primary leading-snug"
-        />
-        <p className="text-xs text-neutral leading-relaxed">
-          Source: regulations.gov via api.data.gov · Live feed · Titles from
-          regulations.gov · Last pull {lastPullLabel}. Official filings may be
-          newer; always check the docket. Explainer cites FR Doc 2026-13392.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between rounded-xl border-2 border-secondary/30 bg-secondary/10 px-4 py-4">
+        <div className="space-y-1">
+          <NprmSectionHeading
+            as="h3"
+            eyebrow="Trust"
+            title="Source and feed status"
+            titleClassName="text-sm font-bold text-primary leading-snug"
+          />
+          <p className="text-sm text-neutral leading-relaxed">
+            Source: {source || 'regulations.gov via api.data.gov'}. Feed{' '}
+            <span className="font-semibold">
+              {feedSource === 'remote' ? 'live' : 'local seed'}
+            </span>
+            . Titles from regulations.gov. Explainer cites FR Doc 2026-13392.{' '}
+            <a
+              href={FEED_SHARE}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-secondary underline underline-offset-2 break-all"
+            >
+              Public JSON (CORS - agent.meta.ai)
+            </a>
+            . {totalComments ?? comments.length} comments tracked · last pull{' '}
+            {lastPullLabel}. Official filings may be newer; always check the
+            docket.
+          </p>
+        </div>
+        {onAbout ? (
+          <button
+            type="button"
+            onClick={onAbout}
+            className="btn btn-outline border-neutral/30 shrink-0"
+          >
+            About & disclaimer
+          </button>
+        ) : null}
       </div>
     </div>
   );

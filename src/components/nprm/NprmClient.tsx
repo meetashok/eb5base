@@ -248,6 +248,10 @@ export default function NprmClient({
             comments={data.comments}
             themes={data.themes}
             lastPull={data.stats.last_pull}
+            source={data.stats.source}
+            totalComments={data.stats.total_comments}
+            feedSource={data.feedSource}
+            onAbout={() => setTab('about')}
           />
         )}
         {active === 'write' && (
@@ -272,13 +276,10 @@ export default function NprmClient({
             stats={data.stats}
             comments={data.comments}
             proposal={data.proposal}
-            lastCheck={data.lastCheck}
-            feedSource={data.feedSource}
             onThemes={() => setTab('themes')}
             onWrite={() => setTab('write')}
             onSummary={() => setTab('summary')}
             onExternalBlogs={() => setTab('summary', 'external-explainers')}
-            onAbout={() => setTab('about')}
           />
         )}
       </div>

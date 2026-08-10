@@ -10,7 +10,6 @@ import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import VolumeChart from '@/components/nprm/VolumeChart';
 import type {
   NprmComment,
-  NprmLastCheck,
   NprmProposalSummary,
   NprmStats,
 } from '@/lib/nprm/types';
@@ -24,19 +23,15 @@ import {
   formatLastPull,
   normalizeShortSummary,
 } from '@/lib/nprm/utils';
-import { FEED_SHARE } from '@/lib/nprm/fetch';
 
 interface Props {
   stats: NprmStats;
   comments: NprmComment[];
   proposal: NprmProposalSummary | null;
-  lastCheck: NprmLastCheck | null;
-  feedSource: 'remote' | 'local';
   onThemes: () => void;
   onWrite: () => void;
   onSummary: () => void;
   onExternalBlogs: () => void;
-  onAbout: () => void;
 }
 
 const KEY_POINTS: {
@@ -85,12 +80,10 @@ export default function OverviewTab({
   stats,
   comments,
   proposal,
-  feedSource,
   onThemes,
   onWrite,
   onSummary,
   onExternalBlogs,
-  onAbout,
 }: Props) {
   const volume = dailyVolume(comments);
   const lastPullLabel = formatLastPull(stats.last_pull);
@@ -343,40 +336,6 @@ export default function OverviewTab({
           ))}
         </ol>
       </section>
-
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between rounded-xl border-2 border-secondary/30 bg-secondary/10 px-4 py-4">
-        <div className="space-y-1">
-          <NprmSectionHeading
-            as="h3"
-            eyebrow="Trust"
-            title="Source and feed status"
-            titleClassName="text-sm font-bold text-primary leading-snug"
-          />
-          <p className="text-sm text-neutral leading-relaxed">
-            Source: {stats.source}. Feed{' '}
-            <span className="font-semibold">
-              {feedSource === 'remote' ? 'live' : 'local seed'}
-            </span>
-            . Explainer cites FR Doc 2026-13392.{' '}
-            <a
-              href={FEED_SHARE}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-secondary underline underline-offset-2 break-all"
-            >
-              Public JSON (CORS - agent.meta.ai)
-            </a>
-            . {stats.total_comments} comments tracked · last pull {lastPullLabel}.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={onAbout}
-          className="btn btn-outline border-neutral/30 shrink-0"
-        >
-          About & disclaimer
-        </button>
-      </div>
     </div>
   );
 }
