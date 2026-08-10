@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState, useTransition } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import AboutTab from '@/components/nprm/AboutTab';
 import CommentsTab from '@/components/nprm/CommentsTab';
+import NprmTabBar from '@/components/nprm/NprmTabBar';
 import OverviewTab from '@/components/nprm/OverviewTab';
 import SummaryTab from '@/components/nprm/SummaryTab';
 import ThemesTab from '@/components/nprm/ThemesTab';
@@ -94,36 +95,7 @@ export default function NprmClient({
         </div>
       </div>
 
-      <div className="border-b-2 border-base-300 bg-base-100 sticky top-[var(--site-sticky-offset)] z-30 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4">
-          <div
-            role="tablist"
-            aria-label="EB-5 proposed rule sections"
-            className="flex gap-1 overflow-x-auto py-2.5 -mx-1 px-1"
-          >
-            {NPRM_TABS.map((t) => {
-              const selected = active === t.id;
-              return (
-                <button
-                  key={t.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={selected}
-                  id={`nprm-tab-${t.id}`}
-                  className={`shrink-0 px-3.5 sm:px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary ${
-                    selected
-                      ? 'bg-primary text-primary-content shadow-soft'
-                      : 'text-neutral bg-base-200/80 hover:bg-base-300 hover:text-primary'
-                  }`}
-                  onClick={() => setTab(t.id)}
-                >
-                  {t.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
+      <NprmTabBar active={active} onSelect={setTab} />
 
       <div
         className="max-w-6xl mx-auto px-4 pt-6 sm:pt-8"
