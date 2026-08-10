@@ -84,9 +84,6 @@ export default function HomePage() {
           <p className="mt-2 text-xs font-medium text-neutral/80 max-w-xl mx-auto leading-relaxed">
             {TRUST_SNAPSHOT}
           </p>
-          <p className="mt-3 text-sm font-medium text-amber-800 max-w-xl mx-auto leading-relaxed">
-            Nothing here is legal or financial advice.
-          </p>
           <div className="flex flex-wrap gap-3 justify-center mt-8">
             <Link href="/nprm" className="btn btn-primary text-primary-content rounded-full px-6">
               Read NPRM explainer
