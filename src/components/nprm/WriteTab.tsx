@@ -638,15 +638,23 @@ export default function WriteTab({
             />
             <ol className="list-decimal pl-5 text-sm text-neutral space-y-1.5 leading-relaxed">
               <li>
-                <span>Paste the prompt into your own LLM</span>
-                <div className="mt-1.5 flex flex-wrap gap-x-1 gap-y-1 text-xs">
+                <span className="inline">
+                  Paste the prompt into your own LLM{' '}
+                </span>
+                <span className="inline text-xs">
                   {LLM_LINKS.map((llm, i) => (
-                    <span key={llm.id} className="inline-flex items-center gap-1">
-                      {i > 0 ? (
+                    <span key={llm.id} className="inline">
+                      {i === 0 ? (
                         <span className="text-neutral/40" aria-hidden>
-                          ·
+                          {' '}
+                          ·{' '}
                         </span>
-                      ) : null}
+                      ) : (
+                        <span className="text-neutral/40" aria-hidden>
+                          {' '}
+                          ·{' '}
+                        </span>
+                      )}
                       <button
                         type="button"
                         className="font-semibold text-secondary underline underline-offset-2 hover:text-primary disabled:opacity-50 disabled:no-underline"
@@ -662,13 +670,7 @@ export default function WriteTab({
                       </button>
                     </span>
                   ))}
-                </div>
-                <p className="mt-1 text-[11px] text-neutral/70 leading-relaxed">
-                  Click a name to copy the prompt and open that chat. ChatGPT,
-                  Claude, and DeepSeek can prefill when the prompt is not too
-                  long; otherwise paste from your clipboard. On phones, the
-                  installed app may open when the OS supports it.
-                </p>
+                </span>
               </li>
               <li>Edit the draft in your voice (aim for more than 30% personal)</li>
               <li>
