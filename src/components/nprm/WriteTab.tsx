@@ -262,7 +262,6 @@ export default function WriteTab({
     try {
       await navigator.clipboard.writeText(text);
       setCopyMsg(`${label} copied`);
-      toast('Copied for regulations.gov', 'success');
       track('builder_copied');
       if (personalized) track('builder_personalized');
       window.setTimeout(() => setCopyMsg(null), 2000);
@@ -638,39 +637,28 @@ export default function WriteTab({
             />
             <ol className="list-decimal pl-5 text-sm text-neutral space-y-1.5 leading-relaxed">
               <li>
-                <span className="inline">
-                  Paste the prompt into your own LLM{' '}
-                </span>
-                <span className="inline text-xs">
-                  {LLM_LINKS.map((llm, i) => (
-                    <span key={llm.id} className="inline">
-                      {i === 0 ? (
-                        <span className="text-neutral/40" aria-hidden>
-                          {' '}
-                          ·{' '}
-                        </span>
-                      ) : (
-                        <span className="text-neutral/40" aria-hidden>
-                          {' '}
-                          ·{' '}
-                        </span>
-                      )}
-                      <button
-                        type="button"
-                        className="font-semibold text-secondary underline underline-offset-2 hover:text-primary disabled:opacity-50 disabled:no-underline"
-                        disabled={!ready}
-                        title={
-                          ready
-                            ? `Copy prompt and open ${llm.label}`
-                            : 'Select at least one theme and accept the disclaimer first'
-                        }
-                        onClick={() => openInLlm(llm)}
-                      >
-                        {llm.label}
-                      </button>
+                Paste the prompt into your own LLM
+                {LLM_LINKS.map((llm) => (
+                  <span key={llm.id} className="text-xs">
+                    <span className="text-neutral/40" aria-hidden>
+                      {' '}
+                      ·{' '}
                     </span>
-                  ))}
-                </span>
+                    <button
+                      type="button"
+                      className="font-semibold text-secondary underline underline-offset-2 hover:text-primary disabled:opacity-50 disabled:no-underline"
+                      disabled={!ready}
+                      title={
+                        ready
+                          ? `Copy prompt and open ${llm.label}`
+                          : 'Select at least one theme and accept the disclaimer first'
+                      }
+                      onClick={() => openInLlm(llm)}
+                    >
+                      {llm.label}
+                    </button>
+                  </span>
+                ))}
               </li>
               <li>Edit the draft in your voice (aim for more than 30% personal)</li>
               <li>
