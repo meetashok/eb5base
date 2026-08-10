@@ -173,12 +173,12 @@ export default function SummaryTab() {
         </nav>
 
         <div className="space-y-6 max-w-3xl">
-          <div className="lg:hidden flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
+          <div className="lg:hidden flex flex-wrap gap-2 pb-1">
             {SECTIONS.map((s) => (
               <a
                 key={s.id}
                 href={`#${s.id}`}
-                className="shrink-0 rounded-full border border-base-300 bg-base-100 px-3 py-1 text-xs font-semibold text-neutral"
+                className="rounded-md border border-base-300 bg-base-100 px-3 py-1 text-xs font-semibold text-neutral"
               >
                 {s.title}
               </a>
