@@ -2,11 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import GlossaryTerm from '@/components/nprm/GlossaryTerm';
 
 export type InvestorFilter = 'all' | 'pre_ria' | 'post_ria' | 'future';
 
 const ROWS: {
   topic: string;
+  happening: string;
+  means: string;
+  legal: string;
   preRia: string;
   postRia: string;
   future: string;
@@ -14,87 +18,115 @@ const ROWS: {
   tone: 'win' | 'watch' | 'risk' | 'neutral';
 }[] = [
   {
-    topic: 'Investment Amount',
+    topic: 'When you can get your money back',
+    happening:
+      'Draft says about 2 years from when your money reaches the job-creating project, not until your green card.',
+    means:
+      'You may get capital back sooner, without forced redeployment into a project you did not choose.',
+    legal: '8 CFR 216.6 · 2-year sustainment',
     preRia:
-      'You paid $500K/$1M old rules. No change. But good-faith protections via I-527 now formalized if your RC failed.',
+      'Your money often had to stay at risk for the whole wait. Redeployment was common.',
     postRia:
-      'You already paid $800K TEA / $1.05M standard. Rule codifies those amounts.',
-    future:
-      'Same $800K/$1.05M today. NEW $1.4M tier for high-employment areas. Inflation hike Jan 1, 2027.',
-    comment: 'Do you support inflation adjustment? Is $1.4M tier fair?',
-    tone: 'watch',
-  },
-  {
-    topic: 'TEA Determination',
-    preRia: 'State letters used before.',
-    postRia: 'USCIS now decides TEAs centrally.',
-    future: 'Same USCIS method, now in regulation with formal criteria.',
-    comment: 'Should DHS publish clearer unemployment methodology?',
-    tone: 'watch',
-  },
-  {
-    topic: 'Sustainment / Redeployment',
-    preRia: 'You were subject to redeployment for entire conditional period.',
-    postRia:
-      'WIN: Only 2 years from investment made available to JCE. After that + job creation met, you can get capital back even if visa backlogged. DHS says this lessens burden from visa backlogs.',
-    future: 'Same 2-year rule. Redeployment expected to be rare.',
-    comment:
-      'Support 2-year rule? Should clock start at investment or JCE deployment?',
+      'Win: about 2 years after money reaches the job project, and once jobs are created, you can get capital back even if your visa is still pending.',
+    future: 'Same 2-year rule. Forced redeployment should be rare.',
+    comment: 'Support the 2-year rule? Say when the clock should start.',
     tone: 'win',
   },
   {
-    topic: 'If Your Regional Center Fails',
-    preRia: 'Old regime: termination could take you down with it.',
+    topic: 'What if your regional center closes',
+    happening:
+      'Draft gives you about 180 days to find a new sponsor and keep your place in line.',
+    means:
+      'You are not punished if the center fails through no fault of your own. If you already finished 2 years and jobs, you may not need to reinvest.',
+    legal: 'Form I-527 · good-faith investor protection',
+    preRia: 'Termination of a center could sink your case with it.',
     postRia:
-      'RIA good-faith protection now in reg: 180-day to re-associate, priority date survives. If 2-year + jobs done, no re-invest needed.',
+      'Win: about 180 days to re-associate, and you keep your place in line. If 2 years and jobs are done, you may not need to reinvest.',
     future: 'Same protection.',
-    comment: 'Is 180 days enough? Should there be expedited re-association?',
+    comment: 'Is 180 days enough? Ask for faster re-association.',
     tone: 'win',
   },
   {
-    topic: 'Priority Date Retention',
-    preRia: 'Limited.',
+    topic: 'How much you pay',
+    happening:
+      '$800K for rural and high unemployment and $1.05M standard stay for now. New $1.4M tier for very low unemployment areas. Amounts rise with inflation on Jan 1, 2027.',
+    means:
+      'If you file after Jan 1, 2027, you may pay more. The $1.4M tier will rarely affect most investors.',
+    legal: '8 CFR 204.6 · investment thresholds',
+    preRia:
+      'You paid under older $500K / $1M rules. Amounts do not go backward. New good-faith forms help if your center failed.',
     postRia:
-      'You can retain priority date from earlier approved petition when refiling if you meet requirements.',
-    future: 'Same.',
-    comment:
-      'Clarify when retention is allowed after RC termination vs. personal withdrawal.',
-    tone: 'neutral',
-  },
-  {
-    topic: 'Sanctions / Audits',
-    preRia: 'RCs had little formal oversight.',
-    postRia:
-      'RCs face audits, site visits, reporting, up to 10% fine of invested capital, suspension/termination.',
+      'You already paid $800K (rural / high unemployment) or $1.05M standard. The draft locks those amounts in.',
     future:
-      'Higher compliance cost: DHS estimates ~$47K/yr per RC but real cost higher, hits small single-project RCs hardest.',
-    comment: 'Comment on proportionality of fines. Ask DHS for real cost data.',
-    tone: 'risk',
-  },
-  {
-    topic: 'Source of Funds - Crypto',
-    preRia: 'Unclear.',
-    postRia:
-      'Rule confirms crypto accepted as lawful source, no crypto-specific regs yet, DHS asks for comment.',
-    future: 'Same - can use crypto but document source.',
-    comment: 'Should USCIS create crypto evidence standard?',
+      'Same $800K / $1.05M today. New $1.4M tier for high-employment areas. Inflation adjustment starts Jan 1, 2027.',
+    comment: 'Fair inflation path? Is the $1.4M tier needed?',
     tone: 'watch',
   },
   {
-    topic: 'Bridge Financing',
-    preRia: 'Common.',
+    topic: 'Who decides if your project qualifies for $800K',
+    happening:
+      'Before 2022, states often decided. Now USCIS decides. The draft writes that into the formal rule.',
+    means:
+      'More consistent nationwide, but USCIS needs to be clear about how it decides.',
+    legal: 'TEA determination · INA 203(b)(5)(E)',
+    preRia: 'State designation letters were common.',
+    postRia: 'USCIS decides centrally whether a project qualifies for the lower amount.',
+    future: 'Same USCIS method, written into regulation with clearer criteria.',
+    comment: 'Ask DHS to publish a clear unemployment method.',
+    tone: 'watch',
+  },
+  {
+    topic: 'Fines and audits for regional centers',
+    happening:
+      'Centers face audits, site visits, and fines (example: up to 10% of capital, late-filing penalties).',
+    means:
+      'Centers may have higher costs. Many are small, so fixed costs hurt them most and some may exit.',
+    legal: 'Sanctions regime · audits',
+    preRia: 'Centers had little formal oversight.',
     postRia:
-      'DHS proposes eliminating repaid bridge financing in certain circumstances and refining qualifying capital.',
-    future: 'Stricter structuring.',
-    comment: 'Will this hurt rural projects that use bridge?',
+      'Audits, site visits, reporting, fines, suspension, or termination are on the table.',
+    future:
+      'Higher compliance cost. Small single-project centers feel it most.',
+    comment: 'Ask whether fines are proportional. Request real cost data.',
     tone: 'risk',
   },
   {
-    topic: 'Promoters',
-    preRia: 'Unregulated abroad.',
-    postRia: 'Mandatory registration of direct and third-party promoters.',
-    future: 'You can verify promoter is registered.',
-    comment: 'Support transparency.',
+    topic: 'Using crypto for source of funds',
+    happening:
+      'Draft says crypto can be a lawful source and asks what evidence should be required.',
+    means:
+      'If you used crypto, you can still file, but document the chain clearly.',
+    legal: 'Source of funds · digital assets',
+    preRia: 'Rules were unclear.',
+    postRia:
+      'Crypto is accepted as a lawful source. No crypto-only rulebook yet. DHS asks for comment.',
+    future: 'Same: crypto is allowed if you document the source.',
+    comment: 'Should USCIS publish a clear crypto evidence standard?',
+    tone: 'watch',
+  },
+  {
+    topic: 'Bridge loans and project financing',
+    happening:
+      'Draft proposes to stop counting repaid bridge loans for job creation in some cases.',
+    means:
+      'May change how projects are structured, especially rural projects that rely on bridge money.',
+    legal: 'Bridge financing restriction',
+    preRia: 'Bridge financing was common in project stacks.',
+    postRia:
+      'DHS proposes limiting repaid bridge financing for proving job creation.',
+    future: 'Stricter structuring for new projects.',
+    comment: 'Will this hurt rural projects that use bridge financing?',
+    tone: 'risk',
+  },
+  {
+    topic: 'People who sell EB-5 abroad',
+    happening: 'Draft says promoters must register.',
+    means: 'You can check whether a promoter is registered. More transparency.',
+    legal: 'Promoter registration',
+    preRia: 'Often unregulated abroad.',
+    postRia: 'Direct and third-party promoters must register.',
+    future: 'You can verify registration before you pay fees.',
+    comment: 'Support clearer promoter transparency.',
     tone: 'win',
   },
 ];
@@ -168,18 +200,24 @@ export default function ImpactMatrix({
   const showPre = filter === 'all' || filter === 'pre_ria';
   const showPost = filter === 'all' || filter === 'post_ria';
   const showFuture = filter === 'all' || filter === 'future';
+  const eraView = filter !== 'all';
 
   return (
-    <section className="space-y-3" id="impact-matrix">
+    <section className="space-y-3 nprm-prose" id="impact-matrix">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div>
-          <h3 className="text-lg font-bold text-primary">
-            How Does This Affect Me? Impact Matrix
+          <p className="nprm-tldr">
+            TLDR: This draft decides when you can get money back, what happens
+            if your center closes, and how much future investors pay.
+          </p>
+          <h3 className="text-lg font-bold text-primary mt-2">
+            How does this affect me?
           </h3>
           <p className="text-sm text-neutral mt-1 leading-relaxed max-w-3xl">
-            Compare Pre-RIA, Post-RIA, and future filers. Green = investor win,
-            amber = watch, red = cost/risk. JCE = job-creating entity; NCE = new
-            commercial enterprise.
+            Plain English first. Green = investor win, amber = watch, red =
+            cost/risk. Hover terms like{' '}
+            <GlossaryTerm term="TEA" /> or <GlossaryTerm term="JCE" /> for
+            definitions.
           </p>
         </div>
         <div
@@ -205,81 +243,143 @@ export default function ImpactMatrix({
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border-2 border-base-300 bg-base-100 shadow-soft relative">
-        <p className="sm:hidden text-[10px] font-semibold uppercase tracking-wider text-neutral/60 px-3 pt-2">
-          Swipe sideways to compare columns
-        </p>
-        <table className="min-w-[40rem] w-full text-left text-xs sm:text-sm border-collapse">
-          <thead>
-            <tr className="bg-base-200/80 text-primary">
-              <th className="sticky left-0 z-10 bg-base-200 px-3 py-2.5 font-bold border-b border-base-300 min-w-[9rem]">
-                Topic
-              </th>
-              {showPre ? (
+      {!eraView ? (
+        <div className="overflow-x-auto rounded-xl border-2 border-base-300 bg-base-100 shadow-soft">
+          <table className="min-w-[36rem] w-full text-left text-sm border-collapse">
+            <thead>
+              <tr className="bg-base-200/80 text-primary">
+                <th className="px-3 py-2.5 font-bold border-b border-base-300 min-w-[10rem]">
+                  Topic
+                </th>
                 <th className="px-3 py-2.5 font-bold border-b border-base-300 min-w-[12rem]">
-                  Filed BEFORE Mar 2022 (Pre-RIA)
+                  What is happening
                 </th>
-              ) : null}
-              {showPost ? (
-                <th className="px-3 py-2.5 font-bold border-b border-base-300 min-w-[12rem] ring-2 ring-inset ring-secondary/40">
-                  Filed AFTER Mar 2022 (Post-RIA)
-                </th>
-              ) : null}
-              {showFuture ? (
                 <th className="px-3 py-2.5 font-bold border-b border-base-300 min-w-[12rem]">
-                  Plan to file in future
+                  What it means for you
                 </th>
-              ) : null}
-              <th className="px-3 py-2.5 font-bold border-b border-base-300 min-w-[10rem]">
-                What to comment on
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {ROWS.map((row) => {
-              const bg =
-                row.tone === 'win'
-                  ? 'bg-[var(--investor-win)]'
-                  : row.tone === 'watch'
-                    ? 'bg-[var(--watch)]'
-                    : row.tone === 'risk'
-                      ? 'bg-[var(--risk)]'
-                      : 'bg-base-100';
-              return (
-                <tr key={row.topic} className={`${bg} align-top`}>
-                  <th
-                    scope="row"
-                    className={`sticky left-0 z-10 px-3 py-2.5 font-semibold text-primary border-b border-base-300/80 ${bg}`}
-                  >
-                    <span className="inline-flex items-start gap-2">
-                      <ToneDot tone={row.tone} />
-                      <span>{row.topic}</span>
-                    </span>
+                <th className="px-3 py-2.5 font-bold border-b border-base-300 min-w-[9rem]">
+                  Legal reference
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {ROWS.map((row) => {
+                const bg =
+                  row.tone === 'win'
+                    ? 'bg-[var(--investor-win)]'
+                    : row.tone === 'watch'
+                      ? 'bg-[var(--watch)]'
+                      : row.tone === 'risk'
+                        ? 'bg-[var(--risk)]'
+                        : 'bg-base-100';
+                return (
+                  <tr key={row.topic} className={`${bg} align-top`}>
+                    <th
+                      scope="row"
+                      className={`px-3 py-2.5 font-semibold text-primary border-b border-base-300/80 ${bg}`}
+                    >
+                      <span className="inline-flex items-start gap-2">
+                        <ToneDot tone={row.tone} />
+                        <span>{row.topic}</span>
+                      </span>
+                    </th>
+                    <td className="px-3 py-2.5 text-neutral leading-relaxed border-b border-base-300/80">
+                      {row.happening}
+                    </td>
+                    <td className="px-3 py-2.5 text-neutral leading-relaxed border-b border-base-300/80">
+                      {row.means}
+                    </td>
+                    <td className="px-3 py-2.5 border-b border-base-300/80">
+                      <span className="nprm-legal-ref">{row.legal}</span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div className="overflow-x-auto rounded-xl border-2 border-base-300 bg-base-100 shadow-soft relative">
+          <p className="sm:hidden text-[10px] font-semibold uppercase tracking-wider text-neutral/60 px-3 pt-2">
+            Swipe sideways to compare columns
+          </p>
+          <table className="min-w-[40rem] w-full text-left text-xs sm:text-sm border-collapse">
+            <thead>
+              <tr className="bg-base-200/80 text-primary">
+                <th className="sticky left-0 z-10 bg-base-200 px-3 py-2.5 font-bold border-b border-base-300 min-w-[9rem]">
+                  Topic
+                </th>
+                {showPre ? (
+                  <th className="px-3 py-2.5 font-bold border-b border-base-300 min-w-[12rem]">
+                    Filed BEFORE Mar 2022
                   </th>
-                  {showPre ? (
-                    <td className="px-3 py-2.5 text-neutral leading-relaxed border-b border-base-300/80">
-                      {row.preRia}
+                ) : null}
+                {showPost ? (
+                  <th className="px-3 py-2.5 font-bold border-b border-base-300 min-w-[12rem] ring-2 ring-inset ring-secondary/40">
+                    Filed AFTER Mar 2022
+                  </th>
+                ) : null}
+                {showFuture ? (
+                  <th className="px-3 py-2.5 font-bold border-b border-base-300 min-w-[12rem]">
+                    Plan to file
+                  </th>
+                ) : null}
+                <th className="px-3 py-2.5 font-bold border-b border-base-300 min-w-[10rem]">
+                  What to comment on
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {ROWS.map((row) => {
+                const bg =
+                  row.tone === 'win'
+                    ? 'bg-[var(--investor-win)]'
+                    : row.tone === 'watch'
+                      ? 'bg-[var(--watch)]'
+                      : row.tone === 'risk'
+                        ? 'bg-[var(--risk)]'
+                        : 'bg-base-100';
+                return (
+                  <tr key={row.topic} className={`${bg} align-top`}>
+                    <th
+                      scope="row"
+                      className={`sticky left-0 z-10 px-3 py-2.5 font-semibold text-primary border-b border-base-300/80 ${bg}`}
+                    >
+                      <span className="inline-flex items-start gap-2">
+                        <ToneDot tone={row.tone} />
+                        <span className="space-y-1">
+                          <span className="block">{row.topic}</span>
+                          <span className="nprm-legal-ref block font-normal">
+                            {row.legal}
+                          </span>
+                        </span>
+                      </span>
+                    </th>
+                    {showPre ? (
+                      <td className="px-3 py-2.5 text-neutral leading-relaxed border-b border-base-300/80">
+                        {row.preRia}
+                      </td>
+                    ) : null}
+                    {showPost ? (
+                      <td className="px-3 py-2.5 text-neutral leading-relaxed border-b border-base-300/80">
+                        {row.postRia}
+                      </td>
+                    ) : null}
+                    {showFuture ? (
+                      <td className="px-3 py-2.5 text-neutral leading-relaxed border-b border-base-300/80">
+                        {row.future}
+                      </td>
+                    ) : null}
+                    <td className="px-3 py-2.5 text-neutral leading-relaxed border-b border-base-300/80 font-medium">
+                      {row.comment}
                     </td>
-                  ) : null}
-                  {showPost ? (
-                    <td className="px-3 py-2.5 text-neutral leading-relaxed border-b border-base-300/80">
-                      {row.postRia}
-                    </td>
-                  ) : null}
-                  {showFuture ? (
-                    <td className="px-3 py-2.5 text-neutral leading-relaxed border-b border-base-300/80">
-                      {row.future}
-                    </td>
-                  ) : null}
-                  <td className="px-3 py-2.5 text-neutral leading-relaxed border-b border-base-300/80 font-medium">
-                    {row.comment}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </section>
   );
 }

@@ -3,6 +3,7 @@
 import { Suspense, useMemo, useState } from 'react';
 import { CitationChips } from '@/components/nprm/CitationChips';
 import CountdownBanner from '@/components/nprm/CountdownBanner';
+import GlossaryTerm from '@/components/nprm/GlossaryTerm';
 import ImpactMatrix from '@/components/nprm/ImpactMatrix';
 import VolumeChart from '@/components/nprm/VolumeChart';
 import WhyComment from '@/components/nprm/WhyComment';
@@ -61,26 +62,35 @@ function Chevron({ open }: { open?: boolean }) {
   );
 }
 
-const NEW_CLAIMS: { label: string; citations: string }[] = [
+const KEY_POINTS: {
+  title: string;
+  body: string;
+  legal: string;
+}[] = [
   {
-    label: 'High Employment Area $1.4M tier',
-    citations: '[FR 2026-13392, IV.B Definitions]',
+    title: 'You may get your investment back after about 2 years, not after many years',
+    body: 'Old practice often kept your money stuck until the green card path moved. The draft says your money only needs to stay invested for about 2 years after it reaches the job-creating project, once jobs are created.',
+    legal: '2-year sustainment · 8 CFR 216.6',
   },
   {
-    label: 'Formal 2-year sustainment rule - ends lifetime redeployment debate',
-    citations: '[FR 2026-13392, IV.D.6 p 40705-06]',
+    title: 'If your regional center fails, you keep your place in line for about 180 days',
+    body: 'The draft gives good-faith investors time to find a new sponsor without losing their filing date. If you already finished 2 years and job creation, you may not need to reinvest.',
+    legal: 'Form I-527 · good-faith protection',
   },
   {
-    label: 'Tiered sanctions regime - fines up to 10% of capital',
-    citations: '[FR 2026-13392, II.C]',
+    title: '$800K stays for now; a new $1.4M tier and Jan 1, 2027 inflation hike are proposed',
+    body: 'Rural and high-unemployment projects stay at $800K today, standard stays at $1.05M. A new higher tier is proposed for very low unemployment areas. Amounts rise with inflation on Jan 1, 2027.',
+    legal: 'Investment thresholds · 8 CFR 204.6',
   },
   {
-    label: 'Form I-527 - new form for good-faith investors whose RC was terminated',
-    citations: '[FR 2026-13392, IV.M]',
+    title: 'USCIS, not states, decides if a project qualifies for the lower amount',
+    body: 'Whether a project gets the $800K amount is decided centrally. That can be more consistent, but the method needs to be transparent.',
+    legal: 'TEA determination',
   },
   {
-    label: 'Promoter registration - direct and third-party promoters must be registered',
-    citations: '[FR 2026-13392, II.C]',
+    title: 'More audits and fines for regional centers',
+    body: 'Centers face site visits, reporting, and fines. Many centers are small, so fixed compliance costs can push some out.',
+    legal: 'Sanctions and audits',
   },
 ];
 
@@ -125,33 +135,18 @@ export default function OverviewTab({
   }, [longThemes, themeQuery]);
 
   return (
-    <div className="space-y-8 animate-[fadeIn_0.35s_ease-out]">
+    <div className="space-y-8 animate-[fadeIn_0.35s_ease-out] nprm-prose">
       <header className="space-y-4 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
         <p className="text-xs uppercase tracking-[0.18em] font-bold text-secondary">
-          DHS Notice of Proposed Rulemaking · July 2, 2026
+          Draft rule · comments close August 31, 2026
         </p>
         <h2 className="text-xl md:text-2xl font-bold text-primary leading-tight">
-          The EB-5 Proposed Rule is Here
+          What is this draft rule, and does it affect your EB-5 money?
         </h2>
-        <p className="text-sm sm:text-[0.95rem] text-neutral leading-relaxed max-w-3xl">
-          EB5 Base is breaking down the 358-page rule that finally codifies the
-          EB-5 Reform and Integrity Act of 2022 into regulation. This is not
-          final. DHS is taking public comments for 60 days through August 31,
-          2026.
+        <p className="nprm-tldr">
+          TLDR: This is a draft of new EB-5 house rules. It is not final. You can
+          tell the agency what you think before August 31, 2026.
         </p>
-        {short?.title ? (
-          <p className="text-xs font-bold uppercase tracking-wider text-neutral/70">
-            {short.title}
-          </p>
-        ) : null}
-        {short?.text ? (
-          <p className="text-sm text-neutral/80 leading-relaxed max-w-3xl">
-            {short.text}
-          </p>
-        ) : null}
-        {short?.citations?.length ? (
-          <CitationChips citations={short.citations} href={FR_HTML} />
-        ) : null}
         <CountdownBanner endsLabel={ends} />
         <div className="flex flex-col gap-2 pt-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -189,7 +184,7 @@ export default function OverviewTab({
               rel="noopener noreferrer"
               className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
             >
-              Federal Register HTML
+              Federal Register
             </a>
             <span className="text-neutral/30" aria-hidden>
               ·
@@ -205,70 +200,145 @@ export default function OverviewTab({
           </div>
         </div>
         <p className="text-xs text-neutral/75 leading-relaxed">
-          Last updated: {NPRM_LAST_UPDATED} · Sources:{' '}
-          <a
-            href={FR_HTML}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold text-secondary underline underline-offset-2"
-          >
-            Federal Register NPRM
-          </a>
-          ,{' '}
-          <a
-            href={DOCKET_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold text-secondary underline underline-offset-2"
-          >
-            regulations.gov docket
-          </a>
-          . Community-built · Investor-led. Not legal advice.
-        </p>
-        <div className="flex flex-wrap gap-2 text-xs">
-          <span className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 font-semibold text-neutral">
+          Last updated: {NPRM_LAST_UPDATED}. Not legal advice.{' '}
+          <span className="nprm-legal-ref">
             FR Doc 2026-13392 · {FR_CITATION} · RIN {RIN}
           </span>
-          <span className="inline-flex items-center rounded-md border border-secondary/40 bg-secondary/10 px-2.5 py-1 font-semibold text-secondary">
-            {stats.total_comments} comments tracked · last pull {lastPullLabel}
-          </span>
-        </div>
+        </p>
       </header>
 
-      <section className="space-y-3 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
+      <section className="nprm-callout-plain space-y-3" id="what-is-nprm">
         <h3 className="text-lg font-bold text-primary">
-          In 60 seconds: What&apos;s actually new vs. what&apos;s just being written
-          down?
+          What is this NPRM? A draft of new house rules
         </h3>
-        <p className="text-sm text-neutral leading-relaxed">
-          Much of the rule just writes into regulation what Congress already
-          decided in 2022.
+        <p>
+          Think of EB-5 as an apartment building. Congress passed a big renovation
+          law in 2022 (the <GlossaryTerm term="RIA" />). Since then, the building
+          manager (<GlossaryTerm term="USCIS" />) has been enforcing the new rules
+          with memos.
         </p>
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <p className="text-xs uppercase tracking-wider font-bold text-secondary">
-              Truly NEW from DHS
-            </p>
-            <ol className="list-decimal pl-5 space-y-2 text-sm text-neutral leading-relaxed">
-              {NEW_CLAIMS.map((claim) => (
-                <li key={claim.label} className="space-y-1">
-                  <span>{claim.label}</span>
-                  <CitationChips citations={claim.citations} href={FR_HTML} />
-                </li>
-              ))}
-            </ol>
-          </div>
-          <div className="space-y-2">
-            <p className="text-xs uppercase tracking-wider font-bold text-neutral/70">
-              Codification of what you already live with
-            </p>
-            <p className="text-sm text-neutral leading-relaxed">
-              RIA integrity measures, audits/site visits, fund administration, TEA
-              adjudication by USCIS (not states), priority date retention,
-              automatic revocation + investor protections.
-            </p>
-          </div>
+        <p>
+          Now the manager published a formal draft of the new rulebook:{' '}
+          <GlossaryTerm term="NPRM" />, 358 pages, published July 2, 2026. It is
+          not final. It is a proposal.
+        </p>
+        <p>
+          You have until August 31, 2026 to tell them what you think. After that,
+          they will publish the final rulebook.
+        </p>
+        <p className="font-semibold text-primary">
+          Why should you care? This draft decides three things that affect your
+          money:
+        </p>
+        <ol className="list-decimal pl-5 space-y-2">
+          <li>
+            When you can get your $800K back (about 2 years vs waiting on a green
+            card backlog)
+          </li>
+          <li>
+            What happens if your regional center closes (can you keep your place
+            in line)
+          </li>
+          <li>
+            How much future investors will pay ($800K stays for now, but a new
+            $1.4M tier is proposed)
+          </li>
+        </ol>
+        {short?.text ? (
+          <details className="rounded-lg border border-base-300 bg-base-100/80">
+            <summary className="cursor-pointer px-3 py-2 text-xs font-bold uppercase tracking-wider text-neutral/80">
+              Official short summary
+            </summary>
+            <div className="px-3 pb-3 space-y-2">
+              {short.title ? (
+                <p className="text-xs font-bold uppercase tracking-wider text-neutral/70">
+                  {short.title}
+                </p>
+              ) : null}
+              <p className="text-sm text-neutral leading-relaxed">{short.text}</p>
+              {short.citations?.length ? (
+                <CitationChips citations={short.citations} href={FR_HTML} />
+              ) : null}
+            </div>
+          </details>
+        ) : null}
+      </section>
+
+      <section className="nprm-callout-action space-y-3" id="do-i-need-to-act">
+        <h3 className="text-lg font-bold text-primary">
+          Do I need to do something before August 31?
+        </h3>
+        <p>
+          <strong>If you already filed:</strong> You do not have to comment, but
+          commenting can help protect your investment. If the 2-year rule is
+          finalized, you may get capital back sooner. If good-faith protections
+          are strengthened, you are safer if your regional center fails.
+        </p>
+        <p>
+          <strong>If you plan to file:</strong> Pay attention. Investment amounts
+          stay $800K for rural and high unemployment and $1.05M standard today,
+          but a new $1.4M tier for high employment areas is proposed. Amounts
+          will also rise for inflation on Jan 1, 2027.
+        </p>
+        <p>
+          <strong>Action:</strong> Read the 5-minute summary, then use our
+          builder to draft a personal comment for regulations.gov. It takes about
+          10 minutes. You can submit anonymously. Do not include your A-Number.
+        </p>
+        <div className="flex flex-wrap gap-2 pt-1">
+          <button
+            type="button"
+            onClick={onSummary}
+            className="btn btn-sm btn-outline border-neutral/30"
+          >
+            Read summary
+          </button>
+          <button
+            type="button"
+            onClick={onWrite}
+            className="btn btn-sm btn-primary text-primary-content"
+          >
+            Build my comment
+          </button>
         </div>
+      </section>
+
+      <aside className="nprm-callout-plain space-y-2" id="india-china">
+        <h3 className="text-base font-bold text-primary">
+          Why this matters if you are waiting from India or China
+        </h3>
+        <p>
+          You often wait the longest for a visa number. A clear 2-year
+          sustainment rule and stronger good-faith protections matter most when
+          your money would otherwise sit through a long backlog or forced
+          redeployment.
+        </p>
+      </aside>
+
+      <section className="space-y-3" id="key-points">
+        <p className="nprm-tldr">
+          TLDR: Five investor-first points. Codes stay in small text underneath.
+        </p>
+        <h3 className="text-lg font-bold text-primary">
+          The points that actually matter to you
+        </h3>
+        <ol className="space-y-3">
+          {KEY_POINTS.map((point, idx) => (
+            <li
+              key={point.title}
+              className="rounded-xl border-2 border-base-300 bg-base-100 p-4 shadow-sm space-y-2"
+            >
+              <p className="font-bold text-primary leading-snug">
+                <span className="text-secondary tabular-nums mr-1.5">
+                  {idx + 1}.
+                </span>
+                {point.title}
+              </p>
+              <p className="text-sm text-neutral leading-relaxed">{point.body}</p>
+              <p className="nprm-legal-ref">For legal reference: {point.legal}</p>
+            </li>
+          ))}
+        </ol>
       </section>
 
       <Suspense fallback={<ListSkeleton count={2} />}>
@@ -278,12 +348,16 @@ export default function OverviewTab({
       <section className="space-y-3" id="proposal-themes">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h3 className="text-lg font-bold text-primary">
+            <p className="nprm-tldr">
+              TLDR: Deeper sections for readers who want the Federal Register
+              trail. Skim titles first.
+            </p>
+            <h3 className="text-lg font-bold text-primary mt-2">
               What the proposal covers
             </h3>
             <p className="text-sm text-neutral mt-1 max-w-2xl leading-relaxed">
-              Twelve plain-language sections. Each paraphrases USCIS text and cites
-              the Federal Register page so you can verify.
+              Twelve plain-language sections. Each paraphrases USCIS text and
+              cites the Federal Register page so you can verify.
             </p>
           </div>
           <p className="text-xs font-semibold text-neutral/70">
@@ -307,7 +381,7 @@ export default function OverviewTab({
             type="search"
             value={themeQuery}
             onChange={(e) => setThemeQuery(e.target.value)}
-            placeholder="Keyword: bridge, sustainment, TEA…"
+            placeholder="Keyword: bridge, sustainment, TEA"
             className="input input-sm input-bordered w-full max-w-md bg-base-100 focus:outline-secondary"
           />
         </div>
@@ -336,7 +410,7 @@ export default function OverviewTab({
                   {plainDash(theme.plain_text)}
                 </p>
                 {theme.uscis_phrasing ? (
-                  <details className="rounded-lg border border-base-300 bg-base-200/50">
+                  <details className="rounded-lg border border-base-300 bg-base-200/50 nprm-callout-legal">
                     <summary className="cursor-pointer px-3 py-2 text-xs font-bold uppercase tracking-wider text-neutral/80">
                       What USCIS actually said
                     </summary>
@@ -356,7 +430,7 @@ export default function OverviewTab({
                     rel="noopener noreferrer"
                     className="inline-flex items-center rounded-md border border-secondary/40 bg-secondary/10 px-2.5 py-1 text-[11px] font-semibold text-secondary hover:bg-secondary/15"
                   >
-                    Open FR ↗
+                    Open FR
                   </a>
                 </div>
               </div>
@@ -441,7 +515,7 @@ export default function OverviewTab({
             >
               Public JSON (CORS - agent.meta.ai)
             </a>
-            .
+            . {stats.total_comments} comments tracked · last pull {lastPullLabel}.
           </p>
         </div>
         <button
