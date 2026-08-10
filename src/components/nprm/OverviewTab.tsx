@@ -265,9 +265,6 @@ export default function OverviewTab({
       </section>
 
       <section className="space-y-3" id="key-points">
-        <p className="nprm-tldr">
-          TLDR: Five investor-first points. Codes stay in small text underneath.
-        </p>
         <h3 className="text-base font-bold text-primary">
           The points that actually matter to you
         </h3>
