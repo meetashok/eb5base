@@ -34,6 +34,7 @@ const TOOLS = [
     badge: 'Urgent - Comment deadline Aug 31',
     comingSoon: false,
     primary: true,
+    variant: 'nprm' as const,
   },
   {
     href: '/status',
@@ -43,6 +44,7 @@ const TOOLS = [
     badge: 'Available now',
     comingSoon: false,
     primary: false,
+    variant: 'status' as const,
   },
   {
     href: '/tracker',
@@ -52,6 +54,7 @@ const TOOLS = [
     badge: 'Coming soon - Join waitlist',
     comingSoon: true,
     primary: false,
+    variant: 'tracker' as const,
   },
 ];
 
@@ -113,14 +116,12 @@ export default function HomePage() {
           {TOOLS.map((tool) => (
             <article
               key={tool.href}
-              className={`rounded-2xl border-2 bg-base-100 p-6 shadow-soft flex flex-col text-left ${
-                tool.primary ? 'border-secondary/50 ring-1 ring-secondary/20' : 'border-base-300'
-              }`}
+              className={`home-tool-card home-tool-card--${tool.variant}`}
             >
               <p
                 className={`text-[11px] uppercase tracking-wider font-bold mb-2 ${
                   tool.comingSoon
-                    ? 'inline-flex self-start rounded-md border border-neutral-700/20 bg-neutral-100 px-2 py-0.5 text-neutral-700'
+                    ? 'inline-flex self-start rounded-md border border-neutral-700/20 bg-white/70 px-2 py-0.5 text-neutral-700'
                     : tool.primary
                       ? 'text-secondary'
                       : 'text-neutral/70'
@@ -129,7 +130,9 @@ export default function HomePage() {
                 {tool.badge}
               </p>
               <h3 className="text-xl font-bold text-primary">{tool.title}</h3>
-              <p className="text-sm text-neutral/75 leading-relaxed mt-2 flex-1">{tool.body}</p>
+              <p className="text-sm text-neutral/80 leading-relaxed mt-2 flex-1">
+                {tool.body}
+              </p>
               {tool.comingSoon ? (
                 <CaseTrackerWaitlistForm
                   source="home"
@@ -142,7 +145,7 @@ export default function HomePage() {
                   className={`btn btn-sm rounded-full mt-5 self-start ${
                     tool.primary
                       ? 'btn-primary text-primary-content'
-                      : 'btn-outline'
+                      : 'btn-outline bg-white/60'
                   }`}
                 >
                   {tool.cta}
