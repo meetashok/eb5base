@@ -221,6 +221,39 @@ body {
     @apply text-secondary;
   }
 
+  .nprm-page {
+    font-size: 1.05rem;
+  }
+
+  .nprm-prose {
+    @apply leading-relaxed;
+    line-height: 1.7;
+  }
+
+  .nprm-prose p {
+    @apply text-[0.95rem] sm:text-[1.05rem] text-neutral leading-relaxed max-w-2xl;
+  }
+
+  .nprm-tldr {
+    @apply text-sm sm:text-[0.95rem] font-semibold text-primary/90 bg-secondary/10 border border-secondary/25 rounded-lg px-3 py-2 max-w-2xl leading-snug;
+  }
+
+  .nprm-legal-ref {
+    @apply text-[11px] sm:text-xs text-neutral/60 font-medium leading-snug;
+  }
+
+  .nprm-callout-plain {
+    @apply rounded-xl border-2 border-secondary/30 bg-secondary/10 px-4 py-4 sm:px-5 sm:py-5;
+  }
+
+  .nprm-callout-action {
+    @apply rounded-xl border-2 border-warning/50 bg-warning/15 px-4 py-4 sm:px-5 sm:py-5;
+  }
+
+  .nprm-callout-legal {
+    @apply rounded-xl border border-base-300 bg-base-200/60;
+  }
+
   .alert-heritage-info {
     @apply rounded-xl border border-secondary/25 bg-secondary/10 text-neutral;
   }

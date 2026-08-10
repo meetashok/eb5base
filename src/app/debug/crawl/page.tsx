@@ -28,6 +28,7 @@ const ROUTES: { href: string; title: string }[] = [
   { href: '/sitemap.xml', title: 'sitemap.xml' },
   { href: '/llms.txt', title: 'llms.txt' },
   { href: '/debug', title: 'Debug ping' },
+  { href: '/debug/plain', title: 'NPRM plain summary (debug)' },
 ];
 
 export default function CrawlDebugPage() {

@@ -1,50 +1,5 @@
 [
   {
-    "id": "grandfather_retroactivity",
-    "title": "Grandfather Clause / Retroactivity",
-    "cfrs": [
-      "INA 203(b)(5) as amended by RIA March 15 2022",
-      "8 CFR 204.400(a)",
-      "8 CFR 204.423(b)",
-      "8 CFR 216.6(d)-(e)"
-    ],
-    "summary": "Should post-RIA sustainment / TEA rules apply to investors who filed I-526E after March 15 2022 but before effective date. Comment 0079 Ankit Dave argues retroactive expansion harms investors who relied on 800k TEA and filed I-526E in 2025.",
-    "sample_ids": [
-      "USCIS-2026-0100-0079",
-      "USCIS-2026-0100-0081"
-    ],
-    "opinions": [
-      {
-        "id": "no_retro",
-        "label": "No retroactive application",
-        "stance": "Rules should apply only to petitions filed after final rule effective date, RIA March 15 2022 is statutory cutoff not regulatory cutoff",
-        "fragments": [
-          "Applying new sustainment/bridge restrictions to cases that filed in reliance on existing RIA guidance violates reliance interests",
-          "Investors who filed I-526E at 800k TEA in 2025 made irreversible capital commitment",
-          "Grandfather under 204.400(a) should track RIA enactment March 15 2022 not future rulemaking effective date"
-        ]
-      },
-      {
-        "id": "limited_retro",
-        "label": "Limited retroactivity with transition",
-        "stance": "Allow pending cases 180-day grace or elect old rule",
-        "fragments": [
-          "Transition period would reduce I-829 denials based on bridge financing elimination since 2013",
-          "USCIS should publish clear election for pending I-526E to opt into old 204.423(b)"
-        ]
-      },
-      {
-        "id": "pro_retro",
-        "label": "Pro retro uniformity",
-        "stance": "Program integrity requires same rule for all pending",
-        "fragments": [
-          "Uniform application avoids two-track adjudication",
-          "Final rule should clarify prospective only to avoid litigation"
-        ]
-      }
-    ]
-  },
-  {
     "id": "sustainment",
     "title": "Sustainment Period - 2yr vs Job Creation",
     "cfrs": [
@@ -125,32 +80,46 @@
     ]
   },
   {
-    "id": "definitional_asymmetry",
-    "title": "Definitional Asymmetry 204.432 vs 204.433",
+    "id": "grandfather_retroactivity",
+    "title": "Grandfather Clause / Retroactivity",
     "cfrs": [
-      "8 CFR 204.432",
-      "8 CFR 204.433"
+      "INA 203(b)(5) as amended by RIA March 15 2022",
+      "8 CFR 204.400(a)",
+      "8 CFR 204.423(b)",
+      "8 CFR 216.6(d)-(e)"
     ],
-    "summary": "Comment 0076 points to asymmetry between regional center vs direct definitions of new commercial enterprise and job creating entity.",
+    "summary": "Should post-RIA sustainment / TEA rules apply to investors who filed I-526E after March 15 2022 but before effective date. Comment 0079 Ankit Dave argues retroactive expansion harms investors who relied on 800k TEA and filed I-526E in 2025.",
     "sample_ids": [
-      "USCIS-2026-0100-0076"
+      "USCIS-2026-0100-0079",
+      "USCIS-2026-0100-0081"
     ],
     "opinions": [
       {
-        "id": "harmonize",
-        "label": "Harmonize definitions",
-        "stance": "Same NCE/JCE definitions should apply to RC and direct",
+        "id": "no_retro",
+        "label": "No retroactive application",
+        "stance": "Rules should apply only to petitions filed after final rule effective date, RIA March 15 2022 is statutory cutoff not regulatory cutoff",
         "fragments": [
-          "Current asymmetry creates disparate treatment of identical investments",
-          "Align 204.432 and 204.433 to reduce RFE risk"
+          "Applying new sustainment/bridge restrictions to cases that filed in reliance on existing RIA guidance violates reliance interests",
+          "Investors who filed I-526E at 800k TEA in 2025 made irreversible capital commitment",
+          "Grandfather under 204.400(a) should track RIA enactment March 15 2022 not future rulemaking effective date"
         ]
       },
       {
-        "id": "keep_distinction",
-        "label": "Keep distinction but clarify",
-        "stance": "Distinction intentional, but clarify when each applies",
+        "id": "limited_retro",
+        "label": "Limited retroactivity with transition",
+        "stance": "Allow pending cases 180-day grace or elect old rule",
         "fragments": [
-          "RC vs direct serve different policy, need plain language guide with examples"
+          "Transition period would reduce I-829 denials based on bridge financing elimination since 2013",
+          "USCIS should publish clear election for pending I-526E to opt into old 204.423(b)"
+        ]
+      },
+      {
+        "id": "pro_retro",
+        "label": "Pro retro uniformity",
+        "stance": "Program integrity requires same rule for all pending",
+        "fragments": [
+          "Uniform application avoids two-track adjudication",
+          "Final rule should clarify prospective only to avoid litigation"
         ]
       }
     ]
@@ -214,6 +183,37 @@
         "stance": "Any return obligation violates at-risk, market needs discipline",
         "fragments": [
           "RIA tightened at-risk to curb fraud, keep prohibition broad"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "definitional_asymmetry",
+    "title": "Definitional Asymmetry 204.432 vs 204.433",
+    "cfrs": [
+      "8 CFR 204.432",
+      "8 CFR 204.433"
+    ],
+    "summary": "Comment 0076 points to asymmetry between regional center vs direct definitions of new commercial enterprise and job creating entity.",
+    "sample_ids": [
+      "USCIS-2026-0100-0076"
+    ],
+    "opinions": [
+      {
+        "id": "harmonize",
+        "label": "Harmonize definitions",
+        "stance": "Same NCE/JCE definitions should apply to RC and direct",
+        "fragments": [
+          "Current asymmetry creates disparate treatment of identical investments",
+          "Align 204.432 and 204.433 to reduce RFE risk"
+        ]
+      },
+      {
+        "id": "keep_distinction",
+        "label": "Keep distinction but clarify",
+        "stance": "Distinction intentional, but clarify when each applies",
+        "fragments": [
+          "RC vs direct serve different policy, need plain language guide with examples"
         ]
       }
     ]
