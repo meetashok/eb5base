@@ -257,7 +257,7 @@ export default function OverviewTab({
       <section className="space-y-4" id="comment-stats">
         <NprmSectionHeading
           eyebrow="Tracker"
-          title={`As of today, ${stats.total_comments} comments have already been made`}
+          title={`As of today, ${stats.total_comments} comments have already been made. It's your turn now.`}
         >
           <p className="text-sm text-neutral leading-relaxed">
             Last pull {lastPullLabel}. You are not starting from zero. See the
