@@ -602,49 +602,85 @@ export default function WriteTab({
           </label>
         </section>
 
-        <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft space-y-2">
+        <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft space-y-3">
           <NprmSectionHeading
             as="h3"
             eyebrow="Step C"
             title="Guidelines"
             titleClassName="text-sm font-semibold text-primary leading-snug"
           />
-          <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                className="checkbox checkbox-sm"
-                checked={length === '150'}
-                onChange={() =>
-                  setLength((v) => (v === '150' ? '300_450' : '150'))
-                }
-              />
-              Length: ~150 words (off = 300 to 450)
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                className="checkbox checkbox-sm"
-                checked={style === 'formal'}
-                onChange={() =>
-                  setStyle((v) => (v === 'formal' ? 'plain' : 'formal'))
-                }
-              />
-              Style: formal regulatory (off = plain English)
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                className="checkbox checkbox-sm"
-                checked={format === 'bullets'}
-                onChange={() =>
-                  setFormat((v) =>
-                    v === 'bullets' ? 'paragraphs' : 'bullets'
-                  )
-                }
-              />
-              Format: bullets (off = paragraphs)
-            </label>
+          <div className="space-y-3">
+            {(
+              [
+                {
+                  id: 'length',
+                  label: 'Length',
+                  value: length,
+                  options: [
+                    { id: '150' as const, label: 'Short (~150)' },
+                    { id: '300_450' as const, label: 'Standard (300-450)' },
+                  ],
+                  onChange: setLength,
+                },
+                {
+                  id: 'style',
+                  label: 'Style',
+                  value: style,
+                  options: [
+                    { id: 'plain' as const, label: 'Plain English' },
+                    { id: 'formal' as const, label: 'Formal regulatory' },
+                  ],
+                  onChange: setStyle,
+                },
+                {
+                  id: 'format',
+                  label: 'Format',
+                  value: format,
+                  options: [
+                    { id: 'paragraphs' as const, label: 'Paragraphs' },
+                    { id: 'bullets' as const, label: 'Bullets' },
+                  ],
+                  onChange: setFormat,
+                },
+              ] as const
+            ).map((row) => (
+              <div
+                key={row.id}
+                className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+              >
+                <span className="text-sm font-semibold text-primary shrink-0">
+                  {row.label}
+                </span>
+                <div
+                  className="inline-flex w-full sm:w-auto rounded-lg border-2 border-base-300 bg-base-200/60 p-0.5"
+                  role="group"
+                  aria-label={row.label}
+                >
+                  {row.options.map((opt) => {
+                    const selected = row.value === opt.id;
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        aria-pressed={selected}
+                        onClick={() =>
+                          (
+                            row.onChange as (v: typeof opt.id) => void
+                          )(opt.id)
+                        }
+                        className={`flex-1 sm:flex-none min-h-9 px-3 py-1.5 text-sm font-semibold rounded-md transition-colors ${
+                          selected
+                            ? 'bg-primary text-primary-content shadow-sm'
+                            : 'text-neutral hover:bg-base-100'
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
