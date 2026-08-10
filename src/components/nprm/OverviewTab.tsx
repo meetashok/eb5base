@@ -2,7 +2,6 @@
 
 import { Suspense, useMemo, useState } from 'react';
 import { CitationChips } from '@/components/nprm/CitationChips';
-import CountdownBanner from '@/components/nprm/CountdownBanner';
 import GlossaryTerm from '@/components/nprm/GlossaryTerm';
 import ImpactMatrix from '@/components/nprm/ImpactMatrix';
 import VolumeChart from '@/components/nprm/VolumeChart';
@@ -108,11 +107,6 @@ export default function OverviewTab({
 }: Props) {
   const [themeQuery, setThemeQuery] = useState('');
   const volume = dailyVolume(comments);
-  const ends =
-    stats.comment_period_ends ||
-    lastCheck?.metadata?.comment_period_ends ||
-    proposal?.comment_deadline ||
-    'August 31, 2026 · 11:59pm ET';
   const lastPullLabel = formatLastPull(stats.last_pull);
   const sourceUrl = proposal?.source_url || FR_PDF;
   const short = normalizeShortSummary(proposal?.short_summary);
@@ -147,7 +141,6 @@ export default function OverviewTab({
           TLDR: This is a draft of new EB-5 house rules. It is not final. You can
           tell the agency what you think before August 31, 2026.
         </p>
-        <CountdownBanner endsLabel={ends} />
         <div className="flex flex-col gap-2 pt-1">
           <div className="flex flex-wrap items-center gap-2">
             <button
@@ -175,20 +168,6 @@ export default function OverviewTab({
             >
               Full PDF
             </a>
-            <span className="text-neutral/30" aria-hidden>
-              ·
-            </span>
-            <a
-              href={FR_HTML}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
-            >
-              Federal Register
-            </a>
-            <span className="text-neutral/30" aria-hidden>
-              ·
-            </span>
             <a
               href={DOCKET_URL}
               target="_blank"
