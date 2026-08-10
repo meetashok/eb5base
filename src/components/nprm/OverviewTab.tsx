@@ -2,7 +2,6 @@
 
 import { Suspense, useMemo, useState } from 'react';
 import { CitationChips } from '@/components/nprm/CitationChips';
-import CountdownBanner from '@/components/nprm/CountdownBanner';
 import ImpactMatrix from '@/components/nprm/ImpactMatrix';
 import VolumeChart from '@/components/nprm/VolumeChart';
 import WhyComment from '@/components/nprm/WhyComment';
@@ -98,11 +97,6 @@ export default function OverviewTab({
 }: Props) {
   const [themeQuery, setThemeQuery] = useState('');
   const volume = dailyVolume(comments);
-  const ends =
-    stats.comment_period_ends ||
-    lastCheck?.metadata?.comment_period_ends ||
-    proposal?.comment_deadline ||
-    'August 31, 2026 · 11:59pm ET';
   const lastPullLabel = formatLastPull(stats.last_pull);
   const sourceUrl = proposal?.source_url || FR_PDF;
   const short = normalizeShortSummary(proposal?.short_summary);
@@ -149,7 +143,6 @@ export default function OverviewTab({
             {short.text}
           </p>
         ) : null}
-        <CountdownBanner endsLabel={ends} />
         <div className="flex flex-col gap-2 pt-1">
           <div className="flex flex-wrap items-center gap-2">
             <button
