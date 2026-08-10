@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 export type InvestorFilter = 'all' | 'pre_ria' | 'post_ria' | 'future';
 
@@ -142,8 +142,6 @@ export default function ImpactMatrix({
   initialInvestor?: InvestorFilter;
 }) {
   const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
   const [filter, setFilter] = useState<InvestorFilter>(
     initialInvestor || 'all'
   );
@@ -154,13 +152,17 @@ export default function ImpactMatrix({
 
   function selectFilter(next: InvestorFilter) {
     setFilter(next);
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(window.location.search);
     if (next === 'all') params.delete('investor');
     else params.set('investor', next);
     const qs = params.toString();
-    router.replace(`${pathname}${qs ? `?${qs}` : ''}#impact-matrix`, {
-      scroll: false,
-    });
+    // history only — NPRM tab switches already use pushState; a Next router
+    // replace here would remount the shell and flash the top nav.
+    window.history.replaceState(
+      null,
+      '',
+      `${window.location.pathname}${qs ? `?${qs}` : ''}#impact-matrix`
+    );
   }
 
   const showPre = filter === 'all' || filter === 'pre_ria';
