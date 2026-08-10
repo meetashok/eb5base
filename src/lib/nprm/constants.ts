@@ -20,6 +20,28 @@ export const ILRC_CITATION =
 export const ILRC_LINK =
   'https://www.ilrc.org/community-resources/how-submit-comment-federal-regulations';
 
+/** Evidence that public comments change final rules (for Why Comment). */
+export const COMMENT_IMPACT_SOURCES = [
+  {
+    id: 'gao',
+    label: 'GAO',
+    title: 'GAO-20-383R: agencies report comments changing final rules',
+    url: 'https://www.gao.gov/assets/gao-20-383r.pdf',
+  },
+  {
+    id: 'fr-process',
+    label: 'FR primer',
+    title: 'Office of the Federal Register: The Rulemaking Process',
+    url: 'https://uploads.federalregister.gov/uploads/2013/09/The-Rulemaking-Process.pdf',
+  },
+  {
+    id: 'eb5-2019',
+    label: '2019 EB-5 final rule',
+    title: 'EB-5 Immigrant Investor Program Modernization final rule (84 FR 35750)',
+    url: 'https://www.govinfo.gov/content/pkg/FR-2019-07-24/pdf/2019-15000.pdf',
+  },
+] as const;
+
 export const DISTINCTNESS_WARNING =
   'If 500 people paste the same paragraph, USCIS counts it as 1. Your personal story makes it distinct. GAO notes that mass mailing campaigns can yield thousands of duplicate comments that agencies may post individually, as attachments, or as a count. OIRA tooling has distilled about 300k comments down to about 30k distinct ones.';
 

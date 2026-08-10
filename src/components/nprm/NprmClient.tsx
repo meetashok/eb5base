@@ -228,7 +228,13 @@ export default function NprmClient({
         role="tabpanel"
         aria-labelledby={`nprm-tab-${active}`}
       >
-        {active === 'summary' && <SummaryTab />}
+        {active === 'summary' && (
+          <SummaryTab
+            proposal={data.proposal}
+            onThemes={() => setTab('themes')}
+            onComments={() => setTab('comments')}
+          />
+        )}
         {active === 'themes' && (
           <ThemesTab
             themes={data.themes}
@@ -269,7 +275,6 @@ export default function NprmClient({
             lastCheck={data.lastCheck}
             feedSource={data.feedSource}
             onThemes={() => setTab('themes')}
-            onComments={() => setTab('comments')}
             onWrite={() => setTab('write')}
             onSummary={() => setTab('summary')}
             onExternalBlogs={() => setTab('summary', 'external-explainers')}
