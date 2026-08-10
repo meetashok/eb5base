@@ -562,17 +562,21 @@ export default function WriteTab({
             </p>
           )}
 
-          <p className="text-xs text-neutral/75 leading-relaxed">
-            EB5 Base does NOT submit for you. Drafts stay in your browser unless
-            you copy them. This is not legal advice.
-          </p>
-
-          <ul className="text-sm text-neutral space-y-1 leading-relaxed">
-            <li>- Paste the prompt into your own LLM</li>
-            <li>- Edit the draft in your voice (&gt;30% personal)</li>
-            <li>- Paste the final comment on regulations.gov</li>
-            <li>- Consider a 30-minute counsel memo for your file</li>
-          </ul>
+          <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-3">
+            <h3 className="text-sm font-semibold text-primary">
+              What to do after you copy
+            </h3>
+            <ol className="list-decimal pl-5 text-sm text-neutral space-y-1.5 leading-relaxed">
+              <li>Paste the prompt into your own LLM</li>
+              <li>Edit the draft in your voice (aim for more than 30% personal)</li>
+              <li>Paste the final comment on regulations.gov</li>
+              <li>Consider a 30-minute counsel memo for your file</li>
+            </ol>
+            <p className="text-xs text-neutral/75 leading-relaxed">
+              EB5 Base does not submit for you. Drafts stay in your browser unless
+              you copy them. This is not legal advice.
+            </p>
+          </section>
         </div>
       </div>
     </div>
