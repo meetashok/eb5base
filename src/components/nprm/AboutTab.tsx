@@ -59,7 +59,7 @@ export default function AboutTab({
       <NprmDisclaimer />
 
       <section className="space-y-2 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
-        <h2 className="text-xl font-bold text-primary">Why we built this</h2>
+        <h2 className="text-lg font-bold text-primary">Why we built this</h2>
         <p className="text-sm text-neutral leading-relaxed">
           Post-RIA EB-5 investors want to comment on Docket USCIS-2026-0100 with
           educated personal stories, not form letters that USCIS can bucket as one.
@@ -70,7 +70,7 @@ export default function AboutTab({
       </section>
 
       <section className="space-y-2 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
-        <h2 className="text-xl font-bold text-primary">
+        <h2 className="text-lg font-bold text-primary">
           Proposal summary sources
         </h2>
         <p className="text-sm text-neutral leading-relaxed">
@@ -101,7 +101,7 @@ export default function AboutTab({
       </section>
 
       <section className="space-y-3 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
-        <h2 className="text-xl font-bold text-primary">Your rights to comment</h2>
+        <h2 className="text-lg font-bold text-primary">Your rights to comment</h2>
         <div className="space-y-3 text-sm text-neutral leading-relaxed">
           <p>
             <span className="font-bold text-primary">APA (5 USC 553(c)):</span>{' '}
@@ -143,7 +143,7 @@ export default function AboutTab({
       </section>
 
       <section className="space-y-2 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
-        <h2 className="text-xl font-bold text-primary">How to file</h2>
+        <h2 className="text-lg font-bold text-primary">How to file</h2>
         <ol className="list-decimal list-inside space-y-2 text-sm text-neutral leading-relaxed">
           <li>Build a prompt in the Write tab (personal block required).</li>
           <li>
@@ -182,7 +182,7 @@ export default function AboutTab({
       </section>
 
       <section className="space-y-3 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
-        <h2 className="text-xl font-bold text-primary">How we keep this accurate</h2>
+        <h2 className="text-lg font-bold text-primary">How we keep this accurate</h2>
         <p className="text-sm text-neutral leading-relaxed">
           We keep a dated record of every update to this guide and the public comment
           summaries, so you can see what changed and when. That history helps us stay

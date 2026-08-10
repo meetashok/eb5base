@@ -246,7 +246,7 @@ export default function WriteTab({
   return (
     <div className="space-y-4 animate-[fadeIn_0.35s_ease-out]">
       <div>
-        <h2 className="text-xl font-bold text-primary">Build My Comment</h2>
+        <h2 className="text-lg font-bold text-primary">Build My Comment</h2>
         <p className="text-sm text-neutral mt-1 max-w-2xl leading-relaxed">
           Use this page to personalize a draft for{' '}
           <a

@@ -130,10 +130,10 @@ export default function OverviewTab({
   return (
     <div className="space-y-8 animate-[fadeIn_0.35s_ease-out] nprm-prose">
       <header className="space-y-4 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
-        <p className="text-xs uppercase tracking-[0.18em] font-bold text-secondary">
+        <p className="text-xs uppercase tracking-[0.22em] font-semibold text-secondary mb-1">
           Draft rule · comments close August 31, 2026
         </p>
-        <h2 className="text-xl md:text-2xl font-bold text-primary leading-tight">
+        <h2 className="text-lg md:text-xl font-bold text-primary leading-snug">
           What is this draft rule, and does it affect your EB-5 money?
         </h2>
         <p className="nprm-tldr">
@@ -186,7 +186,7 @@ export default function OverviewTab({
       </header>
 
       <section className="nprm-callout-plain space-y-3" id="what-is-nprm">
-        <h3 className="text-lg font-bold text-primary">
+        <h3 className="text-base font-bold text-primary">
           What is this NPRM? A draft of new house rules
         </h3>
         <p>
@@ -243,7 +243,7 @@ export default function OverviewTab({
       </section>
 
       <section className="nprm-callout-action space-y-3" id="do-i-need-to-act">
-        <h3 className="text-lg font-bold text-primary">
+        <h3 className="text-base font-bold text-primary">
           Do I need to do something before August 31?
         </h3>
         <p>
@@ -297,7 +297,7 @@ export default function OverviewTab({
         <p className="nprm-tldr">
           TLDR: Five investor-first points. Codes stay in small text underneath.
         </p>
-        <h3 className="text-lg font-bold text-primary">
+        <h3 className="text-base font-bold text-primary">
           The points that actually matter to you
         </h3>
         <ol className="space-y-3">
@@ -330,7 +330,7 @@ export default function OverviewTab({
               TLDR: Deeper sections for readers who want the Federal Register
               trail. Skim titles first.
             </p>
-            <h3 className="text-lg font-bold text-primary mt-2">
+            <h3 className="text-base font-bold text-primary mt-2">
               What the proposal covers
             </h3>
             <p className="text-sm text-neutral mt-1 max-w-2xl leading-relaxed">
@@ -455,7 +455,7 @@ export default function OverviewTab({
 
       <section className="space-y-4" id="comment-stats">
         <div>
-          <h3 className="text-lg font-bold text-primary">Comment tracker</h3>
+          <h3 className="text-base font-bold text-primary">Comment tracker</h3>
           <p className="text-sm text-neutral mt-1 leading-relaxed">
             <span className="font-semibold text-primary tabular-nums">
               {stats.total_comments} comments

@@ -19,7 +19,7 @@ export default function ThemesTab({
   return (
     <div className="space-y-6 animate-[fadeIn_0.35s_ease-out]">
       <div>
-        <h2 className="text-xl font-bold text-primary">
+        <h2 className="text-lg font-bold text-primary">
           Comment Themes That Actually Move The Needle
         </h2>
         <p className="text-sm text-neutral mt-1 max-w-2xl leading-relaxed">
@@ -50,7 +50,7 @@ export default function ThemesTab({
               className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 flex flex-col gap-3 shadow-soft"
             >
               <div>
-                <h3 className="font-bold text-primary text-lg leading-snug">
+                <h3 className="font-bold text-primary text-base leading-snug">
                   {theme.title}
                 </h3>
                 <p className="text-sm text-neutral mt-2 leading-relaxed">

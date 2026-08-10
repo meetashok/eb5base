@@ -131,7 +131,7 @@ export default function CommentsTab({
   return (
     <div className="space-y-6 animate-[fadeIn_0.35s_ease-out]">
       <div className="space-y-2 max-w-2xl">
-        <h2 className="text-xl font-bold text-primary">
+        <h2 className="text-lg font-bold text-primary">
           Comments ({filtered.length}
           {filtered.length !== comments.length ? ` of ${comments.length}` : ''})
         </h2>

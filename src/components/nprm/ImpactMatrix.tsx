@@ -210,7 +210,7 @@ export default function ImpactMatrix({
             TLDR: This draft decides when you can get money back, what happens
             if your center closes, and how much future investors pay.
           </p>
-          <h3 className="text-lg font-bold text-primary mt-2">
+          <h3 className="text-base font-bold text-primary mt-2">
             How does this affect me?
           </h3>
           <p className="text-sm text-neutral mt-1 leading-relaxed max-w-3xl">

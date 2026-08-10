@@ -111,7 +111,7 @@ export default function SummaryTab() {
   return (
     <div className="animate-[fadeIn_0.35s_ease-out]">
       <div className="mb-6 max-w-2xl space-y-2">
-        <h2 className="text-xl font-bold text-primary">10-minute NPRM summary</h2>
+        <h2 className="text-base font-bold text-primary">10-minute NPRM summary</h2>
         <p className="text-sm text-neutral leading-relaxed">
           Current rule vs proposed change, why it matters, and risk if finalized.
           Last updated: {NPRM_LAST_UPDATED}. Always verify on the{' '}
@@ -171,7 +171,7 @@ export default function SummaryTab() {
               id={s.id}
               className="scroll-mt-36 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-3"
             >
-              <h3 className="text-lg font-bold text-primary">{s.title}</h3>
+              <h3 className="text-base font-bold text-primary">{s.title}</h3>
               <dl className="space-y-2 text-sm text-neutral leading-relaxed">
                 <div>
                   <dt className="font-bold text-primary">Current rule</dt>
