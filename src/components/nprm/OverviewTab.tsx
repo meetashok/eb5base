@@ -129,7 +129,10 @@ export default function OverviewTab({
 
   return (
     <div className="space-y-8 animate-[fadeIn_0.35s_ease-out] nprm-prose">
-      <header className="space-y-4 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
+      <header
+        className="space-y-4 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft"
+        id="what-is-nprm"
+      >
         <p className="page-hero-eyebrow mb-2">
           Draft rule · comments close August 31, 2026
         </p>
@@ -138,8 +141,55 @@ export default function OverviewTab({
         </h2>
         <p className="nprm-tldr">
           TLDR: This is a draft of new EB-5 house rules. It is not final. You can
-          tell the agency what you think before August 31, 2026.
+          tell the agency what you think before the deadline.
         </p>
+        <p>
+          Think of EB-5 as an apartment building. Congress passed a big renovation
+          law in 2022 (the <GlossaryTerm term="RIA" />). Since then, the building
+          manager (<GlossaryTerm term="USCIS" />) has been enforcing the new rules
+          with memos.
+        </p>
+        <p>
+          Now the manager published a formal draft of the new rulebook:{' '}
+          <GlossaryTerm term="NPRM" />, 358 pages, published July 2, 2026. After
+          the comment period, they will publish the final rulebook.
+        </p>
+        <p className="font-semibold text-primary">
+          Why should you care? This draft decides three things that affect your
+          money:
+        </p>
+        <ol className="list-decimal pl-5 space-y-2">
+          <li>
+            When you can get your $800K back (about 2 years vs waiting on a green
+            card backlog)
+          </li>
+          <li>
+            What happens if your regional center closes (can you keep your place
+            in line)
+          </li>
+          <li>
+            How much future investors will pay ($800K stays for now, but a new
+            $1.4M tier is proposed)
+          </li>
+        </ol>
+        {short?.text ? (
+          <details className="rounded-lg border border-base-300 bg-base-200/50">
+            <summary className="cursor-pointer px-3 py-2 text-xs font-bold uppercase tracking-wider text-neutral/80">
+              Official short summary
+            </summary>
+            <div className="px-3 pb-3 space-y-2">
+              {short.title ? (
+                <p className="text-xs font-bold uppercase tracking-wider text-neutral/70">
+                  {short.title}
+                </p>
+              ) : null}
+              <p className="text-sm text-neutral leading-relaxed">{short.text}</p>
+              {short.citations?.length ? (
+                <CitationChips citations={short.citations} href={FR_HTML} />
+              ) : null}
+            </div>
+          </details>
+        ) : null}
         <div className="flex flex-col gap-2 pt-1">
           <div className="flex flex-wrap items-center gap-2">
             <button
@@ -185,63 +235,6 @@ export default function OverviewTab({
         </p>
       </header>
 
-      <section className="nprm-callout-plain space-y-3" id="what-is-nprm">
-        <h3 className="text-base font-bold text-primary">
-          What is this NPRM? A draft of new house rules
-        </h3>
-        <p>
-          Think of EB-5 as an apartment building. Congress passed a big renovation
-          law in 2022 (the <GlossaryTerm term="RIA" />). Since then, the building
-          manager (<GlossaryTerm term="USCIS" />) has been enforcing the new rules
-          with memos.
-        </p>
-        <p>
-          Now the manager published a formal draft of the new rulebook:{' '}
-          <GlossaryTerm term="NPRM" />, 358 pages, published July 2, 2026. It is
-          not final. It is a proposal.
-        </p>
-        <p>
-          You have until August 31, 2026 to tell them what you think. After that,
-          they will publish the final rulebook.
-        </p>
-        <p className="font-semibold text-primary">
-          Why should you care? This draft decides three things that affect your
-          money:
-        </p>
-        <ol className="list-decimal pl-5 space-y-2">
-          <li>
-            When you can get your $800K back (about 2 years vs waiting on a green
-            card backlog)
-          </li>
-          <li>
-            What happens if your regional center closes (can you keep your place
-            in line)
-          </li>
-          <li>
-            How much future investors will pay ($800K stays for now, but a new
-            $1.4M tier is proposed)
-          </li>
-        </ol>
-        {short?.text ? (
-          <details className="rounded-lg border border-base-300 bg-base-100/80">
-            <summary className="cursor-pointer px-3 py-2 text-xs font-bold uppercase tracking-wider text-neutral/80">
-              Official short summary
-            </summary>
-            <div className="px-3 pb-3 space-y-2">
-              {short.title ? (
-                <p className="text-xs font-bold uppercase tracking-wider text-neutral/70">
-                  {short.title}
-                </p>
-              ) : null}
-              <p className="text-sm text-neutral leading-relaxed">{short.text}</p>
-              {short.citations?.length ? (
-                <CitationChips citations={short.citations} href={FR_HTML} />
-              ) : null}
-            </div>
-          </details>
-        ) : null}
-      </section>
-
       <section className="nprm-callout-action space-y-3" id="do-i-need-to-act">
         <h3 className="text-base font-bold text-primary">
           Do I need to do something before August 31?
@@ -263,22 +256,6 @@ export default function OverviewTab({
           builder to draft a personal comment for regulations.gov. It takes about
           10 minutes. You can submit anonymously. Do not include your A-Number.
         </p>
-        <div className="flex flex-wrap gap-2 pt-1">
-          <button
-            type="button"
-            onClick={onSummary}
-            className="btn btn-sm btn-outline border-neutral/30"
-          >
-            Read summary
-          </button>
-          <button
-            type="button"
-            onClick={onWrite}
-            className="btn btn-sm btn-primary text-primary-content"
-          >
-            Build my comment
-          </button>
-        </div>
       </section>
 
       <aside className="nprm-callout-plain space-y-2" id="india-china">
