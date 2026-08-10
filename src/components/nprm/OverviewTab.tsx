@@ -14,10 +14,8 @@ import type {
 } from '@/lib/nprm/types';
 import {
   DOCKET_URL,
-  FR_CITATION,
   FR_HTML,
   FR_PDF,
-  RIN,
   dailyVolume,
   formatLastPull,
 } from '@/lib/nprm/utils';
@@ -119,8 +117,25 @@ export default function OverviewTab({
         </p>
         <p>
           Now the manager published a formal draft of the new rulebook:{' '}
-          <GlossaryTerm term="NPRM" />, 358 pages, published July 2, 2026. After
-          the comment period, they will publish the final rulebook.
+          <GlossaryTerm term="NPRM" />,{' '}
+          <a
+            href={sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+          >
+            358-page PDF
+          </a>
+          , published July 2, 2026. After the comment period on{' '}
+          <a
+            href={DOCKET_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+          >
+            docket USCIS-2026-0100
+          </a>
+          , they will publish the final rulebook.
         </p>
         <p className="font-semibold text-primary">
           Why should you care? This draft decides four things that affect your
@@ -144,56 +159,30 @@ export default function OverviewTab({
             $1.4M tier is proposed)
           </li>
         </ol>
-        <div className="flex flex-col gap-2 pt-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={onWrite}
-              data-goatcounter-click="nprm-build-comment"
-              className="btn btn-primary text-primary-content"
-            >
-              Build My Comment
-            </button>
-            <button
-              type="button"
-              onClick={onSummary}
-              className="btn btn-outline border-neutral/30"
-            >
-              Read 10-min Summary
-            </button>
-            <button
-              type="button"
-              onClick={onExternalBlogs}
-              className="btn btn-outline border-neutral/30"
-            >
-              What blogs are saying
-            </button>
-          </div>
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
-            <a
-              href={sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
-            >
-              Full PDF
-            </a>
-            <a
-              href={DOCKET_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
-            >
-              Docket USCIS-2026-0100
-            </a>
-          </div>
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          <button
+            type="button"
+            onClick={onWrite}
+            data-goatcounter-click="nprm-build-comment"
+            className="btn btn-primary text-primary-content"
+          >
+            Build My Comment
+          </button>
+          <button
+            type="button"
+            onClick={onSummary}
+            className="btn btn-outline border-neutral/30"
+          >
+            Read 10-min Summary
+          </button>
+          <button
+            type="button"
+            onClick={onExternalBlogs}
+            className="btn btn-outline border-neutral/30"
+          >
+            What blogs are saying
+          </button>
         </div>
-        <p className="text-xs text-neutral/75 leading-relaxed">
-          Comment data as of {lastPullLabel}. Not legal advice.{' '}
-          <span className="nprm-legal-ref">
-            FR Doc 2026-13392 · {FR_CITATION} · RIN {RIN}
-          </span>
-        </p>
       </header>
 
       <section className="nprm-callout-action space-y-3" id="do-i-need-to-act">
