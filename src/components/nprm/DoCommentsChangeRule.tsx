@@ -18,7 +18,8 @@ export default function DoCommentsChangeRule() {
       <p className="text-sm text-neutral leading-relaxed">
         Yes: investor comments have moved EB-5 before. In the last major
         modernization (2019), <GlossaryTerm term="DHS" /> answered hundreds of
-        comments and{' '}
+        comments{' '}
+        and{' '}
         <strong className="font-bold text-primary">
           lowered the proposed <GlossaryTerm term="TEA" /> amount from $1.35M to
           $900K
