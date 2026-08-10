@@ -258,12 +258,7 @@ export default function OverviewTab({
         <NprmSectionHeading
           eyebrow="Tracker"
           title={`As of today, ${stats.total_comments} comments have already been made. It's your turn now.`}
-        >
-          <p className="text-sm text-neutral leading-relaxed">
-            Last pull {lastPullLabel}. You are not starting from zero. See the
-            volume below, then dig into what actually changes for you.
-          </p>
-        </NprmSectionHeading>
+        />
 
         <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft space-y-4">
           <div className="flex items-center justify-between gap-3">
@@ -278,6 +273,9 @@ export default function OverviewTab({
             </span>
           </div>
           <VolumeChart data={volume} />
+          <p className="text-[11px] text-neutral/60 leading-snug -mt-2">
+            Last pull {lastPullLabel}
+          </p>
           <div className="flex flex-col sm:flex-row flex-wrap gap-2 pt-1">
             <button
               type="button"
