@@ -228,9 +228,25 @@ export default function OverviewTab({
           otherwise sit through a long backlog or forced redeployment.
         </p>
         <p>
-          <strong>Action:</strong> Read the 10-minute summary, then use our
-          builder to draft a personal comment for regulations.gov. It takes about
-          10 minutes. You can submit anonymously. Do not include your A-Number.
+          <strong>Action:</strong> Read the{' '}
+          <button
+            type="button"
+            onClick={onSummary}
+            className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+          >
+            10-minute summary
+          </button>
+          , then use our{' '}
+          <button
+            type="button"
+            onClick={onWrite}
+            data-goatcounter-click="nprm-build-comment"
+            className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+          >
+            builder
+          </button>{' '}
+          to draft a personal comment for regulations.gov. It takes about 10
+          minutes. You can submit anonymously.
         </p>
       </section>
 
