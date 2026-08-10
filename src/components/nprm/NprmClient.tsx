@@ -17,7 +17,12 @@ import {
   tabFromPathname,
   type NprmTabId,
 } from '@/lib/nprm/tabs';
-import { DOCKET_URL, FR_HTML, NPRM_LAST_UPDATED } from '@/lib/nprm/utils';
+import {
+  DOCKET_URL,
+  FR_HTML,
+  FR_PDF,
+  NPRM_LAST_UPDATED,
+} from '@/lib/nprm/utils';
 
 export type { NprmTabId } from '@/lib/nprm/tabs';
 export { isNprmTabId, NPRM_TABS, nprmTabHref } from '@/lib/nprm/tabs';
@@ -114,9 +119,18 @@ export default function NprmClient({
         subtitle={
           <div className="space-y-1.5 text-sm md:text-[0.95rem] text-neutral max-w-2xl leading-relaxed">
             <p>
-              DHS Notice of Proposed Rulemaking, July 2, 2026. EB5 Base breaks down
-              the 358-page rule that finally codifies the EB-5 Reform and Integrity
-              Act of 2022. Comments close August 31, 2026.
+              The Department of Homeland Security (DHS) published a proposed
+              rulemaking notice on July 2, 2026. EB5 Base breaks down the{' '}
+              <a
+                href={FR_PDF}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-secondary underline underline-offset-2"
+              >
+                358-page rule
+              </a>{' '}
+              that finally codifies the EB-5 Reform and Integrity Act of 2022.
+              Comments close August 31, 2026.
             </p>
             <p>
               Last data updated: {NPRM_LAST_UPDATED} ·{' '}
