@@ -78,9 +78,6 @@ export default function HomePage() {
             milestones, and helps you comment on policy before it finalizes. Focus: RIA
             implementation NPRM open until Aug 31 2026.
           </p>
-          <p className="mt-2 text-xs font-medium text-neutral/80 max-w-xl mx-auto leading-relaxed">
-            {TRUST_SNAPSHOT}
-          </p>
           <div className="flex flex-wrap gap-3 justify-center mt-8">
             <Link href="/nprm" className="btn btn-primary text-primary-content rounded-full px-6">
               Read NPRM explainer
