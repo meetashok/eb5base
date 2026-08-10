@@ -264,7 +264,10 @@ export default function OverviewTab({
         </p>
       </section>
 
-      <section className="space-y-3" id="key-points">
+      <section
+        className="space-y-3 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft"
+        id="key-points"
+      >
         <h3 className="text-base font-bold text-primary">
           The points that actually matter to you
         </h3>
