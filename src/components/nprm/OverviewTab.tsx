@@ -401,37 +401,18 @@ export default function OverviewTab({
         />
       ) : null}
 
-      <div className="flex flex-col sm:flex-row gap-2">
-        <button
-          type="button"
-          onClick={onWrite}
-          data-goatcounter-click="nprm-build-comment"
-          className="btn btn-primary text-primary-content"
-        >
-          Build My Comment
-        </button>
-        <button
-          type="button"
-          onClick={onSummary}
-          className="btn btn-outline border-neutral/30"
-        >
-          Read 10-min Summary
-        </button>
-      </div>
-
       <section className="space-y-4" id="comment-stats">
-        <NprmSectionHeading eyebrow="Tracker" title="Comment tracker">
+        <NprmSectionHeading
+          eyebrow="Tracker"
+          title={`${stats.total_comments} comments have already been made`}
+        >
           <p className="text-sm text-neutral leading-relaxed">
-            <span className="font-semibold text-primary tabular-nums">
-              {stats.total_comments} comments
-            </span>
-            <span className="text-neutral/50 mx-1.5">·</span>
             Last pull {lastPullLabel}
           </p>
         </NprmSectionHeading>
 
-        <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
-          <div className="flex items-center justify-between gap-3 mb-4">
+        <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft space-y-4">
+          <div className="flex items-center justify-between gap-3">
             <NprmSectionHeading
               as="h3"
               eyebrow="Volume"
@@ -443,6 +424,30 @@ export default function OverviewTab({
             </span>
           </div>
           <VolumeChart data={volume} />
+          <div className="flex flex-col sm:flex-row flex-wrap gap-2 pt-1">
+            <button
+              type="button"
+              onClick={onWrite}
+              data-goatcounter-click="nprm-build-comment"
+              className="btn btn-primary text-primary-content"
+            >
+              Build My Comment
+            </button>
+            <button
+              type="button"
+              onClick={onThemes}
+              className="btn btn-outline border-neutral/30"
+            >
+              See what others are saying
+            </button>
+            <button
+              type="button"
+              onClick={onSummary}
+              className="btn btn-outline border-neutral/30"
+            >
+              Read 10-min Summary
+            </button>
+          </div>
         </div>
       </section>
 
