@@ -229,7 +229,9 @@ export function countdownParts(now = new Date()): {
   days: number;
   hours: number;
   minutes: number;
+  seconds: number;
   label: string;
+  preciseLabel: string;
 } {
   const ms = COMMENT_PERIOD_END.getTime() - now.getTime();
   if (ms <= 0) {
@@ -238,17 +240,24 @@ export function countdownParts(now = new Date()): {
       days: 0,
       hours: 0,
       minutes: 0,
+      seconds: 0,
       label: 'Comment window closed',
+      preciseLabel: 'Comment window closed',
     };
   }
   const days = Math.floor(ms / (24 * 60 * 60 * 1000));
   const hours = Math.floor((ms % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
   const minutes = Math.floor((ms % (60 * 60 * 1000)) / (60 * 1000));
+  const seconds = Math.floor((ms % (60 * 1000)) / 1000);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const dayWord = days === 1 ? 'day' : 'days';
   return {
     expired: false,
     days,
     hours,
     minutes,
+    seconds,
     label: `${days}d ${hours}h ${minutes}m left`,
+    preciseLabel: `${days} ${dayWord} ${pad(hours)}:${pad(minutes)}:${pad(seconds)}`,
   };
 }

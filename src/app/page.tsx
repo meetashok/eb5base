@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BrandWordmark } from '@/components/Logo';
+import HomeDeadlineCountdown from '@/components/HomeDeadlineCountdown';
 
 export const metadata: Metadata = {
   title: 'EB5 Base: Free EB-5 Investor Library and NPRM Guide',
@@ -104,12 +105,7 @@ export default function HomePage() {
           className="rounded-xl border-2 border-amber-300 bg-amber-50 px-4 py-3 sm:px-5 sm:py-3.5 shadow-soft text-center sm:text-left"
           role="status"
         >
-          <p className="text-xs sm:text-sm text-amber-950 leading-relaxed">
-            <span className="font-bold">Comment deadline:</span> You can still
-            weigh in on the proposed EB-5 rule through{' '}
-            <span className="font-semibold">August 31, 2026</span>. After that,
-            the window closes.
-          </p>
+          <HomeDeadlineCountdown />
         </div>
       </section>
 
