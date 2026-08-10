@@ -25,8 +25,9 @@ export default function StatusUpdatePage() {
         subtitle={
           <p>
             Fill in the milestones that apply, preview the message live, and copy or share it with
-            your investor group, including WhatsApp. Part of{' '}
-            <BrandWordmark variant="on-light" className="font-semibold" />, same builder as{' '}
+            your favorite investor community, including WhatsApp / Discord. Part of{' '}
+            <BrandWordmark variant="on-light" className="font-semibold" />. A previous version of
+            this builder was at{' '}
             <a
               href="https://bit.ly/eb5status"
               className="link link-secondary"
