@@ -619,12 +619,12 @@ export default function WriteTab({
               disabled={!ready}
               title={
                 ready
-                  ? 'Copy full prompt'
+                  ? 'Copy full prompt for your LLM'
                   : 'Select at least one theme and accept the disclaimer first'
               }
               onClick={() => copyText(prompt, 'Prompt')}
             >
-              Copy prompt
+              Copy prompt for LLM
             </button>
           </div>
 
