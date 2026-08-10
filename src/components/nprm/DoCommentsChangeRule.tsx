@@ -7,7 +7,7 @@ export default function DoCommentsChangeRule() {
   return (
     <section
       id="do-comments-change-the-rule"
-      className="nprm-voice-card relative overflow-hidden rounded-xl border-2 border-secondary/30 p-4 sm:p-5 shadow-soft space-y-3 scroll-mt-28"
+      className="rounded-xl border-2 border-secondary/30 bg-secondary/[0.05] p-4 sm:p-5 shadow-soft space-y-3 scroll-mt-28"
     >
       <NprmSectionHeading
         as="h3"
