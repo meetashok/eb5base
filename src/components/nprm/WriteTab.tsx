@@ -578,14 +578,6 @@ export default function WriteTab({
             </a>
           </div>
 
-          {!ready && (
-            <p className="text-xs text-warning">
-              Copy stays disabled until you select at least one theme and accept
-              the disclaimer next to the copy buttons. Personal details are
-              optional but recommended.
-            </p>
-          )}
-
           <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-3">
             <NprmSectionHeading
               as="h3"
