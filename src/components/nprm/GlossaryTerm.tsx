@@ -19,6 +19,8 @@ export const GLOSSARY: Record<string, string> = {
   CFR: 'Code of Federal Regulations: the US federal rulebook.',
   USCIS: 'US Citizenship and Immigration Services: the agency that decides EB-5 cases.',
   DHS: 'Department of Homeland Security: the parent department that published this draft rule.',
+  GAO: 'Government Accountability Office: the congressional watchdog that audits how federal agencies handle programs and public comments.',
+  OIRA: 'Office of Information and Regulatory Affairs: the White House office that reviews federal rules and tools that cluster duplicate public comments.',
   'I-526E': 'Your regional-center EB-5 petition form.',
   'I-527': 'New form for investors whose regional center was terminated and who need to re-associate.',
   RC: 'Regional Center: the approved EB-5 program sponsor for your project.',

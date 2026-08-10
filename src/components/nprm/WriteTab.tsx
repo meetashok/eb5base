@@ -1,10 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import {
-  DISTINCTNESS_WARNING,
-  PROJECT_TYPE_OPTIONS,
-} from '@/lib/nprm/constants';
+import { PROJECT_TYPE_OPTIONS } from '@/lib/nprm/constants';
 import {
   MIN_IMPACT_CHARS,
   buildPersonalOnly,
@@ -21,6 +18,7 @@ import type {
   StyleGuideline,
 } from '@/lib/nprm/types';
 import { COMMENT_ON_URL } from '@/lib/nprm/utils';
+import GlossaryTerm from '@/components/nprm/GlossaryTerm';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import { useToast } from '@/components/Toast';
 
@@ -270,7 +268,12 @@ export default function WriteTab({
         className="rounded-xl border-2 border-warning/50 bg-warning/15 px-3 py-3 text-sm text-neutral font-medium leading-relaxed"
         role="status"
       >
-        {DISTINCTNESS_WARNING}
+        If 500 people paste the same paragraph, <GlossaryTerm term="USCIS" />{' '}
+        counts it as 1. Your personal story makes it distinct.{' '}
+        <GlossaryTerm term="GAO" /> notes that mass mailing campaigns can yield
+        thousands of duplicate comments that agencies may post individually, as
+        attachments, or as a count. <GlossaryTerm term="OIRA" /> tooling has
+        distilled about 300k comments down to about 30k distinct ones.
       </div>
 
       {impactLen >= MIN_IMPACT_CHARS && !personalized ? (
