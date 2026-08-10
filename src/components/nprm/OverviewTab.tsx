@@ -297,11 +297,7 @@ export default function OverviewTab({
       <section className="space-y-3" id="proposal-themes">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <p className="nprm-tldr">
-              TLDR: Deeper sections for readers who want the Federal Register
-              trail. Skim titles first.
-            </p>
-            <h3 className="text-base font-bold text-primary mt-2">
+            <h3 className="text-base font-bold text-primary">
               What the proposal covers
             </h3>
             <p className="text-sm text-neutral mt-1 max-w-2xl leading-relaxed">
