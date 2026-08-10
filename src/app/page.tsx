@@ -123,14 +123,10 @@ export default function HomePage() {
           role="status"
         >
           <p className="text-xs sm:text-sm text-amber-950 leading-relaxed">
-            <span className="font-bold">Deadline alert:</span> EB-5 NPRM comments close{' '}
-            <span className="font-semibold">Aug 31, 2026</span>
-            <span className="text-amber-800/50 mx-1.5">·</span>
-            Docket USCIS-2026-0100
-            <span className="text-amber-800/50 mx-1.5">·</span>
-            FR Doc 2026-13392
-            <span className="text-amber-800/50 mx-1.5">·</span>
-            Source: regulations.gov via api.data.gov
+            <span className="font-bold">Comment deadline:</span> You can still
+            weigh in on the proposed EB-5 rule through{' '}
+            <span className="font-semibold">August 31, 2026</span>. After that,
+            the window closes.
           </p>
         </div>
       </section>
