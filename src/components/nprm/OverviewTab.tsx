@@ -130,7 +130,7 @@ export default function OverviewTab({
   return (
     <div className="space-y-8 animate-[fadeIn_0.35s_ease-out] nprm-prose">
       <header className="space-y-4 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
-        <p className="text-xs uppercase tracking-[0.22em] font-semibold text-secondary mb-1">
+        <p className="page-hero-eyebrow mb-2">
           Draft rule · comments close August 31, 2026
         </p>
         <h2 className="text-lg md:text-xl font-bold text-primary leading-snug">

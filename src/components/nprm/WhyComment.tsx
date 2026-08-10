@@ -27,7 +27,7 @@ export default function WhyComment({
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 space-y-2 max-w-3xl">
-          <p className="text-xs uppercase tracking-[0.22em] font-semibold text-secondary">
+          <p className="page-hero-eyebrow mb-2">
             Why comment
           </p>
           <h3 className="text-base font-bold text-primary leading-snug">
