@@ -1,6 +1,5 @@
 'use client';
 
-import { CitationChips } from '@/components/nprm/CitationChips';
 import GlossaryTerm, {
   GlossaryText,
 } from '@/components/nprm/GlossaryTerm';
@@ -21,7 +20,6 @@ import {
   RIN,
   dailyVolume,
   formatLastPull,
-  normalizeShortSummary,
 } from '@/lib/nprm/utils';
 
 interface Props {
@@ -96,7 +94,6 @@ export default function OverviewTab({
   const volume = dailyVolume(comments);
   const lastPullLabel = formatLastPull(stats.last_pull);
   const sourceUrl = proposal?.source_url || FR_PDF;
-  const short = normalizeShortSummary(proposal?.short_summary);
 
   return (
     <div className="space-y-8 animate-[fadeIn_0.35s_ease-out] nprm-prose">
@@ -147,26 +144,6 @@ export default function OverviewTab({
             $1.4M tier is proposed)
           </li>
         </ol>
-        {short?.text ? (
-          <details className="rounded-lg border border-base-300 bg-base-200/50">
-            <summary className="cursor-pointer px-3 py-2 text-xs font-bold uppercase tracking-wider text-neutral/80">
-              Official short summary
-            </summary>
-            <div className="px-3 pb-3 space-y-2">
-              {short.title ? (
-                <p className="text-xs font-bold uppercase tracking-wider text-neutral/70">
-                  {short.title}
-                </p>
-              ) : null}
-              <p className="text-sm text-neutral leading-relaxed">
-                <GlossaryText text={short.text} />
-              </p>
-              {short.citations?.length ? (
-                <CitationChips citations={short.citations} href={FR_HTML} />
-              ) : null}
-            </div>
-          </details>
-        ) : null}
         <div className="flex flex-col gap-2 pt-1">
           <div className="flex flex-wrap items-center gap-2">
             <button
@@ -330,9 +307,6 @@ export default function OverviewTab({
               </p>
               <p className="text-sm text-neutral leading-relaxed">
                 <GlossaryText text={point.body} />
-              </p>
-              <p className="nprm-legal-ref">
-                For legal reference: <GlossaryText text={point.legal} />
               </p>
               <p className="text-xs">
                 <a
