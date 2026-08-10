@@ -302,7 +302,8 @@ export default function WriteTab({
               titleClassName="text-sm font-semibold text-primary leading-snug"
             >
               <p className="text-xs text-neutral leading-relaxed">
-                Select a theme, then choose your view under it.
+                Select a theme to build your comment. Choose the themes that
+                are most important to you. Then choose your view under it.
               </p>
             </NprmSectionHeading>
             <p className="text-xs text-neutral/70">
