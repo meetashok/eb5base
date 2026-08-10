@@ -29,13 +29,15 @@ export default function DoCommentsChangeRule() {
       </p>
       <p className="text-sm text-neutral leading-relaxed">
         Under the <GlossaryTerm term="APA" />, agencies must consider significant
-        comments. A <GlossaryTerm term="GAO" /> survey found
-        most program offices reported that comments led to substantive changes
-        in final rules, and the Office of the Federal Register says persuasive
-        comments can reshape a proposal. Even though this is not a vote, unique
-        investor stories put concrete harms on the record so they must be
-        addressed, especially when other voices push only to tighten the
-        program.
+        comments. A <GlossaryTerm term="GAO" /> survey found most program offices
+        reported that comments led to substantive changes in final rules, and the
+        Office of the Federal Register says persuasive comments can reshape a
+        proposal. Even though this is not a vote, unique investor stories put
+        concrete harms on the record so they must be addressed,{' '}
+        <strong className="font-bold text-primary">
+          especially when other voices push only to tighten the program
+        </strong>
+        . Add your voice now.
       </p>
       <p className="text-xs text-neutral/80 leading-relaxed">
         Sources:{' '}
