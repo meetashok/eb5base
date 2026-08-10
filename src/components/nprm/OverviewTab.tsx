@@ -220,9 +220,6 @@ export default function OverviewTab({
           <span className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 font-semibold text-neutral">
             FR Doc 2026-13392 · {FR_CITATION} · RIN {RIN}
           </span>
-          <span className="inline-flex items-center rounded-md border border-secondary/40 bg-secondary/10 px-2.5 py-1 font-semibold text-secondary">
-            {stats.total_comments} comments tracked · last pull {lastPullLabel}
-          </span>
         </div>
       </header>
 
