@@ -24,8 +24,8 @@ export default function DoCommentsChangeRule() {
           lowered the proposed <GlossaryTerm term="TEA" /> amount from $1.35M to
           $900K
         </strong>
-        . That is real money for real families, because investors spoke up in
-        the comment record before the rule was final.
+        . That is real money for families. Because investors spoke up before the
+        rule was final.
       </p>
       <p className="text-sm text-neutral leading-relaxed">
         Agencies must consider significant comments under the{' '}
