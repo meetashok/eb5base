@@ -9,13 +9,31 @@ import {
   ILRC_LINK,
 } from '@/lib/nprm/constants';
 import type { NprmProposalSummary } from '@/lib/nprm/types';
-import { COMMENT_ON_URL, DOCKET_URL } from '@/lib/nprm/utils';
+import { COMMENT_ON_URL, DOCKET_URL, plainDash } from '@/lib/nprm/utils';
 
 interface Props {
   checkLog: string;
   lastPull: string;
   totalComments: number;
   proposal: NprmProposalSummary | null;
+}
+
+function parseCheckLogEntries(
+  raw: string
+): Array<{ when: string; detail: string }> {
+  return raw
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const sep = line.indexOf(' - ');
+      if (sep === -1) {
+        return { when: '', detail: plainDash(line.replace(/ - /g, ' · ')) };
+      }
+      const when = line.slice(0, sep).trim();
+      const detail = plainDash(line.slice(sep + 3).replace(/ - /g, ' · '));
+      return { when, detail };
+    });
 }
 
 export default function AboutTab({
@@ -34,6 +52,7 @@ export default function AboutTab({
   const proposalUrl =
     proposal?.source_url ||
     'https://www.govinfo.gov/content/pkg/FR-2026-07-02/pdf/2026-13392.pdf';
+  const logEntries = parseCheckLogEntries(checkLog);
 
   return (
     <div className="space-y-8 max-w-3xl animate-[fadeIn_0.35s_ease-out]">
@@ -158,16 +177,37 @@ export default function AboutTab({
         </p>
       </section>
 
-      <section className="space-y-2 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
+      <section className="space-y-3 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
         <h2 className="text-xl font-bold text-primary">Records / chain of custody</h2>
         <p className="text-sm text-neutral leading-relaxed">
           We keep last-check.json, dated all_comments snapshots, and check.log so
           every card can be attributed. Current seed: {totalComments} comments,
           last pull {lastPull}.
         </p>
-        <pre className="rounded-lg border-2 border-base-300 bg-base-200 p-3 text-xs font-mono text-neutral whitespace-pre-wrap overflow-auto max-h-48">
-          {checkLog || 'check.log unavailable'}
-        </pre>
+        {logEntries.length > 0 ? (
+          <ul className="space-y-3 rounded-lg border-2 border-base-300 bg-base-200/70 p-3 sm:p-4 overflow-auto max-h-72">
+            {logEntries.map((entry, i) => (
+              <li
+                key={`${entry.when}-${i}`}
+                className="flex gap-2.5 text-sm text-neutral leading-relaxed"
+              >
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-secondary" aria-hidden />
+                <div className="min-w-0 space-y-0.5">
+                  {entry.when ? (
+                    <p className="text-[11px] font-bold uppercase tracking-wide text-neutral/70 tabular-nums">
+                      {entry.when}
+                    </p>
+                  ) : null}
+                  <p>{entry.detail}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-neutral/70 rounded-lg border-2 border-dashed border-base-300 p-3">
+            check.log unavailable
+          </p>
+        )}
       </section>
     </div>
   );
