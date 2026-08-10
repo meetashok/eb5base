@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 export const dynamic = 'force-static';
 
 export const metadata = {
@@ -33,15 +31,25 @@ const ROUTES: { href: string; title: string }[] = [
 
 export default function CrawlDebugPage() {
   return (
-    <main style={{ maxWidth: 640, margin: '2rem auto', padding: '0 1rem', fontFamily: 'system-ui, sans-serif' }}>
-      <h1>EB5 Base crawl checklist</h1>
+    <main
+      style={{
+        maxWidth: 640,
+        margin: '2rem auto',
+        padding: '0 1rem 3rem',
+        fontFamily: 'system-ui, sans-serif',
+        lineHeight: 1.6,
+        color: '#111',
+      }}
+    >
+      <h1>Debug Crawl Page - Plain HTML</h1>
       <p>
-        Plain HTML route list for crawler and bot verification. Not linked from the main nav.
+        If you can see this via curl with a bot user-agent, crawlers are not blocked
+        by this app. Not linked from the main nav.
       </p>
       <ul>
         {ROUTES.map((r) => (
           <li key={r.href}>
-            <Link href={r.href}>{r.title}</Link>
+            <a href={r.href}>{r.title}</a>
             {': '}
             <code>{r.href}</code>
           </li>
