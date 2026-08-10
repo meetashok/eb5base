@@ -38,41 +38,56 @@ const KEY_POINTS: {
   title: string;
   body: string;
   legal: string;
+  /** Federal Register HTML heading id (deep link). */
+  frHeadingId: string;
+  frSectionLabel: string;
 }[] = [
   {
     title:
       'You may get your investment back after about 2 years, not after many years',
     body: 'Old practice often kept your money stuck until the green card path moved, which for India and China backlogs could mean a decade of redeployment risk. The draft says capital only needs to stay invested for about 2 years after it reaches the job-creating project, once the required jobs are created. That is the sustainment clock investors have been waiting to see written into regulation. If finalized this way, many post-RIA investors can plan for return of capital even before getting CGC.',
     legal: '2-year sustainment · 8 CFR 216.6 · FR IV.D.6',
+    frHeadingId: 'h-66',
+    frSectionLabel: 'IV.D.6 Duration of Investment',
   },
   {
     title:
       'Repaid bridge financing may no longer count toward proving your 10 jobs',
     body: 'Bridge financing is a short-term loan projects use to start construction or cover costs before EB-5 capital arrives. Under the 2016 Policy Manual, USCIS often let repaid bridge loans count when showing job creation. The NPRM proposes to stop that: jobs would need a closer link to the investor\'s own capital going into the entity that actually creates employment (proposed 8 CFR 204.407(e)(1)). Rural and early-stage projects that rely on bridge stacks may have to restructure or delay closings. Investors who already filed on bridge-based projects are asking for transition or grandfather rules so I-829 adjudications do not rewrite the deal they bought.',
     legal: 'Bridge financing · 8 CFR 204.407(e)(1) · FR IV.D.7 pp 40706-40707',
+    frHeadingId: 'h-67',
+    frSectionLabel: 'IV.D.7 Job Creation Requirements and Bridge Financing',
   },
   {
     title:
       'If your regional center fails, you keep your place in line for about 180 days',
     body: 'When a regional center is terminated, good-faith investors have historically faced chaos over whether their petition and priority date survive. The draft formalizes a roughly 180-day window to re-associate with a compliant sponsor, keep your place in the visa line, and use Form I-527 where needed. If you already finished 2 years of sustainment and job creation, you may not need to reinvest just because the center later fails. The open comment fight is whether 180 days is long enough once new-sponsor diligence and paperwork stack up.',
-    legal: 'Form I-527 · good-faith protection · FR good-faith / I-527',
+    legal: 'Form I-527 · good-faith protection · FR IV.D.9.c',
+    frHeadingId: 'h-72',
+    frSectionLabel: 'IV.D.9.c Terminations and Debarments (good-faith protections)',
   },
   {
     title:
       '$800K stays for now; a new $1.4M tier and Jan 1, 2027 inflation hike are proposed',
     body: 'Rural and high-unemployment TEA projects stay at $800K today and standard stays at $1.05M, matching post-RIA practice. The draft also adds a new high-employment area tier around $1.4M for projects in areas with unusually low unemployment. Automatic inflation adjustments are proposed for Jan 1, 2027 and every 5 years after. Future filers should treat those dates as hard planning points; people already in should confirm their tier is locked and watch how grandfathering is written in the final rule.',
-    legal: 'Investment thresholds · 8 CFR 204.6 · FR amounts / inflation',
+    legal: 'Investment thresholds · 8 CFR 204.6 · FR IV.D.4',
+    frHeadingId: 'h-59',
+    frSectionLabel: 'IV.D.4 Investment Amounts',
   },
   {
     title:
       'USCIS, not states, decides if a project qualifies for the lower amount',
     body: 'Whether a project gets the $800K TEA amount is decided centrally by USCIS under proposed methodology for high-unemployment and rural designations, not primarily by state designation letters. That can make outcomes more consistent nationwide, but it also means investors and developers need the data sources and census boundaries to be transparent and challengeable. A wrong TEA call is the difference between $800K and a higher tier, so methodology comments matter before the rule locks in.',
-    legal: 'TEA determination · FR TEA methodology',
+    legal: 'TEA determination · FR IV.E',
+    frHeadingId: 'h-73',
+    frSectionLabel: 'IV.E Targeted Employment Areas',
   },
   {
     title: 'More audits and fines for regional centers',
     body: 'The draft expands audits, site visits, reporting duties, and tiered penalties, including examples like late annual statement fines and sanctions up to a percentage of capital. Stronger oversight can protect investors from weak sponsors, but fixed compliance costs land hardest on small and single-project centers. That may shrink the pool of sponsors, raise fees passed through to investors, or push more capital into larger multi-project operators. Comments can ask for proportional rules so integrity gains do not wipe out rural and smaller projects.',
-    legal: 'Sanctions and audits · FR sanctions',
+    legal: 'Sanctions and audits · FR IV.H.8-9',
+    frHeadingId: 'h-100',
+    frSectionLabel: 'IV.H.8 Enforcement (penalties, terminations) and Audits',
   },
 ];
 
@@ -331,6 +346,25 @@ export default function OverviewTab({
               </p>
               <p className="nprm-legal-ref">
                 For legal reference: <GlossaryText text={point.legal} />
+              </p>
+              <p className="text-xs">
+                <a
+                  href={`${FR_HTML}#${point.frHeadingId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+                >
+                  Read {point.frSectionLabel} in the Federal Register
+                </a>
+                {' · '}
+                <a
+                  href={FR_PDF}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+                >
+                  PDF
+                </a>
               </p>
             </li>
           ))}
