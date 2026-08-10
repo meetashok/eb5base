@@ -7,7 +7,8 @@
     "dev:clean": "rm -rf .next && next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint && bash scripts/check-emdash.sh",
+    "lint:emdash": "bash scripts/check-emdash.sh"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",

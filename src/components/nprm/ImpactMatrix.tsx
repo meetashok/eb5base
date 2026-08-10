@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 export type InvestorFilter = 'all' | 'pre_ria' | 'post_ria' | 'future';
 
@@ -142,14 +142,26 @@ export default function ImpactMatrix({
   initialInvestor?: InvestorFilter;
 }) {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const [filter, setFilter] = useState<InvestorFilter>(
     initialInvestor || 'all'
   );
 
   useEffect(() => {
-    const fromUrl = parseInvestor(searchParams.get('investor'));
-    if (fromUrl !== 'all') setFilter(fromUrl);
+    setFilter(parseInvestor(searchParams.get('investor')));
   }, [searchParams]);
+
+  function selectFilter(next: InvestorFilter) {
+    setFilter(next);
+    const params = new URLSearchParams(searchParams.toString());
+    if (next === 'all') params.delete('investor');
+    else params.set('investor', next);
+    const qs = params.toString();
+    router.replace(`${pathname}${qs ? `?${qs}` : ''}#impact-matrix`, {
+      scroll: false,
+    });
+  }
 
   const showPre = filter === 'all' || filter === 'pre_ria';
   const showPost = filter === 'all' || filter === 'post_ria';
@@ -178,7 +190,7 @@ export default function ImpactMatrix({
               key={f.id}
               type="button"
               aria-pressed={filter === f.id}
-              onClick={() => setFilter(f.id)}
+              onClick={() => selectFilter(f.id)}
               className={`btn btn-xs h-7 min-h-0 px-2.5 border ${
                 filter === f.id
                   ? 'btn-primary text-primary-content border-primary'

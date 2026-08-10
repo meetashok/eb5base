@@ -10,7 +10,15 @@ function isStaticOrApi(pathname: string): boolean {
     pathname.startsWith('/api') ||
     pathname === '/favicon.ico' ||
     pathname === '/robots.txt' ||
-    /\.(?:svg|png|jpg|jpeg|gif|webp)$/.test(pathname)
+    pathname === '/sitemap.xml' ||
+    pathname === '/llms.txt' ||
+    pathname === '/icon' ||
+    pathname.startsWith('/icon/') ||
+    pathname === '/opengraph-image' ||
+    pathname.startsWith('/opengraph-image/') ||
+    pathname === '/twitter-image' ||
+    pathname.startsWith('/twitter-image/') ||
+    /\.(?:svg|png|jpg|jpeg|gif|webp|txt|xml)$/.test(pathname)
   );
 }
 
@@ -25,19 +33,24 @@ function isPublicPath(pathname: string): boolean {
       '/signup',
       '/privacy',
       '/terms',
+      '/disclaimer',
       '/contact',
       '/rc',
       '/regional-centers',
       '/tracker',
+      '/case-tracker',
       '/status',
+      '/status-update',
       '/eb5status',
       '/nprm',
       '/maintenance',
+      '/debug',
     ].includes(pathname)
   ) {
     return true;
   }
   if (pathname.startsWith('/auth')) return true;
+  if (pathname.startsWith('/debug/')) return true;
   if (pathname.startsWith('/nprm/') || pathname.startsWith('/nrpm')) return true;
   if (pathname.startsWith('/status/') || pathname.startsWith('/eb5status/')) return true;
   if (pathname.startsWith('/resources/')) return true;

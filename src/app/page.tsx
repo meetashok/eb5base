@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { BrandWordmark } from '@/components/Logo';
 
 export const metadata = {
-  title: 'EB5 Base - Home',
+  title: 'EB5 Base: Free EB-5 Investor Library and NPRM Guide',
   description:
     'Investor-built tools for EB-5: plain-English NPRM explainer (comments due Aug 31 2026), status update builder, and forthcoming case tracker. Nothing here is legal or financial advice.',
 };
@@ -13,6 +13,7 @@ const TOOLS = [
     title: 'NPRM Comment Guide',
     body: 'Plain-English explainer of the July 2026 EB-5 proposed rule, impact matrix, themes, and comment builder. Comments close Aug 31.',
     cta: 'Read explainer (5 min)',
+    badge: 'Urgent - Comment deadline Aug 31',
     comingSoon: false,
     primary: true,
   },
@@ -21,6 +22,7 @@ const TOOLS = [
     title: 'Status Update',
     body: 'Draft a structured EB-5 status update from your milestones, preview it live, and share it with your community.',
     cta: 'Open Status Update',
+    badge: 'Available now',
     comingSoon: false,
     primary: false,
   },
@@ -29,6 +31,7 @@ const TOOLS = [
     title: 'Case Tracker',
     body: 'Track USCIS case status for your petitions, get notified on changes, and learn from anonymized cohort insights.',
     cta: 'Preview Case Tracker',
+    badge: 'Coming soon - Join waitlist',
     comingSoon: true,
     primary: false,
   },
@@ -36,14 +39,17 @@ const TOOLS = [
 
 const FAQ = [
   {
+    id: 'legal-advice',
     q: 'Is this legal advice?',
     a: 'No. EB5 Base is information only, not legal or financial advice, and not affiliated with USCIS or DHS. Verify on the Federal Register and consult an immigration attorney.',
   },
   {
+    id: 'who-built',
     q: 'Who built this?',
     a: 'Investors in the EB-5 community. The tools are community-built and investor-led, with open feedback at hello@eb5base.com.',
   },
   {
+    id: 'how-money',
     q: 'How do you make money?',
     a: 'We do not. No ads, no referral fees, no RC promotions. The goal is shared clarity on rules and case progress.',
   },
@@ -72,13 +78,18 @@ export default function HomePage() {
             milestones, and helps you comment on policy before it finalizes. Focus: RIA
             implementation NPRM open until Aug 31 2026.
           </p>
-          <p className="mt-3 text-sm font-semibold text-primary max-w-xl mx-auto">
-            Built by investors, for investors. 0 ads, 0 referral fees.
-          </p>
-          <p className="mt-2 text-xs sm:text-sm text-neutral/70 max-w-xl mx-auto leading-relaxed">
-            Not affiliated with USCIS or DHS. Sources linked. No ads, no referral fees.
-          </p>
-          <p className="mt-2 text-sm font-medium text-amber-800 max-w-xl mx-auto leading-relaxed">
+          <div className="mt-4 flex flex-wrap gap-2 justify-center text-xs font-semibold">
+            <span className="rounded-md border border-secondary/30 bg-secondary/10 px-2.5 py-1 text-secondary">
+              0 ads
+            </span>
+            <span className="rounded-md border border-secondary/30 bg-secondary/10 px-2.5 py-1 text-secondary">
+              0 referral fees
+            </span>
+            <span className="rounded-md border border-base-300 bg-base-100 px-2.5 py-1 text-neutral">
+              Not affiliated with USCIS or DHS
+            </span>
+          </div>
+          <p className="mt-3 text-sm font-medium text-amber-800 max-w-xl mx-auto leading-relaxed">
             Nothing here is legal or financial advice.
           </p>
           <div className="flex flex-wrap gap-3 justify-center mt-8">
@@ -88,14 +99,9 @@ export default function HomePage() {
             <Link href="/status" className="btn btn-outline rounded-full px-6">
               Status Update
             </Link>
-            <span className="relative inline-flex">
-              <Link href="/tracker" className="btn btn-outline rounded-full px-6">
-                Case Tracker
-              </Link>
-              <span className="pointer-events-none absolute -top-2 -right-1 rounded-md border border-amber-300 bg-amber-50 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-900 leading-none shadow-sm">
-                Soon
-              </span>
-            </span>
+            <Link href="/tracker" className="btn btn-outline rounded-full px-6">
+              Case Tracker
+            </Link>
           </div>
           <div className="mt-8 max-w-lg mx-auto rounded-xl border border-base-300/80 bg-base-100/80 px-4 py-3 text-left shadow-soft">
             <p className="text-[11px] uppercase tracking-wider font-bold text-secondary mb-2">
@@ -126,7 +132,10 @@ export default function HomePage() {
       </section>
 
       <section className="max-w-6xl mx-auto px-4 -mt-4 md:-mt-6 relative z-10">
-        <div className="rounded-xl border-2 border-amber-200 bg-amber-50 px-4 py-3 sm:px-5 sm:py-3.5 shadow-soft text-center sm:text-left">
+        <div
+          className="rounded-xl border-2 border-amber-300 bg-amber-50 px-4 py-3 sm:px-5 sm:py-3.5 shadow-soft text-center sm:text-left"
+          role="status"
+        >
           <p className="text-xs sm:text-sm text-amber-950 leading-relaxed">
             <span className="font-bold">Deadline alert:</span> EB-5 NPRM comments close{' '}
             <span className="font-semibold">Aug 31, 2026</span>
@@ -165,21 +174,37 @@ export default function HomePage() {
                       : 'text-neutral/70'
                 }`}
               >
-                {tool.comingSoon
-                  ? 'Coming soon'
-                  : tool.primary
-                    ? 'Urgent · Available now'
-                    : 'Available now'}
+                {tool.badge}
               </p>
               <h3 className="text-xl font-bold text-primary">{tool.title}</h3>
               <p className="text-sm text-neutral/75 leading-relaxed mt-2 flex-1">{tool.body}</p>
               {tool.comingSoon ? (
-                <a
-                  href="mailto:hello@eb5base.com?subject=Case%20Tracker%20notify%20me"
-                  className="btn btn-sm btn-outline rounded-full mt-5 self-start border-neutral/30"
+                <form
+                  action="mailto:hello@eb5base.com?subject=Case%20Tracker%20notify%20me"
+                  method="get"
+                  className="mt-5 space-y-2"
                 >
-                  Notify me
-                </a>
+                  <label className="sr-only" htmlFor="home-tracker-email">
+                    Email for Case Tracker waitlist
+                  </label>
+                  <input
+                    id="home-tracker-email"
+                    type="email"
+                    name="body"
+                    required
+                    placeholder="you@example.com"
+                    className="input input-sm input-bordered w-full"
+                  />
+                  <button
+                    type="submit"
+                    className="btn btn-sm btn-outline rounded-full border-neutral/30"
+                  >
+                    Notify me
+                  </button>
+                  <p className="text-[11px] text-neutral/60 leading-relaxed">
+                    Opens your email app. We do not store the address on the server.
+                  </p>
+                </form>
               ) : (
                 <Link
                   href={tool.href}
@@ -197,13 +222,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="max-w-3xl mx-auto px-4 pb-12 space-y-4">
+      <section id="faq" className="max-w-3xl mx-auto px-4 pb-12 space-y-4 scroll-mt-28">
         <h2 className="text-xl font-bold text-primary text-center">FAQ</h2>
         <div className="space-y-3">
           {FAQ.map((item) => (
             <details
-              key={item.q}
-              className="rounded-xl border-2 border-base-300 bg-base-100 p-4 shadow-sm"
+              key={item.id}
+              id={item.id}
+              className="rounded-xl border-2 border-base-300 bg-base-100 p-4 shadow-sm scroll-mt-28"
             >
               <summary className="cursor-pointer font-semibold text-primary text-sm sm:text-base focus-visible:outline focus-visible:outline-2 focus-visible:outline-secondary rounded">
                 {item.q}
