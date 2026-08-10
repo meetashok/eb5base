@@ -114,31 +114,6 @@ export default function HomePage() {
               Case Tracker
             </Link>
           </div>
-          <div className="mt-8 max-w-lg mx-auto rounded-xl border border-base-300/80 bg-base-100/80 px-4 py-3 text-left shadow-soft">
-            <p className="text-[11px] uppercase tracking-wider font-bold text-secondary mb-2">
-              How does the NPRM affect me?
-            </p>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <Link
-                href="/nprm?investor=pre_ria#impact-matrix"
-                className="btn btn-sm btn-outline flex-1"
-              >
-                Filed before Mar 2022
-              </Link>
-              <Link
-                href="/nprm?investor=post_ria#impact-matrix"
-                className="btn btn-sm btn-outline flex-1"
-              >
-                Filed after Mar 2022
-              </Link>
-              <Link
-                href="/nprm?investor=future#impact-matrix"
-                className="btn btn-sm btn-outline flex-1"
-              >
-                Planning to file
-              </Link>
-            </div>
-          </div>
         </div>
       </section>
 
