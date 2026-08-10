@@ -97,7 +97,7 @@ export default function WhyComment({
             onClick={onComments}
             className="btn btn-sm btn-outline border-neutral/30"
           >
-            Browse comments →
+            Browse existing comments →
           </button>
         ) : null}
         <a
