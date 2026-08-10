@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { ExternalExplainerSection } from '@/components/nprm/ExternalExplainers';
 import { GlossaryText } from '@/components/nprm/GlossaryTerm';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
-import { FR_HTML, FR_PDF, NPRM_LAST_UPDATED } from '@/lib/nprm/utils';
+import { FR_HTML, FR_PDF } from '@/lib/nprm/utils';
 
 const SECTIONS: {
   id: string;
