@@ -24,6 +24,7 @@ function isMaintenancePassthrough(pathname: string): boolean {
     pathname === '/llms.txt' ||
     pathname === '/debug' ||
     pathname.startsWith('/debug/') ||
+    pathname === '/api/crawl-test' ||
     pathname === '/icon' ||
     pathname.startsWith('/icon/') ||
     pathname === '/opengraph-image' ||
@@ -93,13 +94,50 @@ function setBypassCookies(response: NextResponse, secret: string, request: NextR
   });
 }
 
+/**
+ * Public surfaces that must never inspect User-Agent and should skip auth
+ * session work so crawlers get the same fast HTML as browsers.
+ */
+function isCrawlFriendlyPublicPath(pathname: string): boolean {
+  return (
+    pathname === '/robots.txt' ||
+    pathname === '/sitemap.xml' ||
+    pathname === '/llms.txt' ||
+    pathname === '/debug' ||
+    pathname.startsWith('/debug/') ||
+    pathname === '/api/crawl-test' ||
+    pathname === '/nprm' ||
+    pathname.startsWith('/nprm/') ||
+    pathname === '/nrpm' ||
+    pathname.startsWith('/nrpm/') ||
+    pathname === '/icon' ||
+    pathname.startsWith('/icon/') ||
+    pathname === '/opengraph-image' ||
+    pathname.startsWith('/opengraph-image/') ||
+    pathname === '/twitter-image' ||
+    pathname.startsWith('/twitter-image/')
+  );
+}
+
 export async function middleware(request: NextRequest) {
   // No user-agent blocking. Crawlers receive the same HTML as browsers.
   const legacyTab = redirectLegacyNprmTab(request);
   if (legacyTab) return legacyTab;
 
+  const { pathname } = request.nextUrl;
+
+  if (isCrawlFriendlyPublicPath(pathname)) {
+    // Skip Supabase session refresh on crawl/marketing surfaces.
+    if (isMaintenanceMode() && !isMaintenancePassthrough(pathname)) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/maintenance';
+      url.search = '';
+      return NextResponse.rewrite(url);
+    }
+    return NextResponse.next();
+  }
+
   if (isMaintenanceMode()) {
-    const { pathname } = request.nextUrl;
     const secret = getMaintenanceBypassSecret();
     const accessParam = request.nextUrl.searchParams.get('access');
     const bypassCookie = request.cookies.get(MAINTENANCE_BYPASS_COOKIE)?.value;

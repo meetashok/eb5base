@@ -21,6 +21,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/tracker',
     '/case-tracker',
     '/about',
+    '/robots.txt',
+    '/sitemap.xml',
+    '/debug/crawl',
+    '/debug/plain',
+    '/debug/text',
+    '/api/crawl-test',
   ];
 
   const full = [
@@ -29,7 +35,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/terms',
     '/resources',
     '/contact',
-    '/debug/crawl',
   ];
 
   const paths = isMaintenanceMode() ? core : full;

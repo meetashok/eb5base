@@ -10,6 +10,24 @@ const CRAWLER_AGENTS = [
   'Twitterbot',
   'Slackbot',
   'MetaAI',
+  'Applebot',
+];
+
+/** Keep /api/crawl-test crawlable; do not blanket-disallow /api/. */
+const DISALLOW = ['/admin/', '/api/private/'];
+
+const PUBLIC_ALLOW = [
+  '/',
+  '/nprm',
+  '/nprm/',
+  '/status',
+  '/tracker',
+  '/about',
+  '/debug',
+  '/debug/',
+  '/robots.txt',
+  '/sitemap.xml',
+  '/api/crawl-test',
 ];
 
 export default function robots(): MetadataRoute.Robots {
@@ -20,12 +38,12 @@ export default function robots(): MetadataRoute.Robots {
       rules: [
         {
           userAgent: '*',
-          allow: ['/', '/nprm', '/nprm/', '/status', '/tracker', '/about', '/debug'],
-          disallow: ['/admin', '/projects', '/rc', '/api/'],
+          allow: PUBLIC_ALLOW,
+          disallow: DISALLOW,
         },
         {
           userAgent: CRAWLER_AGENTS,
-          allow: ['/', '/nprm', '/nprm/', '/status', '/tracker', '/about', '/debug'],
+          allow: PUBLIC_ALLOW,
         },
       ],
       sitemap,
@@ -37,7 +55,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin', '/api/'],
+        disallow: DISALLOW,
       },
       {
         userAgent: CRAWLER_AGENTS,
