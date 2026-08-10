@@ -1,10 +1,14 @@
 'use client';
 
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { ExternalExplainerSection } from '@/components/nprm/ExternalExplainers';
 import { GlossaryText } from '@/components/nprm/GlossaryTerm';
+import ImpactMatrix from '@/components/nprm/ImpactMatrix';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
-import { FR_HTML, FR_PDF } from '@/lib/nprm/utils';
+import WhyComment from '@/components/nprm/WhyComment';
+import { ListSkeleton } from '@/components/LoadingSkeleton';
+import type { NprmProposalSummary } from '@/lib/nprm/types';
+import { FR_HTML, FR_PDF, mergeWhyReasons } from '@/lib/nprm/utils';
 
 const SECTIONS: {
   id: string;
@@ -111,7 +115,20 @@ const SECTIONS: {
   },
 ];
 
-export default function SummaryTab() {
+export default function SummaryTab({
+  proposal,
+  onThemes,
+  onComments,
+}: {
+  proposal: NprmProposalSummary | null;
+  onThemes: () => void;
+  onComments: () => void;
+}) {
+  const whyComment = mergeWhyReasons(
+    proposal?.why_comment,
+    proposal?.why_participate
+  );
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if (window.location.hash !== '#external-explainers') return;
@@ -155,6 +172,18 @@ export default function SummaryTab() {
           </p>
         </NprmSectionHeading>
       </div>
+
+      <Suspense fallback={<ListSkeleton count={2} />}>
+        <ImpactMatrix />
+      </Suspense>
+
+      {whyComment ? (
+        <WhyComment
+          why={whyComment}
+          onThemes={onThemes}
+          onComments={onComments}
+        />
+      ) : null}
 
       <div className="lg:grid lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-8 items-start">
         <nav

@@ -1,15 +1,12 @@
 'use client';
 
-import { Suspense } from 'react';
 import { CitationChips } from '@/components/nprm/CitationChips';
 import GlossaryTerm, {
   GlossaryText,
 } from '@/components/nprm/GlossaryTerm';
-import ImpactMatrix from '@/components/nprm/ImpactMatrix';
+import DoCommentsChangeRule from '@/components/nprm/DoCommentsChangeRule';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import VolumeChart from '@/components/nprm/VolumeChart';
-import WhyComment from '@/components/nprm/WhyComment';
-import { ListSkeleton } from '@/components/LoadingSkeleton';
 import type {
   NprmComment,
   NprmLastCheck,
@@ -25,7 +22,6 @@ import {
   RIN,
   dailyVolume,
   formatLastPull,
-  mergeWhyReasons,
   normalizeShortSummary,
 } from '@/lib/nprm/utils';
 import { FEED_SHARE } from '@/lib/nprm/fetch';
@@ -37,7 +33,6 @@ interface Props {
   lastCheck: NprmLastCheck | null;
   feedSource: 'remote' | 'local';
   onThemes: () => void;
-  onComments: () => void;
   onWrite: () => void;
   onSummary: () => void;
   onExternalBlogs: () => void;
@@ -82,7 +77,6 @@ export default function OverviewTab({
   proposal,
   feedSource,
   onThemes,
-  onComments,
   onWrite,
   onSummary,
   onExternalBlogs,
@@ -92,10 +86,6 @@ export default function OverviewTab({
   const lastPullLabel = formatLastPull(stats.last_pull);
   const sourceUrl = proposal?.source_url || FR_PDF;
   const short = normalizeShortSummary(proposal?.short_summary);
-  const whyComment = mergeWhyReasons(
-    proposal?.why_comment,
-    proposal?.why_participate
-  );
 
   return (
     <div className="space-y-8 animate-[fadeIn_0.35s_ease-out] nprm-prose">
@@ -243,6 +233,8 @@ export default function OverviewTab({
         </p>
       </section>
 
+      <DoCommentsChangeRule />
+
       <section className="space-y-4" id="comment-stats">
         <NprmSectionHeading
           eyebrow="Tracker"
@@ -324,18 +316,6 @@ export default function OverviewTab({
           ))}
         </ol>
       </section>
-
-      <Suspense fallback={<ListSkeleton count={2} />}>
-        <ImpactMatrix />
-      </Suspense>
-
-      {whyComment ? (
-        <WhyComment
-          why={whyComment}
-          onThemes={onThemes}
-          onComments={onComments}
-        />
-      ) : null}
 
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between rounded-xl border-2 border-secondary/30 bg-secondary/10 px-4 py-4">
         <div className="space-y-1">
