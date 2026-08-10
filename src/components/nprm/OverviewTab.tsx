@@ -133,7 +133,7 @@ export default function OverviewTab({
         <p className="page-hero-eyebrow mb-2">
           Draft rule · comments close August 31, 2026
         </p>
-        <h2 className="text-lg md:text-xl font-bold text-primary leading-snug">
+        <h2 className="text-base font-bold text-primary leading-snug">
           What is this draft rule, and does it affect your EB-5 money?
         </h2>
         <p className="nprm-tldr">

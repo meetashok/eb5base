@@ -318,7 +318,7 @@ body {
   }
 
   .nprm-prose h2 {
-    @apply text-lg md:text-xl font-bold text-primary leading-snug;
+    @apply text-base font-bold text-primary leading-snug;
   }
 
   .nprm-prose h3 {
