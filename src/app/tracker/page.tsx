@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import PageHero from '@/components/PageHero';
 import { BrandWordmark } from '@/components/Logo';
+import CaseTrackerWaitlistForm from '@/components/CaseTrackerWaitlistForm';
 import { createClient } from '@/lib/supabase-server';
 
 export const metadata = {
@@ -116,30 +117,22 @@ export default async function TrackerLandingPage() {
             </p>
             <h2 className="text-xl font-bold text-primary">Notify me when Case Tracker expands</h2>
             <p className="text-sm text-neutral/70 mt-1 leading-relaxed">
-              Email us and we will add you to the notify list. No backend form yet. Opens your mail
-              client.
+              Leave your email and we will notify you once when Case Tracker is ready for broader
+              use. No ads, no marketing list.
             </p>
           </div>
-          <form
-            action="mailto:hello@eb5base.com?subject=Case%20Tracker%20notify%20me"
-            method="get"
-            className="flex flex-col sm:flex-row gap-2 max-w-lg"
-          >
-            <label className="sr-only" htmlFor="tracker-waitlist-email">
-              Email
-            </label>
-            <input
-              id="tracker-waitlist-email"
-              type="email"
-              name="body"
-              required
-              placeholder="you@example.com"
-              className="input input-bordered w-full"
-            />
-            <button type="submit" className="btn btn-primary text-primary-content shrink-0">
-              Notify me
-            </button>
-          </form>
+          <CaseTrackerWaitlistForm
+            source="tracker"
+            variant="full"
+            inputId="tracker-waitlist-email"
+          />
+          <p className="text-xs text-neutral/60 leading-relaxed">
+            By submitting, you agree we may store your email for this one-time launch notice.{' '}
+            <Link href="/privacy" className="underline underline-offset-2 hover:text-secondary">
+              Privacy
+            </Link>
+            .
+          </p>
         </section>
 
         <section className="card-elevated p-6 md:p-8 space-y-3">

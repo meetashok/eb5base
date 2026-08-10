@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BrandWordmark } from '@/components/Logo';
+import CaseTrackerWaitlistForm from '@/components/CaseTrackerWaitlistForm';
 import HomeDeadlineCountdown from '@/components/HomeDeadlineCountdown';
 
 export const metadata: Metadata = {
@@ -139,32 +140,11 @@ export default function HomePage() {
               <h3 className="text-xl font-bold text-primary">{tool.title}</h3>
               <p className="text-sm text-neutral/75 leading-relaxed mt-2 flex-1">{tool.body}</p>
               {tool.comingSoon ? (
-                <form
-                  action="mailto:hello@eb5base.com?subject=Case%20Tracker%20notify%20me"
-                  method="get"
-                  className="mt-5 space-y-2"
-                >
-                  <label className="sr-only" htmlFor="home-tracker-email">
-                    Email for Case Tracker waitlist
-                  </label>
-                  <input
-                    id="home-tracker-email"
-                    type="email"
-                    name="body"
-                    required
-                    placeholder="you@example.com"
-                    className="input input-sm input-bordered w-full"
-                  />
-                  <button
-                    type="submit"
-                    className="btn btn-sm btn-outline rounded-full border-neutral/30"
-                  >
-                    Notify me
-                  </button>
-                  <p className="text-[11px] text-neutral/60 leading-relaxed">
-                    Opens your email app. We do not store the address on the server.
-                  </p>
-                </form>
+                <CaseTrackerWaitlistForm
+                  source="home"
+                  variant="compact"
+                  inputId="home-tracker-email"
+                />
               ) : (
                 <Link
                   href={tool.href}

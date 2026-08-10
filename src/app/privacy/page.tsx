@@ -34,8 +34,9 @@ export default function PrivacyPage() {
           </p>
           <p>
             NPRM comment drafts and Status Update fields stay in your browser (localStorage) unless
-            you copy them elsewhere. We do not collect A-numbers. Optional email for a Case Tracker
-            waitlist is only sent if you choose to email us.
+            you copy them elsewhere. We do not collect A-numbers. If you join the Case Tracker
+            waitlist, we store your email only to send one launch notification; we do not use it for
+            ads or a marketing list. You can ask us to remove it at hello@eb5base.com.
           </p>
         </Section>
 
@@ -57,6 +58,11 @@ export default function PrivacyPage() {
             reports, and regional center verification requests.
           </p>
           <p>
+            <strong className="text-neutral">Case Tracker waitlist.</strong> If you opt in on the
+            home page or Case Tracker page, we store the email address you submit, when you
+            submitted it, and which page you used. We use it only for a one-time launch notice.
+          </p>
+          <p>
             <strong className="text-neutral">Technical information.</strong> Our hosting and
             analytics providers may collect limited technical data such as browser type, device
             information, page views, and approximate usage patterns.
@@ -72,6 +78,9 @@ export default function PrivacyPage() {
             <li>Review submissions and moderate content</li>
             <li>Respond to support requests and reports</li>
             <li>Send service-related emails, such as login links and account notifications</li>
+            <li>
+              Notify waitlist subscribers once when Case Tracker launches (opt-in email only)
+            </li>
             <li>Understand aggregate site usage through privacy-focused analytics</li>
           </ul>
           <p>We do not sell your personal information.</p>
