@@ -152,7 +152,7 @@ export default function CommentsTab({
         ) : null}
       </div>
 
-      <div className="space-y-3 sticky top-[calc(var(--site-sticky-offset)+3.25rem)] z-30 -mx-1 px-1 py-2 bg-base-100/95 backdrop-blur-sm border-b border-base-300/60">
+      <div className="space-y-3">
         <div>
           <label
             htmlFor="nprm-comment-search"
