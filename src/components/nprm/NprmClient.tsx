@@ -279,7 +279,6 @@ export default function NprmClient({
             onThemes={() => setTab('themes')}
             onWrite={() => setTab('write')}
             onSummary={() => setTab('summary')}
-            onExternalBlogs={() => setTab('summary', 'external-explainers')}
           />
         )}
       </div>

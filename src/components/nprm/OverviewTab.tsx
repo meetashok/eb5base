@@ -27,7 +27,6 @@ interface Props {
   onThemes: () => void;
   onWrite: () => void;
   onSummary: () => void;
-  onExternalBlogs: () => void;
 }
 
 const KEY_POINTS: {
@@ -87,7 +86,6 @@ export default function OverviewTab({
   onThemes,
   onWrite,
   onSummary,
-  onExternalBlogs,
 }: Props) {
   const volume = dailyVolume(comments);
   const lastPullLabel = formatLastPull(stats.last_pull);
@@ -168,19 +166,15 @@ export default function OverviewTab({
           >
             Build My Comment
           </button>
+          <a href="#key-points" className="btn btn-outline border-neutral/30">
+            Key points
+          </a>
           <button
             type="button"
             onClick={onSummary}
             className="btn btn-outline border-neutral/30"
           >
             Read 10-min Summary
-          </button>
-          <button
-            type="button"
-            onClick={onExternalBlogs}
-            className="btn btn-outline border-neutral/30"
-          >
-            What blogs are saying
           </button>
         </div>
       </header>
@@ -273,7 +267,7 @@ export default function OverviewTab({
       </section>
 
       <section
-        className="space-y-3 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft"
+        className="space-y-3 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft scroll-mt-28"
         id="key-points"
       >
         <NprmSectionHeading
@@ -318,6 +312,8 @@ export default function OverviewTab({
           ))}
         </ol>
       </section>
+
+      <HowCommentingWorks onWrite={onWrite} />
     </div>
   );
 }
