@@ -588,7 +588,17 @@ export default function WriteTab({
             <ol className="list-decimal pl-5 text-sm text-neutral space-y-1.5 leading-relaxed">
               <li>Paste the prompt into your own LLM</li>
               <li>Edit the draft in your voice (aim for more than 30% personal)</li>
-              <li>Paste the final comment on regulations.gov</li>
+              <li>
+                Paste the final comment on{' '}
+                <a
+                  href={COMMENT_ON_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+                >
+                  regulations.gov
+                </a>
+              </li>
               <li>Consider a 30-minute counsel memo for your file</li>
             </ol>
             <p className="text-xs text-neutral/75 leading-relaxed">
