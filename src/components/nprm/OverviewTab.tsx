@@ -101,7 +101,7 @@ export default function OverviewTab({
       >
         <NprmSectionHeading
           as="h2"
-          eyebrow="Draft rule · comments close August 31, 2026"
+          eyebrow="Draft rule"
           title="What is this draft rule, and does it affect your EB-5 journey?"
         />
         <p className="nprm-tldr">
