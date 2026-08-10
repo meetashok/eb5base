@@ -758,6 +758,22 @@
     html, body { margin: 0; background: transparent; }
     body { overflow-x: hidden; }
     .page-shell { max-width: 72rem; margin: 0 auto; padding-left: 1rem; padding-right: 1rem; }
+    /* Desktop embed: scroll inside the iframe so lg:sticky Live Preview stays on screen. */
+    @media (min-width: 1024px) {
+      html, body {
+        height: 100%;
+      }
+      body {
+        overflow-y: auto;
+      }
+      .page-shell {
+        min-height: 100%;
+        padding-bottom: 1.5rem;
+      }
+      #preview-panel {
+        top: 1rem;
+      }
+    }
   </style>
 </head>
 <body class="min-h-screen font-sans">

@@ -1,18 +1,71 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ListSkeleton } from '@/components/LoadingSkeleton';
+
+const DESKTOP_MQ = '(min-width: 1024px)';
+
+function readChromeBottom(): number {
+  if (typeof window === 'undefined') return 112;
+  const chrome = document.getElementById('site-chrome');
+  if (chrome) {
+    return Math.ceil(chrome.getBoundingClientRect().height);
+  }
+  const raw = getComputedStyle(document.documentElement)
+    .getPropertyValue('--site-sticky-offset')
+    .trim();
+  const parsed = Number.parseFloat(raw);
+  return Number.isFinite(parsed) ? parsed : 112;
+}
+
+function desktopFrameHeight(): number {
+  return Math.max(window.innerHeight - readChromeBottom() - 12, 560);
+}
 
 export default function StatusUpdateEmbed() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [height, setHeight] = useState(2400);
+  const [isDesktop, setIsDesktop] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia(DESKTOP_MQ).matches : false
+  );
+  const [height, setHeight] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia(DESKTOP_MQ).matches
+      ? desktopFrameHeight()
+      : 2400
+  );
   const [ready, setReady] = useState(false);
+
+  const applyDesktopHeight = useCallback(() => {
+    setHeight(desktopFrameHeight());
+  }, []);
+
+  useEffect(() => {
+    const mq = window.matchMedia(DESKTOP_MQ);
+    const syncMode = () => {
+      const desktop = mq.matches;
+      setIsDesktop(desktop);
+      if (desktop) applyDesktopHeight();
+    };
+    syncMode();
+    mq.addEventListener('change', syncMode);
+    return () => mq.removeEventListener('change', syncMode);
+  }, [applyDesktopHeight]);
+
+  useEffect(() => {
+    if (!isDesktop) return;
+    applyDesktopHeight();
+    function onResize() {
+      applyDesktopHeight();
+    }
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [isDesktop, applyDesktopHeight]);
 
   useEffect(() => {
     function onMessage(event: MessageEvent) {
       if (event.origin !== window.location.origin) return;
       const data = event.data;
       if (!data || data.type !== 'eb5status-height') return;
+      if (window.matchMedia(DESKTOP_MQ).matches) return;
       const next = Number(data.height);
       if (Number.isFinite(next) && next > 400) {
         setHeight(Math.ceil(next));
@@ -29,6 +82,11 @@ export default function StatusUpdateEmbed() {
 
     function syncHeight() {
       try {
+        if (window.matchMedia(DESKTOP_MQ).matches) {
+          applyDesktopHeight();
+          setReady(true);
+          return;
+        }
         const el = iframeRef.current;
         if (!el) return;
         const doc = el.contentDocument;
@@ -58,10 +116,16 @@ export default function StatusUpdateEmbed() {
       window.clearInterval(interval);
       window.clearTimeout(timeout);
     };
-  }, []);
+  }, [applyDesktopHeight]);
 
   return (
-    <div className="w-full pb-8 relative">
+    <div
+      className={`w-full pb-8 relative ${
+        isDesktop
+          ? 'lg:sticky lg:top-[var(--site-sticky-offset)] lg:z-10 lg:pb-3'
+          : ''
+      }`}
+    >
       {!ready ? (
         <div className="absolute inset-x-0 top-0 z-10 px-4 max-w-3xl mx-auto">
           <ListSkeleton count={3} />
