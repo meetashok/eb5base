@@ -40,19 +40,6 @@ export default function StatusUpdatePage() {
         }
       />
 
-      <div className="max-w-3xl mx-auto px-4 pb-6 space-y-3">
-        <div
-          className="rounded-xl border-2 border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 leading-relaxed"
-          role="note"
-        >
-          <p className="font-bold mb-1">Before you share publicly</p>
-          <p>
-            Do not share A-numbers, receipt numbers, home addresses, or attorney details. If you
-            type personal identifiers, remove them before posting to a community group.
-          </p>
-        </div>
-      </div>
-
       <StatusUpdateEmbed />
     </div>
   );
