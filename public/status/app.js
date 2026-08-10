@@ -1312,7 +1312,6 @@
   }
 
   const SHARE_URL = "https://eb5base.com/status";
-  const SHARE_URL_SHORT = "eb5base.com/status";
   const SHARE_TITLE = "EB5 Status Update Builder";
   const SHARE_TEXT = "Check out this tool for sharing your EB-5 case status";
   let shareBtnResetTimer = null;
