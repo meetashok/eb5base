@@ -1,4 +1,5 @@
 import { CitationChips } from '@/components/nprm/CitationChips';
+import { GlossaryText } from '@/components/nprm/GlossaryTerm';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import type { NprmProposalWhyComment } from '@/lib/nprm/types';
 import {
@@ -30,7 +31,7 @@ export default function WhyComment({
         <div className="min-w-0 space-y-2 max-w-3xl">
           <NprmSectionHeading eyebrow="Why comment" title={title}>
             <p className="text-sm text-neutral leading-relaxed">
-              {plainDash(why.intro)}
+              <GlossaryText text={plainDash(why.intro)} />
             </p>
             <CitationChips citations={why.citations_intro} href={FR_HTML} />
           </NprmSectionHeading>
@@ -64,12 +65,14 @@ export default function WhyComment({
                   {idx + 1}
                 </span>
                 <h4 className="text-sm font-bold text-primary leading-snug">
-                  {plainDash(reason.title)}
+                  <GlossaryText text={plainDash(reason.title)} />
                 </h4>
               </div>
               <ul className="space-y-1.5 text-sm text-neutral leading-relaxed list-disc pl-5">
                 {bullets.map((b) => (
-                  <li key={b.slice(0, 40)}>{b}</li>
+                  <li key={b.slice(0, 40)}>
+                    <GlossaryText text={b} />
+                  </li>
                 ))}
               </ul>
               <CitationChips citations={reason.citations} href={FR_HTML} />
@@ -116,11 +119,10 @@ export default function WhyComment({
             titleClassName="text-sm font-bold text-primary leading-snug"
           />
           <p className="text-sm text-neutral leading-relaxed">
-            {plainDash(why.how_it_works)}
+            <GlossaryText text={plainDash(why.how_it_works)} />
           </p>
           <p className="text-xs text-neutral/80 leading-relaxed">
-            If enough investors flag the same data gap, USCIS must publish a reasoned
-            response or risk reversal on judicial review under the APA. File on{' '}
+            <GlossaryText text="If enough investors flag the same data gap, USCIS must publish a reasoned response or risk reversal on judicial review under the APA. File on " />
             <a
               href={COMMENT_ON_URL}
               target="_blank"
@@ -144,7 +146,9 @@ export default function WhyComment({
           />
           <ul className="space-y-1.5 text-sm text-neutral leading-relaxed list-disc pl-5">
             {why.what_to_include.map((item) => (
-              <li key={item}>{plainDash(item)}</li>
+              <li key={item}>
+                <GlossaryText text={plainDash(item)} />
+              </li>
             ))}
           </ul>
         </div>

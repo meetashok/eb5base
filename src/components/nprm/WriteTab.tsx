@@ -17,7 +17,9 @@ import type {
   StyleGuideline,
 } from '@/lib/nprm/types';
 import { COMMENT_ON_URL } from '@/lib/nprm/utils';
-import GlossaryTerm from '@/components/nprm/GlossaryTerm';
+import GlossaryTerm, {
+  GlossaryText,
+} from '@/components/nprm/GlossaryTerm';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import { useToast } from '@/components/Toast';
 
@@ -351,7 +353,8 @@ export default function WriteTab({
           Your comment looks too close to a template (
           {Math.round(similarity * 100)}% overlap). Add 1-2 sentences about your
           own case: why you chose EB-5, how long you have waited, what
-          redeployment cost you. DHS discounts form letters.
+          redeployment cost you. <GlossaryTerm term="DHS" /> discounts form
+          letters.
         </div>
       ) : null}
 
@@ -395,7 +398,7 @@ export default function WriteTab({
                       checked ? 'text-primary' : 'text-neutral'
                     } ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                   >
-                    {t.title}
+                    <GlossaryText text={t.title} />
                   </button>
                   {checked ? (
                     <fieldset className="mt-2 space-y-1.5 border-t border-secondary/30 pt-2">
@@ -425,7 +428,9 @@ export default function WriteTab({
                                 }))
                               }
                             />
-                            <span className="leading-snug">{op.label}</span>
+                            <span className="leading-snug">
+                              <GlossaryText text={op.label} />
+                            </span>
                           </label>
                         );
                       })}
@@ -522,12 +527,7 @@ export default function WriteTab({
               }
             />
             <span className="label-text-alt text-[10px] sm:text-[11px] text-neutral/70 leading-relaxed mt-1">
-              Helpful examples: years waiting in the visa queue; capital already
-              invested; a child’s age, school, or aging-out risk; job or
-              work-authorization timing tied to I-829; redeployment or
-              regional-center disruption that hit you; project timelines that
-              clash with a 2-year sustainment clock. Skip A-numbers, receipt
-              numbers, and home addresses.
+              <GlossaryText text="Helpful examples: years waiting in the visa queue; capital already invested; a child’s age, school, or aging-out risk; job or work-authorization timing tied to I-829; redeployment or regional-center disruption that hit you; project timelines that clash with a 2-year sustainment clock. Skip A-numbers, receipt numbers, and home addresses." />
             </span>
           </label>
         </section>

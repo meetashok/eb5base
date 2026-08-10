@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { ExternalExplainerSection } from '@/components/nprm/ExternalExplainers';
+import { GlossaryText } from '@/components/nprm/GlossaryTerm';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import { FR_HTML, FR_PDF, NPRM_LAST_UPDATED } from '@/lib/nprm/utils';
 
@@ -128,7 +129,7 @@ export default function SummaryTab() {
         <NprmSectionHeading
           as="h2"
           eyebrow="Summary"
-          title="10-minute NPRM summary"
+          title={<GlossaryText text="10-minute NPRM summary" />}
         >
           <p className="text-sm text-neutral leading-relaxed">
             Current rule vs proposed change, why it matters, and risk if finalized.
@@ -193,24 +194,32 @@ export default function SummaryTab() {
               <NprmSectionHeading
                 as="h3"
                 eyebrow={`Topic ${idx + 1}`}
-                title={s.title}
+                title={<GlossaryText text={s.title} />}
               />
               <dl className="space-y-2 text-sm text-neutral leading-relaxed">
                 <div>
                   <dt className="font-bold text-primary">Current rule</dt>
-                  <dd>{s.current}</dd>
+                  <dd>
+                    <GlossaryText text={s.current} />
+                  </dd>
                 </div>
                 <div>
                   <dt className="font-bold text-primary">Proposed</dt>
-                  <dd>{s.proposed}</dd>
+                  <dd>
+                    <GlossaryText text={s.proposed} />
+                  </dd>
                 </div>
                 <div>
                   <dt className="font-bold text-primary">Why it matters to you</dt>
-                  <dd>{s.why}</dd>
+                  <dd>
+                    <GlossaryText text={s.why} />
+                  </dd>
                 </div>
                 <div>
                   <dt className="font-bold text-primary">Risk if finalized</dt>
-                  <dd>{s.risk}</dd>
+                  <dd>
+                    <GlossaryText text={s.risk} />
+                  </dd>
                 </div>
               </dl>
               <p className="text-xs font-semibold text-neutral/70">

@@ -17,6 +17,7 @@ import {
   tabFromPathname,
   type NprmTabId,
 } from '@/lib/nprm/tabs';
+import GlossaryTerm from '@/components/nprm/GlossaryTerm';
 import {
   DOCKET_URL,
   FR_HTML,
@@ -119,8 +120,8 @@ export default function NprmClient({
         subtitle={
           <div className="space-y-1.5 text-sm md:text-[0.95rem] text-neutral max-w-2xl leading-relaxed">
             <p>
-              The Department of Homeland Security (DHS) published a proposed
-              rulemaking notice on July 2, 2026. EB5 Base breaks down the{' '}
+              <GlossaryTerm term="DHS" /> published a proposed rulemaking notice
+              on July 2, 2026. EB5 Base breaks down the{' '}
               <a
                 href={FR_PDF}
                 target="_blank"
@@ -129,8 +130,9 @@ export default function NprmClient({
               >
                 358-page rule
               </a>{' '}
-              that finally codifies the EB-5 Reform and Integrity Act of 2022.
-              Comments close August 31, 2026.
+              that finally codifies the EB-5{' '}
+              <GlossaryTerm term="RIA">Reform and Integrity Act</GlossaryTerm>{' '}
+              of 2022. Comments close August 31, 2026.
             </p>
             <p>
               Last data updated: {NPRM_LAST_UPDATED} ·{' '}

@@ -1,3 +1,4 @@
+import { GlossaryText } from '@/components/nprm/GlossaryTerm';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import { NPRM_DISCLAIMER_PARAS } from '@/lib/nprm/constants';
 
@@ -16,7 +17,9 @@ export default function NprmDisclaimer({ className = '' }: { className?: string 
       />
       <div className="space-y-3 text-sm text-neutral leading-relaxed">
         {NPRM_DISCLAIMER_PARAS.map((para) => (
-          <p key={para.slice(0, 48)}>{para}</p>
+          <p key={para.slice(0, 48)}>
+            <GlossaryText text={para} />
+          </p>
         ))}
       </div>
       <ul className="mt-4 list-disc list-outside pl-5 space-y-2 text-sm text-neutral leading-relaxed">

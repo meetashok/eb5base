@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import GlossaryTerm from '@/components/nprm/GlossaryTerm';
+import GlossaryTerm, {
+  GlossaryText,
+} from '@/components/nprm/GlossaryTerm';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 
 export type InvestorFilter = 'all' | 'pre_ria' | 'post_ria' | 'future';
@@ -281,13 +283,15 @@ export default function ImpactMatrix({
                       </span>
                     </th>
                     <td className="px-3 py-2.5 text-neutral leading-relaxed border-b border-base-300/80">
-                      {row.happening}
+                      <GlossaryText text={row.happening} />
                     </td>
                     <td className="px-3 py-2.5 text-neutral leading-relaxed border-b border-base-300/80">
-                      {row.means}
+                      <GlossaryText text={row.means} />
                     </td>
                     <td className="px-3 py-2.5 border-b border-base-300/80">
-                      <span className="nprm-legal-ref">{row.legal}</span>
+                      <span className="nprm-legal-ref">
+                        <GlossaryText text={row.legal} />
+                      </span>
                     </td>
                   </tr>
                 );
@@ -347,28 +351,28 @@ export default function ImpactMatrix({
                         <span className="space-y-1">
                           <span className="block">{row.topic}</span>
                           <span className="nprm-legal-ref block font-normal">
-                            {row.legal}
+                            <GlossaryText text={row.legal} />
                           </span>
                         </span>
                       </span>
                     </th>
                     {showPre ? (
                       <td className="px-3 py-2.5 text-neutral leading-relaxed border-b border-base-300/80">
-                        {row.preRia}
+                        <GlossaryText text={row.preRia} />
                       </td>
                     ) : null}
                     {showPost ? (
                       <td className="px-3 py-2.5 text-neutral leading-relaxed border-b border-base-300/80">
-                        {row.postRia}
+                        <GlossaryText text={row.postRia} />
                       </td>
                     ) : null}
                     {showFuture ? (
                       <td className="px-3 py-2.5 text-neutral leading-relaxed border-b border-base-300/80">
-                        {row.future}
+                        <GlossaryText text={row.future} />
                       </td>
                     ) : null}
                     <td className="px-3 py-2.5 text-neutral leading-relaxed border-b border-base-300/80 font-medium">
-                      {row.comment}
+                      <GlossaryText text={row.comment} />
                     </td>
                   </tr>
                 );
