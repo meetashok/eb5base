@@ -1,5 +1,6 @@
 'use client';
 
+import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import type { NprmTheme } from '@/lib/nprm/types';
 import { commentUrl } from '@/lib/nprm/utils';
 
@@ -18,19 +19,25 @@ export default function ThemesTab({
 }: Props) {
   return (
     <div className="space-y-6 animate-[fadeIn_0.35s_ease-out]">
-      <div>
-        <h2 className="text-lg font-bold text-primary">
-          Comment Themes That Actually Move The Needle
-        </h2>
-        <p className="text-sm text-neutral mt-1 max-w-2xl leading-relaxed">
+      <NprmSectionHeading
+        as="h2"
+        eyebrow="Themes"
+        title="Comment themes that actually move the needle"
+      >
+        <p className="text-sm text-neutral leading-relaxed max-w-2xl">
           Don&apos;t copy-paste. USCIS discounts form letters. Use our Write builder to
           personalize with your dates. Context and sample IDs below come from real
           regulations.gov comments.
         </p>
-      </div>
+      </NprmSectionHeading>
 
       <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 space-y-2 text-sm text-neutral leading-relaxed">
-        <p className="font-bold text-primary">How to submit</p>
+        <NprmSectionHeading
+          as="h3"
+          eyebrow="How to submit"
+          title="Three steps to file"
+          titleClassName="text-sm font-semibold text-primary leading-snug"
+        />
         <ol className="list-decimal pl-5 space-y-1">
           <li>Pick a theme and opinion below, then open Write.</li>
           <li>Personalize with your filing date and story (we check length).</li>
@@ -49,14 +56,11 @@ export default function ThemesTab({
               key={theme.id}
               className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 flex flex-col gap-3 shadow-soft"
             >
-              <div>
-                <h3 className="font-bold text-primary text-base leading-snug">
-                  {theme.title}
-                </h3>
-                <p className="text-sm text-neutral mt-2 leading-relaxed">
+              <NprmSectionHeading as="h3" eyebrow="Theme" title={theme.title}>
+                <p className="text-sm text-neutral leading-relaxed">
                   {theme.summary}
                 </p>
-              </div>
+              </NprmSectionHeading>
 
               <div className="flex flex-wrap gap-1.5">
                 {theme.cfrs.map((cfr) => (
@@ -113,10 +117,10 @@ export default function ThemesTab({
                 {selected && (
                   <button
                     type="button"
-                    className="btn btn-sm btn-secondary mt-1"
+                    className="btn btn-sm btn-primary text-primary-content mt-1"
                     onClick={() => onWriteWithTheme(theme.id, selected)}
                   >
-                    Use in Write tab
+                    Build My Comment
                   </button>
                 )}
               </div>

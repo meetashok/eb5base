@@ -1,4 +1,5 @@
 import { CitationChips } from '@/components/nprm/CitationChips';
+import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import type { NprmProposalWhyComment } from '@/lib/nprm/types';
 import {
   COMMENT_ON_URL,
@@ -27,16 +28,12 @@ export default function WhyComment({
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 space-y-2 max-w-3xl">
-          <p className="page-hero-eyebrow mb-2">
-            Why comment
-          </p>
-          <h3 className="text-base font-bold text-primary leading-snug">
-            {title}
-          </h3>
-          <p className="text-sm text-neutral leading-relaxed">
-            {plainDash(why.intro)}
-          </p>
-          <CitationChips citations={why.citations_intro} href={FR_HTML} />
+          <NprmSectionHeading eyebrow="Why comment" title={title}>
+            <p className="text-sm text-neutral leading-relaxed">
+              {plainDash(why.intro)}
+            </p>
+            <CitationChips citations={why.citations_intro} href={FR_HTML} />
+          </NprmSectionHeading>
         </div>
         <a
           href={DOCUMENT_URL}
@@ -112,7 +109,12 @@ export default function WhyComment({
 
       {why.how_it_works ? (
         <div className="rounded-xl border border-base-300 bg-base-100 p-4 space-y-2">
-          <h4 className="text-sm font-bold text-primary">How commenting works</h4>
+          <NprmSectionHeading
+            as="h3"
+            eyebrow="Process"
+            title="How commenting works"
+            titleClassName="text-sm font-bold text-primary leading-snug"
+          />
           <p className="text-sm text-neutral leading-relaxed">
             {plainDash(why.how_it_works)}
           </p>
@@ -134,9 +136,12 @@ export default function WhyComment({
 
       {why.what_to_include?.length ? (
         <div className="rounded-xl border border-base-300 bg-base-100 p-4 space-y-2">
-          <h4 className="text-sm font-bold text-primary">
-            What to include if you comment
-          </h4>
+          <NprmSectionHeading
+            as="h3"
+            eyebrow="Checklist"
+            title="What to include if you comment"
+            titleClassName="text-sm font-bold text-primary leading-snug"
+          />
           <ul className="space-y-1.5 text-sm text-neutral leading-relaxed list-disc pl-5">
             {why.what_to_include.map((item) => (
               <li key={item}>{plainDash(item)}</li>

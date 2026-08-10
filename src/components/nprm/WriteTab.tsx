@@ -21,6 +21,7 @@ import type {
   StyleGuideline,
 } from '@/lib/nprm/types';
 import { COMMENT_ON_URL } from '@/lib/nprm/utils';
+import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import { useToast } from '@/components/Toast';
 
 interface Props {
@@ -245,9 +246,12 @@ export default function WriteTab({
 
   return (
     <div className="space-y-4 animate-[fadeIn_0.35s_ease-out]">
-      <div>
-        <h2 className="text-lg font-bold text-primary">Build My Comment</h2>
-        <p className="text-sm text-neutral mt-1 max-w-2xl leading-relaxed">
+      <NprmSectionHeading
+        as="h2"
+        eyebrow="Write"
+        title="Build My Comment"
+      >
+        <p className="text-sm text-neutral leading-relaxed max-w-2xl">
           Use this page to personalize a draft for{' '}
           <a
             href={COMMENT_ON_URL}
@@ -260,7 +264,7 @@ export default function WriteTab({
           . We do not submit the comment for you. You will need to file it
           yourself on that site when you are ready.
         </p>
-      </div>
+      </NprmSectionHeading>
 
       <div
         className="rounded-xl border-2 border-warning/50 bg-warning/15 px-3 py-3 text-sm text-neutral font-medium leading-relaxed"
@@ -281,86 +285,97 @@ export default function WriteTab({
         </div>
       ) : null}
 
-      <div className="grid lg:grid-cols-10 gap-5">
-        <div className="lg:col-span-3 space-y-5">
-          <section className="space-y-2">
-            <h3 className="text-sm font-semibold text-primary">
-              Step A: Themes (max {MAX_THEMES})
-            </h3>
-            <p className="text-xs text-neutral leading-relaxed">
-              Select a theme, then choose your view right under it.
-            </p>
-            <div className="space-y-2">
-              {themes.map((t) => {
-                const checked = themeIds.includes(t.id);
-                const disabled = !checked && themeIds.length >= MAX_THEMES;
-                return (
-                  <div
-                    key={t.id}
-                    className={`rounded-lg border-2 px-3 py-2.5 ${
-                      checked
-                        ? 'border-secondary bg-secondary/15'
-                        : 'border-base-300 bg-base-100'
-                    } ${disabled ? 'opacity-50' : ''}`}
-                  >
-                    <label
-                      className={`flex items-start gap-2 text-sm font-medium ${
-                        checked ? 'text-primary' : 'text-neutral'
-                      } ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-                    >
-                      <input
-                        type="checkbox"
-                        className="checkbox checkbox-sm mt-0.5"
-                        checked={checked}
-                        disabled={disabled}
-                        onChange={() => toggleTheme(t.id)}
-                      />
-                      <span>{t.title}</span>
-                    </label>
-                    {checked ? (
-                      <fieldset className="mt-2.5 ml-6 space-y-1.5 border-t border-secondary/20 pt-2.5">
-                        <legend className="text-[11px] font-bold uppercase tracking-wider text-secondary/90 px-0.5">
-                          Your view
-                        </legend>
-                        {t.opinions.map((op) => (
-                          <label
-                            key={op.id}
-                            className="flex items-start gap-2 text-sm cursor-pointer text-neutral font-normal"
-                          >
-                            <input
-                              type="radio"
-                              name={`opinion-${t.id}`}
-                              className="radio radio-sm mt-0.5"
-                              checked={opinions[t.id] === op.id}
-                              onChange={() =>
-                                setOpinions((prev) => ({
-                                  ...prev,
-                                  [t.id]: op.id,
-                                }))
-                              }
-                            />
-                            <span>{op.label}</span>
-                          </label>
-                        ))}
-                      </fieldset>
-                    ) : null}
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-
-          <section className="space-y-3">
-            <div>
-              <h3 className="text-sm font-semibold text-primary">
-                Step B: Personal block (optional)
-              </h3>
-              <p className="text-xs text-neutral mt-1 leading-relaxed">
-                Optional, but a few personal details make your comment count as
-                distinct. Stored only in your browser.
+      <div className="space-y-5">
+        <section className="space-y-2 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
+          <div className="flex flex-wrap items-end justify-between gap-2">
+            <NprmSectionHeading
+              as="h3"
+              eyebrow="Step A"
+              title={`Themes (max ${MAX_THEMES})`}
+              titleClassName="text-sm font-semibold text-primary leading-snug"
+            >
+              <p className="text-xs text-neutral leading-relaxed">
+                Select a theme, then choose your view under it.
               </p>
-            </div>
-            <label className="form-control">
+            </NprmSectionHeading>
+            <p className="text-xs text-neutral/70">
+              {themeIds.length}/{MAX_THEMES} selected
+            </p>
+          </div>
+          <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-2">
+            {themes.map((t) => {
+              const checked = themeIds.includes(t.id);
+              const disabled = !checked && themeIds.length >= MAX_THEMES;
+              return (
+                <div
+                  key={t.id}
+                  className={`rounded-lg border-2 px-3 py-2.5 ${
+                    checked
+                      ? 'border-secondary bg-secondary/15'
+                      : 'border-base-300 bg-base-100'
+                  } ${disabled ? 'opacity-50' : ''}`}
+                >
+                  <label
+                    className={`flex items-start gap-2 text-sm font-medium ${
+                      checked ? 'text-primary' : 'text-neutral'
+                    } ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                  >
+                    <input
+                      type="checkbox"
+                      className="checkbox checkbox-sm mt-0.5 shrink-0"
+                      checked={checked}
+                      disabled={disabled}
+                      onChange={() => toggleTheme(t.id)}
+                    />
+                    <span className="leading-snug">{t.title}</span>
+                  </label>
+                  {checked ? (
+                    <fieldset className="mt-2 space-y-1 border-t border-secondary/20 pt-2">
+                      <legend className="text-[11px] font-bold uppercase tracking-wider text-secondary/90 px-0.5">
+                        Your view
+                      </legend>
+                      {t.opinions.map((op) => (
+                        <label
+                          key={op.id}
+                          className="flex items-start gap-2 text-xs sm:text-sm cursor-pointer text-neutral font-normal"
+                        >
+                          <input
+                            type="radio"
+                            name={`opinion-${t.id}`}
+                            className="radio radio-xs mt-0.5 shrink-0"
+                            checked={opinions[t.id] === op.id}
+                            onChange={() =>
+                              setOpinions((prev) => ({
+                                ...prev,
+                                [t.id]: op.id,
+                              }))
+                            }
+                          />
+                          <span className="leading-snug">{op.label}</span>
+                        </label>
+                      ))}
+                    </fieldset>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="space-y-3 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
+          <NprmSectionHeading
+            as="h3"
+            eyebrow="Step B"
+            title="Personal block (optional)"
+            titleClassName="text-sm font-semibold text-primary leading-snug"
+          >
+            <p className="text-xs text-neutral leading-relaxed">
+              Optional, but a few personal details make your comment count as
+              distinct. Stored only in your browser.
+            </p>
+          </NprmSectionHeading>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <label className="form-control sm:col-span-2 lg:col-span-1">
               <span className="label-text text-xs">
                 When did you file or plan to file?
               </span>
@@ -407,86 +422,92 @@ export default function WriteTab({
                 }))
               }
             />
-            <label className="form-control">
-              <span className="label-text text-xs flex justify-between">
-                <span>Personal story (optional)</span>
-                <span
-                  className={
-                    impactLen === 0
-                      ? 'text-neutral/60'
-                      : impactLen >= MIN_IMPACT_CHARS && personalized
-                        ? 'text-success'
-                        : 'text-warning'
-                  }
-                >
-                  {impactLen}/{MIN_IMPACT_CHARS}
-                </span>
+          </div>
+          <label className="form-control">
+            <span className="label-text text-xs flex justify-between">
+              <span>Personal story (optional)</span>
+              <span
+                className={
+                  impactLen === 0
+                    ? 'text-neutral/60'
+                    : impactLen >= MIN_IMPACT_CHARS && personalized
+                      ? 'text-success'
+                      : 'text-warning'
+                }
+              >
+                {impactLen}/{MIN_IMPACT_CHARS}
               </span>
-              <textarea
-                className="textarea textarea-bordered text-sm min-h-28"
-                placeholder="Why you chose EB-5, how long you have waited, what redeployment or RC issues cost you"
-                value={personal.impact}
-                onChange={(e) =>
-                  setPersonal((p) => ({ ...p, impact: e.target.value }))
+            </span>
+            <textarea
+              className="textarea textarea-bordered text-sm min-h-24"
+              placeholder="Why you chose EB-5, how long you have waited, what redeployment or RC issues cost you"
+              value={personal.impact}
+              onChange={(e) =>
+                setPersonal((p) => ({ ...p, impact: e.target.value }))
+              }
+            />
+            <span className="label-text-alt text-[10px] text-neutral/70">
+              A short personal fact helps. Example: wait time, capital already
+              deployed, school or job timing tied to I-829.
+            </span>
+          </label>
+        </section>
+
+        <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft space-y-2">
+          <NprmSectionHeading
+            as="h3"
+            eyebrow="Step C"
+            title="Guidelines"
+            titleClassName="text-sm font-semibold text-primary leading-snug"
+          />
+          <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                className="checkbox checkbox-sm"
+                checked={length === '150'}
+                onChange={() =>
+                  setLength((v) => (v === '150' ? '300_450' : '150'))
                 }
               />
-              <span className="label-text-alt text-[10px] text-neutral/70">
-                A short personal fact helps. Example: wait time, capital already
-                deployed, school or job timing tied to I-829.
-              </span>
+              Length: ~150 words (off = 300 to 450)
             </label>
-          </section>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                className="checkbox checkbox-sm"
+                checked={style === 'formal'}
+                onChange={() =>
+                  setStyle((v) => (v === 'formal' ? 'plain' : 'formal'))
+                }
+              />
+              Style: formal regulatory (off = plain English)
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                className="checkbox checkbox-sm"
+                checked={format === 'bullets'}
+                onChange={() =>
+                  setFormat((v) =>
+                    v === 'bullets' ? 'paragraphs' : 'bullets'
+                  )
+                }
+              />
+              Format: bullets (off = paragraphs)
+            </label>
+          </div>
+        </section>
 
-          <section className="space-y-2">
-            <h3 className="text-sm font-semibold text-primary">
-              Step C: Guidelines
-            </h3>
-            <div className="space-y-2 text-sm">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="checkbox checkbox-sm"
-                  checked={length === '150'}
-                  onChange={() =>
-                    setLength((v) => (v === '150' ? '300_450' : '150'))
-                  }
-                />
-                Length: ~150 words (off = 300 to 450)
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="checkbox checkbox-sm"
-                  checked={style === 'formal'}
-                  onChange={() =>
-                    setStyle((v) => (v === 'formal' ? 'plain' : 'formal'))
-                  }
-                />
-                Style: formal regulatory (off = plain English)
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="checkbox checkbox-sm"
-                  checked={format === 'bullets'}
-                  onChange={() =>
-                    setFormat((v) =>
-                      v === 'bullets' ? 'paragraphs' : 'bullets'
-                    )
-                  }
-                />
-                Format: bullets (off = paragraphs)
-              </label>
-            </div>
-          </section>
-        </div>
-
-        <div className="lg:col-span-7 space-y-3">
+        <div className="space-y-3">
           <div className="rounded-xl border border-base-300 bg-primary text-primary-content p-4 sm:p-5">
             <div className="flex items-center justify-between gap-2 mb-3">
-              <h3 className="text-sm font-semibold text-accent">
-                Deterministic prompt preview
-              </h3>
+              <NprmSectionHeading
+                as="h3"
+                eyebrow="Preview"
+                title="Deterministic prompt"
+                titleClassName="text-sm font-semibold text-accent leading-snug"
+              />
               {copyMsg && (
                 <span className="text-xs text-accent">{copyMsg}</span>
               )}
@@ -563,9 +584,12 @@ export default function WriteTab({
           )}
 
           <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-3">
-            <h3 className="text-sm font-semibold text-primary">
-              What to do after you copy
-            </h3>
+            <NprmSectionHeading
+              as="h3"
+              eyebrow="Next"
+              title="What to do after you copy"
+              titleClassName="text-sm font-semibold text-primary leading-snug"
+            />
             <ol className="list-decimal pl-5 text-sm text-neutral space-y-1.5 leading-relaxed">
               <li>Paste the prompt into your own LLM</li>
               <li>Edit the draft in your voice (aim for more than 30% personal)</li>

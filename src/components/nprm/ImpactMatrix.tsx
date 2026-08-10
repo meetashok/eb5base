@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import GlossaryTerm from '@/components/nprm/GlossaryTerm';
+import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 
 export type InvestorFilter = 'all' | 'pre_ria' | 'post_ria' | 'future';
 
@@ -205,17 +206,17 @@ export default function ImpactMatrix({
   return (
     <section className="space-y-3 nprm-prose" id="impact-matrix">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-        <div>
-          <h3 className="text-base font-bold text-primary">
-            How does this affect me?
-          </h3>
-          <p className="text-sm text-neutral mt-1 leading-relaxed max-w-3xl">
+        <NprmSectionHeading
+          eyebrow="Impact"
+          title="How does this affect me?"
+        >
+          <p className="text-sm text-neutral leading-relaxed max-w-3xl">
             Plain English first. Green = investor win, amber = watch, red =
-            cost/risk. Hover terms like{' '}
+            cost/risk. Hover or tap terms like{' '}
             <GlossaryTerm term="TEA" /> or <GlossaryTerm term="JCE" /> for
             definitions.
           </p>
-        </div>
+        </NprmSectionHeading>
         <div
           className="flex flex-wrap gap-1.5"
           role="group"
@@ -274,7 +275,7 @@ export default function ImpactMatrix({
                       scope="row"
                       className={`px-3 py-2.5 font-semibold text-primary border-b border-base-300/80 ${bg}`}
                     >
-                      <span className="inline-flex items-start gap-2">
+                      <span className="inline-flex items-center gap-2">
                         <ToneDot tone={row.tone} />
                         <span>{row.topic}</span>
                       </span>
@@ -341,7 +342,7 @@ export default function ImpactMatrix({
                       scope="row"
                       className={`sticky left-0 z-10 px-3 py-2.5 font-semibold text-primary border-b border-base-300/80 ${bg}`}
                     >
-                      <span className="inline-flex items-start gap-2">
+                      <span className="inline-flex items-center gap-2">
                         <ToneDot tone={row.tone} />
                         <span className="space-y-1">
                           <span className="block">{row.topic}</span>

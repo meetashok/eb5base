@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import type { NprmComment, NprmTheme } from '@/lib/nprm/types';
 import {
   commentUrl,
@@ -131,14 +132,24 @@ export default function CommentsTab({
   return (
     <div className="space-y-6 animate-[fadeIn_0.35s_ease-out]">
       <div className="space-y-2 max-w-2xl">
-        <h2 className="text-lg font-bold text-primary">
-          Comments ({filtered.length}
-          {filtered.length !== comments.length ? ` of ${comments.length}` : ''})
-        </h2>
-        <p className="text-sm text-neutral leading-relaxed">
-          Summaries of comments filed on Docket USCIS-2026-0100. Sorted by
-          posted date, newest first. Data as of last pull: {lastPullLabel}.
-        </p>
+        <NprmSectionHeading
+          as="h2"
+          eyebrow="Comments"
+          title={
+            <>
+              Browse filed comments ({filtered.length}
+              {filtered.length !== comments.length
+                ? ` of ${comments.length}`
+                : ''}
+              )
+            </>
+          }
+        >
+          <p className="text-sm text-neutral leading-relaxed">
+            Summaries of comments filed on Docket USCIS-2026-0100. Sorted by
+            posted date, newest first. Data as of last pull: {lastPullLabel}.
+          </p>
+        </NprmSectionHeading>
         <p className="text-xs leading-relaxed text-amber-800 bg-amber-50 border border-amber-200/80 rounded-md px-2.5 py-1.5">
           AI summaries are for browsing only and may be incomplete. Always verify
           against the original filing on regulations.gov (Verify link on each
@@ -152,7 +163,7 @@ export default function CommentsTab({
         ) : null}
       </div>
 
-      <div className="space-y-3 sticky top-[calc(var(--site-sticky-offset)+3.25rem)] z-30 -mx-1 px-1 py-2 bg-base-100/95 backdrop-blur-sm border-b border-base-300/60">
+      <div className="space-y-3">
         <div>
           <label
             htmlFor="nprm-comment-search"
@@ -296,7 +307,12 @@ export default function CommentsTab({
       )}
 
       <div className="rounded-xl border-2 border-secondary/30 bg-secondary/10 px-4 py-4 space-y-1">
-        <p className="text-sm font-bold text-primary">Trust & source</p>
+        <NprmSectionHeading
+          as="h3"
+          eyebrow="Trust"
+          title="Source and feed status"
+          titleClassName="text-sm font-bold text-primary leading-snug"
+        />
         <p className="text-xs text-neutral leading-relaxed">
           Source: regulations.gov via api.data.gov · Live feed · Titles from
           regulations.gov · Last pull {lastPullLabel}. Official filings may be

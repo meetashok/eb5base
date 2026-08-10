@@ -2,8 +2,13 @@
 
 import { Suspense, useMemo, useState } from 'react';
 import { CitationChips } from '@/components/nprm/CitationChips';
+import {
+  ExternalExplainerInline,
+  ExternalExplainerSection,
+} from '@/components/nprm/ExternalExplainers';
 import GlossaryTerm from '@/components/nprm/GlossaryTerm';
 import ImpactMatrix from '@/components/nprm/ImpactMatrix';
+import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import VolumeChart from '@/components/nprm/VolumeChart';
 import WhyComment from '@/components/nprm/WhyComment';
 import { ListSkeleton } from '@/components/LoadingSkeleton';
@@ -133,12 +138,11 @@ export default function OverviewTab({
         className="space-y-4 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft"
         id="what-is-nprm"
       >
-        <p className="page-hero-eyebrow mb-2">
-          Draft rule · comments close August 31, 2026
-        </p>
-        <h2 className="text-base font-bold text-primary leading-snug">
-          What is this draft rule, and does it affect your EB-5 money?
-        </h2>
+        <NprmSectionHeading
+          as="h2"
+          eyebrow="Draft rule · comments close August 31, 2026"
+          title="What is this draft rule, and does it affect your EB-5 journey?"
+        />
         <p className="nprm-tldr">
           TLDR: This is a draft of new EB-5 house rules. It is not final. You can
           tell the agency what you think before the deadline.
@@ -226,6 +230,7 @@ export default function OverviewTab({
               Docket USCIS-2026-0100
             </a>
           </div>
+          <ExternalExplainerInline />
         </div>
         <p className="text-xs text-neutral/75 leading-relaxed">
           Last updated: {NPRM_LAST_UPDATED}. Not legal advice.{' '}
@@ -236,9 +241,10 @@ export default function OverviewTab({
       </header>
 
       <section className="nprm-callout-action space-y-3" id="do-i-need-to-act">
-        <h3 className="text-base font-bold text-primary">
-          Do I need to do something before August 31?
-        </h3>
+        <NprmSectionHeading
+          eyebrow="Before August 31"
+          title="Do I need to do something before the deadline?"
+        />
         <p>
           <strong>If you already filed:</strong> You do not have to comment, but
           commenting can help protect your investment. If the 2-year rule is
@@ -268,9 +274,10 @@ export default function OverviewTab({
         className="space-y-3 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft"
         id="key-points"
       >
-        <h3 className="text-base font-bold text-primary">
-          The points that actually matter to you
-        </h3>
+        <NprmSectionHeading
+          eyebrow="Key points"
+          title="The points that actually matter to you"
+        />
         <ol className="space-y-3">
           {KEY_POINTS.map((point, idx) => (
             <li
@@ -296,15 +303,15 @@ export default function OverviewTab({
 
       <section className="space-y-3" id="proposal-themes">
         <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h3 className="text-base font-bold text-primary">
-              What the proposal covers
-            </h3>
-            <p className="text-sm text-neutral mt-1 max-w-2xl leading-relaxed">
+          <NprmSectionHeading
+            eyebrow="Proposal"
+            title="What the proposal covers"
+          >
+            <p className="text-sm text-neutral leading-relaxed max-w-2xl">
               Twelve plain-language sections. Each paraphrases USCIS text and
               cites the Federal Register page so you can verify.
             </p>
-          </div>
+          </NprmSectionHeading>
           <p className="text-xs font-semibold text-neutral/70">
             {filteredThemes.length}/{longThemes.length || 12} sections
           </p>
@@ -399,49 +406,66 @@ export default function OverviewTab({
         />
       ) : null}
 
-      <div className="flex flex-col sm:flex-row gap-2">
-        <button
-          type="button"
-          onClick={onThemes}
-          className="btn btn-outline border-neutral/30"
-        >
-          See comment themes
-        </button>
-        <button
-          type="button"
-          onClick={onWrite}
-          className="btn btn-accent text-accent-content shadow-soft"
-        >
-          Write your own comment
-        </button>
-      </div>
-
       <section className="space-y-4" id="comment-stats">
-        <div>
-          <h3 className="text-base font-bold text-primary">Comment tracker</h3>
-          <p className="text-sm text-neutral mt-1 leading-relaxed">
-            <span className="font-semibold text-primary tabular-nums">
-              {stats.total_comments} comments
-            </span>
-            <span className="text-neutral/50 mx-1.5">·</span>
+        <NprmSectionHeading
+          eyebrow="Tracker"
+          title={`${stats.total_comments} comments have already been made`}
+        >
+          <p className="text-sm text-neutral leading-relaxed">
             Last pull {lastPullLabel}
           </p>
-        </div>
+        </NprmSectionHeading>
 
-        <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
-          <div className="flex items-center justify-between gap-3 mb-4">
-            <h4 className="font-bold text-primary">Comment volume</h4>
+        <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft space-y-4">
+          <div className="flex items-center justify-between gap-3">
+            <NprmSectionHeading
+              as="h3"
+              eyebrow="Volume"
+              title="Comment volume"
+              titleClassName="text-sm font-bold text-primary leading-snug"
+            />
             <span className="text-xs font-medium text-neutral/70">
               Daily bars + cumulative line
             </span>
           </div>
           <VolumeChart data={volume} />
+          <div className="flex flex-col sm:flex-row flex-wrap gap-2 pt-1">
+            <button
+              type="button"
+              onClick={onWrite}
+              data-goatcounter-click="nprm-build-comment"
+              className="btn btn-primary text-primary-content"
+            >
+              Build My Comment
+            </button>
+            <button
+              type="button"
+              onClick={onThemes}
+              className="btn btn-outline border-neutral/30"
+            >
+              See what others are saying
+            </button>
+            <button
+              type="button"
+              onClick={onSummary}
+              className="btn btn-outline border-neutral/30"
+            >
+              Read 10-min Summary
+            </button>
+          </div>
         </div>
       </section>
 
+      <ExternalExplainerSection />
+
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between rounded-xl border-2 border-secondary/30 bg-secondary/10 px-4 py-4">
         <div className="space-y-1">
-          <p className="text-sm font-bold text-primary">Trust & source</p>
+          <NprmSectionHeading
+            as="h3"
+            eyebrow="Trust"
+            title="Source and feed status"
+            titleClassName="text-sm font-bold text-primary leading-snug"
+          />
           <p className="text-sm text-neutral leading-relaxed">
             Source: {stats.source}. Feed{' '}
             <span className="font-semibold">

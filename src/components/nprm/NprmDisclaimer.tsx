@@ -1,3 +1,4 @@
+import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import { NPRM_DISCLAIMER_PARAS } from '@/lib/nprm/constants';
 
 /** Full disclaimer block for the About tab. */
@@ -7,9 +8,12 @@ export default function NprmDisclaimer({ className = '' }: { className?: string 
       id="disclaimer"
       className={`scroll-mt-28 rounded-xl border-2 border-neutral/20 bg-base-100 px-4 py-4 sm:px-5 sm:py-5 shadow-soft ${className}`}
     >
-      <h3 className="text-base font-bold text-primary mb-3">
-        Disclaimer: not legal advice
-      </h3>
+      <NprmSectionHeading
+        as="h3"
+        eyebrow="Disclaimer"
+        title="Not legal advice"
+        className="mb-3"
+      />
       <div className="space-y-3 text-sm text-neutral leading-relaxed">
         {NPRM_DISCLAIMER_PARAS.map((para) => (
           <p key={para.slice(0, 48)}>{para}</p>

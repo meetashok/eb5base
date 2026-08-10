@@ -1,5 +1,6 @@
 'use client';
 
+import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import { FR_HTML, FR_PDF, NPRM_LAST_UPDATED } from '@/lib/nprm/utils';
 
 const SECTIONS: {
@@ -110,30 +111,35 @@ const SECTIONS: {
 export default function SummaryTab() {
   return (
     <div className="animate-[fadeIn_0.35s_ease-out]">
-      <div className="mb-6 max-w-2xl space-y-2">
-        <h2 className="text-base font-bold text-primary">10-minute NPRM summary</h2>
-        <p className="text-sm text-neutral leading-relaxed">
-          Current rule vs proposed change, why it matters, and risk if finalized.
-          Last updated: {NPRM_LAST_UPDATED}. Always verify on the{' '}
-          <a
-            href={FR_HTML}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold text-secondary underline underline-offset-2"
-          >
-            Federal Register
-          </a>{' '}
-          (
-          <a
-            href={FR_PDF}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold text-secondary underline underline-offset-2"
-          >
-            PDF
-          </a>
-          ).
-        </p>
+      <div className="mb-6 max-w-2xl">
+        <NprmSectionHeading
+          as="h2"
+          eyebrow="Summary"
+          title="10-minute NPRM summary"
+        >
+          <p className="text-sm text-neutral leading-relaxed">
+            Current rule vs proposed change, why it matters, and risk if finalized.
+            Last updated: {NPRM_LAST_UPDATED}. Always verify on the{' '}
+            <a
+              href={FR_HTML}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-secondary underline underline-offset-2"
+            >
+              Federal Register
+            </a>{' '}
+            (
+            <a
+              href={FR_PDF}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-secondary underline underline-offset-2"
+            >
+              PDF
+            </a>
+            ).
+          </p>
+        </NprmSectionHeading>
       </div>
 
       <div className="lg:grid lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-8 items-start">
@@ -165,13 +171,17 @@ export default function SummaryTab() {
             ))}
           </div>
 
-          {SECTIONS.map((s) => (
+          {SECTIONS.map((s, idx) => (
             <article
               key={s.id}
               id={s.id}
               className="scroll-mt-36 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-3"
             >
-              <h3 className="text-base font-bold text-primary">{s.title}</h3>
+              <NprmSectionHeading
+                as="h3"
+                eyebrow={`Topic ${idx + 1}`}
+                title={s.title}
+              />
               <dl className="space-y-2 text-sm text-neutral leading-relaxed">
                 <div>
                   <dt className="font-bold text-primary">Current rule</dt>

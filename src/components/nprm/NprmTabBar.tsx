@@ -12,12 +12,42 @@ function mobileWindow(active: NprmTabId): NprmTabId[] {
   return ids.slice(start, start + MOBILE_VISIBLE);
 }
 
-function tabClass(selected: boolean): string {
-  return `shrink-0 px-3 sm:px-3.5 md:px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary ${
-    selected
-      ? 'bg-primary text-primary-content shadow-soft'
-      : 'text-neutral bg-base-200/80 hover:bg-base-300 hover:text-primary'
-  }`;
+function tabClass(selected: boolean, emphasize = false): string {
+  if (selected) {
+    return `shrink-0 px-3 sm:px-3.5 md:px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary ${
+      emphasize
+        ? 'bg-secondary text-secondary-content shadow-soft'
+        : 'bg-primary text-primary-content shadow-soft'
+    }`;
+  }
+  if (emphasize) {
+    return 'shrink-0 px-3 sm:px-3.5 md:px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary text-secondary-content bg-secondary hover:bg-secondary/90 shadow-soft ring-1 ring-secondary/40';
+  }
+  return 'shrink-0 px-3 sm:px-3.5 md:px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary text-neutral bg-base-200/80 hover:bg-base-300 hover:text-primary';
+}
+
+function WriteIcon({ className = 'h-3.5 w-3.5' }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className={className}
+      aria-hidden
+    >
+      <path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z" />
+    </svg>
+  );
+}
+
+function TabLabel({ id, label }: { id: NprmTabId; label: string }) {
+  if (id !== 'write') return <>{label}</>;
+  return (
+    <span className="inline-flex items-center justify-center gap-1.5">
+      <WriteIcon />
+      <span>{label}</span>
+    </span>
+  );
 }
 
 export default function NprmTabBar({
@@ -69,6 +99,7 @@ export default function NprmTabBar({
         >
           {NPRM_TABS.map((t) => {
             const selected = active === t.id;
+            const emphasize = t.id === 'write';
             return (
               <button
                 key={t.id}
@@ -76,10 +107,10 @@ export default function NprmTabBar({
                 role="tab"
                 aria-selected={selected}
                 id={`nprm-tab-${t.id}`}
-                className={tabClass(selected)}
+                className={tabClass(selected, emphasize)}
                 onClick={() => onSelect(t.id)}
               >
-                {t.label}
+                <TabLabel id={t.id} label={t.label} />
               </button>
             );
           })}
@@ -95,6 +126,7 @@ export default function NprmTabBar({
             const t = NPRM_TABS.find((tab) => tab.id === id);
             if (!t) return null;
             const selected = active === t.id;
+            const emphasize = t.id === 'write';
             return (
               <button
                 key={t.id}
@@ -102,10 +134,10 @@ export default function NprmTabBar({
                 role="tab"
                 aria-selected={selected}
                 id={`nprm-tab-mobile-${t.id}`}
-                className={`${tabClass(selected)} flex-1 min-w-0 truncate text-center`}
+                className={`${tabClass(selected, emphasize)} flex-1 min-w-0 truncate text-center`}
                 onClick={() => onSelect(t.id)}
               >
-                {t.label}
+                <TabLabel id={t.id} label={t.label} />
               </button>
             );
           })}
@@ -139,6 +171,7 @@ export default function NprmTabBar({
               >
                 {overflow.map((t) => {
                   const selected = active === t.id;
+                  const emphasize = t.id === 'write';
                   return (
                     <button
                       key={t.id}
@@ -146,15 +179,19 @@ export default function NprmTabBar({
                       role="menuitem"
                       className={`w-full text-left px-3 py-2.5 text-sm font-semibold rounded-lg ${
                         selected
-                          ? 'bg-primary text-primary-content'
-                          : 'text-neutral hover:bg-base-200'
+                          ? emphasize
+                            ? 'bg-secondary text-secondary-content'
+                            : 'bg-primary text-primary-content'
+                          : emphasize
+                            ? 'text-secondary-content bg-secondary hover:bg-secondary/90'
+                            : 'text-neutral hover:bg-base-200'
                       }`}
                       onClick={() => {
                         onSelect(t.id);
                         setMenuOpen(false);
                       }}
                     >
-                      {t.label}
+                      <TabLabel id={t.id} label={t.label} />
                     </button>
                   );
                 })}
