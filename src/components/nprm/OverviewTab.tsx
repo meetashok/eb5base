@@ -53,8 +53,8 @@ const KEY_POINTS: {
   {
     title:
       'Repaid bridge financing may no longer count toward proving your 10 jobs',
-    body: 'Bridge financing is a short-term loan projects use to start construction or cover costs before EB-5 capital arrives. Under the 2016 Policy Manual, USCIS often let repaid bridge loans count when showing job creation. The NPRM proposes to stop that: jobs would need a closer link to the investor\'s own capital going into the entity that actually creates employment (proposed 8 CFR 204.407(e)(1)). Rural and early-stage projects that rely on bridge stacks may have to restructure or delay closings. Investors who already filed on bridge-based projects are asking for transition or grandfather rules so I-829 adjudications do not rewrite the deal they bought.',
-    legal: 'Bridge financing · 8 CFR 204.407(e)(1) · FR IV.D.7 pp 40706-40707',
+    body: 'Today, under the USCIS Policy Manual (not a final regulation), investors can often still claim jobs created with short-term bridge financing that EB-5 capital later repays. The NPRM would change that: proposed 8 CFR 204.407(e)(1) says jobs from financing repaid with EB-5 money would not count as jobs created by that EB-5 capital. That is draft language only. It is not law yet, and RIA itself did not ban bridge financing. DHS also says the rule would generally apply prospectively to petitions filed on or after the final rule\'s effective date, not automatically to every post-RIA filing from March 2022 onward. The open risk is I-829 and transition wording: commenters are asking DHS to say expressly that pending bridge-based projects keep the old Policy Manual treatment.',
+    legal: 'Bridge financing · proposed 8 CFR 204.407(e)(1) · FR IV.D.7; prospective application FR IV.A',
     frHeadingId: 'h-67',
     frSectionLabel: 'IV.D.7 Job Creation Requirements and Bridge Financing',
   },
