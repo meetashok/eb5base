@@ -7,7 +7,7 @@
     "agency": "U.S. Citizenship and Immigration Services",
     "posted_date": "Jul 2, 2026",
     "comment_period_ends": "Aug 31, 2026 at 11:59 PM EDT",
-    "total_comments": 48,
+    "total_comments": 49,
     "federal_register_citation": "91 FR 40676",
     "rin": "1615-AC94",
     "dhs_docket_no": "USCIS-2026-0100",
@@ -684,6 +684,18 @@
         "postedDate": "2026-07-02T04:00:00Z",
         "lastModifiedDate": "2026-07-02T20:11:12Z",
         "title": "Comment Submitted by Anonymous"
+      }
+    },
+    {
+      "id": "USCIS-2026-0100-0082",
+      "type": "comments",
+      "attributes": {
+        "agencyId": "USCIS",
+        "documentType": "Public Submission",
+        "withdrawn": false,
+        "highlightedContent": "",
+        "postedDate": "2026-08-09T04:00:00Z",
+        "title": "Comment Submitted by ArroyoWest LLC"
       }
     }
   ]
