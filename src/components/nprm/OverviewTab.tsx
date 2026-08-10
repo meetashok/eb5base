@@ -317,29 +317,6 @@ export default function OverviewTab({
         <ImpactMatrix />
       </Suspense>
 
-      <section
-        className="space-y-3 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft"
-        id="proposal-summary-link"
-      >
-        <NprmSectionHeading
-          eyebrow="Deeper read"
-          title="Want the full topic-by-topic breakdown?"
-        >
-          <p className="text-sm text-neutral leading-relaxed max-w-2xl">
-            For current rule vs proposed change, why it matters, and risk if
-            finalized, open the 10-minute Summary tab. That is the detailed
-            topic guide.
-          </p>
-        </NprmSectionHeading>
-        <button
-          type="button"
-          onClick={onSummary}
-          className="btn btn-outline border-neutral/30"
-        >
-          Read 10-min Summary
-        </button>
-      </section>
-
       {whyComment ? (
         <WhyComment
           why={whyComment}
