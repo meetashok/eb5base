@@ -46,7 +46,7 @@ export default function HomeDeadlineCountdown() {
       </div>
       <Link
         href="/nprm"
-        className="btn btn-sm btn-primary text-primary-content shrink-0 self-start sm:self-center"
+        className="btn btn-sm btn-primary text-primary-content shrink-0 self-center"
       >
         Read explainer
       </Link>
