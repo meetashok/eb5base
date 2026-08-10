@@ -306,11 +306,7 @@ export default function OverviewTab({
             </p>
           </div>
           <p className="text-xs font-semibold text-neutral/70">
-            {filteredThemes.length}
-            {filteredThemes.length !== longThemes.length
-              ? ` of ${longThemes.length || 12}`
-              : ` ${longThemes.length || 12}`}{' '}
-            sections
+            {filteredThemes.length}/{longThemes.length || 12} sections
           </p>
         </div>
 
