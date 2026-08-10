@@ -212,5 +212,6 @@ export function isPersonalizedEnough(impact: string): boolean {
 
 /** Personal fields are optional. Callers gate copy on themes + privacy. */
 export function canCopyPrompt(_personal?: PersonalBlock): boolean {
+  void _personal;
   return true;
 }

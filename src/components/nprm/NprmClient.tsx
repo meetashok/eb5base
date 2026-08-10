@@ -12,6 +12,7 @@ import ThemesTab from '@/components/nprm/ThemesTab';
 import WriteTab from '@/components/nprm/WriteTab';
 import type { NprmPageData } from '@/lib/nprm/types';
 import {
+  NPRM_TABS,
   nprmTabHref,
   tabFromPathname,
   type NprmTabId,

@@ -97,7 +97,6 @@ export default function OverviewTab({
   stats,
   comments,
   proposal,
-  lastCheck,
   feedSource,
   onThemes,
   onComments,
