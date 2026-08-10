@@ -1,13 +1,9 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import {
-  DISTINCTNESS_WARNING,
-  PROJECT_TYPE_OPTIONS,
-} from '@/lib/nprm/constants';
+import { PROJECT_TYPE_OPTIONS } from '@/lib/nprm/constants';
 import {
   MIN_IMPACT_CHARS,
-  buildPersonalOnly,
   buildPrompt,
   isPersonalizedEnough,
   templateSimilarity,
@@ -20,7 +16,10 @@ import type {
   PersonalBlock,
   StyleGuideline,
 } from '@/lib/nprm/types';
-import { COMMENT_ON_URL } from '@/lib/nprm/utils';
+import { COMMENT_GUIDANCE, COMMENT_ON_URL } from '@/lib/nprm/utils';
+import GlossaryTerm, {
+  GlossaryText,
+} from '@/components/nprm/GlossaryTerm';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import { useToast } from '@/components/Toast';
 
@@ -33,6 +32,72 @@ interface Props {
 
 const MAX_THEMES = 3;
 const DRAFT_KEY = 'eb5base_nprm_write_draft_v1';
+/** Browser/URL length guard for LLM ?q= prefill links. */
+const LLM_PREFILL_MAX_CHARS = 3500;
+
+const PERSONAL_STORY_EXAMPLES = [
+  'years waiting (ex: 5 years since I-526E filing)',
+  'capital already invested and at risk (approx amount and year, not account numbers)',
+  'teen at risk of aging out before I-829 (no school name or full name)',
+  'job or work-authorization timing tied to conditional residency',
+  'redeployment or regional-center disruption you experienced',
+  'project timeline that does not fit a 2-year sustainment window',
+] as const;
+
+function GuidanceLinks({ className = '' }: { className?: string }) {
+  return (
+    <span className={className}>
+      {COMMENT_GUIDANCE.map((g, i) => (
+        <span key={g.id}>
+          {i > 0 ? <span className="text-neutral/40"> · </span> : null}
+          <a
+            href={g.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={g.title}
+            className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+          >
+            {g.label}
+          </a>
+        </span>
+      ))}
+    </span>
+  );
+}
+
+const LLM_LINKS = [
+  {
+    id: 'chatgpt',
+    label: 'ChatGPT',
+    href: 'https://chatgpt.com/',
+    prefill: (prompt: string) =>
+      `https://chatgpt.com/?q=${encodeURIComponent(prompt)}`,
+  },
+  {
+    id: 'claude',
+    label: 'Claude',
+    href: 'https://claude.ai/new',
+    prefill: (prompt: string) =>
+      `https://claude.ai/new?q=${encodeURIComponent(prompt)}`,
+  },
+  {
+    id: 'gemini',
+    label: 'Gemini',
+    href: 'https://gemini.google.com/app',
+  },
+  {
+    id: 'metaai',
+    label: 'Meta AI',
+    href: 'https://www.meta.ai/',
+  },
+  {
+    id: 'deepseek',
+    label: 'DeepSeek',
+    href: 'https://chat.deepseek.com/',
+    prefill: (prompt: string) =>
+      `https://chat.deepseek.com/?q=${encodeURIComponent(prompt)}`,
+  },
+] as const;
 
 const INVESTOR_TYPE_OPTIONS: {
   value: NonNullable<PersonalBlock['investor_type']>;
@@ -175,13 +240,6 @@ export default function WriteTab({
   const impactLen = personal.impact.trim().length;
   const personalized = isPersonalizedEnough(personal.impact);
   const similarity = templateSimilarity(personal.impact);
-  const hasPersonalBits = Boolean(
-    personal.i_526e_file_date.trim() ||
-      personal.project_type ||
-      personal.investor_type ||
-      personal.country ||
-      personal.impact.trim()
-  );
 
   const prompt = useMemo(
     () =>
@@ -234,13 +292,47 @@ export default function WriteTab({
     try {
       await navigator.clipboard.writeText(text);
       setCopyMsg(`${label} copied`);
-      toast('Copied for regulations.gov', 'success');
       track('builder_copied');
       if (personalized) track('builder_personalized');
       window.setTimeout(() => setCopyMsg(null), 2000);
     } catch {
       setCopyMsg('Copy failed. Select the text manually.');
       window.setTimeout(() => setCopyMsg(null), 3000);
+    }
+  }
+
+  async function openInLlm(llm: (typeof LLM_LINKS)[number]) {
+    if (!ready) {
+      toast('Select a theme and accept the disclaimer first', 'error');
+      return;
+    }
+    let copied = false;
+    try {
+      await navigator.clipboard.writeText(prompt);
+      copied = true;
+      setCopyMsg('Prompt copied');
+      track('builder_copied');
+      if (personalized) track('builder_personalized');
+      window.setTimeout(() => setCopyMsg(null), 2000);
+    } catch {
+      // Still open the LLM; user can copy manually from the preview.
+    }
+
+    const canPrefill =
+      'prefill' in llm &&
+      typeof llm.prefill === 'function' &&
+      prompt.length > 0 &&
+      prompt.length <= LLM_PREFILL_MAX_CHARS;
+    const url = canPrefill ? llm.prefill(prompt) : llm.href;
+    window.open(url, '_blank', 'noopener,noreferrer');
+    track(`llm_open_${llm.id}`);
+
+    if (copied && canPrefill) {
+      toast(`Opening ${llm.label} with your prompt`, 'success');
+    } else if (copied) {
+      toast(`Prompt copied — paste into ${llm.label}`, 'success');
+    } else {
+      toast(`Opened ${llm.label}. Copy the prompt from the preview.`, 'info');
     }
   }
 
@@ -267,10 +359,22 @@ export default function WriteTab({
       </NprmSectionHeading>
 
       <div
-        className="rounded-xl border-2 border-warning/50 bg-warning/15 px-3 py-3 text-sm text-neutral font-medium leading-relaxed"
+        className="rounded-xl border-2 border-warning/50 bg-warning/15 px-3 py-3 text-sm text-neutral leading-relaxed space-y-1"
         role="status"
       >
-        {DISTINCTNESS_WARNING}
+        <p className="font-semibold text-primary">
+          Your comment needs to be unique
+        </p>
+        <p className="font-medium">
+          If 500 people paste the same paragraph, <GlossaryTerm term="USCIS" />{' '}
+          counts it as one. Agencies use tools like those noted by{' '}
+          <GlossaryTerm term="GAO" /> and <GlossaryTerm term="OIRA" /> that can
+          distill thousands of comments into a much smaller set of distinct ones.
+          Federal guidance says a constructive, detailed comment with your own
+          experience is more useful than identical form letters. Add your personal
+          story so yours stands alone. See why:{' '}
+          <GuidanceLinks />.
+        </p>
       </div>
 
       {impactLen >= MIN_IMPACT_CHARS && !personalized ? (
@@ -281,7 +385,8 @@ export default function WriteTab({
           Your comment looks too close to a template (
           {Math.round(similarity * 100)}% overlap). Add 1-2 sentences about your
           own case: why you chose EB-5, how long you have waited, what
-          redeployment cost you. DHS discounts form letters.
+          redeployment cost you. <GlossaryTerm term="DHS" /> discounts form
+          letters.
         </div>
       ) : null}
 
@@ -295,7 +400,8 @@ export default function WriteTab({
               titleClassName="text-sm font-semibold text-primary leading-snug"
             >
               <p className="text-xs text-neutral leading-relaxed">
-                Select a theme, then choose your view under it.
+                Select a theme to build your comment. Choose the themes that
+                are most important to you. Then choose your view under it.
               </p>
             </NprmSectionHeading>
             <p className="text-xs text-neutral/70">
@@ -315,45 +421,51 @@ export default function WriteTab({
                       : 'border-base-300 bg-base-100'
                   } ${disabled ? 'opacity-50' : ''}`}
                 >
-                  <label
-                    className={`flex items-start gap-2 text-sm font-medium ${
+                  <button
+                    type="button"
+                    aria-pressed={checked}
+                    disabled={disabled}
+                    onClick={() => toggleTheme(t.id)}
+                    className={`w-full text-left text-sm font-medium leading-snug rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary ${
                       checked ? 'text-primary' : 'text-neutral'
                     } ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                   >
-                    <input
-                      type="checkbox"
-                      className="checkbox checkbox-sm mt-0.5 shrink-0"
-                      checked={checked}
-                      disabled={disabled}
-                      onChange={() => toggleTheme(t.id)}
-                    />
-                    <span className="leading-snug">{t.title}</span>
-                  </label>
+                    <GlossaryText text={t.title} />
+                  </button>
                   {checked ? (
-                    <fieldset className="mt-2 space-y-1 border-t border-secondary/20 pt-2">
-                      <legend className="text-[11px] font-bold uppercase tracking-wider text-secondary/90 px-0.5">
+                    <fieldset className="mt-2 space-y-1.5 border-t border-secondary/30 pt-2">
+                      <legend className="text-[11px] font-bold uppercase tracking-wider text-secondary px-0.5">
                         Your view
                       </legend>
-                      {t.opinions.map((op) => (
-                        <label
-                          key={op.id}
-                          className="flex items-start gap-2 text-xs sm:text-sm cursor-pointer text-neutral font-normal"
-                        >
-                          <input
-                            type="radio"
-                            name={`opinion-${t.id}`}
-                            className="radio radio-xs mt-0.5 shrink-0"
-                            checked={opinions[t.id] === op.id}
-                            onChange={() =>
-                              setOpinions((prev) => ({
-                                ...prev,
-                                [t.id]: op.id,
-                              }))
-                            }
-                          />
-                          <span className="leading-snug">{op.label}</span>
-                        </label>
-                      ))}
+                      {t.opinions.map((op) => {
+                        const selected = opinions[t.id] === op.id;
+                        return (
+                          <label
+                            key={op.id}
+                            className={`flex items-start gap-2 text-xs sm:text-sm cursor-pointer rounded-md px-1.5 py-1 -mx-0.5 transition-colors ${
+                              selected
+                                ? 'bg-base-100/90 text-primary font-semibold ring-1 ring-secondary/35'
+                                : 'text-primary/90 font-medium hover:bg-base-100/70'
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name={`opinion-${t.id}`}
+                              className="radio radio-xs radio-secondary mt-0.5 shrink-0 checked:bg-secondary"
+                              checked={selected}
+                              onChange={() =>
+                                setOpinions((prev) => ({
+                                  ...prev,
+                                  [t.id]: op.id,
+                                }))
+                              }
+                            />
+                            <span className="leading-snug">
+                              <GlossaryText text={op.label} />
+                            </span>
+                          </label>
+                        );
+                      })}
                     </fieldset>
                   ) : null}
                 </div>
@@ -371,7 +483,9 @@ export default function WriteTab({
           >
             <p className="text-xs text-neutral leading-relaxed">
               Optional, but a few personal details make your comment count as
-              distinct. Stored only in your browser.
+              distinct. Federal agencies ask for constructive, detailed comments
+              and say relevant personal experience helps reviewers. See why:{' '}
+              <GuidanceLinks />.
             </p>
           </NprmSectionHeading>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -440,16 +554,51 @@ export default function WriteTab({
             </span>
             <textarea
               className="textarea textarea-bordered text-sm min-h-24"
-              placeholder="Why you chose EB-5, how long you have waited, what redeployment or RC issues cost you"
+              placeholder="e.g. 5 years since I-526E filing; teen at risk of aging out before I-829; capital at risk since 2023"
               value={personal.impact}
               onChange={(e) =>
                 setPersonal((p) => ({ ...p, impact: e.target.value }))
               }
             />
-            <span className="label-text-alt text-[10px] text-neutral/70">
-              A short personal fact helps. Example: wait time, capital already
-              deployed, school or job timing tied to I-829.
-            </span>
+            <div className="mt-1.5 space-y-1.5 text-[10px] sm:text-[11px] text-neutral/80 leading-relaxed">
+              <p>
+                Adding your story helps. Agencies say one detailed personal
+                comment outweighs many identical form letters. See why:{' '}
+                <GuidanceLinks />.
+              </p>
+              <p>
+                Helpful examples (keep them anonymized):{' '}
+                {PERSONAL_STORY_EXAMPLES.map((ex, i) => (
+                  <span key={ex}>
+                    {i > 0 ? '; ' : null}
+                    <GlossaryText text={ex} />
+                  </span>
+                ))}
+                .
+              </p>
+              <ul className="list-disc pl-4 space-y-0.5 text-neutral/75">
+                <li>
+                  Tie the story to a rule cite (ex:{' '}
+                  <GlossaryText text="8 CFR 204.408" /> sustainment).
+                </li>
+                <li>
+                  Keep years and approx amounts; drop identifiers (no A-number,
+                  receipt number, DOB, school name, employer name, or child full
+                  name).
+                </li>
+                <li>
+                  End with what you want <GlossaryTerm term="USCIS" /> to keep or
+                  change.
+                </li>
+              </ul>
+              <p className="text-neutral/70">
+                Comments are posted publicly on regulations.gov as submitted,
+                including any personal information you provide. Limit personal
+                info. Do not include SSN, DOB, A-number, receipt number,
+                passport, bank account, school name, employer name, or a
+                child&apos;s full name.
+              </p>
+            </div>
           </label>
         </section>
 
@@ -517,7 +666,7 @@ export default function WriteTab({
             </pre>
           </div>
 
-          <label className="flex items-start gap-2.5 text-xs sm:text-sm text-neutral cursor-pointer rounded-lg border-2 border-base-300 p-3 sm:p-3.5 bg-base-100 leading-relaxed">
+          <label className="flex items-start gap-2.5 text-[11px] sm:text-xs text-amber-950/90 cursor-pointer rounded-xl border-2 border-warning/50 bg-warning/15 p-3 leading-relaxed">
             <input
               type="checkbox"
               className="checkbox checkbox-sm mt-0.5 shrink-0"
@@ -537,51 +686,18 @@ export default function WriteTab({
           <div className="flex flex-col sm:flex-row flex-wrap gap-2">
             <button
               type="button"
-              className="btn btn-accent text-accent-content"
+              className="btn btn-secondary shadow-glow-green sm:w-auto"
               disabled={!ready}
               title={
                 ready
-                  ? 'Copy full prompt'
+                  ? 'Copy full prompt for your LLM'
                   : 'Select at least one theme and accept the disclaimer first'
               }
               onClick={() => copyText(prompt, 'Prompt')}
             >
-              Copy prompt
+              Copy prompt for LLM
             </button>
-            <button
-              type="button"
-              className="btn btn-outline"
-              disabled={!ready || !hasPersonalBits}
-              title={
-                hasPersonalBits
-                  ? 'Copy personal details only'
-                  : 'Add optional personal details first'
-              }
-              onClick={() =>
-                copyText(buildPersonalOnly(personal), 'Personal block')
-              }
-            >
-              Copy personal-only
-            </button>
-            <a
-              href={COMMENT_ON_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              data-goatcounter-click="nprm-regulations-gov"
-              onClick={() => track('regulations_gov_clicked')}
-              className="btn btn-secondary shadow-glow-green sm:flex-1"
-            >
-              Open regulations.gov to paste your personal comment
-            </a>
           </div>
-
-          {!ready && (
-            <p className="text-xs text-warning">
-              Copy stays disabled until you select at least one theme and accept
-              the disclaimer next to the copy buttons. Personal details are
-              optional but recommended.
-            </p>
-          )}
 
           <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-3">
             <NprmSectionHeading
@@ -591,10 +707,46 @@ export default function WriteTab({
               titleClassName="text-sm font-semibold text-primary leading-snug"
             />
             <ol className="list-decimal pl-5 text-sm text-neutral space-y-1.5 leading-relaxed">
-              <li>Paste the prompt into your own LLM</li>
+              <li>
+                Paste the prompt into your own LLM
+                {LLM_LINKS.map((llm) => (
+                  <span key={llm.id} className="text-xs">
+                    <span className="text-neutral/40" aria-hidden>
+                      {' '}
+                      ·{' '}
+                    </span>
+                    <button
+                      type="button"
+                      className="font-semibold text-secondary underline underline-offset-2 hover:text-primary disabled:opacity-50 disabled:no-underline"
+                      disabled={!ready}
+                      title={
+                        ready
+                          ? `Copy prompt and open ${llm.label}`
+                          : 'Select at least one theme and accept the disclaimer first'
+                      }
+                      onClick={() => openInLlm(llm)}
+                    >
+                      {llm.label}
+                    </button>
+                  </span>
+                ))}
+              </li>
               <li>Edit the draft in your voice (aim for more than 30% personal)</li>
-              <li>Paste the final comment on regulations.gov</li>
-              <li>Consider a 30-minute counsel memo for your file</li>
+              <li>
+                Paste the final comment on{' '}
+                <a
+                  href={COMMENT_ON_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+                >
+                  regulations.gov
+                </a>
+              </li>
+              <li>
+                Optional: ask your immigration attorney to review the draft
+                before you file
+              </li>
             </ol>
             <p className="text-xs text-neutral/75 leading-relaxed">
               EB5 Base does not submit for you. Drafts stay in your browser unless

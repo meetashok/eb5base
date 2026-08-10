@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { GlossaryText } from '@/components/nprm/GlossaryTerm';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import type { NprmComment, NprmTheme } from '@/lib/nprm/types';
 import {
@@ -146,8 +147,8 @@ export default function CommentsTab({
           }
         >
           <p className="text-sm text-neutral leading-relaxed">
-            Summaries of comments filed on Docket USCIS-2026-0100. Sorted by
-            posted date, newest first. Data as of last pull: {lastPullLabel}.
+            <GlossaryText text="Summaries of comments filed on Docket USCIS-2026-0100. Sorted by posted date, newest first. Data as of last pull: " />
+            {lastPullLabel}.
           </p>
         </NprmSectionHeading>
         <p className="text-xs leading-relaxed text-amber-800 bg-amber-50 border border-amber-200/80 rounded-md px-2.5 py-1.5">

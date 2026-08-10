@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { GlossaryText } from '@/components/nprm/GlossaryTerm';
 import NprmDisclaimer from '@/components/nprm/NprmDisclaimer';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import {
@@ -66,11 +67,7 @@ export default function AboutTab({
           title="Why we built this"
         />
         <p className="text-sm text-neutral leading-relaxed">
-          Post-RIA EB-5 investors want to comment on Docket USCIS-2026-0100 with
-          educated personal stories, not form letters that USCIS can bucket as one.
-          regulations.gov is hard to browse by theme. This page explains what the
-          NPRM itself proposes in plain English, organizes the real comments, and
-          helps you build a distinct prompt for your own LLM.
+          <GlossaryText text="Post-RIA EB-5 investors want to comment on Docket USCIS-2026-0100 with educated personal stories, not form letters that USCIS can bucket as one. regulations.gov is hard to browse by theme. This page explains what the NPRM itself proposes in plain English, organizes the real comments, and helps you build a distinct prompt for your own LLM." />
         </p>
       </section>
 

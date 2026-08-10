@@ -2,7 +2,9 @@
 
 import { Suspense } from 'react';
 import { CitationChips } from '@/components/nprm/CitationChips';
-import GlossaryTerm from '@/components/nprm/GlossaryTerm';
+import GlossaryTerm, {
+  GlossaryText,
+} from '@/components/nprm/GlossaryTerm';
 import ImpactMatrix from '@/components/nprm/ImpactMatrix';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import VolumeChart from '@/components/nprm/VolumeChart';
@@ -150,7 +152,9 @@ export default function OverviewTab({
                   {short.title}
                 </p>
               ) : null}
-              <p className="text-sm text-neutral leading-relaxed">{short.text}</p>
+              <p className="text-sm text-neutral leading-relaxed">
+                <GlossaryText text={short.text} />
+              </p>
               {short.citations?.length ? (
                 <CitationChips citations={short.citations} href={FR_HTML} />
               ) : null}
@@ -308,10 +312,14 @@ export default function OverviewTab({
                 <span className="text-secondary tabular-nums mr-1.5">
                   {idx + 1}.
                 </span>
-                {point.title}
+                <GlossaryText text={point.title} />
               </p>
-              <p className="text-sm text-neutral leading-relaxed">{point.body}</p>
-              <p className="nprm-legal-ref">For legal reference: {point.legal}</p>
+              <p className="text-sm text-neutral leading-relaxed">
+                <GlossaryText text={point.body} />
+              </p>
+              <p className="nprm-legal-ref">
+                For legal reference: <GlossaryText text={point.legal} />
+              </p>
             </li>
           ))}
         </ol>

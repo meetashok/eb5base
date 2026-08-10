@@ -4,6 +4,7 @@ import {
   useCallback,
   useEffect,
   useId,
+  useMemo,
   useRef,
   useState,
   type ReactNode,
@@ -19,9 +20,16 @@ export const GLOSSARY: Record<string, string> = {
   CFR: 'Code of Federal Regulations: the US federal rulebook.',
   USCIS: 'US Citizenship and Immigration Services: the agency that decides EB-5 cases.',
   DHS: 'Department of Homeland Security: the parent department that published this draft rule.',
+  GAO: 'Government Accountability Office: the congressional watchdog that audits how federal agencies handle programs and public comments.',
+  OIRA: 'Office of Information and Regulatory Affairs: the White House office that reviews federal rules and tools that cluster duplicate public comments.',
+  INA: 'Immigration and Nationality Act: the main US immigration statute.',
+  RFE: 'Request for Evidence: a USCIS notice asking for more documents before a decision.',
   'I-526E': 'Your regional-center EB-5 petition form.',
+  'I-526': 'The older EB-5 immigrant petition form (often used for direct or pre-RIA filings).',
   'I-527': 'New form for investors whose regional center was terminated and who need to re-associate.',
+  'I-829': 'Petition to remove conditions on permanent residence after the conditional green card period.',
   RC: 'Regional Center: the approved EB-5 program sponsor for your project.',
+  APA: 'Administrative Procedure Act: the law that requires agencies to take and respond to public comments on rules.',
 };
 
 type GlossaryKey = keyof typeof GLOSSARY;
@@ -32,6 +40,53 @@ function resolveTip(term: string): string | undefined {
     GLOSSARY[term.toUpperCase()] ||
     GLOSSARY[term.toLowerCase()]
   );
+}
+
+const GLOSSARY_TERM_PATTERN = (() => {
+  const terms = Object.keys(GLOSSARY)
+    .sort((a, b) => b.length - a.length)
+    .map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  // Skip docket-style IDs like USCIS-2026-0100 (term followed by -digit).
+  return new RegExp(`\\b(${terms.join('|')})(?!-\\d)`, 'g');
+})();
+
+/** Wrap known NPRM acronyms in hover glossary tips. */
+export function GlossaryText({
+  text,
+  children,
+}: {
+  text?: string;
+  children?: string;
+}) {
+  const raw = text ?? children ?? '';
+  const nodes = useMemo(() => {
+    if (!raw) return null;
+    const parts: ReactNode[] = [];
+    let lastIndex = 0;
+    const re = new RegExp(
+      GLOSSARY_TERM_PATTERN.source,
+      GLOSSARY_TERM_PATTERN.flags
+    );
+    let match: RegExpExecArray | null;
+    while ((match = re.exec(raw)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push(raw.slice(lastIndex, match.index));
+      }
+      const term = match[1];
+      parts.push(
+        <GlossaryTerm key={`${term}-${match.index}`} term={term}>
+          {term}
+        </GlossaryTerm>
+      );
+      lastIndex = match.index + match[0].length;
+    }
+    if (lastIndex < raw.length) {
+      parts.push(raw.slice(lastIndex));
+    }
+    return parts;
+  }, [raw]);
+
+  return <>{nodes}</>;
 }
 
 export default function GlossaryTerm({
@@ -196,12 +251,18 @@ export default function GlossaryTerm({
               id={tipId}
               role="tooltip"
               onPointerEnter={(event) => {
-                if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+                if (
+                  event.pointerType === 'mouse' ||
+                  event.pointerType === 'pen'
+                ) {
                   show();
                 }
               }}
               onPointerLeave={(event) => {
-                if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+                if (
+                  event.pointerType === 'mouse' ||
+                  event.pointerType === 'pen'
+                ) {
                   hideSoon();
                 }
               }}

@@ -2,8 +2,9 @@
 
 import { useEffect } from 'react';
 import { ExternalExplainerSection } from '@/components/nprm/ExternalExplainers';
+import { GlossaryText } from '@/components/nprm/GlossaryTerm';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
-import { FR_HTML, FR_PDF, NPRM_LAST_UPDATED } from '@/lib/nprm/utils';
+import { FR_HTML, FR_PDF } from '@/lib/nprm/utils';
 
 const SECTIONS: {
   id: string;
@@ -14,6 +15,27 @@ const SECTIONS: {
   risk: string;
   page: string;
 }[] = [
+  {
+    id: 'sustainment',
+    title: 'Two-year sustainment & redeployment',
+    current:
+      'Many investors faced indefinite redeployment while waiting for visas through conditional residency.',
+    proposed:
+      'Capital must remain at risk for a minimum of 2 years from the date made available to the job-creating entity (JCE). DHS expects redeployment to become rare for post-RIA cases.',
+    why: 'Especially material for India/China backlogged investors whose capital sat far longer than the job-creation clock.',
+    risk: 'Ambiguity on when the clock starts (NCE vs JCE) could still force unwanted redeployments.',
+    page: 'FR Doc 2026-13392 (sustainment)',
+  },
+  {
+    id: 'bridge-capital',
+    title: 'Bridge financing & qualifying capital',
+    current: 'Bridge financing is common in project capital stacks.',
+    proposed:
+      'Restricts use of repaid bridge financing in certain circumstances and refines what counts as qualifying capital.',
+    why: 'Rural and early-stage projects often rely on bridge; structure changes can delay closings.',
+    risk: 'Over-broad restrictions may chill financing for projects investors want to fund.',
+    page: 'FR Doc 2026-13392 (bridge / capital)',
+  },
   {
     id: 'amounts',
     title: 'Investment amounts & inflation',
@@ -35,17 +57,6 @@ const SECTIONS: {
     why: 'Where your project sits decides $800K vs $1.05M vs the new $1.4M tier.',
     risk: 'Opaque unemployment data sources make TEA outcomes hard to predict or challenge.',
     page: 'FR Doc 2026-13392 (TEA methodology)',
-  },
-  {
-    id: 'sustainment',
-    title: 'Two-year sustainment & redeployment',
-    current:
-      'Many investors faced indefinite redeployment while waiting for visas through conditional residency.',
-    proposed:
-      'Capital must remain at risk for a minimum of 2 years from the date made available to the job-creating entity (JCE). DHS expects redeployment to become rare for post-RIA cases.',
-    why: 'Especially material for India/China backlogged investors whose capital sat far longer than the job-creation clock.',
-    risk: 'Ambiguity on when the clock starts (NCE vs JCE) could still force unwanted redeployments.',
-    page: 'FR Doc 2026-13392 (sustainment)',
   },
   {
     id: 'good-faith',
@@ -89,16 +100,6 @@ const SECTIONS: {
     page: 'FR Doc 2026-13392 (promoters)',
   },
   {
-    id: 'bridge-capital',
-    title: 'Bridge financing & qualifying capital',
-    current: 'Bridge financing is common in project capital stacks.',
-    proposed:
-      'Restricts use of repaid bridge financing in certain circumstances and refines what counts as qualifying capital.',
-    why: 'Rural and early-stage projects often rely on bridge; structure changes can delay closings.',
-    risk: 'Over-broad restrictions may chill financing for projects investors want to fund.',
-    page: 'FR Doc 2026-13392 (bridge / capital)',
-  },
-  {
     id: 'source-funds',
     title: 'Source of funds, crypto',
     current: 'Crypto as source of funds has been handled case-by-case with heavy RFEs.',
@@ -128,11 +129,11 @@ export default function SummaryTab() {
         <NprmSectionHeading
           as="h2"
           eyebrow="Summary"
-          title="10-minute NPRM summary"
+          title={<GlossaryText text="10-minute NPRM summary" />}
         >
           <p className="text-sm text-neutral leading-relaxed">
             Current rule vs proposed change, why it matters, and risk if finalized.
-            Last updated: {NPRM_LAST_UPDATED}. Always verify on the{' '}
+            Always verify on the{' '}
             <a
               href={FR_HTML}
               target="_blank"
@@ -172,12 +173,12 @@ export default function SummaryTab() {
         </nav>
 
         <div className="space-y-6 max-w-3xl">
-          <div className="lg:hidden flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
+          <div className="lg:hidden flex flex-wrap gap-2 pb-1">
             {SECTIONS.map((s) => (
               <a
                 key={s.id}
                 href={`#${s.id}`}
-                className="shrink-0 rounded-full border border-base-300 bg-base-100 px-3 py-1 text-xs font-semibold text-neutral"
+                className="rounded-md border border-base-300 bg-base-100 px-3 py-1 text-xs font-semibold text-neutral"
               >
                 {s.title}
               </a>
@@ -193,24 +194,32 @@ export default function SummaryTab() {
               <NprmSectionHeading
                 as="h3"
                 eyebrow={`Topic ${idx + 1}`}
-                title={s.title}
+                title={<GlossaryText text={s.title} />}
               />
               <dl className="space-y-2 text-sm text-neutral leading-relaxed">
                 <div>
                   <dt className="font-bold text-primary">Current rule</dt>
-                  <dd>{s.current}</dd>
+                  <dd>
+                    <GlossaryText text={s.current} />
+                  </dd>
                 </div>
                 <div>
                   <dt className="font-bold text-primary">Proposed</dt>
-                  <dd>{s.proposed}</dd>
+                  <dd>
+                    <GlossaryText text={s.proposed} />
+                  </dd>
                 </div>
                 <div>
                   <dt className="font-bold text-primary">Why it matters to you</dt>
-                  <dd>{s.why}</dd>
+                  <dd>
+                    <GlossaryText text={s.why} />
+                  </dd>
                 </div>
                 <div>
                   <dt className="font-bold text-primary">Risk if finalized</dt>
-                  <dd>{s.risk}</dd>
+                  <dd>
+                    <GlossaryText text={s.risk} />
+                  </dd>
                 </div>
               </dl>
               <p className="text-xs font-semibold text-neutral/70">

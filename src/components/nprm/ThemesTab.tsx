@@ -1,5 +1,6 @@
 'use client';
 
+import { GlossaryText } from '@/components/nprm/GlossaryTerm';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import type { NprmTheme } from '@/lib/nprm/types';
 import { commentUrl } from '@/lib/nprm/utils';
@@ -25,9 +26,7 @@ export default function ThemesTab({
         title="Comment themes that actually move the needle"
       >
         <p className="text-sm text-neutral leading-relaxed max-w-2xl">
-          Don&apos;t copy-paste. USCIS discounts form letters. Use our Write builder to
-          personalize with your dates. Context and sample IDs below come from real
-          regulations.gov comments.
+          <GlossaryText text="Don't copy-paste. USCIS discounts form letters. Use our Write builder to personalize with your dates. Context and sample IDs below come from real regulations.gov comments." />
         </p>
       </NprmSectionHeading>
 
@@ -58,7 +57,7 @@ export default function ThemesTab({
             >
               <NprmSectionHeading as="h3" eyebrow="Theme" title={theme.title}>
                 <p className="text-sm text-neutral leading-relaxed">
-                  {theme.summary}
+                  <GlossaryText text={theme.summary} />
                 </p>
               </NprmSectionHeading>
 
@@ -68,7 +67,7 @@ export default function ThemesTab({
                     key={cfr}
                     className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2 py-0.5 text-[11px] font-semibold text-neutral"
                   >
-                    {cfr}
+                    <GlossaryText text={cfr} />
                   </span>
                 ))}
               </div>
