@@ -251,24 +251,18 @@ export default function OverviewTab({
           but a new $1.4M tier for high employment areas is proposed. Amounts
           will also rise for inflation on Jan 1, 2027.
         </p>
+        <p id="india-china">
+          <strong>If you are waiting from India or China:</strong> You often wait
+          the longest for a visa number. A clear 2-year sustainment rule and
+          stronger good-faith protections matter most when your money would
+          otherwise sit through a long backlog or forced redeployment.
+        </p>
         <p>
           <strong>Action:</strong> Read the 5-minute summary, then use our
           builder to draft a personal comment for regulations.gov. It takes about
           10 minutes. You can submit anonymously. Do not include your A-Number.
         </p>
       </section>
-
-      <aside className="nprm-callout-plain space-y-2" id="india-china">
-        <h3 className="text-base font-bold text-primary">
-          Why this matters if you are waiting from India or China
-        </h3>
-        <p>
-          You often wait the longest for a visa number. A clear 2-year
-          sustainment rule and stronger good-faith protections matter most when
-          your money would otherwise sit through a long backlog or forced
-          redeployment.
-        </p>
-      </aside>
 
       <section className="space-y-3" id="key-points">
         <p className="nprm-tldr">
