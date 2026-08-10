@@ -177,7 +177,7 @@ export function buildPersonalOnly(personal: PersonalBlock): string {
 }
 
 /** Minimum personal story length for copy (review: 100 chars). */
-export const MIN_IMPACT_CHARS = 100;
+export const MIN_IMPACT_CHARS = 600;
 
 /**
  * Word-overlap similarity of user impact vs a generic template.
