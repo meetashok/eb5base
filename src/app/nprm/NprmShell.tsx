@@ -92,10 +92,10 @@ export default async function NprmShell({ tab }: { tab: NprmTabId }) {
             <p>
               DHS Notice of Proposed Rulemaking, July 2, 2026. EB5 Base breaks down
               the 358-page rule that finally codifies the EB-5 Reform and Integrity
-              Act of 2022. Comments close Aug 31, 2026 at 11:59pm ET.
+              Act of 2022. Comments close August 31, 2026.
             </p>
             <p>
-              Last updated: {NPRM_LAST_UPDATED} ·{' '}
+              Last data updated: {NPRM_LAST_UPDATED} ·{' '}
               <a
                 href={FR_HTML}
                 target="_blank"
