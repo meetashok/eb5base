@@ -178,11 +178,13 @@ export default function AboutTab({
       </section>
 
       <section className="space-y-3 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
-        <h2 className="text-xl font-bold text-primary">Records / chain of custody</h2>
+        <h2 className="text-xl font-bold text-primary">How we keep this accurate</h2>
         <p className="text-sm text-neutral leading-relaxed">
-          We keep last-check.json, dated all_comments snapshots, and check.log so
-          every card can be attributed. Current seed: {totalComments} comments,
-          last pull {lastPull}.
+          We keep a dated record of every update to this guide and the public comment
+          summaries, so you can see what changed and when. That history helps us stay
+          transparent, catch mistakes, and point each summary back to the original
+          filing on regulations.gov. Right now we track {totalComments} comments.
+          Last refresh: {lastPull}.
         </p>
         {logEntries.length > 0 ? (
           <ul className="space-y-3 rounded-lg border-2 border-base-300 bg-base-200/70 p-3 sm:p-4 overflow-auto max-h-72">
