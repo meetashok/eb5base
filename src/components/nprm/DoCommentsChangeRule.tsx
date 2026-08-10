@@ -28,8 +28,8 @@ export default function DoCommentsChangeRule() {
         rule was final.
       </p>
       <p className="text-sm text-neutral leading-relaxed">
-        Agencies must consider significant comments under the{' '}
-        <GlossaryTerm term="APA" />. A <GlossaryTerm term="GAO" /> survey found
+        Under the <GlossaryTerm term="APA" />, agencies must consider significant
+        comments. A <GlossaryTerm term="GAO" /> survey found
         most program offices reported that comments led to substantive changes
         in final rules, and the Office of the Federal Register says persuasive
         comments can reshape a proposal. Even though this is not a vote, unique
