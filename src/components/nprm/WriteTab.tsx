@@ -175,8 +175,17 @@ export default function WriteTab({
       <div>
         <h2 className="text-xl font-bold text-primary">Build My Comment</h2>
         <p className="text-sm text-neutral mt-1 max-w-2xl leading-relaxed">
-          Personalize a draft for regulations.gov. We do not submit for you and we
-          do not store drafts on our servers, only in your browser (localStorage).
+          Use this page to personalize a draft for{' '}
+          <a
+            href={COMMENT_ON_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+          >
+            regulations.gov
+          </a>
+          . We do not submit the comment for you. You will need to file it
+          yourself on that site when you are ready.
         </p>
       </div>
 
