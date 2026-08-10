@@ -68,6 +68,32 @@ export function commentSnippet(comment: NprmComment, max = 140): string {
   return `Public submission by ${poster}. Full text on regulations.gov.`;
 }
 
+/**
+ * Preferred Write / Themes display order.
+ * Remote feed order can reshuffle; keep Grandfather at #3 (after Sustainment + Bridge).
+ */
+export const THEME_DISPLAY_ORDER = [
+  'sustainment',
+  'bridge_financing',
+  'grandfather_retroactivity',
+  'tea_designation',
+  'program_integrity',
+  'definitional_asymmetry',
+] as const;
+
+/** Sort themes into the preferred display order; unknown ids keep relative order at the end. */
+export function orderThemesForDisplay(themes: NprmTheme[]): NprmTheme[] {
+  const rank = new Map<string, number>(
+    THEME_DISPLAY_ORDER.map((id, i) => [id, i])
+  );
+  return [...themes].sort((a, b) => {
+    const ra = rank.get(a.id) ?? THEME_DISPLAY_ORDER.length;
+    const rb = rank.get(b.id) ?? THEME_DISPLAY_ORDER.length;
+    if (ra !== rb) return ra - rb;
+    return 0;
+  });
+}
+
 /** Map comment ID → theme IDs using grounded sample_ids (not invented). */
 export function buildCommentThemeIndex(
   themes: NprmTheme[]

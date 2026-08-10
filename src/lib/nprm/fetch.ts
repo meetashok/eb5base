@@ -10,6 +10,7 @@ import type {
   NprmStats,
   NprmTheme,
 } from './types';
+import { orderThemesForDisplay } from './utils';
 
 /** Accept nested regs.gov rows or flat Hatch theme/summary rows. */
 export function normalizeComment(
@@ -254,7 +255,7 @@ export async function loadNprmPageData(): Promise<NprmPageData> {
 
   return {
     stats: statsR.data,
-    themes: themesR.data,
+    themes: orderThemesForDisplay(themesR.data),
     promptTree: promptsR.data,
     comments: merged,
     proposal: proposalR?.data ?? null,
