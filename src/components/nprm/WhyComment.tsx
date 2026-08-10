@@ -110,32 +110,6 @@ export default function WhyComment({
         </a>
       </div>
 
-      {why.how_it_works ? (
-        <div className="rounded-xl border border-base-300 bg-base-100 p-4 space-y-2">
-          <NprmSectionHeading
-            as="h3"
-            eyebrow="Process"
-            title="How commenting works"
-            titleClassName="text-sm font-bold text-primary leading-snug"
-          />
-          <p className="text-sm text-neutral leading-relaxed">
-            <GlossaryText text={plainDash(why.how_it_works)} />
-          </p>
-          <p className="text-xs text-neutral/80 leading-relaxed">
-            <GlossaryText text="If enough investors flag the same data gap, USCIS must publish a reasoned response or risk reversal on judicial review under the APA. File on " />
-            <a
-              href={COMMENT_ON_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-secondary underline underline-offset-2"
-            >
-              regulations.gov
-            </a>
-            .
-          </p>
-        </div>
-      ) : null}
-
       {why.what_to_include?.length ? (
         <div className="rounded-xl border border-base-300 bg-base-100 p-4 space-y-2">
           <NprmSectionHeading

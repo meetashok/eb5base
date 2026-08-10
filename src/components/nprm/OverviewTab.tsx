@@ -5,6 +5,7 @@ import GlossaryTerm, {
   GlossaryText,
 } from '@/components/nprm/GlossaryTerm';
 import DoCommentsChangeRule from '@/components/nprm/DoCommentsChangeRule';
+import HowCommentingWorks from '@/components/nprm/HowCommentingWorks';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import VolumeChart from '@/components/nprm/VolumeChart';
 import type {
@@ -234,6 +235,8 @@ export default function OverviewTab({
       </section>
 
       <DoCommentsChangeRule />
+
+      <HowCommentingWorks onWrite={onWrite} />
 
       <section className="space-y-4" id="comment-stats">
         <NprmSectionHeading
