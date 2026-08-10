@@ -398,30 +398,37 @@ export default function WriteTab({
                     {t.title}
                   </button>
                   {checked ? (
-                    <fieldset className="mt-2 space-y-1 border-t border-secondary/20 pt-2">
-                      <legend className="text-[11px] font-bold uppercase tracking-wider text-secondary/90 px-0.5">
+                    <fieldset className="mt-2 space-y-1.5 border-t border-secondary/30 pt-2">
+                      <legend className="text-[11px] font-bold uppercase tracking-wider text-secondary px-0.5">
                         Your view
                       </legend>
-                      {t.opinions.map((op) => (
-                        <label
-                          key={op.id}
-                          className="flex items-start gap-2 text-xs sm:text-sm cursor-pointer text-neutral font-normal"
-                        >
-                          <input
-                            type="radio"
-                            name={`opinion-${t.id}`}
-                            className="radio radio-xs mt-0.5 shrink-0"
-                            checked={opinions[t.id] === op.id}
-                            onChange={() =>
-                              setOpinions((prev) => ({
-                                ...prev,
-                                [t.id]: op.id,
-                              }))
-                            }
-                          />
-                          <span className="leading-snug">{op.label}</span>
-                        </label>
-                      ))}
+                      {t.opinions.map((op) => {
+                        const selected = opinions[t.id] === op.id;
+                        return (
+                          <label
+                            key={op.id}
+                            className={`flex items-start gap-2 text-xs sm:text-sm cursor-pointer rounded-md px-1.5 py-1 -mx-0.5 transition-colors ${
+                              selected
+                                ? 'bg-base-100/90 text-primary font-semibold ring-1 ring-secondary/35'
+                                : 'text-primary/90 font-medium hover:bg-base-100/70'
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name={`opinion-${t.id}`}
+                              className="radio radio-xs radio-secondary mt-0.5 shrink-0 checked:bg-secondary"
+                              checked={selected}
+                              onChange={() =>
+                                setOpinions((prev) => ({
+                                  ...prev,
+                                  [t.id]: op.id,
+                                }))
+                              }
+                            />
+                            <span className="leading-snug">{op.label}</span>
+                          </label>
+                        );
+                      })}
                     </fieldset>
                   ) : null}
                 </div>
