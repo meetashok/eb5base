@@ -61,7 +61,6 @@ export default function NprmTabBar({
   const menuRef = useRef<HTMLDivElement>(null);
   const menuId = useId();
   const visibleMobile = mobileWindow(active);
-  const overflow = NPRM_TABS.filter((t) => !visibleMobile.includes(t.id));
 
   useEffect(() => {
     setMenuOpen(false);
@@ -151,7 +150,7 @@ export default function NprmTabBar({
               aria-controls={menuId}
               onClick={() => setMenuOpen((open) => !open)}
             >
-              <span className="sr-only">More sections</span>
+              <span className="sr-only">All sections</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
@@ -166,10 +165,10 @@ export default function NprmTabBar({
               <div
                 id={menuId}
                 role="menu"
-                aria-label="More NPRM sections"
+                aria-label="All NPRM sections"
                 className="absolute right-0 top-full mt-1 z-40 min-w-[11rem] rounded-xl border-2 border-base-300 bg-base-100 p-1.5 shadow-soft"
               >
-                {overflow.map((t) => {
+                {NPRM_TABS.map((t) => {
                   const selected = active === t.id;
                   const emphasize = t.id === 'write';
                   return (
