@@ -2,6 +2,10 @@
 
 import { Suspense, useMemo, useState } from 'react';
 import { CitationChips } from '@/components/nprm/CitationChips';
+import {
+  ExternalExplainerInline,
+  ExternalExplainerSection,
+} from '@/components/nprm/ExternalExplainers';
 import GlossaryTerm from '@/components/nprm/GlossaryTerm';
 import ImpactMatrix from '@/components/nprm/ImpactMatrix';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
@@ -226,6 +230,7 @@ export default function OverviewTab({
               Docket USCIS-2026-0100
             </a>
           </div>
+          <ExternalExplainerInline />
         </div>
         <p className="text-xs text-neutral/75 leading-relaxed">
           Last updated: {NPRM_LAST_UPDATED}. Not legal advice.{' '}
@@ -450,6 +455,8 @@ export default function OverviewTab({
           </div>
         </div>
       </section>
+
+      <ExternalExplainerSection />
 
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between rounded-xl border-2 border-secondary/30 bg-secondary/10 px-4 py-4">
         <div className="space-y-1">
