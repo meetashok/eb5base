@@ -1,6 +1,7 @@
+import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+import { getSupabaseConfig, isSupabaseConfigured } from '@/lib/supabase-env';
 import { createServiceClient } from '@/lib/supabase-service';
-import { isSupabaseConfigured } from '@/lib/supabase-env';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const SOURCES = new Set(['home', 'tracker', 'unknown']);
@@ -9,15 +10,18 @@ function normalizeEmail(raw: string): string {
   return raw.trim().toLowerCase();
 }
 
+function getWaitlistClient() {
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()) {
+    return createServiceClient();
+  }
+  const { url, key } = getSupabaseConfig();
+  return createClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+}
+
 export async function POST(request: Request) {
   if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: 'Waitlist is temporarily unavailable. Email hello@eb5base.com instead.' },
-      { status: 503 }
-    );
-  }
-
-  if (!process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()) {
     return NextResponse.json(
       { error: 'Waitlist is temporarily unavailable. Email hello@eb5base.com instead.' },
       { status: 503 }
@@ -49,19 +53,19 @@ export async function POST(request: Request) {
   }
 
   try {
-    const supabase = createServiceClient();
-    const { error } = await supabase.from('case_tracker_waitlist').upsert(
-      {
-        email,
-        email_normalized: emailNormalized,
-        source,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: 'email_normalized', ignoreDuplicates: false }
-    );
+    const supabase = getWaitlistClient();
+    const { error } = await supabase.from('case_tracker_waitlist').insert({
+      email,
+      email_normalized: emailNormalized,
+      source,
+    });
 
     if (error) {
-      console.error('[waitlist]', error.message);
+      // Already subscribed - treat as success.
+      if (error.code === '23505') {
+        return NextResponse.json({ ok: true, already: true });
+      }
+      console.error('[waitlist]', error.code, error.message);
       return NextResponse.json(
         { error: 'Could not save your email. Try again in a moment.' },
         { status: 500 }

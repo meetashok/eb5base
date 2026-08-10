@@ -17,8 +17,15 @@ CREATE INDEX IF NOT EXISTS case_tracker_waitlist_created_at_idx
 
 ALTER TABLE public.case_tracker_waitlist ENABLE ROW LEVEL SECURITY;
 
--- No anon/authenticated policies: inserts go through service role via /api/waitlist only.
+-- Public opt-in: anon/authenticated may INSERT only (no SELECT/UPDATE/DELETE).
+GRANT INSERT ON TABLE public.case_tracker_waitlist TO anon, authenticated;
 GRANT ALL ON TABLE public.case_tracker_waitlist TO service_role;
+
+DROP POLICY IF EXISTS case_tracker_waitlist_insert_public ON public.case_tracker_waitlist;
+CREATE POLICY case_tracker_waitlist_insert_public ON public.case_tracker_waitlist
+  FOR INSERT
+  TO anon, authenticated
+  WITH CHECK (true);
 
 COMMENT ON TABLE public.case_tracker_waitlist IS
   'Opt-in emails for Case Tracker launch notify. One row per normalized email.';
