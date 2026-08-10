@@ -137,7 +137,7 @@ export default function OverviewTab({
           Draft rule · comments close August 31, 2026
         </p>
         <h2 className="text-base font-bold text-primary leading-snug">
-          What is this draft rule, and does it affect your EB-5 money?
+          What is this draft rule, and does it affect your EB-5 journey?
         </h2>
         <p className="nprm-tldr">
           TLDR: This is a draft of new EB-5 house rules. It is not final. You can
