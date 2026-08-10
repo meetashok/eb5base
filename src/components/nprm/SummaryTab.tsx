@@ -173,18 +173,6 @@ export default function SummaryTab({
         </NprmSectionHeading>
       </div>
 
-      <Suspense fallback={<ListSkeleton count={2} />}>
-        <ImpactMatrix />
-      </Suspense>
-
-      {whyComment ? (
-        <WhyComment
-          why={whyComment}
-          onThemes={onThemes}
-          onComments={onComments}
-        />
-      ) : null}
-
       <div className="lg:grid lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-8 items-start">
         <nav
           aria-label="Summary sections"
@@ -268,6 +256,18 @@ export default function SummaryTab({
       </div>
 
       <ExternalExplainerSection />
+
+      <Suspense fallback={<ListSkeleton count={2} />}>
+        <ImpactMatrix />
+      </Suspense>
+
+      {whyComment ? (
+        <WhyComment
+          why={whyComment}
+          onThemes={onThemes}
+          onComments={onComments}
+        />
+      ) : null}
     </div>
   );
 }
