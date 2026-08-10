@@ -172,46 +172,56 @@ export default function OverviewTab({
           <CitationChips citations={short.citations} href={FR_HTML} />
         ) : null}
         <CountdownBanner endsLabel={ends} />
-        <div className="flex flex-wrap gap-2 pt-1">
-          <button
-            type="button"
-            onClick={onWrite}
-            data-goatcounter-click="nprm-build-comment"
-            className="btn btn-primary text-primary-content"
-          >
-            Build My Comment
-          </button>
-          <button
-            type="button"
-            onClick={onSummary}
-            className="btn btn-outline border-neutral/30"
-          >
-            Read 10-min Summary
-          </button>
-          <a
-            href={sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-ghost btn-sm"
-          >
-            Full PDF
-          </a>
-          <a
-            href={FR_HTML}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-ghost btn-sm"
-          >
-            Federal Register HTML
-          </a>
-          <a
-            href={DOCKET_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-ghost btn-sm"
-          >
-            Docket USCIS-2026-0100
-          </a>
+        <div className="flex flex-col gap-2 pt-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={onWrite}
+              data-goatcounter-click="nprm-build-comment"
+              className="btn btn-primary text-primary-content"
+            >
+              Build My Comment
+            </button>
+            <button
+              type="button"
+              onClick={onSummary}
+              className="btn btn-outline border-neutral/30"
+            >
+              Read 10-min Summary
+            </button>
+          </div>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+            <a
+              href={sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+            >
+              Full PDF
+            </a>
+            <span className="text-neutral/30" aria-hidden>
+              ·
+            </span>
+            <a
+              href={FR_HTML}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+            >
+              Federal Register HTML
+            </a>
+            <span className="text-neutral/30" aria-hidden>
+              ·
+            </span>
+            <a
+              href={DOCKET_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+            >
+              Docket USCIS-2026-0100
+            </a>
+          </div>
         </div>
         <p className="text-xs text-neutral/75 leading-relaxed">
           Last updated: {NPRM_LAST_UPDATED} · Sources:{' '}
