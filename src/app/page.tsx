@@ -97,17 +97,6 @@ export default function HomePage() {
             milestones, and helps you comment on policy before it finalizes. Focus: RIA
             implementation NPRM open until Aug 31 2026.
           </p>
-          <div className="mt-4 flex flex-wrap gap-2 justify-center text-xs font-semibold">
-            <span className="rounded-md border border-secondary/30 bg-secondary/10 px-2.5 py-1 text-secondary">
-              0 ads
-            </span>
-            <span className="rounded-md border border-secondary/30 bg-secondary/10 px-2.5 py-1 text-secondary">
-              0 referral fees
-            </span>
-            <span className="rounded-md border border-base-300 bg-base-100 px-2.5 py-1 text-neutral">
-              Not affiliated with USCIS or DHS
-            </span>
-          </div>
           <p className="mt-2 text-xs font-medium text-neutral/80 max-w-xl mx-auto leading-relaxed">
             {TRUST_SNAPSHOT}
           </p>
