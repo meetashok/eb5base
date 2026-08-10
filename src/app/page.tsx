@@ -56,24 +56,6 @@ const TOOLS = [
 const TRUST_SNAPSHOT =
   '48 comments tracked · Last checked Aug 9, 2026, 1:30 PM IST · Docket USCIS-2026-0100';
 
-const FAQ = [
-  {
-    id: 'legal-advice',
-    q: 'Is this legal advice?',
-    a: 'No. EB5 Base is information only, not legal or financial advice, and not affiliated with USCIS or DHS. Verify on the Federal Register and consult an immigration attorney.',
-  },
-  {
-    id: 'who-built',
-    q: 'Who built this?',
-    a: 'Investors in the EB-5 community. The tools are community-built and investor-led, with open feedback at hello@eb5base.com.',
-  },
-  {
-    id: 'how-money',
-    q: 'How do you make money?',
-    a: 'We do not. No ads, no referral fees, no RC promotions. The goal is shared clarity on rules and case progress.',
-  },
-];
-
 export default function HomePage() {
   return (
     <div>
@@ -200,24 +182,6 @@ export default function HomePage() {
                 </Link>
               )}
             </article>
-          ))}
-        </div>
-      </section>
-
-      <section id="faq" className="max-w-3xl mx-auto px-4 pb-12 space-y-4 scroll-mt-28">
-        <h2 className="text-xl font-bold text-primary text-center">FAQ</h2>
-        <div className="space-y-3">
-          {FAQ.map((item) => (
-            <details
-              key={item.id}
-              id={item.id}
-              className="rounded-xl border-2 border-base-300 bg-base-100 p-4 shadow-sm scroll-mt-28"
-            >
-              <summary className="cursor-pointer font-semibold text-primary text-sm sm:text-base focus-visible:outline focus-visible:outline-2 focus-visible:outline-secondary rounded">
-                {item.q}
-              </summary>
-              <p className="mt-2 text-sm text-neutral leading-relaxed">{item.a}</p>
-            </details>
           ))}
         </div>
       </section>
