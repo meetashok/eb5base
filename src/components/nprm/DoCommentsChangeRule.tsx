@@ -16,7 +16,7 @@ export default function DoCommentsChangeRule() {
         titleClassName="text-base font-bold text-primary leading-snug"
       />
       <p className="text-sm text-neutral leading-relaxed">
-        Yes — investor comments have moved EB-5 before. In the last major
+        Yes: investor comments have moved EB-5 before. In the last major
         modernization (2019), <GlossaryTerm term="DHS" /> answered hundreds of
         comments and{' '}
         <strong className="font-bold text-primary">
@@ -32,7 +32,7 @@ export default function DoCommentsChangeRule() {
         in final rules, and the Office of the Federal Register says persuasive
         comments can reshape a proposal. Even though this is not a vote, unique
         investor stories put concrete harms on the record so they must be
-        addressed — especially when other voices push only to tighten the
+        addressed, especially when other voices push only to tighten the
         program.
       </p>
       <p className="text-xs text-neutral/80 leading-relaxed">
