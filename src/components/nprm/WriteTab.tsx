@@ -30,6 +30,42 @@ interface Props {
 
 const MAX_THEMES = 3;
 const DRAFT_KEY = 'eb5base_nprm_write_draft_v1';
+/** Browser/URL length guard for LLM ?q= prefill links. */
+const LLM_PREFILL_MAX_CHARS = 3500;
+
+const LLM_LINKS = [
+  {
+    id: 'chatgpt',
+    label: 'ChatGPT',
+    href: 'https://chatgpt.com/',
+    prefill: (prompt: string) =>
+      `https://chatgpt.com/?q=${encodeURIComponent(prompt)}`,
+  },
+  {
+    id: 'claude',
+    label: 'Claude',
+    href: 'https://claude.ai/new',
+    prefill: (prompt: string) =>
+      `https://claude.ai/new?q=${encodeURIComponent(prompt)}`,
+  },
+  {
+    id: 'gemini',
+    label: 'Gemini',
+    href: 'https://gemini.google.com/app',
+  },
+  {
+    id: 'metaai',
+    label: 'Meta AI',
+    href: 'https://www.meta.ai/',
+  },
+  {
+    id: 'deepseek',
+    label: 'DeepSeek',
+    href: 'https://chat.deepseek.com/',
+    prefill: (prompt: string) =>
+      `https://chat.deepseek.com/?q=${encodeURIComponent(prompt)}`,
+  },
+] as const;
 
 const INVESTOR_TYPE_OPTIONS: {
   value: NonNullable<PersonalBlock['investor_type']>;
@@ -231,6 +267,41 @@ export default function WriteTab({
     } catch {
       setCopyMsg('Copy failed. Select the text manually.');
       window.setTimeout(() => setCopyMsg(null), 3000);
+    }
+  }
+
+  async function openInLlm(llm: (typeof LLM_LINKS)[number]) {
+    if (!ready) {
+      toast('Select a theme and accept the disclaimer first', 'error');
+      return;
+    }
+    let copied = false;
+    try {
+      await navigator.clipboard.writeText(prompt);
+      copied = true;
+      setCopyMsg('Prompt copied');
+      track('builder_copied');
+      if (personalized) track('builder_personalized');
+      window.setTimeout(() => setCopyMsg(null), 2000);
+    } catch {
+      // Still open the LLM; user can copy manually from the preview.
+    }
+
+    const canPrefill =
+      'prefill' in llm &&
+      typeof llm.prefill === 'function' &&
+      prompt.length > 0 &&
+      prompt.length <= LLM_PREFILL_MAX_CHARS;
+    const url = canPrefill ? llm.prefill(prompt) : llm.href;
+    window.open(url, '_blank', 'noopener,noreferrer');
+    track(`llm_open_${llm.id}`);
+
+    if (copied && canPrefill) {
+      toast(`Opening ${llm.label} with your prompt`, 'success');
+    } else if (copied) {
+      toast(`Prompt copied — paste into ${llm.label}`, 'success');
+    } else {
+      toast(`Opened ${llm.label}. Copy the prompt from the preview.`, 'info');
     }
   }
 
@@ -559,7 +630,39 @@ export default function WriteTab({
               titleClassName="text-sm font-semibold text-primary leading-snug"
             />
             <ol className="list-decimal pl-5 text-sm text-neutral space-y-1.5 leading-relaxed">
-              <li>Paste the prompt into your own LLM</li>
+              <li>
+                <span>Paste the prompt into your own LLM</span>
+                <div className="mt-1.5 flex flex-wrap gap-x-1 gap-y-1 text-xs">
+                  {LLM_LINKS.map((llm, i) => (
+                    <span key={llm.id} className="inline-flex items-center gap-1">
+                      {i > 0 ? (
+                        <span className="text-neutral/40" aria-hidden>
+                          ·
+                        </span>
+                      ) : null}
+                      <button
+                        type="button"
+                        className="font-semibold text-secondary underline underline-offset-2 hover:text-primary disabled:opacity-50 disabled:no-underline"
+                        disabled={!ready}
+                        title={
+                          ready
+                            ? `Copy prompt and open ${llm.label}`
+                            : 'Select at least one theme and accept the disclaimer first'
+                        }
+                        onClick={() => openInLlm(llm)}
+                      >
+                        {llm.label}
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <p className="mt-1 text-[11px] text-neutral/70 leading-relaxed">
+                  Click a name to copy the prompt and open that chat. ChatGPT,
+                  Claude, and DeepSeek can prefill when the prompt is not too
+                  long; otherwise paste from your clipboard. On phones, the
+                  installed app may open when the OS supports it.
+                </p>
+              </li>
               <li>Edit the draft in your voice (aim for more than 30% personal)</li>
               <li>
                 Paste the final comment on{' '}
