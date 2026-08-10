@@ -3,8 +3,13 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import GlossaryTerm from '@/components/nprm/GlossaryTerm';
+import UserTypeSelector, {
+  readStoredUserType,
+  writeStoredUserType,
+  type InvestorFilter,
+} from '@/components/nprm/UserTypeSelector';
 
-export type InvestorFilter = 'all' | 'pre_ria' | 'post_ria' | 'future';
+export type { InvestorFilter };
 
 const ROWS: {
   topic: string;
@@ -161,13 +166,6 @@ function parseInvestor(raw: string | null): InvestorFilter {
   return 'all';
 }
 
-const FILTERS: { id: InvestorFilter; label: string }[] = [
-  { id: 'all', label: 'All' },
-  { id: 'pre_ria', label: 'Filed before Mar 2022' },
-  { id: 'post_ria', label: 'Filed after Mar 2022' },
-  { id: 'future', label: 'Planning to file' },
-];
-
 export default function ImpactMatrix({
   initialInvestor,
 }: {
@@ -179,16 +177,23 @@ export default function ImpactMatrix({
   );
 
   useEffect(() => {
-    setFilter(parseInvestor(searchParams.get('investor')));
+    const fromUrl = parseInvestor(searchParams.get('investor'));
+    if (fromUrl !== 'all') {
+      setFilter(fromUrl);
+      return;
+    }
+    const stored = readStoredUserType();
+    if (stored) setFilter(stored);
   }, [searchParams]);
 
   function selectFilter(next: InvestorFilter) {
     setFilter(next);
+    writeStoredUserType(next);
     const params = new URLSearchParams(window.location.search);
     if (next === 'all') params.delete('investor');
     else params.set('investor', next);
     const qs = params.toString();
-    // history only — NPRM tab switches already use pushState; a Next router
+    // history only: NPRM tab switches already use pushState; a Next router
     // replace here would remount the shell and flash the top nav.
     window.history.replaceState(
       null,
@@ -204,6 +209,8 @@ export default function ImpactMatrix({
 
   return (
     <section className="space-y-3 nprm-prose" id="impact-matrix">
+      <UserTypeSelector value={filter} onChange={selectFilter} />
+
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div>
           <p className="nprm-tldr">
@@ -219,27 +226,6 @@ export default function ImpactMatrix({
             <GlossaryTerm term="TEA" /> or <GlossaryTerm term="JCE" /> for
             definitions.
           </p>
-        </div>
-        <div
-          className="flex flex-wrap gap-1.5"
-          role="group"
-          aria-label="Filter by filing era"
-        >
-          {FILTERS.map((f) => (
-            <button
-              key={f.id}
-              type="button"
-              aria-pressed={filter === f.id}
-              onClick={() => selectFilter(f.id)}
-              className={`btn btn-xs h-7 min-h-0 px-2.5 border ${
-                filter === f.id
-                  ? 'btn-primary text-primary-content border-primary'
-                  : 'btn-ghost bg-base-100 border-base-300'
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
         </div>
       </div>
 

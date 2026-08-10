@@ -9,7 +9,9 @@ import {
   MIN_IMPACT_CHARS,
   buildPersonalOnly,
   buildPrompt,
+  canCopyPrompt,
   isPersonalizedEnough,
+  personalizationOverlapPercent,
   templateSimilarity,
 } from '@/lib/nprm/prompt';
 import type {
@@ -37,11 +39,13 @@ const INVESTOR_TYPE_OPTIONS: {
   value: NonNullable<PersonalBlock['investor_type']>;
   label: string;
 }[] = [
-  { value: 'pre_ria', label: 'Pre-RIA' },
-  { value: 'post_ria', label: 'Post-RIA 2022+' },
-  { value: 'future', label: 'Future filer' },
-  { value: 'family', label: 'Family' },
+  { value: 'pre_ria', label: 'Filed before Mar 2022' },
+  { value: 'post_ria', label: 'Filed Mar 2022 to now' },
+  { value: 'future', label: 'Planning to file' },
+  { value: 'family', label: 'Family of investor' },
 ];
+
+const MAX_STORY_CHARS = 5000;
 
 const COUNTRY_OPTIONS = [
   { value: 'India', label: 'India' },
@@ -170,10 +174,14 @@ export default function WriteTab({
     }
   }, [hydrated, themeIds, opinions, personal, length, style, format]);
 
-  const ready = privacyOk && themeIds.length > 0;
+  const ready =
+    privacyOk &&
+    themeIds.length > 0 &&
+    canCopyPrompt(personal);
   const impactLen = personal.impact.trim().length;
   const personalized = isPersonalizedEnough(personal.impact);
   const similarity = templateSimilarity(personal.impact);
+  const overlapPct = personalizationOverlapPercent(personal.impact);
   const hasPersonalBits = Boolean(
     personal.i_526e_file_date.trim() ||
       personal.project_type ||
@@ -228,19 +236,45 @@ export default function WriteTab({
     }
   }
 
-  async function copyText(text: string, label: string) {
+  async function copyText(text: string, label: string, openRegs = false) {
     if (!ready) return;
     try {
       await navigator.clipboard.writeText(text);
       setCopyMsg(`${label} copied`);
-      toast('Copied for regulations.gov', 'success');
+      toast(
+        'Copied. Paste on regulations.gov, then clear your clipboard for privacy.',
+        'success'
+      );
       track('builder_copied');
       if (personalized) track('builder_personalized');
-      window.setTimeout(() => setCopyMsg(null), 2000);
+      if (openRegs) {
+        window.open(COMMENT_ON_URL, '_blank', 'noopener,noreferrer');
+        track('regulations_gov_clicked');
+      }
+      window.setTimeout(() => setCopyMsg(null), 4000);
     } catch {
       setCopyMsg('Copy failed. Select the text manually.');
       window.setTimeout(() => setCopyMsg(null), 3000);
     }
+  }
+
+  function clearDraft() {
+    try {
+      localStorage.removeItem(DRAFT_KEY);
+    } catch {
+      // ignore
+    }
+    setThemeIds([]);
+    setOpinions({});
+    setPersonal({
+      i_526e_file_date: '',
+      project_type: '',
+      impact: '',
+      investor_type: '',
+      country: '',
+    });
+    setPrivacyOk(false);
+    toast('Draft cleared from this browser', 'success');
   }
 
   return (
@@ -353,21 +387,21 @@ export default function WriteTab({
           <section className="space-y-3">
             <div>
               <h3 className="text-sm font-semibold text-primary">
-                Step B: Personal block (optional)
+                Step B: Your story (required to copy)
               </h3>
               <p className="text-xs text-neutral mt-1 leading-relaxed">
-                Optional, but a few personal details make your comment count as
-                distinct. Stored only in your browser.
+                At least {MIN_IMPACT_CHARS} characters in your own words. Stored
+                only in this browser. Do not include an A-Number.
               </p>
             </div>
             <label className="form-control">
               <span className="label-text text-xs">
-                When did you file or plan to file?
+                When did you file I-526E? (or plan to)
               </span>
               <input
                 type="text"
-                className="input input-bordered input-sm"
-                placeholder="e.g. Dec 2025"
+                className="input input-bordered input-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary"
+                placeholder="e.g. 2023-03 or Mar 2023"
                 value={personal.i_526e_file_date}
                 onChange={(e) =>
                   setPersonal((p) => ({
@@ -376,6 +410,10 @@ export default function WriteTab({
                   }))
                 }
               />
+              <span className="label-text-alt text-[10px] text-neutral/70">
+                Helps highlight parts that hit you most. Planning to file? Pick
+                a future month or leave blank and choose Planning to file.
+              </span>
             </label>
             <ChoiceChips
               label="Investor type"
@@ -408,33 +446,76 @@ export default function WriteTab({
               }
             />
             <label className="form-control">
-              <span className="label-text text-xs flex justify-between">
-                <span>Personal story (optional)</span>
+              <span className="label-text text-xs flex justify-between gap-2">
+                <span>Tell your story in your words</span>
                 <span
                   className={
                     impactLen === 0
                       ? 'text-neutral/60'
                       : impactLen >= MIN_IMPACT_CHARS && personalized
                         ? 'text-success'
-                        : 'text-warning'
+                        : 'text-error'
                   }
                 >
-                  {impactLen}/{MIN_IMPACT_CHARS}
+                  {impactLen}/{MIN_IMPACT_CHARS} (max {MAX_STORY_CHARS})
                 </span>
               </span>
               <textarea
-                className="textarea textarea-bordered text-sm min-h-28"
-                placeholder="Why you chose EB-5, how long you have waited, what redeployment or RC issues cost you"
+                className={`textarea textarea-bordered text-sm min-h-28 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary ${
+                  impactLen > 0 && impactLen < MIN_IMPACT_CHARS
+                    ? 'border-error'
+                    : ''
+                }`}
+                placeholder="I invested $800K in a rural project near... I filed March 2023. My family waited..."
+                maxLength={MAX_STORY_CHARS}
                 value={personal.impact}
                 onChange={(e) =>
                   setPersonal((p) => ({ ...p, impact: e.target.value }))
                 }
               />
               <span className="label-text-alt text-[10px] text-neutral/70">
-                A short personal fact helps. Example: wait time, capital already
-                deployed, school or job timing tied to I-829.
+                Agencies count personal stories more than form letters. Mention
+                project type, filing month, why money timing matters. No
+                A-Number.
               </span>
             </label>
+            <div className="space-y-1.5 rounded-lg border border-base-300 bg-base-100 px-3 py-2.5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-semibold text-primary">
+                  Personalization meter
+                </span>
+                <span
+                  className={
+                    impactLen < MIN_IMPACT_CHARS
+                      ? 'text-neutral/60'
+                      : overlapPct <= 30
+                        ? 'text-success'
+                        : overlapPct > 70
+                          ? 'text-error'
+                          : 'text-warning'
+                  }
+                >
+                  {impactLen === 0
+                    ? 'Write first'
+                    : `${overlapPct}% overlap with template`}
+                </span>
+              </div>
+              <progress
+                className={`progress w-full h-2 ${
+                  overlapPct > 70
+                    ? 'progress-error'
+                    : overlapPct <= 30
+                      ? 'progress-success'
+                      : 'progress-warning'
+                }`}
+                value={Math.min(100, overlapPct)}
+                max={100}
+              />
+              <p className="text-[10px] text-neutral/70 leading-relaxed">
+                Aim under 30% overlap. Over 70% blocks copy so agencies are less
+                likely to flag a bulk form letter.
+              </p>
+            </div>
           </section>
 
           <section className="space-y-2">
@@ -504,37 +585,36 @@ export default function WriteTab({
               onChange={(e) => setPrivacyOk(e.target.checked)}
             />
             <span>
-              I understand that I must not include my A-Number, receipt number,
-              home address, or other sensitive personal identifiers in a public
-              comment. By using this prompt, I am acting in my own capacity. EB5
-              Base does not submit comments for me and is not liable or
-              responsible for any comment I eventually file on regulations.gov
-              or elsewhere. This tool is information only, not legal advice.
+              I understand my comment is public on regulations.gov. I will not
+              include an A-Number, receipt number, birth date, or home address.
+              By using this prompt, I act in my own capacity. EB5 Base does not
+              submit comments for me and is not liable for any comment I file.
+              This tool is information only, not legal advice.
             </span>
           </label>
 
           <div className="flex flex-col sm:flex-row flex-wrap gap-2">
             <button
               type="button"
-              className="btn btn-accent text-accent-content"
+              className="btn btn-accent text-accent-content focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               disabled={!ready}
               title={
                 ready
                   ? 'Copy full prompt'
-                  : 'Select at least one theme and accept the disclaimer first'
+                  : 'Select a theme, write 100+ personal characters with low template overlap, and accept the privacy checkbox'
               }
-              onClick={() => copyText(prompt, 'Prompt')}
+              onClick={() => copyText(prompt, 'Prompt', true)}
             >
-              Copy prompt
+              Copy and open regulations.gov
             </button>
             <button
               type="button"
-              className="btn btn-outline"
+              className="btn btn-outline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary"
               disabled={!ready || !hasPersonalBits}
               title={
                 hasPersonalBits
                   ? 'Copy personal details only'
-                  : 'Add optional personal details first'
+                  : 'Add personal details first'
               }
               onClick={() =>
                 copyText(buildPersonalOnly(personal), 'Personal block')
@@ -548,17 +628,24 @@ export default function WriteTab({
               rel="noopener noreferrer"
               data-goatcounter-click="nprm-regulations-gov"
               onClick={() => track('regulations_gov_clicked')}
-              className="btn btn-secondary shadow-glow-green sm:flex-1"
+              className="btn btn-secondary shadow-glow-green sm:flex-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary"
             >
-              Open regulations.gov to paste your personal comment
+              Open regulations.gov
             </a>
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm text-neutral/70"
+              onClick={clearDraft}
+            >
+              Clear draft
+            </button>
           </div>
 
           {!ready && (
             <p className="text-xs text-warning">
-              Copy stays disabled until you select at least one theme and accept
-              the disclaimer next to the copy buttons. Personal details are
-              optional but recommended.
+              Copy stays disabled until you: (1) select at least one theme, (2)
+              write at least {MIN_IMPACT_CHARS} personal characters with under
+              70% template overlap, and (3) accept the privacy checkbox.
             </p>
           )}
 

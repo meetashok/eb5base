@@ -11,6 +11,7 @@ import SummaryTab from '@/components/nprm/SummaryTab';
 import ThemesTab from '@/components/nprm/ThemesTab';
 import WriteTab from '@/components/nprm/WriteTab';
 import type { NprmPageData } from '@/lib/nprm/types';
+import { nprmDocumentTitle } from '@/lib/nprm/metadata';
 import {
   NPRM_TABS,
   nprmTabHref,
@@ -21,15 +22,6 @@ import { DOCKET_URL, FR_HTML, NPRM_LAST_UPDATED } from '@/lib/nprm/utils';
 
 export type { NprmTabId } from '@/lib/nprm/tabs';
 export { isNprmTabId, NPRM_TABS, nprmTabHref } from '@/lib/nprm/tabs';
-
-const TAB_DOCUMENT_TITLE: Record<NprmTabId, string> = {
-  overview: 'EB-5 NPRM 2026: Plain-English Guide to DHS Proposed Rule',
-  summary: 'EB-5 NPRM Summary - Current vs Proposed',
-  themes: 'NPRM Comment Themes That Move the Needle',
-  comments: 'NPRM Comments (48) - Themes & Summaries',
-  write: 'Build My EB-5 NPRM Comment',
-  about: 'About the NPRM Comment Guide',
-};
 
 function tabLabel(tab: NprmTabId): string {
   return NPRM_TABS.find((t) => t.id === tab)?.label || 'Overview';
@@ -63,7 +55,7 @@ export default function NprmClient({
   }, [tab]);
 
   useEffect(() => {
-    document.title = `${TAB_DOCUMENT_TITLE[active]} | EB5 Base`;
+    document.title = `${nprmDocumentTitle(active)} | EB5 Base`;
   }, [active]);
 
   const setTab = useCallback((id: NprmTabId) => {
@@ -106,13 +98,14 @@ export default function NprmClient({
             </span>
           </a>
         }
-        title="The EB-5 Proposed Rule is Here"
+        title="A draft of new EB-5 house rules"
         subtitle={
           <div className="space-y-1.5 text-sm md:text-[0.95rem] text-neutral max-w-2xl leading-relaxed">
             <p>
-              DHS Notice of Proposed Rulemaking, July 2, 2026. EB5 Base breaks down
-              the 358-page rule that finally codifies the EB-5 Reform and Integrity
-              Act of 2022. Comments close August 31, 2026.
+              DHS published a 358-page draft on July 2, 2026 to apply the 2022
+              law called RIA. It is not final. You can comment before August 31,
+              2026. This site explains it in plain English with links back to
+              official pages.
             </p>
             <p>
               Last data updated: {NPRM_LAST_UPDATED} ·{' '}

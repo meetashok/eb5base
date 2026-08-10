@@ -28,9 +28,10 @@ export function commentUrl(commentId: string): string {
 /** Strip em/en dashes and leaked citation artifacts from feed copy. */
 export function plainDash(text: string): string {
   return text
-    .replace(/\u2014|\u2013/g, '-')
+    .replace(/\s*[\u2014\u2013]\s*/g, ', ')
     .replace(/【[^】]*】/g, '')
     .replace(/\u2020/g, '')
+    .replace(/\s*,\s*,+/g, ',')
     .replace(/\s{2,}/g, ' ')
     .trim();
 }

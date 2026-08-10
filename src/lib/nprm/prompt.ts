@@ -210,8 +210,16 @@ export function isPersonalizedEnough(impact: string): boolean {
   return templateSimilarity(impact) <= 0.7;
 }
 
-/** Personal fields are optional. Callers gate copy on themes + privacy. */
-export function canCopyPrompt(_personal?: PersonalBlock): boolean {
-  void _personal;
-  return true;
+/**
+ * Copy gate: privacy + at least one theme are checked by the UI;
+ * personal story must clear the 100-char + uniqueness bar.
+ */
+export function canCopyPrompt(personal?: PersonalBlock): boolean {
+  if (!personal) return false;
+  return isPersonalizedEnough(personal.impact || '');
+}
+
+/** Overlap percent for the personalization meter (0-100). */
+export function personalizationOverlapPercent(impact: string): number {
+  return Math.round(templateSimilarity(impact) * 100);
 }
