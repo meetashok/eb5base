@@ -1458,7 +1458,7 @@
       }
     }
 
-    await copyTextToClipboard(SHARE_URL_SHORT);
+    await copyTextToClipboard(SHARE_URL);
     showShareCopied(button, "Link copied!");
   }
 
