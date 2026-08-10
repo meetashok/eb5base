@@ -61,7 +61,7 @@ const TOOLS = [
 export default function HomePage() {
   return (
     <div>
-      <section className="hero-glow border-b border-base-300/80 relative overflow-hidden">
+      <section className="hero-glow relative overflow-hidden">
         <div
           className="absolute inset-0 pointer-events-none opacity-40"
           aria-hidden
@@ -95,12 +95,19 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="max-w-6xl mx-auto px-4 -mt-4 md:-mt-6 relative z-10">
+      <section className="relative z-10 -mt-4 md:-mt-6">
+        {/* Full-bleed rule centered on the deadline card (not the hero edge). */}
         <div
-          className="rounded-xl border-2 border-amber-300 bg-amber-50 px-4 py-3 sm:px-5 sm:py-3.5 shadow-soft text-center sm:text-left"
-          role="status"
-        >
-          <HomeDeadlineCountdown />
+          className="pointer-events-none absolute inset-x-0 top-1/2 border-t border-base-300/80"
+          aria-hidden
+        />
+        <div className="max-w-6xl mx-auto px-4 relative">
+          <div
+            className="rounded-xl border-2 border-amber-300 bg-amber-50 px-4 py-3 sm:px-5 sm:py-3.5 shadow-soft text-center sm:text-left"
+            role="status"
+          >
+            <HomeDeadlineCountdown />
+          </div>
         </div>
       </section>
 

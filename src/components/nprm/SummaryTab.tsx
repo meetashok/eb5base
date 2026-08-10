@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+import { ExternalExplainerSection } from '@/components/nprm/ExternalExplainers';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import { FR_HTML, FR_PDF, NPRM_LAST_UPDATED } from '@/lib/nprm/utils';
 
@@ -109,9 +111,20 @@ const SECTIONS: {
 ];
 
 export default function SummaryTab() {
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.location.hash !== '#external-explainers') return;
+    const el = document.getElementById('external-explainers');
+    if (!el) return;
+    const id = window.requestAnimationFrame(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    return () => window.cancelAnimationFrame(id);
+  }, []);
+
   return (
-    <div className="animate-[fadeIn_0.35s_ease-out]">
-      <div className="mb-6 max-w-2xl">
+    <div className="animate-[fadeIn_0.35s_ease-out] space-y-8">
+      <div className="mb-0 max-w-2xl">
         <NprmSectionHeading
           as="h2"
           eyebrow="Summary"
@@ -215,6 +228,8 @@ export default function SummaryTab() {
           ))}
         </div>
       </div>
+
+      <ExternalExplainerSection />
     </div>
   );
 }
