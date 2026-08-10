@@ -149,9 +149,6 @@ export default function OverviewTab({
             {short.text}
           </p>
         ) : null}
-        {short?.citations?.length ? (
-          <CitationChips citations={short.citations} href={FR_HTML} />
-        ) : null}
         <CountdownBanner endsLabel={ends} />
         <div className="flex flex-col gap-2 pt-1">
           <div className="flex flex-wrap items-center gap-2">
