@@ -136,36 +136,116 @@ export default async function TrackerLandingPage() {
           </p>
         </section>
 
-        <section className="card-elevated p-6 md:p-8 space-y-3">
+        <section className="card-elevated p-6 md:p-8 space-y-4">
           <div>
             <p className="text-xs uppercase tracking-[0.22em] font-semibold text-secondary mb-2">
               Vision
             </p>
             <h2 className="text-xl font-bold text-primary">
-              Illustrative cohort insight (not live data)
+              See where your case sits in your project cohort
             </h2>
-            <p className="text-sm text-neutral/70 mt-1 leading-relaxed">
-              Example chart concept: median I-526E progress by filing quarter for India. Real
-              charts will use opt-in anonymized cohort data only.
+            <p className="text-sm text-neutral/70 mt-1 leading-relaxed max-w-2xl">
+              Example chart concept: I-526E approval-time distribution for your project (opt-in,
+              anonymized). The curve shows how long similar filings took. Markers show the median
+              and where you land.
             </p>
           </div>
-          <div
-            className="rounded-xl border border-dashed border-base-300 bg-base-200/40 p-4"
-            aria-hidden
-          >
-            <div className="flex items-end gap-2 h-28">
-              {[40, 55, 48, 62, 70, 58].map((h, i) => (
-                <div
-                  key={i}
-                  className="flex-1 rounded-t-md bg-secondary/40"
-                  style={{ height: `${h}%` }}
-                />
-              ))}
+
+          <div className="rounded-xl border border-dashed border-base-300 bg-base-200/40 p-4 sm:p-5 space-y-3">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <p className="text-xs font-bold uppercase tracking-wider text-secondary">
+                Sample project · I-526E approval time
+              </p>
+              <p className="text-[11px] text-neutral/60">Illustrative only · not live data</p>
             </div>
-            <p className="text-[11px] text-neutral/60 mt-2 text-center">
-              Illustrative and anonymized, not real adjudication stats
-            </p>
+
+            <div className="relative pt-8 pb-2">
+              {/* Callouts above the chart */}
+              <div className="absolute top-0 left-[42%] -translate-x-1/2 max-w-[9.5rem] text-center">
+                <p className="text-[10px] sm:text-[11px] font-semibold text-primary leading-snug">
+                  50% approved within 8 months
+                </p>
+              </div>
+              <div className="absolute top-0 left-[28%] -translate-x-1/2 max-w-[8.5rem] text-center hidden sm:block">
+                <p className="text-[10px] sm:text-[11px] font-semibold text-secondary leading-snug">
+                  Your case · top 25%
+                </p>
+              </div>
+
+              <svg
+                viewBox="0 0 400 155"
+                className="w-full h-auto text-secondary"
+                role="img"
+                aria-label="Illustrative distribution: half of sample I-526E cases approved by 8 months; example case in top 25 percent at 6 months"
+              >
+                {/* Distribution area */}
+                <path
+                  d="M20 120 C 60 118, 80 110, 100 85 C 120 55, 130 35, 150 28 C 170 22, 185 30, 200 48 C 220 75, 240 95, 270 108 C 300 118, 340 120, 380 122 L 380 130 L 20 130 Z"
+                  fill="currentColor"
+                  opacity="0.22"
+                />
+                <path
+                  d="M20 120 C 60 118, 80 110, 100 85 C 120 55, 130 35, 150 28 C 170 22, 185 30, 200 48 C 220 75, 240 95, 270 108 C 300 118, 340 120, 380 122"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  opacity="0.55"
+                />
+
+                {/* Median line at ~8 months (x≈168) */}
+                <line
+                  x1="168"
+                  y1="18"
+                  x2="168"
+                  y2="130"
+                  stroke="#0a1628"
+                  strokeWidth="1.75"
+                  strokeDasharray="4 3"
+                />
+                {/* Your case at ~6 months / top 25% (x≈112) */}
+                <line
+                  x1="112"
+                  y1="18"
+                  x2="112"
+                  y2="130"
+                  stroke="#2d5a47"
+                  strokeWidth="2"
+                />
+                <circle cx="112" cy="70" r="4.5" fill="#2d5a47" />
+
+                {/* X axis */}
+                <line x1="20" y1="130" x2="380" y2="130" stroke="#2c3338" strokeOpacity="0.25" />
+                <text x="20" y="148" fontSize="10" fill="#2c3338" fillOpacity="0.55">
+                  0 mo
+                </text>
+                <text x="155" y="148" fontSize="10" fill="#2c3338" fillOpacity="0.55">
+                  8 mo
+                </text>
+                <text x="250" y="148" fontSize="10" fill="#2c3338" fillOpacity="0.55">
+                  12 mo
+                </text>
+                <text x="345" y="148" fontSize="10" fill="#2c3338" fillOpacity="0.55">
+                  18+ mo
+                </text>
+              </svg>
+
+              <p className="sm:hidden text-[11px] font-semibold text-secondary text-center">
+                Your case · top 25% (faster than most in this sample)
+              </p>
+            </div>
+
+            <ul className="grid sm:grid-cols-2 gap-2 text-xs text-neutral/75 leading-relaxed">
+              <li>
+                <span className="font-semibold text-primary">Median (50%):</span> half of similar
+                filings in this sample were approved by month 8.
+              </li>
+              <li>
+                <span className="font-semibold text-secondary">Your marker:</span> example case at
+                month 6, in the fastest quarter of the cohort.
+              </li>
+            </ul>
           </div>
+
           <p className="text-sm text-neutral/80">
             While we build this, use{' '}
             <Link href="/status" className="link link-secondary font-medium">
