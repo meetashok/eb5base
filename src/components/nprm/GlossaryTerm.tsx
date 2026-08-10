@@ -1,6 +1,14 @@
 'use client';
 
-import { useId, useState, type ReactNode } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
+import { createPortal } from 'react-dom';
 
 export const GLOSSARY: Record<string, string> = {
   NPRM: 'Notice of Proposed Rulemaking: a draft federal rule the public can comment on before it becomes final.',
@@ -18,6 +26,14 @@ export const GLOSSARY: Record<string, string> = {
 
 type GlossaryKey = keyof typeof GLOSSARY;
 
+function resolveTip(term: string): string | undefined {
+  return (
+    GLOSSARY[term] ||
+    GLOSSARY[term.toUpperCase()] ||
+    GLOSSARY[term.toLowerCase()]
+  );
+}
+
 export default function GlossaryTerm({
   term,
   children,
@@ -25,10 +41,101 @@ export default function GlossaryTerm({
   term: GlossaryKey | string;
   children?: ReactNode;
 }) {
-  const tip = GLOSSARY[term] || GLOSSARY[term.toUpperCase()];
+  const tip = resolveTip(term);
   const label = children ?? term;
   const tipId = useId();
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const tipRef = useRef<HTMLSpanElement>(null);
+  const closeTimer = useRef<number | null>(null);
   const [open, setOpen] = useState(false);
+  const [coords, setCoords] = useState<{ top: number; left: number } | null>(
+    null
+  );
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const clearCloseTimer = useCallback(() => {
+    if (closeTimer.current != null) {
+      window.clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+  }, []);
+
+  const updatePosition = useCallback(() => {
+    const el = triggerRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const tipWidth = Math.min(16 * 16, window.innerWidth * 0.8);
+    const left = Math.min(
+      Math.max(8, rect.left),
+      window.innerWidth - tipWidth - 8
+    );
+    const gap = 8;
+    const estimatedHeight = tipRef.current?.offsetHeight ?? 80;
+    const below = rect.bottom + gap;
+    const top =
+      below + estimatedHeight > window.innerHeight - gap
+        ? Math.max(gap, rect.top - estimatedHeight - gap)
+        : below;
+    setCoords({ top, left });
+  }, []);
+
+  const show = useCallback(() => {
+    clearCloseTimer();
+    updatePosition();
+    setOpen(true);
+  }, [clearCloseTimer, updatePosition]);
+
+  const hideSoon = useCallback(() => {
+    clearCloseTimer();
+    closeTimer.current = window.setTimeout(() => setOpen(false), 140);
+  }, [clearCloseTimer]);
+
+  const hideNow = useCallback(() => {
+    clearCloseTimer();
+    setOpen(false);
+  }, [clearCloseTimer]);
+
+  useEffect(() => {
+    if (!open) return;
+    updatePosition();
+    function onScrollOrResize() {
+      updatePosition();
+    }
+    function onKey(event: KeyboardEvent) {
+      if (event.key === 'Escape') hideNow();
+    }
+    function onPointerDown(event: MouseEvent | TouchEvent) {
+      const target = event.target as Node | null;
+      if (!target) return;
+      if (triggerRef.current?.contains(target)) return;
+      if (tipRef.current?.contains(target)) return;
+      hideNow();
+    }
+    window.addEventListener('scroll', onScrollOrResize, true);
+    window.addEventListener('resize', onScrollOrResize);
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('touchstart', onPointerDown);
+    return () => {
+      window.removeEventListener('scroll', onScrollOrResize, true);
+      window.removeEventListener('resize', onScrollOrResize);
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('touchstart', onPointerDown);
+    };
+  }, [open, updatePosition, hideNow]);
+
+  useEffect(() => {
+    if (!open) return;
+    const id = window.requestAnimationFrame(updatePosition);
+    return () => window.cancelAnimationFrame(id);
+  }, [open, tip, updatePosition]);
+
+  useEffect(() => () => clearCloseTimer(), [clearCloseTimer]);
 
   if (!tip) {
     return <span>{label}</span>;
@@ -37,26 +144,78 @@ export default function GlossaryTerm({
   return (
     <span className="relative inline-block">
       <button
+        ref={triggerRef}
         type="button"
-        className="underline decoration-dotted decoration-neutral/50 underline-offset-2 hover:text-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary"
+        className="cursor-help underline decoration-dotted decoration-neutral/50 underline-offset-2 text-inherit font-inherit hover:text-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary"
+        aria-expanded={open}
         aria-describedby={open ? tipId : undefined}
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
-        onFocus={() => setOpen(true)}
-        onBlur={() => setOpen(false)}
-        onClick={() => setOpen((v) => !v)}
+        onPointerEnter={(event) => {
+          if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+            show();
+          }
+        }}
+        onPointerLeave={(event) => {
+          if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+            hideSoon();
+          }
+        }}
+        onClick={(event) => {
+          // Hover already opens on fine pointers. Click/tap toggles on touch.
+          // Avoid focus+click races that previously closed the tip immediately.
+          event.preventDefault();
+          clearCloseTimer();
+          const finePointer =
+            typeof window !== 'undefined' &&
+            window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+          if (finePointer) {
+            show();
+            return;
+          }
+          updatePosition();
+          setOpen((wasOpen) => !wasOpen);
+        }}
+        onKeyDown={(event) => {
+          if (event.key === 'Escape') {
+            hideNow();
+            return;
+          }
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            clearCloseTimer();
+            updatePosition();
+            setOpen((wasOpen) => !wasOpen);
+          }
+        }}
       >
         {label}
       </button>
-      {open ? (
-        <span
-          id={tipId}
-          role="tooltip"
-          className="absolute z-40 left-0 top-full mt-1 w-64 max-w-[min(16rem,80vw)] rounded-lg border border-base-300 bg-base-100 px-2.5 py-2 text-left text-xs font-normal normal-case tracking-normal text-neutral shadow-soft leading-relaxed"
-        >
-          {tip}
-        </span>
-      ) : null}
+      {mounted && open && coords
+        ? createPortal(
+            <span
+              ref={tipRef}
+              id={tipId}
+              role="tooltip"
+              onPointerEnter={(event) => {
+                if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+                  show();
+                }
+              }}
+              onPointerLeave={(event) => {
+                if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+                  hideSoon();
+                }
+              }}
+              className="fixed z-[200] w-64 max-w-[min(16rem,80vw)] rounded-lg border-2 border-secondary/30 bg-base-100 px-2.5 py-2 text-left text-xs font-normal normal-case tracking-normal text-neutral shadow-lift leading-relaxed"
+              style={{ top: coords.top, left: coords.left }}
+            >
+              <span className="block text-[10px] font-bold uppercase tracking-wider text-secondary mb-1">
+                {term}
+              </span>
+              {tip}
+            </span>,
+            document.body
+          )
+        : null}
     </span>
   );
 }

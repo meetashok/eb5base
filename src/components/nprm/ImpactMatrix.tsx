@@ -212,7 +212,7 @@ export default function ImpactMatrix({
         >
           <p className="text-sm text-neutral leading-relaxed max-w-3xl">
             Plain English first. Green = investor win, amber = watch, red =
-            cost/risk. Hover terms like{' '}
+            cost/risk. Hover or tap terms like{' '}
             <GlossaryTerm term="TEA" /> or <GlossaryTerm term="JCE" /> for
             definitions.
           </p>
@@ -342,7 +342,7 @@ export default function ImpactMatrix({
                       scope="row"
                       className={`sticky left-0 z-10 px-3 py-2.5 font-semibold text-primary border-b border-base-300/80 ${bg}`}
                     >
-                      <span className="inline-flex items-start gap-2">
+                      <span className="inline-flex items-center gap-2">
                         <ToneDot tone={row.tone} />
                         <span className="space-y-1">
                           <span className="block">{row.topic}</span>
