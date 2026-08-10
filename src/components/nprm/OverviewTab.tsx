@@ -205,16 +205,7 @@ export default function OverviewTab({
           </div>
         </div>
         <p className="text-xs text-neutral/75 leading-relaxed">
-          Last updated: {NPRM_LAST_UPDATED} · Sources:{' '}
-          <a
-            href={FR_HTML}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold text-secondary underline underline-offset-2"
-          >
-            Federal Register NPRM
-          </a>
-          ,{' '}
+          Last updated: {NPRM_LAST_UPDATED} · Source:{' '}
           <a
             href={DOCKET_URL}
             target="_blank"
