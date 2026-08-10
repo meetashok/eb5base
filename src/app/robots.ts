@@ -10,6 +10,7 @@ const CRAWLER_AGENTS = [
   'Twitterbot',
   'Slackbot',
   'MetaAI',
+  'Applebot',
 ];
 
 export default function robots(): MetadataRoute.Robots {
@@ -20,12 +21,32 @@ export default function robots(): MetadataRoute.Robots {
       rules: [
         {
           userAgent: '*',
-          allow: ['/', '/nprm', '/nprm/', '/status', '/tracker', '/about', '/debug'],
-          disallow: ['/admin', '/projects', '/rc', '/api/'],
+          allow: [
+            '/',
+            '/nprm',
+            '/nprm/',
+            '/status',
+            '/tracker',
+            '/about',
+            '/debug',
+            '/robots.txt',
+            '/sitemap.xml',
+          ],
+          disallow: ['/admin', '/projects', '/rc', '/api/', '/_next/'],
         },
         {
           userAgent: CRAWLER_AGENTS,
-          allow: ['/', '/nprm', '/nprm/', '/status', '/tracker', '/about', '/debug'],
+          allow: [
+            '/',
+            '/nprm',
+            '/nprm/',
+            '/status',
+            '/tracker',
+            '/about',
+            '/debug',
+            '/robots.txt',
+            '/sitemap.xml',
+          ],
         },
       ],
       sitemap,
@@ -37,7 +58,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin', '/api/'],
+        disallow: ['/admin', '/api/', '/_next/'],
       },
       {
         userAgent: CRAWLER_AGENTS,
