@@ -133,13 +133,17 @@ export default function OverviewTab({
           the comment period, they will publish the final rulebook.
         </p>
         <p className="font-semibold text-primary">
-          Why should you care? This draft decides three things that affect your
+          Why should you care? This draft decides four things that affect your
           money:
         </p>
         <ol className="list-decimal pl-5 space-y-2">
           <li>
             When you can get your $800K back (about 2 years vs waiting on a green
             card backlog)
+          </li>
+          <li>
+            Whether repaid bridge financing still counts toward proving your 10
+            jobs
           </li>
           <li>
             What happens if your regional center closes (can you keep your place
