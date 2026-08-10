@@ -1,14 +1,14 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { createClient } from '@/lib/supabase';
 import AuthBrandPanel from '@/components/AuthBrandPanel';
 import Logo, { BrandWordmark } from '@/components/Logo';
 
 function GoogleIcon() {
   return (
-    <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden>
+    <svg className="w-5 h-5 opacity-60" viewBox="0 0 24 24" aria-hidden>
       <path
         fill="#4285F4"
         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -31,30 +31,6 @@ function GoogleIcon() {
 
 function LoginForm() {
   const searchParams = useSearchParams();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const redirectParam = searchParams.get('redirect') || '/profile/setup';
-  const nextPath = redirectParam.startsWith('/') ? redirectParam : '/profile/setup';
-  const isTrackerFlow = nextPath.startsWith('/tracker');
-
-  async function handleGoogleSignIn() {
-    setLoading(true);
-    setError(null);
-    const supabase = createClient();
-    const origin = window.location.origin;
-    const { error: err } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(nextPath)}`,
-      },
-    });
-    if (err) {
-      setLoading(false);
-      setError(err.message);
-    }
-  }
-
   const urlError = searchParams.get('error');
 
   return (
@@ -67,50 +43,59 @@ function LoginForm() {
             <h1 className="text-3xl font-bold text-primary">
               Sign in to <BrandWordmark variant="on-light" className="text-[1.05em]" />
             </h1>
-            <p className="text-neutral/60 mt-2">
-              {isTrackerFlow
-                ? 'Track your EB-5 cases with encrypted receipt storage'
-                : 'Browse projects, confirm status, and contribute'}
+            <p className="text-neutral/60 mt-2 leading-relaxed">
+              Sign-in is not necessary right now. You can use the NPRM guide, Status
+              Update, and other public tools without an account.
             </p>
           </div>
 
           <div className="card-elevated">
             <div className="card-body gap-4">
-              {(error || urlError) && (
-                <p className="text-error text-sm">{error || urlError}</p>
-              )}
+              {urlError ? <p className="text-error text-sm">{urlError}</p> : null}
+
+              <div
+                className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-950 leading-relaxed"
+                role="status"
+              >
+                Account sign-in is temporarily paused. Nothing on the public site requires
+                it today.
+              </div>
+
               <button
                 type="button"
-                onClick={handleGoogleSignIn}
-                className="btn btn-outline w-full gap-2 rounded-full transition-all duration-150"
-                disabled={loading}
+                className="btn btn-outline w-full gap-2 rounded-full opacity-60 cursor-not-allowed"
+                disabled
+                aria-disabled="true"
+                title="Sign-in is not available right now"
               >
-                {loading ? (
-                  <span className="loading loading-spinner loading-sm" />
-                ) : (
-                  <>
-                    <GoogleIcon />
-                    Continue with Google
-                  </>
-                )}
+                <GoogleIcon />
+                Continue with Google
               </button>
 
-              <p className="text-center text-sm text-neutral/50">
-                Email sign-in coming soon
+              <p className="text-center text-sm text-neutral/60 leading-relaxed">
+                Google sign-in will return when account features reopen. Until then, browse
+                freely.
               </p>
+
+              <Link href="/" className="btn btn-primary text-primary-content w-full rounded-full">
+                Back to home
+              </Link>
             </div>
           </div>
 
           <p className="text-center text-xs text-neutral/40 mt-6">
-            By signing in, you agree to our{' '}
-            <a href="/terms" className="link link-hover">
-              Terms of Service
-            </a>{' '}
-            and{' '}
-            <a href="/privacy" className="link link-hover">
-              Privacy Policy
+            Questions?{' '}
+            <a href="mailto:hello@eb5base.com" className="link link-hover">
+              hello@eb5base.com
             </a>
-            .
+            {' · '}
+            <Link href="/about" className="link link-hover">
+              About
+            </Link>
+            {' · '}
+            <Link href="/privacy" className="link link-hover">
+              Privacy
+            </Link>
           </p>
         </div>
       </div>
