@@ -68,9 +68,9 @@ export default function NprmClient({
 
   return (
     <div className="pb-16">
-      <div className="border-b-2 border-base-300 bg-base-100 sticky top-[var(--site-sticky-offset)] z-30 shadow-sm">
+      <div className="border-b border-base-300/80 bg-base-100">
         <div className="max-w-6xl mx-auto px-4">
-          <ol className="flex flex-wrap gap-x-3 gap-y-1 pt-2 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-neutral/60">
+          <ol className="flex flex-wrap gap-x-3 gap-y-1 py-2 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-neutral/60">
             {[
               { n: 1, label: 'Understand', tabs: ['overview', 'summary'] },
               { n: 2, label: 'Themes', tabs: ['themes', 'comments'] },
@@ -91,6 +91,11 @@ export default function NprmClient({
               );
             })}
           </ol>
+        </div>
+      </div>
+
+      <div className="border-b-2 border-base-300 bg-base-100 sticky top-[var(--site-sticky-offset)] z-30 shadow-sm">
+        <div className="max-w-6xl mx-auto px-4">
           <div
             role="tablist"
             aria-label="EB-5 proposed rule sections"
