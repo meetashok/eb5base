@@ -7,10 +7,8 @@ import {
 } from '@/lib/nprm/constants';
 import {
   MIN_IMPACT_CHARS,
-  PROMPT_DIVERSITY_NOTE,
   buildPersonalOnly,
   buildPrompt,
-  canCopyPrompt,
   isPersonalizedEnough,
   templateSimilarity,
 } from '@/lib/nprm/prompt';
@@ -20,7 +18,6 @@ import type {
   NprmPromptNode,
   NprmTheme,
   PersonalBlock,
-  ProjectTypeOption,
   StyleGuideline,
 } from '@/lib/nprm/types';
 import { COMMENT_ON_URL } from '@/lib/nprm/utils';
@@ -35,6 +32,60 @@ interface Props {
 
 const MAX_THEMES = 3;
 const DRAFT_KEY = 'eb5base_nprm_write_draft_v1';
+
+const INVESTOR_TYPE_OPTIONS: {
+  value: NonNullable<PersonalBlock['investor_type']>;
+  label: string;
+}[] = [
+  { value: 'pre_ria', label: 'Pre-RIA' },
+  { value: 'post_ria', label: 'Post-RIA 2022+' },
+  { value: 'future', label: 'Future filer' },
+  { value: 'family', label: 'Family' },
+];
+
+const COUNTRY_OPTIONS = [
+  { value: 'India', label: 'India' },
+  { value: 'China', label: 'China' },
+  { value: 'ROW', label: 'Rest of World' },
+] as const;
+
+function ChoiceChips<T extends string>({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: readonly { value: T; label: string }[];
+  value: T | '';
+  onChange: (next: T | '') => void;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <p className="text-xs font-medium text-neutral">{label}</p>
+      <div className="flex flex-wrap gap-1.5" role="group" aria-label={label}>
+        {options.map((opt) => {
+          const selected = value === opt.value;
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              aria-pressed={selected}
+              onClick={() => onChange(selected ? '' : opt.value)}
+              className={`btn btn-xs h-8 min-h-0 px-2.5 border ${
+                selected
+                  ? 'btn-primary text-primary-content border-primary'
+                  : 'btn-ghost bg-base-100 border-base-300 text-neutral'
+              }`}
+            >
+              {opt.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 type GoatCounter = { count?: (opts: { path: string; title?: string; event?: boolean }) => void };
 
@@ -119,10 +170,17 @@ export default function WriteTab({
     }
   }, [hydrated, themeIds, opinions, personal, length, style, format]);
 
-  const ready = canCopyPrompt(personal) && privacyOk && themeIds.length > 0;
+  const ready = privacyOk && themeIds.length > 0;
   const impactLen = personal.impact.trim().length;
   const personalized = isPersonalizedEnough(personal.impact);
   const similarity = templateSimilarity(personal.impact);
+  const hasPersonalBits = Boolean(
+    personal.i_526e_file_date.trim() ||
+      personal.project_type ||
+      personal.investor_type ||
+      personal.country ||
+      personal.impact.trim()
+  );
 
   const prompt = useMemo(
     () =>
@@ -190,11 +248,17 @@ export default function WriteTab({
       <div>
         <h2 className="text-xl font-bold text-primary">Build My Comment</h2>
         <p className="text-sm text-neutral mt-1 max-w-2xl leading-relaxed">
-          Personalize a draft for regulations.gov. We do not submit for you and we
-          do not store drafts on our servers, only in your browser (localStorage).
-        </p>
-        <p className="text-xs text-neutral/75 mt-2 font-mono leading-relaxed">
-          {PROMPT_DIVERSITY_NOTE}
+          Use this page to personalize a draft for{' '}
+          <a
+            href={COMMENT_ON_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+          >
+            regulations.gov
+          </a>
+          . We do not submit the comment for you. You will need to file it
+          yourself on that site when you are ready.
         </p>
       </div>
 
@@ -286,10 +350,16 @@ export default function WriteTab({
             </div>
           </section>
 
-          <section className="space-y-2">
-            <h3 className="text-sm font-semibold text-primary">
-              Step B: Personal block (required)
-            </h3>
+          <section className="space-y-3">
+            <div>
+              <h3 className="text-sm font-semibold text-primary">
+                Step B: Personal block (optional)
+              </h3>
+              <p className="text-xs text-neutral mt-1 leading-relaxed">
+                Optional, but a few personal details make your comment count as
+                distinct. Stored only in your browser.
+              </p>
+            </div>
             <label className="form-control">
               <span className="label-text text-xs">
                 When did you file or plan to file?
@@ -306,72 +376,47 @@ export default function WriteTab({
                   }))
                 }
               />
-              <span className="label-text-alt text-[10px] text-neutral/70">
-                Personalizes your comment. Stored only in your browser.
-              </span>
             </label>
-            <label className="form-control">
-              <span className="label-text text-xs">Investor type</span>
-              <select
-                className="select select-bordered select-sm"
-                value={personal.investor_type || ''}
-                onChange={(e) =>
-                  setPersonal((p) => ({
-                    ...p,
-                    investor_type: e.target.value as PersonalBlock['investor_type'],
-                  }))
-                }
-              >
-                <option value="">Select…</option>
-                <option value="pre_ria">Pre-RIA</option>
-                <option value="post_ria">Post-RIA 2022+</option>
-                <option value="future">Future filer</option>
-                <option value="family">Family</option>
-              </select>
-            </label>
-            <label className="form-control">
-              <span className="label-text text-xs">Country chargeability</span>
-              <select
-                className="select select-bordered select-sm"
-                value={personal.country || ''}
-                onChange={(e) =>
-                  setPersonal((p) => ({ ...p, country: e.target.value }))
-                }
-              >
-                <option value="">Select…</option>
-                <option value="India">India</option>
-                <option value="China">China</option>
-                <option value="ROW">Rest of World</option>
-              </select>
-            </label>
-            <label className="form-control">
-              <span className="label-text text-xs">Project type</span>
-              <select
-                className="select select-bordered select-sm"
-                value={personal.project_type}
-                onChange={(e) =>
-                  setPersonal((p) => ({
-                    ...p,
-                    project_type: e.target.value as ProjectTypeOption | '',
-                  }))
-                }
-              >
-                <option value="">Select…</option>
-                {PROJECT_TYPE_OPTIONS.map((o) => (
-                  <option key={o.value} value={o.value}>
-                    {o.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <ChoiceChips
+              label="Investor type"
+              options={INVESTOR_TYPE_OPTIONS}
+              value={personal.investor_type || ''}
+              onChange={(next) =>
+                setPersonal((p) => ({
+                  ...p,
+                  investor_type: next,
+                }))
+              }
+            />
+            <ChoiceChips
+              label="Country chargeability"
+              options={COUNTRY_OPTIONS}
+              value={(personal.country as (typeof COUNTRY_OPTIONS)[number]['value'] | '') || ''}
+              onChange={(next) =>
+                setPersonal((p) => ({ ...p, country: next }))
+              }
+            />
+            <ChoiceChips
+              label="Project type"
+              options={PROJECT_TYPE_OPTIONS}
+              value={personal.project_type}
+              onChange={(next) =>
+                setPersonal((p) => ({
+                  ...p,
+                  project_type: next,
+                }))
+              }
+            />
             <label className="form-control">
               <span className="label-text text-xs flex justify-between">
-                <span>Personal story (required)</span>
+                <span>Personal story (optional)</span>
                 <span
                   className={
-                    impactLen >= MIN_IMPACT_CHARS && personalized
-                      ? 'text-success'
-                      : 'text-warning'
+                    impactLen === 0
+                      ? 'text-neutral/60'
+                      : impactLen >= MIN_IMPACT_CHARS && personalized
+                        ? 'text-success'
+                        : 'text-warning'
                   }
                 >
                   {impactLen}/{MIN_IMPACT_CHARS}
@@ -379,15 +424,15 @@ export default function WriteTab({
               </span>
               <textarea
                 className="textarea textarea-bordered text-sm min-h-28"
-                placeholder="Why you chose EB-5, how long you have waited, what redeployment or RC issues cost you…"
+                placeholder="Why you chose EB-5, how long you have waited, what redeployment or RC issues cost you"
                 value={personal.impact}
                 onChange={(e) =>
                   setPersonal((p) => ({ ...p, impact: e.target.value }))
                 }
               />
               <span className="label-text-alt text-[10px] text-neutral/70">
-                Your comment needs personal facts. Example: wait time, capital
-                already deployed, school/job timing tied to I-829.
+                A short personal fact helps. Example: wait time, capital already
+                deployed, school or job timing tied to I-829.
               </span>
             </label>
           </section>
@@ -472,7 +517,7 @@ export default function WriteTab({
               title={
                 ready
                   ? 'Copy full prompt'
-                  : 'Complete personal block, privacy checkbox, and themes first'
+                  : 'Select at least one theme and check the privacy box first'
               }
               onClick={() => copyText(prompt, 'Prompt')}
             >
@@ -481,7 +526,12 @@ export default function WriteTab({
             <button
               type="button"
               className="btn btn-outline"
-              disabled={!ready}
+              disabled={!ready || !hasPersonalBits}
+              title={
+                hasPersonalBits
+                  ? 'Copy personal details only'
+                  : 'Add optional personal details first'
+              }
               onClick={() =>
                 copyText(buildPersonalOnly(personal), 'Personal block')
               }
@@ -502,9 +552,8 @@ export default function WriteTab({
 
           {!ready && (
             <p className="text-xs text-warning">
-              Copy stays disabled until file date, project type, personal story (
-              {MIN_IMPACT_CHARS}+ characters, personalized), privacy checkbox, and
-              at least one theme are filled.
+              Copy stays disabled until you select at least one theme and check
+              the privacy box. Personal details are optional but recommended.
             </p>
           )}
 

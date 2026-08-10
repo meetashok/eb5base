@@ -212,11 +212,7 @@ export function isPersonalizedEnough(impact: string): boolean {
   return templateSimilarity(impact) <= 0.7;
 }
 
-export function canCopyPrompt(personal: PersonalBlock): boolean {
-  return (
-    personal.i_526e_file_date.trim().length > 0 &&
-    personal.project_type !== '' &&
-    personal.impact.trim().length >= MIN_IMPACT_CHARS &&
-    isPersonalizedEnough(personal.impact)
-  );
+/** Personal fields are optional. Callers gate copy on themes + privacy. */
+export function canCopyPrompt(_personal?: PersonalBlock): boolean {
+  return true;
 }
