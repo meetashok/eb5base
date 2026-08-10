@@ -223,8 +223,6 @@ export default function OverviewTab({
 
       <DoCommentsChangeRule />
 
-      <HowCommentingWorks onWrite={onWrite} />
-
       <section className="space-y-4" id="comment-stats">
         <NprmSectionHeading
           eyebrow="Tracker"
