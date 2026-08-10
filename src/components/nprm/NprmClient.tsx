@@ -66,10 +66,14 @@ export default function NprmClient({
     document.title = `${TAB_DOCUMENT_TITLE[active]} | EB5 Base`;
   }, [active]);
 
-  const setTab = useCallback((id: NprmTabId) => {
+  const setTab = useCallback((id: NprmTabId, hash?: string) => {
     setActive(id);
-    const href = nprmTabHref(id);
-    if (window.location.pathname !== href) {
+    const base = nprmTabHref(id);
+    const href = hash
+      ? `${base}#${hash.replace(/^#/, '')}`
+      : base;
+    const current = `${window.location.pathname}${window.location.hash}`;
+    if (current !== href) {
       // Update the URL without a Next.js route transition so the shell/nav
       // stay mounted and only the tab panel content swaps.
       window.history.pushState(null, '', href);
@@ -252,6 +256,7 @@ export default function NprmClient({
             onComments={() => setTab('comments')}
             onWrite={() => setTab('write')}
             onSummary={() => setTab('summary')}
+            onExternalBlogs={() => setTab('summary', 'external-explainers')}
             onAbout={() => setTab('about')}
           />
         )}

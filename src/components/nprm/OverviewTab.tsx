@@ -2,10 +2,6 @@
 
 import { Suspense } from 'react';
 import { CitationChips } from '@/components/nprm/CitationChips';
-import {
-  ExternalExplainerInline,
-  ExternalExplainerSection,
-} from '@/components/nprm/ExternalExplainers';
 import GlossaryTerm from '@/components/nprm/GlossaryTerm';
 import ImpactMatrix from '@/components/nprm/ImpactMatrix';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
@@ -42,6 +38,7 @@ interface Props {
   onComments: () => void;
   onWrite: () => void;
   onSummary: () => void;
+  onExternalBlogs: () => void;
   onAbout: () => void;
 }
 
@@ -86,6 +83,7 @@ export default function OverviewTab({
   onComments,
   onWrite,
   onSummary,
+  onExternalBlogs,
   onAbout,
 }: Props) {
   const volume = dailyVolume(comments);
@@ -176,6 +174,13 @@ export default function OverviewTab({
             >
               Read 10-min Summary
             </button>
+            <button
+              type="button"
+              onClick={onExternalBlogs}
+              className="btn btn-outline border-neutral/30"
+            >
+              What blogs are saying
+            </button>
           </div>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
             <a
@@ -195,7 +200,6 @@ export default function OverviewTab({
               Docket USCIS-2026-0100
             </a>
           </div>
-          <ExternalExplainerInline />
         </div>
         <p className="text-xs text-neutral/75 leading-relaxed">
           Last updated: {NPRM_LAST_UPDATED}. Not legal advice.{' '}
@@ -324,8 +328,6 @@ export default function OverviewTab({
           onComments={onComments}
         />
       ) : null}
-
-      <ExternalExplainerSection />
 
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between rounded-xl border-2 border-secondary/30 bg-secondary/10 px-4 py-4">
         <div className="space-y-1">

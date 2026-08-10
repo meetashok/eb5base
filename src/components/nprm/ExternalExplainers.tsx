@@ -50,7 +50,7 @@ export function ExternalExplainerSection() {
       <NprmSectionHeading
         as="h2"
         eyebrow="External blogs"
-        title="External blogs explaining the NPRM"
+        title="What external blogs are saying"
       >
         <p className="text-sm text-neutral leading-relaxed max-w-3xl">
           Independent plain-English writeups of FR Doc 2026-13392. Useful context
