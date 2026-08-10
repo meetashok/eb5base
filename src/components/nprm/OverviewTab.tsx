@@ -227,23 +227,13 @@ export default function OverviewTab({
           eyebrow="Before August 31"
           title="Do I need to do something before the deadline?"
         />
-        <p>
-          <strong>If you already filed:</strong> Commenting can help protect
-          your investment. If the 2-year rule is finalized, you may get capital
-          back sooner. If good-faith protections are strengthened, you are safer
-          if your regional center fails.
-        </p>
-        <p>
-          <strong>If you plan to file:</strong> Pay attention. Investment amounts
-          stay $800K for rural and high unemployment and $1.05M standard today,
-          but a new $1.4M tier for high employment areas is proposed. Amounts
-          will also rise for inflation on Jan 1, 2027.
-        </p>
         <p id="india-china">
-          <strong>If you are waiting from India or China:</strong> You often wait
-          the longest for a visa number. A clear 2-year sustainment rule and
-          stronger good-faith protections matter most when your money would
-          otherwise sit through a long backlog or forced redeployment.
+          Commenting can help protect your investment whether you already filed
+          or plan to file. A finalized 2-year sustainment rule and stronger
+          good-faith protections matter most if your capital would otherwise sit
+          through a long backlog or forced redeployment (especially India and
+          China waits). Future filers should also watch the proposed $1.4M high
+          employment tier and the Jan 1, 2027 inflation hike.
         </p>
         <p>
           <strong>Action:</strong> Read the{' '}
