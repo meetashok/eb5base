@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { PROJECT_TYPE_OPTIONS } from '@/lib/nprm/constants';
 import {
   MIN_IMPACT_CHARS,
-  buildPersonalOnly,
   buildPrompt,
   isPersonalizedEnough,
   templateSimilarity,
@@ -173,13 +172,6 @@ export default function WriteTab({
   const impactLen = personal.impact.trim().length;
   const personalized = isPersonalizedEnough(personal.impact);
   const similarity = templateSimilarity(personal.impact);
-  const hasPersonalBits = Boolean(
-    personal.i_526e_file_date.trim() ||
-      personal.project_type ||
-      personal.investor_type ||
-      personal.country ||
-      personal.impact.trim()
-  );
 
   const prompt = useMemo(
     () =>
@@ -546,7 +538,7 @@ export default function WriteTab({
           <div className="flex flex-col sm:flex-row flex-wrap gap-2">
             <button
               type="button"
-              className="btn btn-accent text-accent-content"
+              className="btn btn-secondary shadow-glow-green sm:w-auto"
               disabled={!ready}
               title={
                 ready
@@ -557,31 +549,6 @@ export default function WriteTab({
             >
               Copy prompt
             </button>
-            <button
-              type="button"
-              className="btn btn-outline"
-              disabled={!ready || !hasPersonalBits}
-              title={
-                hasPersonalBits
-                  ? 'Copy personal details only'
-                  : 'Add optional personal details first'
-              }
-              onClick={() =>
-                copyText(buildPersonalOnly(personal), 'Personal block')
-              }
-            >
-              Copy personal-only
-            </button>
-            <a
-              href={COMMENT_ON_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              data-goatcounter-click="nprm-regulations-gov"
-              onClick={() => track('regulations_gov_clicked')}
-              className="btn btn-secondary shadow-glow-green sm:flex-1"
-            >
-              Open regulations.gov to paste your personal comment
-            </a>
           </div>
 
           <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-3">
