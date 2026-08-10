@@ -39,13 +39,23 @@ const TAB_META: Record<
 
 export function nprmMetadata(tab: NprmTabId): Metadata {
   const meta = TAB_META[tab];
+  const url =
+    tab === 'overview' ? 'https://eb5base.com/nprm' : `https://eb5base.com/nprm/${tab}`;
   return {
     title: meta.title,
     description: meta.description,
+    alternates: { canonical: url },
     openGraph: {
       title: `${meta.title} | EB5 Base`,
       description: meta.description,
-      url: tab === 'overview' ? 'https://eb5base.com/nprm' : `https://eb5base.com/nprm/${tab}`,
+      url,
+      siteName: 'EB5 Base',
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${meta.title} | EB5 Base`,
+      description: meta.description,
     },
   };
 }

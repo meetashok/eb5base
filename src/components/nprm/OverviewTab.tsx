@@ -1,10 +1,12 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useMemo, useState } from 'react';
+import { CitationChips } from '@/components/nprm/CitationChips';
 import CountdownBanner from '@/components/nprm/CountdownBanner';
 import ImpactMatrix from '@/components/nprm/ImpactMatrix';
 import VolumeChart from '@/components/nprm/VolumeChart';
 import WhyComment from '@/components/nprm/WhyComment';
+import { ListSkeleton } from '@/components/LoadingSkeleton';
 import type {
   NprmComment,
   NprmLastCheck,
@@ -20,6 +22,8 @@ import {
   RIN,
   dailyVolume,
   formatLastPull,
+  mergeWhyReasons,
+  normalizeShortSummary,
   plainDash,
 } from '@/lib/nprm/utils';
 import { FEED_SHARE } from '@/lib/nprm/fetch';
@@ -76,6 +80,29 @@ const METRICS = [
   },
 ];
 
+const NEW_CLAIMS: { label: string; citations: string }[] = [
+  {
+    label: 'High Employment Area $1.4M tier',
+    citations: '[FR 2026-13392, IV.B Definitions]',
+  },
+  {
+    label: 'Formal 2-year sustainment rule - ends lifetime redeployment debate',
+    citations: '[FR 2026-13392, IV.D.6 p 40705-06]',
+  },
+  {
+    label: 'Tiered sanctions regime - fines up to 10% of capital',
+    citations: '[FR 2026-13392, II.C]',
+  },
+  {
+    label: 'Form I-527 - new form for good-faith investors whose RC was terminated',
+    citations: '[FR 2026-13392, IV.M]',
+  },
+  {
+    label: 'Promoter registration - direct and third-party promoters must be registered',
+    citations: '[FR 2026-13392, II.C]',
+  },
+];
+
 export default function OverviewTab({
   stats,
   comments,
@@ -88,6 +115,7 @@ export default function OverviewTab({
   onSummary,
   onAbout,
 }: Props) {
+  const [themeQuery, setThemeQuery] = useState('');
   const volume = dailyVolume(comments);
   const ends =
     stats.comment_period_ends ||
@@ -96,9 +124,24 @@ export default function OverviewTab({
     'August 31, 2026 · 11:59pm ET';
   const lastPullLabel = formatLastPull(stats.last_pull);
   const sourceUrl = proposal?.source_url || FR_PDF;
-  const short = proposal?.short_summary;
-  const longThemes = proposal?.long_summary_by_theme ?? [];
-  const whyComment = proposal?.why_comment || proposal?.why_participate;
+  const short = normalizeShortSummary(proposal?.short_summary);
+  const longThemes = useMemo(
+    () => proposal?.long_summary_by_theme ?? [],
+    [proposal?.long_summary_by_theme]
+  );
+  const whyComment = mergeWhyReasons(
+    proposal?.why_comment,
+    proposal?.why_participate
+  );
+
+  const filteredThemes = useMemo(() => {
+    const q = themeQuery.trim().toLowerCase();
+    if (!q) return longThemes;
+    return longThemes.filter((theme) => {
+      const hay = `${theme.title} ${theme.plain_text} ${theme.citation}`.toLowerCase();
+      return hay.includes(q);
+    });
+  }, [longThemes, themeQuery]);
 
   return (
     <div className="space-y-8 animate-[fadeIn_0.35s_ease-out]">
@@ -115,10 +158,18 @@ export default function OverviewTab({
           final. DHS is taking public comments for 60 days through August 31,
           2026.
         </p>
+        {short?.title ? (
+          <p className="text-xs font-bold uppercase tracking-wider text-neutral/70">
+            {short.title}
+          </p>
+        ) : null}
         {short?.text ? (
           <p className="text-sm text-neutral/80 leading-relaxed max-w-3xl">
-            {plainDash(short.text)}
+            {short.text}
           </p>
+        ) : null}
+        {short?.citations?.length ? (
+          <CitationChips citations={short.citations} href={FR_HTML} />
         ) : null}
         <CountdownBanner endsLabel={ends} />
         <div className="flex flex-wrap gap-2 pt-1">
@@ -221,18 +272,13 @@ export default function OverviewTab({
             <p className="text-xs uppercase tracking-wider font-bold text-secondary">
               Truly NEW from DHS
             </p>
-            <ol className="list-decimal pl-5 space-y-1.5 text-sm text-neutral leading-relaxed">
-              <li>High Employment Area $1.4M tier</li>
-              <li>Formal 2-year sustainment rule - ends lifetime redeployment debate</li>
-              <li>
-                Tiered sanctions regime - fines up to 10% of capital, $10K example
-                for late annual statement
-              </li>
-              <li>Form I-527 - new form for good-faith investors whose RC was terminated</li>
-              <li>
-                Promoter registration - direct and third-party promoters must be
-                registered
-              </li>
+            <ol className="list-decimal pl-5 space-y-2 text-sm text-neutral leading-relaxed">
+              {NEW_CLAIMS.map((claim) => (
+                <li key={claim.label} className="space-y-1">
+                  <span>{claim.label}</span>
+                  <CitationChips citations={claim.citations} href={FR_HTML} />
+                </li>
+              ))}
             </ol>
           </div>
           <div className="space-y-2">
@@ -248,13 +294,7 @@ export default function OverviewTab({
         </div>
       </section>
 
-      <Suspense
-        fallback={
-          <div className="rounded-xl border-2 border-base-300 p-4 text-sm text-neutral">
-            Loading impact matrix…
-          </div>
-        }
-      >
+      <Suspense fallback={<ListSkeleton count={2} />}>
         <ImpactMatrix />
       </Suspense>
 
@@ -270,12 +310,33 @@ export default function OverviewTab({
             </p>
           </div>
           <p className="text-xs font-semibold text-neutral/70">
-            {longThemes.length || 12} sections
+            {filteredThemes.length}
+            {filteredThemes.length !== longThemes.length
+              ? ` of ${longThemes.length || 12}`
+              : ` ${longThemes.length || 12}`}{' '}
+            sections
           </p>
         </div>
 
+        <div className="sticky top-[calc(var(--site-sticky-offset)+3.25rem)] z-20 -mx-1 px-1 py-2 bg-base-100/95 backdrop-blur-sm">
+          <label
+            htmlFor="nprm-theme-filter"
+            className="text-[11px] uppercase tracking-wider font-bold text-neutral/70 mb-1.5 block"
+          >
+            Filter themes
+          </label>
+          <input
+            id="nprm-theme-filter"
+            type="search"
+            value={themeQuery}
+            onChange={(e) => setThemeQuery(e.target.value)}
+            placeholder="Keyword: bridge, sustainment, TEA…"
+            className="input input-sm input-bordered w-full max-w-md bg-base-100 focus:outline-secondary"
+          />
+        </div>
+
         <div className="space-y-2">
-          {longThemes.map((theme) => (
+          {filteredThemes.map((theme) => (
             <details
               key={theme.theme_id}
               className="group rounded-xl border-2 border-base-300 bg-base-100 shadow-sm open:shadow-soft"
@@ -308,11 +369,10 @@ export default function OverviewTab({
                   </details>
                 ) : null}
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center rounded-md border border-base-300 bg-base-200 px-2.5 py-1 text-[11px] font-semibold text-neutral">
-                    {plainDash(
-                      theme.citation.replace(/^\[/, '').replace(/\]$/, '')
-                    )}
-                  </span>
+                  <CitationChips
+                    citations={theme.citation}
+                    href={theme.source_link || FR_HTML}
+                  />
                   <a
                     href={theme.source_link || FR_HTML}
                     target="_blank"
@@ -329,6 +389,11 @@ export default function OverviewTab({
             <p className="text-sm text-neutral rounded-xl border-2 border-dashed border-base-300 p-4">
               Proposal theme summaries are unavailable. Open the Federal Register
               PDF above for the official text.
+            </p>
+          )}
+          {longThemes.length > 0 && filteredThemes.length === 0 && (
+            <p className="text-sm text-neutral rounded-xl border-2 border-dashed border-base-300 p-4">
+              No themes match that keyword. Clear the filter to see all sections.
             </p>
           )}
         </div>
@@ -390,14 +455,14 @@ export default function OverviewTab({
             <span className="font-semibold">
               {feedSource === 'remote' ? 'live' : 'local seed'}
             </span>
-            . Explainer cites FR Doc 2026-13392. Public JSON (CORS):{' '}
+            . Explainer cites FR Doc 2026-13392.{' '}
             <a
               href={FEED_SHARE}
               target="_blank"
               rel="noopener noreferrer"
               className="font-semibold text-secondary underline underline-offset-2 break-all"
             >
-              agent.meta.ai space
+              Public JSON (CORS - agent.meta.ai)
             </a>
             .
           </p>

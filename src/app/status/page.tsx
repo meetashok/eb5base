@@ -7,6 +7,13 @@ export const metadata: Metadata = {
   title: 'Status Update',
   description:
     'Draft a structured EB-5 status update for sharing with your community: milestones, live preview, and one-click copy. All fields optional; drafts stay in your browser.',
+  alternates: { canonical: 'https://eb5base.com/status' },
+  openGraph: {
+    title: 'Status Update | EB5 Base',
+    description:
+      'Draft a structured EB-5 status update for sharing with your community. Drafts stay in your browser.',
+    url: 'https://eb5base.com/status',
+  },
 };
 
 export default function StatusUpdatePage() {

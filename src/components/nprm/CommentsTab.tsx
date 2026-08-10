@@ -100,15 +100,28 @@ export default function CommentsTab({
     });
   }, [comments, posterFilter, query, themeFilter, themes]);
 
-  const posterOptions: { id: PosterFilter; label: string }[] = [
-    { id: 'all', label: 'All posters' },
-    { id: 'anonymous', label: 'Anonymous' },
-    { id: 'named', label: 'Named person' },
-    { id: 'org', label: 'Organization' },
-  ];
+  const posterOptions = useMemo(() => {
+    const counts = { all: comments.length, anonymous: 0, named: 0, org: 0 };
+    for (const c of comments) {
+      const { posterType } = parsePoster(c.attributes?.title);
+      counts[posterType] += 1;
+    }
+    return [
+      { id: 'all' as const, label: `All posters (${counts.all})` },
+      { id: 'anonymous' as const, label: `Anonymous (${counts.anonymous})` },
+      { id: 'named' as const, label: `Named person (${counts.named})` },
+      { id: 'org' as const, label: `Organization (${counts.org})` },
+    ];
+  }, [comments]);
+
+  const topThemeNote = useMemo(() => {
+    const top = themeOptions.find((t) => t.id !== 'all');
+    if (!top) return null;
+    return `${top.label} is the most common theme label from the feed (not a bug). Poster names come from regulations.gov titles; AI summaries stay generic.`;
+  }, [themeOptions]);
 
   function filterBtnClass(active: boolean) {
-    return `btn btn-xs h-7 min-h-0 px-2.5 border ${
+    return `btn btn-xs h-7 min-h-0 px-2.5 border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-secondary ${
       active
         ? 'btn-primary text-primary-content border-primary'
         : 'btn-ghost bg-base-100 border-base-300 text-neutral hover:border-secondary/50'
@@ -132,6 +145,11 @@ export default function CommentsTab({
           card). This list may lag newer filings after {lastPullLabel}. Source:
           regulations.gov via api.data.gov.
         </p>
+        {topThemeNote ? (
+          <p className="text-xs text-neutral/75 leading-relaxed">
+            Theme counts: {topThemeNote}
+          </p>
+        ) : null}
       </div>
 
       <div className="space-y-3 sticky top-[calc(var(--site-sticky-offset)+3.25rem)] z-30 -mx-1 px-1 py-2 bg-base-100/95 backdrop-blur-sm border-b border-base-300/60">
@@ -273,15 +291,18 @@ export default function CommentsTab({
 
       {filtered.length === 0 && (
         <p className="text-sm text-neutral rounded-xl border-2 border-dashed border-base-300 p-4">
-          No comments match that filter. Clear filters to see all filings.
+          No comments match that theme. Clear filters to see all filings.
         </p>
       )}
 
-      <p className="text-xs text-neutral/70 leading-relaxed border-t border-base-300 pt-4">
-        Source: regulations.gov via api.data.gov · Live feed · Titles from
-        regulations.gov · Last pull {lastPullLabel}. Official filings may be newer.
-        always check the docket.
-      </p>
+      <div className="rounded-xl border-2 border-secondary/30 bg-secondary/10 px-4 py-4 space-y-1">
+        <p className="text-sm font-bold text-primary">Trust & source</p>
+        <p className="text-xs text-neutral leading-relaxed">
+          Source: regulations.gov via api.data.gov · Live feed · Titles from
+          regulations.gov · Last pull {lastPullLabel}. Official filings may be
+          newer; always check the docket. Explainer cites FR Doc 2026-13392.
+        </p>
+      </div>
     </div>
   );
 }

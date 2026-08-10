@@ -1,10 +1,26 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BrandWordmark } from '@/components/Logo';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'EB5 Base: Free EB-5 Investor Library and NPRM Guide',
   description:
     'Investor-built tools for EB-5: plain-English NPRM explainer (comments due Aug 31 2026), status update builder, and forthcoming case tracker. Nothing here is legal or financial advice.',
+  alternates: { canonical: 'https://eb5base.com/' },
+  openGraph: {
+    title: 'EB5 Base: Free EB-5 Investor Library and NPRM Guide',
+    description:
+      'Investor-built tools for EB-5: plain-English NPRM explainer, status update builder, and forthcoming case tracker.',
+    url: 'https://eb5base.com/',
+    siteName: 'EB5 Base',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'EB5 Base: Free EB-5 Investor Library and NPRM Guide',
+    description:
+      'Investor-built tools for EB-5: plain-English NPRM explainer, status update builder, and forthcoming case tracker.',
+  },
 };
 
 const TOOLS = [
@@ -36,6 +52,9 @@ const TOOLS = [
     primary: false,
   },
 ];
+
+const TRUST_SNAPSHOT =
+  '48 comments tracked · Last checked Aug 9, 2026, 1:30 PM IST · Docket USCIS-2026-0100';
 
 const FAQ = [
   {
@@ -89,6 +108,9 @@ export default function HomePage() {
               Not affiliated with USCIS or DHS
             </span>
           </div>
+          <p className="mt-2 text-xs font-medium text-neutral/80 max-w-xl mx-auto leading-relaxed">
+            {TRUST_SNAPSHOT}
+          </p>
           <p className="mt-3 text-sm font-medium text-amber-800 max-w-xl mx-auto leading-relaxed">
             Nothing here is legal or financial advice.
           </p>
@@ -168,7 +190,7 @@ export default function HomePage() {
               <p
                 className={`text-[11px] uppercase tracking-wider font-bold mb-2 ${
                   tool.comingSoon
-                    ? 'text-amber-900'
+                    ? 'inline-flex self-start rounded-md border border-neutral-700/20 bg-neutral-100 px-2 py-0.5 text-neutral-700'
                     : tool.primary
                       ? 'text-secondary'
                       : 'text-neutral/70'

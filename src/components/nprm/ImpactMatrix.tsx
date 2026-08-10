@@ -203,7 +203,10 @@ export default function ImpactMatrix({
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border-2 border-base-300 bg-base-100 shadow-soft">
+      <div className="overflow-x-auto rounded-xl border-2 border-base-300 bg-base-100 shadow-soft relative">
+        <p className="sm:hidden text-[10px] font-semibold uppercase tracking-wider text-neutral/60 px-3 pt-2">
+          Swipe sideways to compare columns
+        </p>
         <table className="min-w-[40rem] w-full text-left text-xs sm:text-sm border-collapse">
           <thead>
             <tr className="bg-base-200/80 text-primary">

@@ -128,6 +128,12 @@ export interface NprmProposalShortSummary {
   citations: string[];
 }
 
+/** Feed may publish short_summary as a string or as { text, citations, title }. */
+export type NprmProposalShortSummaryRaw =
+  | string
+  | NprmProposalShortSummary
+  | { text?: string; citations?: string[]; title?: string };
+
 export interface NprmProposalThemeSummary {
   theme_id: string;
   title: string;
@@ -163,7 +169,7 @@ export interface NprmProposalSummary {
   retrieved: string;
   comment_deadline: string;
   plain_language_note: string;
-  short_summary: NprmProposalShortSummary;
+  short_summary: NprmProposalShortSummaryRaw;
   long_summary_by_theme: NprmProposalThemeSummary[];
   why_comment?: NprmProposalWhyComment;
   why_participate?: NprmProposalWhyComment;

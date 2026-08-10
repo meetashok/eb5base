@@ -80,12 +80,17 @@ export default function Navbar() {
     return pathname === href || (href !== '/' && pathname.startsWith(href));
   };
 
-  const navLink = (href: string, label: string, match: 'exact' | 'prefix' = 'prefix') => {
+  const navLink = (
+    href: string,
+    label: string,
+    match: 'exact' | 'prefix' | 'nprm-overview' = 'prefix'
+  ) => {
     const active = isActive(href, match);
     return (
       <Link
         href={href}
-        className={`relative px-2 lg:px-3 py-2 text-sm font-medium whitespace-nowrap transition-all duration-150 hover:text-accent ${
+        aria-current={active ? 'page' : undefined}
+        className={`relative px-2 lg:px-3 py-2 text-sm font-medium whitespace-nowrap transition-all duration-150 hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent rounded-sm ${
           active ? 'text-accent' : 'text-primary-content/90'
         }`}
       >

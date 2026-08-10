@@ -105,7 +105,7 @@ export default function NprmClient({
                   role="tab"
                   aria-selected={selected}
                   id={`nprm-tab-${t.id}`}
-                  className={`shrink-0 px-3.5 sm:px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-150 ${
+                  className={`shrink-0 px-3.5 sm:px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary ${
                     selected
                       ? 'bg-primary text-primary-content shadow-soft'
                       : 'text-neutral bg-base-200/80 hover:bg-base-300 hover:text-primary'

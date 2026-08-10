@@ -1,4 +1,10 @@
-import type { NprmComment, NprmTheme } from './types';
+import type {
+  NprmComment,
+  NprmProposalShortSummary,
+  NprmProposalShortSummaryRaw,
+  NprmProposalWhyComment,
+  NprmTheme,
+} from './types';
 import { COMMENT_PERIOD_END } from './config';
 
 export {
@@ -162,6 +168,60 @@ export function formatShortDate(iso?: string): string {
     timeZone: 'UTC',
   });
   return `${date} · ${time} UTC`;
+}
+
+/** Normalize feed short_summary whether string or { text, citations }. */
+export function normalizeShortSummary(
+  raw: NprmProposalShortSummaryRaw | null | undefined
+): NprmProposalShortSummary | null {
+  if (raw == null) return null;
+  if (typeof raw === 'string') {
+    const text = plainDash(raw);
+    return text ? { title: '', text, citations: [] } : null;
+  }
+  const text = plainDash(String(raw.text || ''));
+  if (!text) return null;
+  const citations = Array.isArray(raw.citations)
+    ? raw.citations.map((c) => String(c))
+    : [];
+  return {
+    title: plainDash(String(raw.title || '')),
+    text,
+    citations,
+  };
+}
+
+/** Prefer why_comment; append unique why_participate reasons (8 total when both present). */
+export function mergeWhyReasons(
+  whyComment?: NprmProposalWhyComment | null,
+  whyParticipate?: NprmProposalWhyComment | null
+): NprmProposalWhyComment | null {
+  if (!whyComment && !whyParticipate) return null;
+  const base = whyComment || whyParticipate!;
+  if (!whyComment || !whyParticipate) return base;
+  const seen = new Set(base.reasons.map((r) => r.id));
+  const extras = whyParticipate.reasons.filter((r) => !seen.has(r.id));
+  return {
+    ...base,
+    how_it_works: base.how_it_works || whyParticipate.how_it_works,
+    what_to_include: base.what_to_include?.length
+      ? base.what_to_include
+      : whyParticipate.what_to_include,
+    note: base.note || whyParticipate.note,
+    reasons: [...base.reasons, ...extras],
+  };
+}
+
+/** Split a dense paragraph into up to `max` sentence bullets for card layout. */
+export function toReasonBullets(text: string, max = 2): string[] {
+  const cleaned = plainDash(text);
+  const parts = cleaned
+    .split(/(?<=\.)\s+/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  if (parts.length <= 1) return [cleaned];
+  if (parts.length <= max) return parts;
+  return [...parts.slice(0, max - 1), parts.slice(max - 1).join(' ')];
 }
 
 export function countdownParts(now = new Date()): {

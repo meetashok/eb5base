@@ -1,17 +1,12 @@
+import { CitationChips } from '@/components/nprm/CitationChips';
 import type { NprmProposalWhyComment } from '@/lib/nprm/types';
 import {
   COMMENT_ON_URL,
   DOCUMENT_URL,
+  FR_HTML,
   plainDash,
+  toReasonBullets,
 } from '@/lib/nprm/utils';
-
-const FTC_PARTICIPATION =
-  'https://www.ftc.gov/news-events/topics/competition-enforcement/public-participation';
-const FR_HTML = 'https://www.federalregister.gov/d/2026-13392';
-
-function citeLabel(raw: string): string {
-  return plainDash(raw.replace(/^\[/, '').replace(/\]$/, ''));
-}
 
 export default function WhyComment({
   why,
@@ -41,21 +36,7 @@ export default function WhyComment({
           <p className="text-sm text-neutral leading-relaxed">
             {plainDash(why.intro)}
           </p>
-          {why.citations_intro?.length ? (
-            <div className="flex flex-wrap gap-2">
-              {why.citations_intro.map((c) => (
-                <a
-                  key={c}
-                  href={FR_HTML}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center rounded-md border border-base-300 bg-base-100 px-2 py-0.5 text-[10px] font-semibold text-neutral/80 hover:border-secondary/50 hover:text-secondary"
-                >
-                  {citeLabel(c)}
-                </a>
-              ))}
-            </div>
-          ) : null}
+          <CitationChips citations={why.citations_intro} href={FR_HTML} />
         </div>
         <a
           href={DOCUMENT_URL}
@@ -70,35 +51,34 @@ export default function WhyComment({
         </a>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {reasons.map((reason) => (
-          <article
-            key={reason.id}
-            className="rounded-xl border-2 border-base-300 bg-base-100 p-4 shadow-sm space-y-2"
-          >
-            <h4 className="text-sm font-bold text-primary leading-snug">
-              {plainDash(reason.title)}
-            </h4>
-            <p className="text-sm text-neutral leading-relaxed">
-              {plainDash(reason.text)}
-            </p>
-            {reason.citations?.length ? (
-              <div className="flex flex-wrap gap-1.5 pt-0.5">
-                {reason.citations.map((c) => (
-                  <a
-                    key={c}
-                    href={FR_HTML}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center rounded-md border border-base-300 bg-base-200/70 px-2 py-0.5 text-[10px] font-medium text-neutral/75 hover:border-secondary/50 hover:text-secondary"
-                  >
-                    {citeLabel(c)}
-                  </a>
-                ))}
+      <div className="grid gap-3 sm:grid-cols-2">
+        {reasons.map((reason, idx) => {
+          const bullets = toReasonBullets(reason.text, 2);
+          return (
+            <article
+              key={reason.id}
+              className="rounded-xl border-2 border-base-300 bg-base-100 p-4 shadow-sm space-y-2"
+            >
+              <div className="flex items-start gap-2">
+                <span
+                  className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-secondary/15 text-[11px] font-bold text-secondary tabular-nums"
+                  aria-hidden
+                >
+                  {idx + 1}
+                </span>
+                <h4 className="text-sm font-bold text-primary leading-snug">
+                  {plainDash(reason.title)}
+                </h4>
               </div>
-            ) : null}
-          </article>
-        ))}
+              <ul className="space-y-1.5 text-sm text-neutral leading-relaxed list-disc pl-5">
+                {bullets.map((b) => (
+                  <li key={b.slice(0, 40)}>{b}</li>
+                ))}
+              </ul>
+              <CitationChips citations={reason.citations} href={FR_HTML} />
+            </article>
+          );
+        })}
       </div>
 
       <div className="flex flex-col sm:flex-row flex-wrap gap-2">
@@ -136,17 +116,9 @@ export default function WhyComment({
           <p className="text-sm text-neutral leading-relaxed">
             {plainDash(why.how_it_works)}
           </p>
-          <p className="text-xs text-neutral/80">
-            More on public participation:{' '}
-            <a
-              href={FTC_PARTICIPATION}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-secondary underline underline-offset-2"
-            >
-              FTC public participation
-            </a>
-            . File on{' '}
+          <p className="text-xs text-neutral/80 leading-relaxed">
+            If enough investors flag the same data gap, USCIS must publish a reasoned
+            response or risk reversal on judicial review under the APA. File on{' '}
             <a
               href={COMMENT_ON_URL}
               target="_blank"
