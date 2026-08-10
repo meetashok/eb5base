@@ -286,8 +286,9 @@ export default async function TrackerLandingPage() {
               Receipt numbers stay protected
             </h2>
             <p className="text-sm text-neutral/60 mt-2 leading-relaxed max-w-2xl">
-              Designed so your receipt numbers are not shown to other investors or to EB5 Base
-              staff in clear text.
+              <BrandWordmark variant="on-light" className="font-semibold" /> takes privacy
+              seriously. That is why we take great care so your receipt numbers are not exposed to
+              other investors or to EB5 Base staff in clear text.
             </p>
           </div>
           <ul className="space-y-3 text-sm text-neutral/80">
