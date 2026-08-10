@@ -51,20 +51,6 @@ export default function StatusUpdatePage() {
             type personal identifiers, remove them before posting to a community group.
           </p>
         </div>
-
-        <aside className="rounded-xl border-2 border-base-300 bg-base-100 p-4 shadow-sm space-y-2">
-          <p className="text-xs uppercase tracking-wider font-bold text-secondary">
-            Sample preview
-          </p>
-          <p className="text-sm text-neutral leading-relaxed font-medium">
-            I-526E filed Mar 2023 · India · TEA rural · Still waiting on interview · Capital
-            deployed to JCE · No personal identifiers shared.
-          </p>
-          <p className="text-xs text-neutral/70">
-            Empty forms feel intimidating. Start from your real milestones in the builder below.
-            Drafts stay in your browser.
-          </p>
-        </aside>
       </div>
 
       <StatusUpdateEmbed />
