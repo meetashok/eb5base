@@ -200,8 +200,8 @@ export default function NprmClient({
           <ol className="flex flex-wrap gap-x-3 gap-y-1 py-2 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-neutral/60">
             {[
               { n: 1, label: 'Understand', tabs: ['overview', 'summary'] },
-              { n: 2, label: 'Themes', tabs: ['themes', 'comments'] },
-              { n: 3, label: 'Personalize', tabs: ['write'] },
+              { n: 2, label: 'Personalize', tabs: ['write'] },
+              { n: 3, label: 'Themes', tabs: ['themes', 'comments'] },
               { n: 4, label: 'Submit', tabs: ['write'] },
             ].map((step) => {
               const on =
