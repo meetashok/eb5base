@@ -275,7 +275,7 @@ export default function ImpactMatrix({
                       scope="row"
                       className={`px-3 py-2.5 font-semibold text-primary border-b border-base-300/80 ${bg}`}
                     >
-                      <span className="inline-flex items-start gap-2">
+                      <span className="inline-flex items-center gap-2">
                         <ToneDot tone={row.tone} />
                         <span>{row.topic}</span>
                       </span>
