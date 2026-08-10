@@ -6,7 +6,8 @@ import ConfirmationWidget from '@/components/ConfirmationWidget';
 import ProjectGallery from '@/components/ProjectGallery';
 import ReportDuplicateButton from '@/app/projects/[id]/ReportDuplicateButton';
 import RcVerifiedBadge from '@/components/RcVerifiedBadge';
-import type { Project, ProjectContact, ProjectImage, Profile } from '@/lib/types';
+import type { Project, ProjectContact, ProjectImage } from '@/lib/types';
+import type { ProjectConfirmationStats } from '@/lib/projects';
 import { brandPath, projectEditPath } from '@/lib/slugs';
 import {
   formatCurrency,
@@ -24,6 +25,7 @@ interface ProjectDetailProps {
   images?: ProjectImage[];
   userId: string | null;
   canEdit: boolean;
+  confirmationStats?: ProjectConfirmationStats;
 }
 
 export default function ProjectDetail({
@@ -32,9 +34,9 @@ export default function ProjectDetail({
   images = [],
   userId,
   canEdit,
+  confirmationStats,
 }: ProjectDetailProps) {
   const location = [p.location_city, p.location_state].filter(Boolean).join(', ');
-  const adder = p.profiles as Pick<Profile, 'display_name'> | null | undefined;
   const brand = p.rc_brands;
   const rc = p.regional_centers;
   const brandDisplayName = brand?.name || rc?.name;
@@ -46,6 +48,15 @@ export default function ProjectDetail({
           name: brand?.name,
         })
       : null;
+
+  const confirmations7d = confirmationStats?.confirmations_7d ?? 0;
+  const openPct7d = confirmationStats?.open_pct_7d ?? null;
+  const lastConfirmation = confirmationStats?.last_vote_at
+    ? formatDate(confirmationStats.last_vote_at)
+    : 'None yet';
+
+  const showEditLink = canEdit || !userId;
+  const showDisabledEdit = Boolean(userId && !canEdit && p.rc_verified_at);
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -106,14 +117,14 @@ export default function ProjectDetail({
                   userId={userId}
                   className="btn btn-outline btn-sm border-primary-content/40 text-primary-content hover:bg-primary-content/10 rounded-full"
                 />
-                {canEdit ? (
+                {showEditLink ? (
                   <AuthGateLink
                     href={projectEditPath(p)}
                     className="btn btn-outline btn-sm border-primary-content/40 text-primary-content hover:bg-primary-content/10 rounded-full"
                   >
                     Edit Project
                   </AuthGateLink>
-                ) : p.rc_verified_at && userId ? (
+                ) : showDisabledEdit ? (
                   <button
                     type="button"
                     disabled
@@ -193,7 +204,15 @@ export default function ProjectDetail({
           }
         />
         <InfoRow label="Date Added" value={formatDate(p.created_at)} />
-        <InfoRow label="Added By" value={adder?.display_name || 'Anonymous'} />
+        <InfoRow label="Last Confirmation" value={lastConfirmation} />
+        <InfoRow
+          label="Confirmations (7 days)"
+          value={`${confirmations7d.toLocaleString()}`}
+        />
+        <InfoRow
+          label="Open Confirmations (7 days)"
+          value={openPct7d == null ? 'No confirmations yet' : `${openPct7d}%`}
+        />
       </section>
 
       <section className="mb-8">

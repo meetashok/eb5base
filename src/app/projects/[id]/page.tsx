@@ -5,6 +5,7 @@ import { canEditProject, canViewProject, loadProjectByParam } from '@/lib/projec
 import {
   loadProjectImages,
 } from '@/lib/project-images-server';
+import { getProjectConfirmationStats } from '@/lib/projects';
 import { projectPath } from '@/lib/slugs';
 import type { ProjectContact } from '@/lib/types';
 
@@ -43,7 +44,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
     redirect(`/projects/${project.slug}`);
   }
 
-  const [{ data: contacts }, canEdit, images] = await Promise.all([
+  const [{ data: contacts }, canEdit, images, confirmationStats] = await Promise.all([
     supabase
       .from('project_contacts')
       .select('*')
@@ -51,6 +52,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
       .order('created_at', { ascending: true }),
     canEditProject(project, userId),
     loadProjectImages(project.id),
+    getProjectConfirmationStats(project.id),
   ]);
 
   return (
@@ -60,6 +62,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
       images={images}
       userId={userId}
       canEdit={canEdit}
+      confirmationStats={confirmationStats}
     />
   );
 }
