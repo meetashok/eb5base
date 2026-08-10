@@ -213,12 +213,15 @@ body {
   .home-tool-card::before {
     content: '';
     position: absolute;
-    inset: 0;
+    /* Oversized so the glow can drift without leaving empty corners. */
+    inset: -45%;
     pointer-events: none;
-    opacity: 0.9;
+    opacity: 0.95;
+    will-change: transform;
     background:
-      radial-gradient(ellipse 70% 55% at 100% 0%, rgba(212, 175, 55, 0.18), transparent 55%),
-      radial-gradient(ellipse 55% 45% at 0% 100%, rgba(45, 90, 71, 0.12), transparent 50%);
+      radial-gradient(ellipse 42% 36% at 72% 28%, rgba(212, 175, 55, 0.22), transparent 62%),
+      radial-gradient(ellipse 38% 34% at 22% 78%, rgba(45, 90, 71, 0.14), transparent 60%);
+    animation: home-tool-glow-a 16s ease-in-out infinite alternate;
   }
 
   .home-tool-card > * {
@@ -235,8 +238,11 @@ body {
 
   .home-tool-card--nprm::before {
     background:
-      radial-gradient(ellipse 65% 50% at 100% -10%, rgba(45, 90, 71, 0.22), transparent 55%),
-      radial-gradient(ellipse 50% 40% at 0% 110%, rgba(212, 175, 55, 0.2), transparent 50%);
+      radial-gradient(ellipse 44% 38% at 78% 18%, rgba(45, 90, 71, 0.26), transparent 60%),
+      radial-gradient(ellipse 36% 34% at 18% 82%, rgba(212, 175, 55, 0.22), transparent 58%);
+    animation-name: home-tool-glow-a;
+    animation-duration: 14s;
+    animation-delay: -2s;
   }
 
   .home-tool-card--status {
@@ -247,8 +253,11 @@ body {
 
   .home-tool-card--status::before {
     background:
-      radial-gradient(ellipse 60% 50% at 100% 0%, rgba(184, 115, 51, 0.2), transparent 55%),
-      radial-gradient(ellipse 45% 40% at 0% 100%, rgba(212, 175, 55, 0.12), transparent 50%);
+      radial-gradient(ellipse 42% 36% at 80% 22%, rgba(184, 115, 51, 0.24), transparent 60%),
+      radial-gradient(ellipse 34% 32% at 16% 84%, rgba(212, 175, 55, 0.16), transparent 58%);
+    animation-name: home-tool-glow-b;
+    animation-duration: 19s;
+    animation-delay: -7s;
   }
 
   .home-tool-card--tracker {
@@ -259,8 +268,63 @@ body {
 
   .home-tool-card--tracker::before {
     background:
-      radial-gradient(ellipse 55% 45% at 100% 0%, rgba(74, 98, 116, 0.16), transparent 55%),
-      radial-gradient(ellipse 45% 40% at 0% 100%, rgba(45, 90, 71, 0.08), transparent 50%);
+      radial-gradient(ellipse 40% 34% at 76% 20%, rgba(74, 98, 116, 0.2), transparent 60%),
+      radial-gradient(ellipse 34% 32% at 20% 80%, rgba(45, 90, 71, 0.1), transparent 58%);
+    animation-name: home-tool-glow-c;
+    animation-duration: 22s;
+    animation-delay: -11s;
+  }
+
+  @keyframes home-tool-glow-a {
+    0% {
+      transform: translate3d(-6%, -4%, 0) scale(1.02);
+    }
+    35% {
+      transform: translate3d(10%, 6%, 0) scale(1.08);
+    }
+    70% {
+      transform: translate3d(-8%, 12%, 0) scale(1.04);
+    }
+    100% {
+      transform: translate3d(8%, -8%, 0) scale(1.1);
+    }
+  }
+
+  @keyframes home-tool-glow-b {
+    0% {
+      transform: translate3d(8%, 6%, 0) scale(1.05);
+    }
+    40% {
+      transform: translate3d(-10%, -6%, 0) scale(1.1);
+    }
+    65% {
+      transform: translate3d(6%, -12%, 0) scale(1.03);
+    }
+    100% {
+      transform: translate3d(-6%, 10%, 0) scale(1.08);
+    }
+  }
+
+  @keyframes home-tool-glow-c {
+    0% {
+      transform: translate3d(-4%, 10%, 0) scale(1.04);
+    }
+    30% {
+      transform: translate3d(12%, -8%, 0) scale(1.09);
+    }
+    60% {
+      transform: translate3d(-10%, -4%, 0) scale(1.06);
+    }
+    100% {
+      transform: translate3d(4%, 8%, 0) scale(1.02);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-tool-card::before {
+      animation: none !important;
+      transform: none !important;
+    }
   }
 
   .icon-ring-copper {
