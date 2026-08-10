@@ -101,7 +101,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="max-w-6xl mx-auto px-4 py-12 md:py-16">
+      <section className="max-w-6xl mx-auto px-4 pt-12 pb-8 md:pt-16 md:pb-10">
         <div className="text-center mb-8">
           <p className="text-xs uppercase tracking-[0.22em] font-semibold text-secondary mb-2">
             What you can use today
@@ -153,7 +153,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="max-w-6xl mx-auto px-4 pb-16 text-center">
+      <section className="max-w-6xl mx-auto px-4 pb-6 text-center">
         <p className="text-sm text-neutral/60 max-w-xl mx-auto leading-relaxed">
           Questions?{' '}
           <a href="mailto:hello@eb5base.com" className="link link-secondary font-medium">
