@@ -23,8 +23,6 @@ import { commentUrl } from './utils';
  * We ship fragments + a prompt, never a canned form letter. Final wording
  * happens on the user's own LLM so USCIS/OIRA cannot bucket identical paste.
  */
-export const PROMPT_DIVERSITY_NOTE =
-  '6 themes × ~2.5 opinions × 3 phrasings × 8 guideline combos × ~6 sample rotations ≈ 60k+ deterministic skeletons; personal block makes each comment distinct.';
 
 const PROJECT_TYPE_LABELS: Record<ProjectTypeOption, string> = {
   rural: 'rural',

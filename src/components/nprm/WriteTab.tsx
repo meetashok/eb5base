@@ -7,7 +7,6 @@ import {
 } from '@/lib/nprm/constants';
 import {
   MIN_IMPACT_CHARS,
-  PROMPT_DIVERSITY_NOTE,
   buildPersonalOnly,
   buildPrompt,
   canCopyPrompt,
@@ -178,9 +177,6 @@ export default function WriteTab({
         <p className="text-sm text-neutral mt-1 max-w-2xl leading-relaxed">
           Personalize a draft for regulations.gov. We do not submit for you and we
           do not store drafts on our servers, only in your browser (localStorage).
-        </p>
-        <p className="text-xs text-neutral/75 mt-2 font-mono leading-relaxed">
-          {PROMPT_DIVERSITY_NOTE}
         </p>
       </div>
 
