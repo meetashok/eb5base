@@ -16,6 +16,27 @@ const SECTIONS: {
   page: string;
 }[] = [
   {
+    id: 'sustainment',
+    title: 'Two-year sustainment & redeployment',
+    current:
+      'Many investors faced indefinite redeployment while waiting for visas through conditional residency.',
+    proposed:
+      'Capital must remain at risk for a minimum of 2 years from the date made available to the job-creating entity (JCE). DHS expects redeployment to become rare for post-RIA cases.',
+    why: 'Especially material for India/China backlogged investors whose capital sat far longer than the job-creation clock.',
+    risk: 'Ambiguity on when the clock starts (NCE vs JCE) could still force unwanted redeployments.',
+    page: 'FR Doc 2026-13392 (sustainment)',
+  },
+  {
+    id: 'bridge-capital',
+    title: 'Bridge financing & qualifying capital',
+    current: 'Bridge financing is common in project capital stacks.',
+    proposed:
+      'Restricts use of repaid bridge financing in certain circumstances and refines what counts as qualifying capital.',
+    why: 'Rural and early-stage projects often rely on bridge; structure changes can delay closings.',
+    risk: 'Over-broad restrictions may chill financing for projects investors want to fund.',
+    page: 'FR Doc 2026-13392 (bridge / capital)',
+  },
+  {
     id: 'amounts',
     title: 'Investment amounts & inflation',
     current:
@@ -36,17 +57,6 @@ const SECTIONS: {
     why: 'Where your project sits decides $800K vs $1.05M vs the new $1.4M tier.',
     risk: 'Opaque unemployment data sources make TEA outcomes hard to predict or challenge.',
     page: 'FR Doc 2026-13392 (TEA methodology)',
-  },
-  {
-    id: 'sustainment',
-    title: 'Two-year sustainment & redeployment',
-    current:
-      'Many investors faced indefinite redeployment while waiting for visas through conditional residency.',
-    proposed:
-      'Capital must remain at risk for a minimum of 2 years from the date made available to the job-creating entity (JCE). DHS expects redeployment to become rare for post-RIA cases.',
-    why: 'Especially material for India/China backlogged investors whose capital sat far longer than the job-creation clock.',
-    risk: 'Ambiguity on when the clock starts (NCE vs JCE) could still force unwanted redeployments.',
-    page: 'FR Doc 2026-13392 (sustainment)',
   },
   {
     id: 'good-faith',
@@ -90,16 +100,6 @@ const SECTIONS: {
     page: 'FR Doc 2026-13392 (promoters)',
   },
   {
-    id: 'bridge-capital',
-    title: 'Bridge financing & qualifying capital',
-    current: 'Bridge financing is common in project capital stacks.',
-    proposed:
-      'Restricts use of repaid bridge financing in certain circumstances and refines what counts as qualifying capital.',
-    why: 'Rural and early-stage projects often rely on bridge; structure changes can delay closings.',
-    risk: 'Over-broad restrictions may chill financing for projects investors want to fund.',
-    page: 'FR Doc 2026-13392 (bridge / capital)',
-  },
-  {
     id: 'source-funds',
     title: 'Source of funds, crypto',
     current: 'Crypto as source of funds has been handled case-by-case with heavy RFEs.',
@@ -133,7 +133,7 @@ export default function SummaryTab() {
         >
           <p className="text-sm text-neutral leading-relaxed">
             Current rule vs proposed change, why it matters, and risk if finalized.
-            Last updated: {NPRM_LAST_UPDATED}. Always verify on the{' '}
+            Always verify on the{' '}
             <a
               href={FR_HTML}
               target="_blank"
