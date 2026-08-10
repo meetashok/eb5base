@@ -520,7 +520,7 @@ export default function WriteTab({
             </pre>
           </div>
 
-          <label className="flex items-start gap-2.5 text-xs sm:text-sm text-neutral cursor-pointer rounded-lg border-2 border-base-300 p-3 sm:p-3.5 bg-base-100 leading-relaxed">
+          <label className="flex items-start gap-2.5 text-[11px] sm:text-xs text-amber-950/90 cursor-pointer rounded-xl border-2 border-warning/50 bg-warning/15 p-3 leading-relaxed">
             <input
               type="checkbox"
               className="checkbox checkbox-sm mt-0.5 shrink-0"
