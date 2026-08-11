@@ -26,6 +26,7 @@ import type {
   TopicCommentSelection,
 } from '@/lib/nprm/types';
 import { COMMENT_GUIDANCE, COMMENT_ON_URL } from '@/lib/nprm/utils';
+import { SITE_URL } from '@/lib/constants';
 import { nprmTabHref } from '@/lib/nprm/tabs';
 import GlossaryTerm, {
   GlossaryText,
@@ -43,6 +44,10 @@ const MAX_TOPICS = 3;
 const DRAFT_KEY = 'eb5base_nprm_write_draft_v4';
 /** Browser/URL length guard for LLM ?q= prefill links. */
 const LLM_PREFILL_MAX_CHARS = 3500;
+const NPRM_SHARE_URL = `${SITE_URL}/nprm`;
+const NPRM_SHARE_TITLE = 'EB5 Base NPRM comment guide';
+const NPRM_SHARE_TEXT =
+  'I used EB5 Base to share my view on the EB-5 NPRM. Make yourself heard:';
 
 const PERSONAL_STORY_EXAMPLES = [
   'years waiting (ex: 5 years since I-526E filing)',
@@ -670,6 +675,37 @@ export default function WriteTab({
     }
   }
 
+  async function shareGuide() {
+    const payload = {
+      title: NPRM_SHARE_TITLE,
+      text: NPRM_SHARE_TEXT,
+      url: NPRM_SHARE_URL,
+    };
+    const clipboardText = `${NPRM_SHARE_TEXT} ${NPRM_SHARE_URL}`;
+
+    try {
+      if (
+        typeof navigator.share === 'function' &&
+        (!navigator.canShare || navigator.canShare(payload))
+      ) {
+        await navigator.share(payload);
+        track('builder_shared');
+        return;
+      }
+    } catch (err) {
+      // User dismissed the sheet; do not fall through to clipboard noise.
+      if (err instanceof DOMException && err.name === 'AbortError') return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(clipboardText);
+      track('builder_shared');
+      toast('Share text copied. Paste it anywhere to invite others.', 'success');
+    } catch {
+      toast(`Copy this link: ${NPRM_SHARE_URL}`, 'info');
+    }
+  }
+
   return (
     <div className="space-y-4 animate-[fadeIn_0.35s_ease-out]">
       <NprmSectionHeading as="h2" eyebrow="Write" title="Build My Comment">
@@ -993,31 +1029,42 @@ export default function WriteTab({
             </span>
           </label>
 
-          <button
-            type="button"
-            key={copyPulseKey}
-            className={`btn w-full sm:w-auto ${
-              copyMsg === 'Prompt copied'
-                ? 'btn-ghost bg-base-300 text-primary border-base-300 shadow-none nprm-copy-pulse'
+          <div className="flex flex-col sm:flex-row gap-2">
+            <button
+              type="button"
+              key={copyPulseKey}
+              className={`btn w-full sm:w-auto ${
+                copyMsg === 'Prompt copied'
+                  ? 'btn-ghost bg-base-300 text-primary border-base-300 shadow-none nprm-copy-pulse'
+                  : copyMsg === 'Copy failed'
+                    ? 'btn-error text-error-content'
+                    : 'btn-secondary shadow-glow-green'
+              }`}
+              disabled={!ready}
+              aria-live="polite"
+              title={
+                ready
+                  ? 'Copy full prompt for your LLM'
+                  : 'Finish at least one topic and accept the disclaimer first'
+              }
+              onClick={() => copyText(prompt)}
+            >
+              {copyMsg === 'Prompt copied'
+                ? 'Prompt copied'
                 : copyMsg === 'Copy failed'
-                  ? 'btn-error text-error-content'
-                  : 'btn-secondary shadow-glow-green'
-            }`}
-            disabled={!ready}
-            aria-live="polite"
-            title={
-              ready
-                ? 'Copy full prompt for your LLM'
-                : 'Finish at least one topic and accept the disclaimer first'
-            }
-            onClick={() => copyText(prompt)}
-          >
-            {copyMsg === 'Prompt copied'
-              ? 'Prompt copied'
-              : copyMsg === 'Copy failed'
-                ? 'Copy failed'
-                : 'Copy prompt for LLM'}
-          </button>
+                  ? 'Copy failed'
+                  : 'Copy prompt for LLM'}
+            </button>
+            <button
+              type="button"
+              onClick={shareGuide}
+              data-goatcounter-click="nprm-share-guide"
+              className="btn btn-outline border-neutral/30 w-full sm:w-auto"
+              title="Share EB5 Base NPRM with other investors"
+            >
+              Share
+            </button>
+          </div>
 
           <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-3">
             <NprmSectionHeading
