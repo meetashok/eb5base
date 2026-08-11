@@ -113,12 +113,14 @@ export default function OverviewTab({
           eyebrow="Draft rule"
           title="What is this draft rule, and does it affect your EB-5 journey?"
         />
-        <p className="nprm-tldr">
-          TLDR: This is a draft of new EB-5 house rules. It is not final. As an
-          investor, you have a right and a responsibility to comment on the draft
-          before the deadline. Your comment can influence what gets finalized.
-        </p>
-        <CountdownBadge />
+        <div className="nprm-tldr space-y-2">
+          <p>
+            TLDR: This is a draft of new EB-5 house rules. It is not final. As an
+            investor, you have a right and a responsibility to comment on the draft
+            before the deadline. Your comment can influence what gets finalized.
+          </p>
+          <CountdownBadge />
+        </div>
         <p>
           Think of EB-5 as an apartment building. Congress passed a big renovation
           law in 2022 (the <GlossaryTerm term="RIA" />). Since then, the building
