@@ -119,14 +119,22 @@ export default function NprmClient({
         subtitle={
           <div className="space-y-1.5 text-sm md:text-[0.95rem] text-neutral max-w-2xl leading-relaxed">
             <p>
-              <GlossaryTerm term="DHS" /> published a proposed rulemaking notice
+              <GlossaryTerm term="DHS" /> published a{' '}
+              <a
+                href={DOCKET_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+              >
+                proposed rulemaking notice
+              </a>{' '}
               on July 2, 2026. The draft finally codifies the EB-5{' '}
               <GlossaryTerm term="RIA" /> of 2022. EB5 Base breaks down the{' '}
               <a
                 href={FR_PDF}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-semibold text-secondary underline underline-offset-2"
+                className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
               >
                 358-page rule
               </a>{' '}
