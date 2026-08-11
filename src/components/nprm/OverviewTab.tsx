@@ -10,7 +10,6 @@ import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import VolumeChart from '@/components/nprm/VolumeChart';
 import {
   KEY_TOPICS,
-  anglesByPolarity,
   topicSectionId,
 } from '@/lib/nprm/keyTopics';
 import type {
@@ -87,43 +86,6 @@ function KeyPointBody({
   }
 
   return <>{nodes}</>;
-}
-
-function PolarityAngles({
-  title,
-  items,
-  tone,
-}: {
-  title: string;
-  items: string[];
-  tone: 'agree' | 'disagree';
-}) {
-  if (!items.length) return null;
-  const isAgree = tone === 'agree';
-  return (
-    <div
-      className={`space-y-1.5 rounded-md border-l-4 pl-2.5 py-1 ${
-        isAgree
-          ? 'border-secondary bg-secondary/5'
-          : 'border-warning bg-warning/5'
-      }`}
-    >
-      <div
-        className={`text-xs font-bold ${
-          isAgree ? 'text-secondary' : 'text-warning'
-        }`}
-      >
-        {title}
-      </div>
-      <ul className="list-disc pl-4 space-y-1.5 text-sm text-neutral leading-relaxed">
-        {items.map((item) => (
-          <li key={item}>
-            <GlossaryText text={item} />
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
 }
 
 export default function OverviewTab({
@@ -297,10 +259,7 @@ export default function OverviewTab({
           title="The points that actually matter to you"
         />
         <ol className="space-y-3">
-          {KEY_TOPICS.map((point, idx) => {
-            const agree = anglesByPolarity(point, 'agree');
-            const disagree = anglesByPolarity(point, 'disagree');
-            return (
+          {KEY_TOPICS.map((point, idx) => (
               <li
                 key={point.id}
                 className="rounded-xl border-2 border-base-300 bg-base-100 p-4 shadow-sm space-y-2"
@@ -314,37 +273,22 @@ export default function OverviewTab({
                 <p className="text-sm text-neutral leading-relaxed">
                   <KeyPointBody text={point.body} links={point.inlineLinks} />
                 </p>
-                <div className="border-t border-base-300 pt-2.5 space-y-3">
-                  <div className="text-[11px] font-semibold uppercase tracking-wide text-neutral/45">
-                    Potential comments
-                  </div>
-                  <PolarityAngles
-                    title="If you generally agree with the draft"
-                    items={agree}
-                    tone="agree"
-                  />
-                  <PolarityAngles
-                    title="If you generally disagree with the draft"
-                    items={disagree}
-                    tone="disagree"
-                  />
-                  <div className="flex flex-wrap gap-2 pt-0.5">
-                    <button
-                      type="button"
-                      onClick={() => onWriteTopic(point.id)}
-                      data-goatcounter-click="nprm-build-comment"
-                      className="btn btn-primary btn-sm text-primary-content"
-                    >
-                      Build a comment on this
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onSummary(topicSectionId(point.id))}
-                      className="btn btn-outline btn-sm border-neutral/30"
-                    >
-                      Read more
-                    </button>
-                  </div>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => onWriteTopic(point.id)}
+                    data-goatcounter-click="nprm-build-comment"
+                    className="btn btn-primary btn-sm text-primary-content"
+                  >
+                    Build a comment on this
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onSummary(topicSectionId(point.id))}
+                    className="btn btn-outline btn-sm border-neutral/30"
+                  >
+                    Read more
+                  </button>
                 </div>
                 <p className="text-[10px] leading-snug text-neutral/70">
                   <a
@@ -366,8 +310,7 @@ export default function OverviewTab({
                   </a>
                 </p>
               </li>
-            );
-          })}
+          ))}
         </ol>
       </section>
 
