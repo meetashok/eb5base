@@ -135,8 +135,8 @@ export default function NprmClient({
                 358-page rule
               </a>{' '}
               that finally codifies the EB-5{' '}
-              <GlossaryTerm term="RIA">Reform and Integrity Act</GlossaryTerm>{' '}
-              of 2022. Comments close August 31, 2026.{' '}
+              <GlossaryTerm term="RIA" /> of 2022. Comments close August 31,
+              2026.{' '}
               <Link
                 href="/about#disclaimer"
                 className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
