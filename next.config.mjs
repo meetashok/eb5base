@@ -6,6 +6,8 @@ const nextConfig = {
     outputFileTracingIncludes: {
       '/nprm': ['./public/data/nprm/**/*'],
       '/nprm/[tab]': ['./public/data/nprm/**/*'],
+      '/opengraph-image': ['./public/fonts/**/*', './public/logo.png'],
+      '/twitter-image': ['./public/fonts/**/*', './public/logo.png'],
     },
   },
   async redirects() {

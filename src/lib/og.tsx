@@ -42,7 +42,21 @@ async function loadLogoDataUrl() {
   return `data:image/png;base64,${bytes.toString('base64')}`;
 }
 
-async function loadJakartaFont(weight: 500 | 600 | 700) {
+async function loadJakartaFont(weight: 500 | 600 | 700): Promise<ArrayBuffer> {
+  // Prefer bundled TTFs so OG/twitter image prerender never depends on
+  // fonts.googleapis.com (Vercel builds can fail with TypeError: fetch failed).
+  try {
+    const bytes = await readFile(
+      join(process.cwd(), 'public/fonts', `PlusJakartaSans-${weight}.ttf`)
+    );
+    return bytes.buffer.slice(
+      bytes.byteOffset,
+      bytes.byteOffset + bytes.byteLength
+    );
+  } catch {
+    // fall through to Google Fonts
+  }
+
   // Request TTF (not woff2) - @vercel/og / Satori only parse OpenType/TrueType.
   const css = await fetch(
     `https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@${weight}&display=swap`,
@@ -62,6 +76,26 @@ async function loadJakartaFont(weight: 500 | 600 | 700) {
   return fetch(match[1]).then((res) => res.arrayBuffer());
 }
 
+async function loadJakartaFontsSafe(): Promise<
+  | {
+      medium: ArrayBuffer;
+      semiBold: ArrayBuffer;
+      bold: ArrayBuffer;
+    }
+  | null
+> {
+  try {
+    const [medium, semiBold, bold] = await Promise.all([
+      loadJakartaFont(500),
+      loadJakartaFont(600),
+      loadJakartaFont(700),
+    ]);
+    return { medium, semiBold, bold };
+  } catch {
+    return null;
+  }
+}
+
 async function getStatsSafe(): Promise<OgStats> {
   if (!isSupabaseConfigured()) return FALLBACK_STATS;
   try {
@@ -76,11 +110,9 @@ function formatStat(value: number) {
 }
 
 async function createMaintenanceOgImage() {
-  const [logoSrc, fontMedium, fontSemiBold, fontBold] = await Promise.all([
+  const [logoSrc, fonts] = await Promise.all([
     loadLogoDataUrl(),
-    loadJakartaFont(500),
-    loadJakartaFont(600),
-    loadJakartaFont(700),
+    loadJakartaFontsSafe(),
   ]);
 
   return new ImageResponse(
@@ -94,7 +126,7 @@ async function createMaintenanceOgImage() {
           justifyContent: 'center',
           padding: '56px 64px',
           background: 'linear-gradient(135deg, #060f1a 0%, #0a1628 32%, #1a3d32 72%, #0a1628 100%)',
-          fontFamily: 'Plus Jakarta Sans',
+          fontFamily: fonts ? 'Plus Jakarta Sans' : 'sans-serif',
           color: '#f5f1ea',
           position: 'relative',
           overflow: 'hidden',
@@ -150,11 +182,13 @@ async function createMaintenanceOgImage() {
     ),
     {
       ...OG_SIZE,
-      fonts: [
-        { name: 'Plus Jakarta Sans', data: fontMedium, weight: 500, style: 'normal' },
-        { name: 'Plus Jakarta Sans', data: fontSemiBold, weight: 600, style: 'normal' },
-        { name: 'Plus Jakarta Sans', data: fontBold, weight: 700, style: 'normal' },
-      ],
+      fonts: fonts
+        ? [
+            { name: 'Plus Jakarta Sans', data: fonts.medium, weight: 500, style: 'normal' },
+            { name: 'Plus Jakarta Sans', data: fonts.semiBold, weight: 600, style: 'normal' },
+            { name: 'Plus Jakarta Sans', data: fonts.bold, weight: 700, style: 'normal' },
+          ]
+        : undefined,
     }
   );
 }
@@ -164,12 +198,10 @@ export async function createOgImage() {
     return createMaintenanceOgImage();
   }
 
-  const [logoSrc, stats, fontMedium, fontSemiBold, fontBold] = await Promise.all([
+  const [logoSrc, stats, fonts] = await Promise.all([
     loadLogoDataUrl(),
     getStatsSafe(),
-    loadJakartaFont(500),
-    loadJakartaFont(600),
-    loadJakartaFont(700),
+    loadJakartaFontsSafe(),
   ]);
 
   const showStats = stats.projects >= 10;
@@ -191,7 +223,7 @@ export async function createOgImage() {
           justifyContent: 'space-between',
           padding: '48px 56px 44px',
           background: 'linear-gradient(135deg, #060f1a 0%, #0a1628 32%, #1a3d32 72%, #0a1628 100%)',
-          fontFamily: 'Plus Jakarta Sans',
+          fontFamily: fonts ? 'Plus Jakarta Sans' : 'sans-serif',
           color: '#f5f1ea',
           position: 'relative',
           overflow: 'hidden',
@@ -436,11 +468,13 @@ export async function createOgImage() {
     ),
     {
       ...OG_SIZE,
-      fonts: [
-        { name: 'Plus Jakarta Sans', data: fontMedium, weight: 500, style: 'normal' },
-        { name: 'Plus Jakarta Sans', data: fontSemiBold, weight: 600, style: 'normal' },
-        { name: 'Plus Jakarta Sans', data: fontBold, weight: 700, style: 'normal' },
-      ],
+      fonts: fonts
+        ? [
+            { name: 'Plus Jakarta Sans', data: fonts.medium, weight: 500, style: 'normal' },
+            { name: 'Plus Jakarta Sans', data: fonts.semiBold, weight: 600, style: 'normal' },
+            { name: 'Plus Jakarta Sans', data: fonts.bold, weight: 700, style: 'normal' },
+          ]
+        : undefined,
     }
   );
 }
