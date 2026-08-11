@@ -25,6 +25,10 @@ import type {
   StyleGuideline,
   TopicCommentSelection,
 } from '@/lib/nprm/types';
+import {
+  fetchPromptCopyCount,
+  recordPromptCopyOnce,
+} from '@/lib/nprm/promptUse';
 import { COMMENT_GUIDANCE, COMMENT_ON_URL } from '@/lib/nprm/utils';
 import { SITE_URL } from '@/lib/constants';
 import { nprmTabHref } from '@/lib/nprm/tabs';
@@ -32,6 +36,7 @@ import GlossaryTerm, {
   GlossaryText,
 } from '@/components/nprm/GlossaryTerm';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
+import PromptCopyCount from '@/components/nprm/PromptCopyCount';
 import { useToast } from '@/components/Toast';
 
 interface Props {
@@ -500,6 +505,7 @@ export default function WriteTab({
   const [style, setStyle] = useState<StyleGuideline>('plain');
   const [copyMsg, setCopyMsg] = useState<string | null>(null);
   const [copyPulseKey, setCopyPulseKey] = useState(0);
+  const [promptCopyCount, setPromptCopyCount] = useState<number | null>(null);
   const [flashTopicId, setFlashTopicId] = useState<string | null>(null);
   const [privacyOk, setPrivacyOk] = useState(false);
   const [hydrated, setHydrated] = useState(false);
@@ -602,6 +608,16 @@ export default function WriteTab({
   }, [initialTopicIds]);
 
   useEffect(() => {
+    let cancelled = false;
+    fetchPromptCopyCount().then((n) => {
+      if (!cancelled) setPromptCopyCount(n);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
     if (!hydrated) return;
     try {
       localStorage.setItem(
@@ -646,6 +662,11 @@ export default function WriteTab({
     });
   }
 
+  async function notePromptCopied() {
+    const next = await recordPromptCopyOnce();
+    if (next != null) setPromptCopyCount(next);
+  }
+
   async function copyText(text: string) {
     if (!ready) {
       toast(
@@ -660,6 +681,7 @@ export default function WriteTab({
       setCopyPulseKey((k) => k + 1);
       track('builder_copied');
       if (personalized) track('builder_personalized');
+      void notePromptCopied();
       window.setTimeout(() => setCopyMsg(null), 2500);
     } catch {
       setCopyMsg('Copy failed');
@@ -684,6 +706,7 @@ export default function WriteTab({
       setCopyPulseKey((k) => k + 1);
       track('builder_copied');
       if (personalized) track('builder_personalized');
+      void notePromptCopied();
       window.setTimeout(() => setCopyMsg(null), 2000);
     } catch {
       // Still open the LLM; user can copy manually from the preview.
@@ -1097,6 +1120,7 @@ export default function WriteTab({
               Share
             </button>
           </div>
+          <PromptCopyCount count={promptCopyCount} />
 
           <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-3">
             <NprmSectionHeading

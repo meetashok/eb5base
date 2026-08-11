@@ -15,7 +15,7 @@ export default function PrivacyPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
       <h1 className="text-3xl font-bold text-primary mb-2">Privacy Policy</h1>
-      <p className="text-sm text-neutral/50 mb-8">Last updated: July 11, 2026</p>
+      <p className="text-sm text-neutral/50 mb-8">Last updated: August 11, 2026</p>
 
       <div className="space-y-10">
         <Section title="Overview">
@@ -37,6 +37,12 @@ export default function PrivacyPage() {
             you copy them elsewhere. We do not collect A-numbers. If you join the Case Tracker
             waitlist, we store your email only to send one launch notification; we do not use it for
             ads or a marketing list. You can ask us to remove it at hello@eb5base.com.
+          </p>
+          <p>
+            When you copy an NPRM comment prompt from the Write tab, we may increment a public
+            aggregate count of how many browsers have copied a prompt. To avoid double-counting, we
+            store a non-identifying flag in your browser&apos;s localStorage. We do not store the
+            prompt text, your name, or other personal details for this count.
           </p>
         </Section>
 
@@ -130,6 +136,11 @@ export default function PrivacyPage() {
           <p>
             EB5 Base uses cookies and similar technologies needed for sign-in, session management,
             and security. Supabase authentication may set cookies so you can stay signed in.
+          </p>
+          <p>
+            We also use browser localStorage for NPRM draft text and a non-identifying flag that
+            prevents double-counting prompt copies. These values stay on your device and are not
+            advertising cookies.
           </p>
           <p>
             GoatCounter analytics is designed to avoid tracking cookies for advertising and does not
