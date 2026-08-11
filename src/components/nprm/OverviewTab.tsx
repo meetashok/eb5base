@@ -179,7 +179,7 @@ export default function OverviewTab({
             onClick={onComments}
             className="btn btn-outline border-neutral/30"
           >
-            Comments
+            What others are saying
           </button>
         </div>
       </header>
