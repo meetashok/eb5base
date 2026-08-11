@@ -1073,7 +1073,7 @@ export default function WriteTab({
             </pre>
           </div>
 
-          <div className="rounded-xl border-2 border-warning/50 bg-warning/15 p-3 sm:p-4 space-y-3 text-sm text-amber-950/90 leading-relaxed">
+          <div className="rounded-xl border-2 border-warning/50 bg-warning/15 p-3 sm:p-4 space-y-3 text-[11px] sm:text-xs text-amber-950/90 leading-relaxed">
             <div className="space-y-2">
               <NprmSectionHeading
                 as="h3"
