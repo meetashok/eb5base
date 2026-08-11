@@ -294,12 +294,15 @@ function TopicDecisionCard({
       >
         {(
           [
-            { id: false, label: 'Skip' },
-            { id: true, label: 'Comment on this' },
+            { id: false as const, label: 'Skip' },
+            { id: true as const, label: 'Comment on this' },
           ] as const
         ).map((opt) => {
           const selected = sel.include === opt.id;
           const blocked = opt.id && includeDisabled && !sel.include;
+          const selectedClass = opt.id
+            ? 'bg-secondary text-secondary-content shadow-sm'
+            : 'bg-base-300 text-primary shadow-sm';
           return (
             <button
               key={String(opt.id)}
@@ -309,7 +312,7 @@ function TopicDecisionCard({
               onClick={() => setInclude(opt.id)}
               className={`min-h-9 px-3 py-1.5 text-sm font-semibold rounded-md transition-colors ${
                 selected
-                  ? 'bg-primary text-primary-content shadow-sm'
+                  ? selectedClass
                   : 'text-neutral hover:bg-base-100'
               } ${blocked ? 'opacity-40 cursor-not-allowed' : ''}`}
             >
