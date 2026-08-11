@@ -10,7 +10,8 @@ import {
   APA_LINK,
   ILRC_CITATION,
   ILRC_LINK,
-  UNIQUE_COMMENT_CHECKLIST,
+  UNIQUE_AFTER_LLM_CHECKLIST,
+  UNIQUE_BEFORE_PROMPT_CHECKLIST,
 } from '@/lib/nprm/constants';
 import type { NprmProposalSummary } from '@/lib/nprm/types';
 import { nprmTabHref } from '@/lib/nprm/tabs';
@@ -275,12 +276,25 @@ export default function AboutTab({
             with the same structure and rules.
           </p>
           <p className="text-sm text-neutral leading-relaxed">
-            On Write, the uniqueness checklist sits in the same gate as the
-            privacy disclaimer. Copy / Open LLM stay disabled until you check
-            that you have read the checklist and will personalize before filing:
+            Write splits uniqueness guidance into two lists:
+          </p>
+          <p className="text-sm font-semibold text-primary">
+            Before you copy the prompt (after personal story)
           </p>
           <ul className="list-disc pl-5 text-sm text-neutral space-y-1.5 leading-relaxed">
-            {UNIQUE_COMMENT_CHECKLIST.map((item) => (
+            {UNIQUE_BEFORE_PROMPT_CHECKLIST.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+          <p className="text-sm font-semibold text-primary">
+            After your LLM draft (Copy gate)
+          </p>
+          <p className="text-sm text-neutral leading-relaxed">
+            Copy / Open LLM stay disabled until you check that you have read
+            this list and will personalize before filing:
+          </p>
+          <ul className="list-disc pl-5 text-sm text-neutral space-y-1.5 leading-relaxed">
+            {UNIQUE_AFTER_LLM_CHECKLIST.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>

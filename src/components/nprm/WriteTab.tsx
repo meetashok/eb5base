@@ -1,7 +1,11 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { PROJECT_TYPE_OPTIONS, UNIQUE_COMMENT_CHECKLIST } from '@/lib/nprm/constants';
+import {
+  PROJECT_TYPE_OPTIONS,
+  UNIQUE_AFTER_LLM_CHECKLIST,
+  UNIQUE_BEFORE_PROMPT_CHECKLIST,
+} from '@/lib/nprm/constants';
 import {
   KEY_TOPICS,
   stancesByPolarity,
@@ -995,6 +999,24 @@ export default function WriteTab({
               </p>
             </div>
           </label>
+
+          <div className="rounded-xl border-2 border-secondary/30 bg-secondary/[0.05] p-3 sm:p-4 space-y-2 text-[11px] sm:text-xs text-neutral leading-relaxed">
+            <NprmSectionHeading
+              as="h3"
+              eyebrow="Before you copy the prompt"
+              title="What to include"
+              titleClassName="text-sm font-semibold text-primary leading-snug"
+            />
+            <p>
+              Do this in the topics and personal story above so the LLM has real
+              material to work with.
+            </p>
+            <ul className="list-disc pl-5 space-y-1.5">
+              {UNIQUE_BEFORE_PROMPT_CHECKLIST.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
         </section>
 
         <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft space-y-3">
@@ -1077,16 +1099,16 @@ export default function WriteTab({
             <div className="space-y-2">
               <NprmSectionHeading
                 as="h3"
-                eyebrow="Make it yours"
+                eyebrow="After your LLM draft"
                 title="Uniqueness checklist"
                 titleClassName="text-sm font-semibold text-primary leading-snug"
               />
               <p>
-                Agencies can bucket near-identical comments as one. Read this
-                before you copy, then again after your LLM draft.
+                Agencies can bucket near-identical comments as one. Use this
+                after the model writes, before you file.
               </p>
               <ul className="list-disc pl-5 space-y-1.5">
-                {UNIQUE_COMMENT_CHECKLIST.map((item) => (
+                {UNIQUE_AFTER_LLM_CHECKLIST.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
               </ul>
@@ -1099,12 +1121,12 @@ export default function WriteTab({
                 onChange={(e) => setPrivacyOk(e.target.checked)}
               />
               <span>
-                I have read the uniqueness checklist above and will personalize
-                my comment before filing. I will not include my A-Number,
-                receipt number, home address, or other sensitive personal
-                identifiers. By using this prompt, I am acting in my own
-                capacity. EB5 Base does not submit comments for me and is not
-                liable or responsible for any comment I eventually file on
+                I have read the after-draft uniqueness checklist above and will
+                personalize my comment before filing. I will not include my
+                A-Number, receipt number, home address, or other sensitive
+                personal identifiers. By using this prompt, I am acting in my
+                own capacity. EB5 Base does not submit comments for me and is
+                not liable or responsible for any comment I eventually file on
                 regulations.gov or elsewhere. This tool is information only, not
                 legal advice.
               </span>
