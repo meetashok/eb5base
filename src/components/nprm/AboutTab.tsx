@@ -25,28 +25,39 @@ interface Props {
 
 function parseCheckLogEntries(
   raw: string
-): Array<{ when: string; detail: string }> {
-  return raw
-    .split(/\n+/)
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const sep = line.indexOf(' - ');
-      if (sep !== -1) {
-        const when = line.slice(0, sep).trim();
-        const detail = plainDash(line.slice(sep + 3).replace(/ - /g, ' · '));
-        return { when, detail };
-      }
-      // Pull script writes: `${isoStamp} first-party pull...`
-      const isoLead = line.match(/^(\d{4}-\d{2}-\d{2}T\S+)\s+(.*)$/);
-      if (isoLead) {
-        return {
-          when: isoLead[1],
-          detail: plainDash(isoLead[2].replace(/ - /g, ' · ')),
-        };
-      }
-      return { when: '', detail: plainDash(line.replace(/ - /g, ' · ')) };
-    });
+): Array<{ when: string; details: string[] }> {
+  const entries: Array<{ when: string; details: string[] }> = [];
+
+  for (const line of raw.split(/\n+/).map((l) => l.trim()).filter(Boolean)) {
+    const sep = line.indexOf(' - ');
+    if (sep !== -1) {
+      entries.push({
+        when: line.slice(0, sep).trim(),
+        details: [plainDash(line.slice(sep + 3).replace(/ - /g, ' · '))],
+      });
+      continue;
+    }
+
+    // Pull script writes: `${isoStamp} first-party pull...`
+    const isoLead = line.match(/^(\d{4}-\d{2}-\d{2}T\S+)\s+(.*)$/);
+    if (isoLead) {
+      entries.push({
+        when: isoLead[1],
+        details: [plainDash(isoLead[2].replace(/ - /g, ' · '))],
+      });
+      continue;
+    }
+
+    const detail = plainDash(line.replace(/ - /g, ' · '));
+    // Continuation lines belong to the latest stamped entry.
+    if (entries.length > 0) {
+      entries[entries.length - 1].details.push(detail);
+    } else {
+      entries.push({ when: '', details: [detail] });
+    }
+  }
+
+  return entries;
 }
 
 export default function AboutTab({
@@ -270,25 +281,35 @@ export default function AboutTab({
           </p>
           {logEntries.length > 0 ? (
             <ul className="space-y-3 rounded-lg border-2 border-base-300 bg-base-200/70 p-3 sm:p-4 overflow-auto max-h-72">
-              {logEntries.map((entry, i) => (
-                <li
-                  key={`${entry.when}-${i}`}
-                  className="flex gap-2.5 text-sm text-neutral leading-relaxed"
-                >
-                  <span
-                    className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-secondary"
-                    aria-hidden
-                  />
-                  <div className="min-w-0 space-y-0.5">
-                    {entry.when ? (
-                      <p className="text-[11px] font-bold uppercase tracking-wide text-neutral/70 tabular-nums">
-                        <LocalDateTime value={entry.when} />
-                      </p>
-                    ) : null}
-                    <p>{entry.detail}</p>
-                  </div>
-                </li>
-              ))}
+              {logEntries.map((entry, i) => {
+                const [headline, ...rest] = entry.details;
+                return (
+                  <li
+                    key={`${entry.when}-${i}`}
+                    className="flex gap-2.5 text-sm text-neutral leading-relaxed"
+                  >
+                    <span
+                      className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-secondary"
+                      aria-hidden
+                    />
+                    <div className="min-w-0 space-y-1">
+                      {entry.when ? (
+                        <p className="text-[11px] font-bold uppercase tracking-wide text-neutral/70 tabular-nums">
+                          <LocalDateTime value={entry.when} />
+                        </p>
+                      ) : null}
+                      {headline ? <p>{headline}</p> : null}
+                      {rest.length > 0 ? (
+                        <ul className="list-disc pl-4 space-y-0.5 text-sm text-neutral/85">
+                          {rest.map((detail) => (
+                            <li key={detail}>{detail}</li>
+                          ))}
+                        </ul>
+                      ) : null}
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           ) : (
             <p className="text-sm text-neutral/70 rounded-lg border-2 border-dashed border-base-300 p-3">
