@@ -113,9 +113,9 @@ export default function OverviewTab({
           title="What is this draft rule, and does it affect your EB-5 journey?"
         />
         <p className="nprm-tldr">
-          TLDR: This is a draft of new EB-5 house rules. It is not final. You can
-          tell the agency what you think before the deadline. Your comment can
-          influence what gets finalized.
+          TLDR: This is a draft of new EB-5 house rules. It is not final. As an
+          investor, you have a right and a responsibility to comment on the draft
+          before the deadline. Your comment can influence what gets finalized.
         </p>
         <p>
           Think of EB-5 as an apartment building. Congress passed a big renovation
