@@ -40,22 +40,24 @@ const INVESTOR_COMMUNITIES: ResourceLink[] = [
 
 function ResourceList({ items }: { items: ResourceLink[] }) {
   return (
-    <ul className="divide-y divide-base-300 border-y border-base-300">
+    <ul className="rounded-lg border border-base-300 divide-y divide-base-300 overflow-hidden bg-base-200/30">
       {items.map((item) => (
         <li key={item.href}>
           <a
             href={item.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-5 transition-colors hover:bg-base-200/40 -mx-2 px-2 rounded-lg"
+            className="group flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1.5 sm:gap-4 px-3 py-3 sm:px-3.5 transition-colors hover:bg-base-100"
           >
-            <div className="min-w-0 space-y-1">
-              <p className="font-bold text-primary group-hover:text-accent transition-colors">
+            <div className="min-w-0 space-y-0.5">
+              <h3 className="text-sm font-semibold text-primary leading-snug group-hover:text-secondary transition-colors">
                 {item.title}
+              </h3>
+              <p className="text-xs sm:text-sm text-neutral leading-relaxed">
+                {item.body}
               </p>
-              <p className="text-sm text-neutral/70 leading-relaxed">{item.body}</p>
             </div>
-            <span className="text-sm font-medium text-secondary shrink-0 sm:pl-6">
+            <span className="text-xs font-semibold text-secondary shrink-0 sm:pt-0.5 sm:text-right">
               {item.short}
               <span
                 aria-hidden
@@ -68,6 +70,39 @@ function ResourceList({ items }: { items: ResourceLink[] }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+function ResourceSection({
+  eyebrow,
+  title,
+  description,
+  items,
+  headingId,
+}: {
+  eyebrow: string;
+  title: string;
+  description: string;
+  items: ResourceLink[];
+  headingId: string;
+}) {
+  return (
+    <section
+      className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft space-y-3"
+      aria-labelledby={headingId}
+    >
+      <header className="space-y-1">
+        <p className="page-hero-eyebrow mb-0">{eyebrow}</p>
+        <h2
+          id={headingId}
+          className="text-base sm:text-lg font-bold text-primary leading-snug tracking-tight"
+        >
+          {title}
+        </h2>
+        <p className="text-sm text-neutral leading-relaxed">{description}</p>
+      </header>
+      <ResourceList items={items} />
+    </section>
   );
 }
 
@@ -85,35 +120,21 @@ export default function ResourcesPage() {
         }
       />
 
-      <div className="max-w-3xl mx-auto px-4 py-10 space-y-10">
-        <section className="space-y-3" aria-labelledby="community-faqs-heading">
-          <h2
-            id="community-faqs-heading"
-            className="text-lg font-bold text-primary tracking-tight"
-          >
-            Community-built FAQs
-          </h2>
-          <p className="text-sm text-neutral/70 leading-relaxed">
-            Shared FAQ documents maintained by investors in the community.
-          </p>
-          <ResourceList items={COMMUNITY_FAQS} />
-        </section>
-
-        <section
-          className="space-y-3"
-          aria-labelledby="investor-communities-heading"
-        >
-          <h2
-            id="investor-communities-heading"
-            className="text-lg font-bold text-primary tracking-tight"
-          >
-            Investor communities
-          </h2>
-          <p className="text-sm text-neutral/70 leading-relaxed">
-            Peer spaces where EB-5 investors compare notes and timelines.
-          </p>
-          <ResourceList items={INVESTOR_COMMUNITIES} />
-        </section>
+      <div className="max-w-3xl mx-auto px-4 py-8 sm:py-10 space-y-5 sm:space-y-6">
+        <ResourceSection
+          eyebrow="FAQs"
+          title="Community-built FAQs"
+          description="Shared FAQ documents maintained by investors in the community."
+          items={COMMUNITY_FAQS}
+          headingId="community-faqs-heading"
+        />
+        <ResourceSection
+          eyebrow="Communities"
+          title="Investor communities"
+          description="Peer spaces where EB-5 investors compare notes and timelines."
+          items={INVESTOR_COMMUNITIES}
+          headingId="investor-communities-heading"
+        />
       </div>
     </div>
   );
