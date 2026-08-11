@@ -250,7 +250,7 @@ export default function NprmClient({
             stats={data.stats}
             comments={data.comments}
             proposal={data.proposal}
-            onWrite={() => setTab('write')}
+            onWrite={goWrite}
             onWriteTopic={goWriteWithTopic}
             onSummary={(hash) => setTab('summary', hash)}
           />
