@@ -5,7 +5,11 @@ import { countdownParts } from '@/lib/nprm/utils';
 
 type Parts = ReturnType<typeof countdownParts>;
 
-/** Compact live deadline countdown (label + timer only). */
+function pad(n: number) {
+  return String(n).padStart(2, '0');
+}
+
+/** Live deadline clock nested inside the Overview TLDR (not its own card). */
 export default function CountdownBadge() {
   // Null until mount so SSR and first client paint match.
   const [parts, setParts] = useState<Parts | null>(null);
@@ -19,41 +23,41 @@ export default function CountdownBadge() {
 
   if (parts?.expired) {
     return (
-      <div
-        className="inline-flex flex-wrap items-baseline gap-x-3 gap-y-0.5 rounded-lg border-2 border-error/40 bg-error/10 px-3 py-2 text-error"
-        role="status"
-      >
-        <span className="text-[11px] uppercase tracking-wider font-bold opacity-80">
-          Comment deadline
+      <p className="flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5 pt-1 border-t border-secondary/20" role="status">
+        <span className="text-[11px] uppercase tracking-[0.18em] font-bold text-error/80">
+          Time left
         </span>
-        <span className="font-bold tracking-tight text-sm sm:text-base">
+        <span className="text-base sm:text-lg font-bold tracking-tight text-error">
           Window closed
         </span>
-      </div>
+      </p>
     );
   }
 
+  const dayWord = parts?.days === 1 ? 'day' : 'days';
+
   return (
-    <div
-      className="inline-flex flex-wrap items-baseline gap-x-3 gap-y-0.5 rounded-lg border-2 border-accent/50 bg-accent/20 px-3 py-2 text-primary"
+    <p
+      className="flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5 pt-1 border-t border-secondary/20"
       role="status"
     >
-      <span className="text-[11px] uppercase tracking-wider font-bold text-secondary">
-        Comment deadline
+      <span className="text-[11px] uppercase tracking-[0.18em] font-bold text-secondary">
+        Time left
       </span>
       <span
-        className="font-bold tabular-nums tracking-tight text-sm sm:text-base min-h-[1.25rem]"
+        className="font-bold tabular-nums tracking-tight text-lg sm:text-xl text-primary min-h-[1.5rem]"
         aria-live="polite"
       >
         {parts ? (
           <>
-            {parts.preciseLabel}
+            {parts.days} {dayWord} {pad(parts.hours)}:{pad(parts.minutes)}
+            <span className="text-error">:{pad(parts.seconds)}</span>
             <span className="sr-only"> remaining</span>
           </>
         ) : (
-          <span className="text-neutral/60 font-semibold">Counting down</span>
+          <span className="text-neutral/50 text-base font-semibold">—</span>
         )}
       </span>
-    </div>
+    </p>
   );
 }
