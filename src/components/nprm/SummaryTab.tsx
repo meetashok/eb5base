@@ -144,11 +144,9 @@ export default function SummaryTab({
       <div className="lg:grid lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-8 items-start">
         <nav
           aria-label="Summary sections"
-          className="hidden lg:block sticky top-[calc(var(--site-sticky-offset)+3.5rem)] space-y-1 text-sm"
+          className="hidden lg:block sticky top-[calc(var(--site-sticky-offset)+3.5rem)] space-y-1 text-sm pt-4 sm:pt-5"
         >
-          <p className="px-2 pb-2 text-xs font-bold uppercase tracking-wide text-primary">
-            Key points
-          </p>
+          <p className="page-hero-eyebrow px-2 pb-2 mb-0">Key points</p>
           {KEY_TOPICS.map((t, idx) => (
             <a
               key={t.id}
