@@ -33,6 +33,8 @@ interface Props {
 const KEY_POINTS: {
   title: string;
   body: string;
+  /** Actionable angles investors can raise in a comment. */
+  commentItems: string[];
   /** Federal Register HTML heading id (deep link). */
   frHeadingId: string;
   frSectionLabel: string;
@@ -43,13 +45,25 @@ const KEY_POINTS: {
     title:
       'You may get your investment back after about 2 years, not after many years',
     body: 'Old practice often kept your money stuck until the green card path moved, which for India and China backlogs could mean years of redeployment risk. The draft says capital only needs to stay invested for about 2 years after it is made available to the JCE, once the required jobs are created. That is the sustainment clock investors have been waiting to see written into regulation. If finalized this way, many post-RIA investors can plan for return of capital even before getting CGC.',
+    commentItems: [
+      'Say the 2-year clock should start when capital is made available to the JCE, not when your visa becomes current.',
+      'Ask DHS to confirm you can receive return of capital after 2 years and job creation, even before CGC.',
+      'Oppose forced redeployment into a new project you did not choose after the sustainment period ends.',
+      'Ask for clear rules on escrowed capital: when the 2-year expectation starts after release to the project.',
+    ],
     frHeadingId: 'h-66',
     frSectionLabel: 'IV.D.6 Duration of Investment',
   },
   {
     title:
       'Repaid bridge financing may no longer count toward proving your 10 jobs',
-    body: 'Today, under the USCIS Policy Manual (not a final regulation), investors can often still claim jobs created with short-term bridge financing that EB-5 capital later repays. The NPRM would change that: jobs from financing repaid with EB-5 money would not count as jobs created by that EB-5 capital. That is draft language only. It is not law yet, and RIA itself did not ban bridge financing. DHS also says the rule would generally apply prospectively to petitions filed on or after the final rule\'s effective date, not automatically to every post-RIA filing from March 2022 onward. The open risk is I-829 and transition wording: commenters are asking DHS to say expressly that pending bridge-based projects keep the old Policy Manual treatment.',
+    body: 'Today, under the USCIS Policy Manual (not a final regulation), investors can often still claim jobs created with short-term bridge financing that EB-5 capital later repays. The NPRM would change that: jobs from financing repaid with EB-5 money would not count as jobs created by that EB-5 capital. That is draft language only. It is not law yet, and RIA itself did not ban bridge financing. DHS also says the rule would generally apply prospectively to petitions filed on or after the final rule\'s effective date, not automatically to every post-RIA filing from March 2022 onward.',
+    commentItems: [
+      'Ask DHS to say expressly that any bridge change applies only to petitions filed on or after the final rule\'s effective date.',
+      'Ask that pending I-526E / I-829 cases keep the current Policy Manual treatment for already-structured bridge projects.',
+      'Prefer restricting bridge (for example maturity limits or share of project cost) over eliminating it entirely.',
+      'Ask DHS to grandfather projects with an I-956F filed before the final rule takes effect.',
+    ],
     frHeadingId: 'h-67',
     frSectionLabel: 'IV.D.7 Job Creation Requirements and Bridge Financing',
     inlineLinks: [
@@ -64,7 +78,13 @@ const KEY_POINTS: {
   {
     title:
       'If your regional center fails, you keep your place in line for about 180 days',
-    body: 'When a regional center is terminated, good-faith investors have historically faced chaos over whether their petition and priority date survive. The draft formalizes a roughly 180-day window to re-associate with a compliant sponsor, keep your place in the visa line, and use Form I-527 where needed. If you already finished 2 years of sustainment and job creation, you may not need to reinvest just because the center later fails. The open comment fight is whether 180 days is long enough once new-sponsor diligence and paperwork stack up.',
+    body: 'When a regional center is terminated, good-faith investors have historically faced chaos over whether their petition and priority date survive. The draft formalizes a roughly 180-day window to re-associate with a compliant sponsor, keep your place in the visa line, and use Form I-527 where needed. If you already finished 2 years of sustainment and job creation, you may not need to reinvest just because the center later fails.',
+    commentItems: [
+      'Ask whether 180 days is long enough once new-sponsor diligence, counsel, and I-527 paperwork stack up.',
+      'Ask for tolling or extra time when USCIS delay or notice timing eats into the window.',
+      'Confirm you keep your priority date when you re-associate in good faith.',
+      'Confirm no new investment is required if you already completed 2 years of sustainment and job creation.',
+    ],
     frHeadingId: 'h-72',
     frSectionLabel: 'IV.D.9.c Terminations and Debarments (good-faith protections)',
   },
@@ -72,6 +92,12 @@ const KEY_POINTS: {
     title:
       '$800K stays for now; a new $1.4M tier and Jan 1, 2027 inflation hike are proposed',
     body: 'Rural and high-unemployment TEA projects stay at $800K today and the standard minimum investment amount stays at $1.05M, matching post-RIA practice. The draft also adds a new high-employment area tier around $1.4M for projects in areas with unusually low unemployment. Automatic inflation adjustments are proposed for Jan 1, 2027 and every 5 years after. Future filers should treat those dates as hard planning points; people already in should confirm their tier is locked and watch how grandfathering is written in the final rule.',
+    commentItems: [
+      'Ask DHS to lock the investment amount and tier at the petition filing date, including through the Jan 1, 2027 inflation date.',
+      'Comment on whether a new $1.4M high-employment area tier is needed, and how HEA is defined.',
+      'Ask USCIS to publish adjusted amounts early and clearly on its website before each inflation date.',
+      'Confirm TEA and infrastructure remain at 75% of the standard minimum after each inflation adjustment.',
+    ],
     frHeadingId: 'h-59',
     frSectionLabel: 'IV.D.4 Investment Amounts',
   },
@@ -79,12 +105,24 @@ const KEY_POINTS: {
     title:
       'USCIS, not states, decides if a project qualifies for the lower amount',
     body: 'Whether a project gets the $800K TEA amount is decided centrally by USCIS under proposed methodology for high-unemployment and rural designations, not primarily by state designation letters. That can make outcomes more consistent nationwide, but it also means investors and developers need the data sources and census boundaries to be transparent and challengeable. A wrong TEA call is the difference between $800K and a higher tier, so methodology comments matter before the rule locks in.',
+    commentItems: [
+      'Ask DHS to publish the unemployment data sources, formulas, and census boundaries it will use.',
+      'Ask that TEA status lock at I-526E filing for later I-829 review.',
+      'Ask for a clear way to challenge a wrong TEA determination before capital is stuck.',
+      'Comment on rural vs high-unemployment methodology so the $800K path stays predictable.',
+    ],
     frHeadingId: 'h-73',
     frSectionLabel: 'IV.E Targeted Employment Areas',
   },
   {
     title: 'More audits and fines for regional centers',
-    body: 'The draft expands audits, site visits, reporting duties, and tiered penalties, including examples like late annual statement fines and sanctions up to a percentage of capital. Stronger oversight can protect investors from weak sponsors, but fixed compliance costs land hardest on small and single-project centers. That may shrink the pool of sponsors, raise fees passed through to investors, or push more capital into larger multi-project operators. Comments can ask for proportional rules so integrity gains do not wipe out rural and smaller projects.',
+    body: 'The draft expands audits, site visits, reporting duties, and tiered penalties, including examples like late annual statement fines and sanctions up to a percentage of capital. Stronger oversight can protect investors from weak sponsors, but fixed compliance costs land hardest on small and single-project centers. That may shrink the pool of sponsors, raise fees passed through to investors, or push more capital into larger multi-project operators.',
+    commentItems: [
+      'Ask that fines and compliance costs be proportional so small and single-project regional centers are not forced out.',
+      'Ask DHS to publish realistic compliance-cost data, especially for rural and smaller sponsors.',
+      'Support strong audits against fraud while protecting good-faith investors if a center is sanctioned.',
+      'Ask how integrity rules will avoid shrinking the pool of rural and TEA projects investors rely on.',
+    ],
     frHeadingId: 'h-100',
     frSectionLabel: 'IV.H.8 Enforcement (penalties, terminations) and Audits',
   },
@@ -359,6 +397,26 @@ export default function OverviewTab({
               <p className="text-sm text-neutral leading-relaxed">
                 <KeyPointBody text={point.body} links={point.inlineLinks} />
               </p>
+              <div className="border-t border-base-300 pt-2.5 space-y-1.5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-secondary">
+                  What to comment on
+                </p>
+                <ul className="list-disc pl-4 space-y-1.5 text-sm text-neutral leading-relaxed">
+                  {point.commentItems.map((item) => (
+                    <li key={item}>
+                      <GlossaryText text={item} />
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  type="button"
+                  onClick={onWrite}
+                  data-goatcounter-click="nprm-build-comment"
+                  className="text-xs font-semibold text-secondary underline underline-offset-2 hover:text-primary pt-0.5"
+                >
+                  Build a comment on this
+                </button>
+              </div>
               <p className="text-xs">
                 <a
                   href={`${FR_HTML}#${point.frHeadingId}`}
