@@ -136,8 +136,7 @@ export default function OverviewTab({
           >
             358-page PDF
           </a>
-          , published July 2, 2026. After the comment period, they will publish
-          the final rulebook.
+          . After the comment period, they will publish the final rulebook.
         </p>
         <p className="font-semibold text-primary">
           This draft impacts your EB-5 journey:
