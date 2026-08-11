@@ -104,7 +104,7 @@ export default function OverviewTab({
   const sourceUrl = proposal?.source_url || FR_PDF;
 
   return (
-    <div className="space-y-8 animate-[fadeIn_0.35s_ease-out] nprm-prose">
+    <div className="max-w-3xl mx-auto space-y-8 animate-[fadeIn_0.35s_ease-out] nprm-prose">
       <header
         className="space-y-4 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft"
         id="what-is-nprm"
