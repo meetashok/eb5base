@@ -189,43 +189,100 @@ export default function AboutTab({
         </p>
       </section>
 
-      <section className="space-y-3 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
+      <section className="space-y-4 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
         <NprmSectionHeading
           as="h2"
           eyebrow="Accuracy"
-          title="How we keep this accurate"
+          title="How we built this, and how we keep it honest"
         />
-        <p className="text-sm text-neutral leading-relaxed">
-          We keep a dated record of every update to this guide and the public comment
-          summaries, so you can see what changed and when. That history helps us stay
-          transparent, catch mistakes, and point each summary back to the original
-          filing on regulations.gov. Right now we track {totalComments} comments.
-          Last refresh: {lastPull}.
-        </p>
-        {logEntries.length > 0 ? (
-          <ul className="space-y-3 rounded-lg border-2 border-base-300 bg-base-200/70 p-3 sm:p-4 overflow-auto max-h-72">
-            {logEntries.map((entry, i) => (
-              <li
-                key={`${entry.when}-${i}`}
-                className="flex gap-2.5 text-sm text-neutral leading-relaxed"
-              >
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-secondary" aria-hidden />
-                <div className="min-w-0 space-y-0.5">
-                  {entry.when ? (
-                    <p className="text-[11px] font-bold uppercase tracking-wide text-neutral/70 tabular-nums">
-                      {entry.when}
-                    </p>
-                  ) : null}
-                  <p>{entry.detail}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-sm text-neutral/70 rounded-lg border-2 border-dashed border-base-300 p-3">
-            check.log unavailable
+
+        <div className="space-y-2">
+          <h3 className="text-sm font-bold text-primary">
+            Overview and Summary topics
+          </h3>
+          <p className="text-sm text-neutral leading-relaxed">
+            Every topic on Overview and Summary starts from the official draft
+            rule (Federal Register Doc 2026-13392 / Docket USCIS-2026-0100). We
+            read the notice, drafted a short plain-English Overview point for
+            each issue, then expanded it into a longer Summary writeup (with AI
+            help for drafting and editing). Agree and disagree angles both show
+            honest pros and cons so the page does not push one side. These are
+            still paraphrases. They can miss nuance or get something wrong. Use
+            the Federal Register links in each topic section to verify the
+            primary text before you rely on any claim here.
           </p>
-        )}
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="text-sm font-bold text-primary">Public comments</h3>
+          <p className="text-sm text-neutral leading-relaxed">
+            Comments come from the regulations.gov API for this docket, not from
+            a third-party social feed. We pull on a daily cadence, normalize each
+            filing into a common shape (id, link, posted date, theme tags, poster
+            type), and label posters only as Anonymous, Named person, or
+            Organization. Person and company names are stripped from the summary
+            voice so browsing stays comparable across filers. For each comment we
+            generate a short automated summary from the posted body text
+            (&quot;This comment…&quot; voice); attachment-only filings get a note
+            to open the original on regulations.gov. Summaries can miss context or
+            mis-weight a point, so open the linked filing when it matters. Right
+            now we track {totalComments} comments. Last refresh: {lastPull}.
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="text-sm font-bold text-primary">
+            Write tab prompt builder
+          </h3>
+          <p className="text-sm text-neutral leading-relaxed">
+            The Write tab builds a prompt for your own LLM; we never draft or
+            POST the comment for you. You choose whether to comment on each
+            topic, and whether you generally agree or disagree with the draft.
+            The prompt only includes the angles you select plus your personal
+            story. Safeguards baked into that prompt: use only facts you
+            provided; do not invent dates, amounts, project names, or legal
+            conclusions; do not copy sample comments into a form letter; prefer
+            concrete asks to DHS/USCIS over vague opposition; and cite only the
+            FR / CFR references listed for your selected issues. The tool is
+            stance-neutral: it scaffolds whichever side you pick, with the same
+            structure and rules, so it does not lobby for agree or disagree.
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="text-sm font-bold text-primary">Change log</h3>
+          <p className="text-sm text-neutral leading-relaxed">
+            We keep a dated record of guide and comment-data refreshes so you can
+            see what changed and when.
+          </p>
+          {logEntries.length > 0 ? (
+            <ul className="space-y-3 rounded-lg border-2 border-base-300 bg-base-200/70 p-3 sm:p-4 overflow-auto max-h-72">
+              {logEntries.map((entry, i) => (
+                <li
+                  key={`${entry.when}-${i}`}
+                  className="flex gap-2.5 text-sm text-neutral leading-relaxed"
+                >
+                  <span
+                    className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-secondary"
+                    aria-hidden
+                  />
+                  <div className="min-w-0 space-y-0.5">
+                    {entry.when ? (
+                      <p className="text-[11px] font-bold uppercase tracking-wide text-neutral/70 tabular-nums">
+                        {entry.when}
+                      </p>
+                    ) : null}
+                    <p>{entry.detail}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-neutral/70 rounded-lg border-2 border-dashed border-base-300 p-3">
+              check.log unavailable
+            </p>
+          )}
+        </div>
       </section>
     </div>
   );
