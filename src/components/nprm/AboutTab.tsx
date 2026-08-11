@@ -71,39 +71,6 @@ export default function AboutTab({
         </p>
       </section>
 
-      <section className="space-y-2 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
-        <NprmSectionHeading
-          as="h2"
-          eyebrow="Sources"
-          title="Proposal summary sources"
-        />
-        <p className="text-sm text-neutral leading-relaxed">
-          Overview proposal summaries are plain-language paraphrases of Federal
-          Register Doc 2026-13392 (Vol 91 No 126, July 2 2026, RIN 1615-AC94).
-          Every statement cites the FR section and page it paraphrases. We do not
-          invent facts. For the official text, read{' '}
-          <a
-            href={proposalUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold text-secondary underline underline-offset-2 break-all"
-          >
-            {proposalUrl}
-          </a>
-          .
-        </p>
-        {proposal?.plain_language_note ? (
-          <p className="text-sm text-neutral leading-relaxed">
-            {proposal.plain_language_note}
-          </p>
-        ) : null}
-        {proposal?.source_document ? (
-          <p className="text-xs text-neutral/80 leading-relaxed">
-            Source document: {proposal.source_document}
-          </p>
-        ) : null}
-      </section>
-
       <section className="space-y-3 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
         <NprmSectionHeading
           as="h2"
@@ -202,15 +169,29 @@ export default function AboutTab({
           </h3>
           <p className="text-sm text-neutral leading-relaxed">
             Every topic on Overview and Summary starts from the official draft
-            rule (Federal Register Doc 2026-13392 / Docket USCIS-2026-0100). We
-            read the notice, drafted a short plain-English Overview point for
-            each issue, then expanded it into a longer Summary writeup (with AI
-            help for drafting and editing). Agree and disagree angles both show
-            honest pros and cons so the page does not push one side. These are
-            still paraphrases. They can miss nuance or get something wrong. Use
-            the Federal Register links in each topic section to verify the
-            primary text before you rely on any claim here.
+            rule (Federal Register Doc 2026-13392, Vol 91 No 126, July 2 2026,
+            RIN 1615-AC94 / Docket USCIS-2026-0100). We read the notice, drafted
+            a short plain-English Overview point for each issue, then expanded it
+            into a longer Summary writeup (with AI help for drafting and
+            editing). Agree and disagree angles both show honest pros and cons so
+            the page does not push one side. These are still paraphrases. They
+            can miss nuance or get something wrong. Use the Federal Register
+            links in each topic section, or the full notice at{' '}
+            <a
+              href={proposalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-secondary underline underline-offset-2 break-all"
+            >
+              {proposalUrl}
+            </a>
+            , before you rely on any claim here.
           </p>
+          {proposal?.source_document ? (
+            <p className="text-xs text-neutral/80 leading-relaxed">
+              Source document: {proposal.source_document}
+            </p>
+          ) : null}
         </div>
 
         <div className="space-y-2">
