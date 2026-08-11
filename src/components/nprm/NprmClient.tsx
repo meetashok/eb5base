@@ -19,9 +19,7 @@ import {
 import GlossaryTerm from '@/components/nprm/GlossaryTerm';
 import {
   DOCKET_URL,
-  FR_HTML,
   FR_PDF,
-  formatLastPull,
 } from '@/lib/nprm/utils';
 
 export type { NprmTabId } from '@/lib/nprm/tabs';
@@ -138,25 +136,14 @@ export default function NprmClient({
               </a>{' '}
               that finally codifies the EB-5{' '}
               <GlossaryTerm term="RIA">Reform and Integrity Act</GlossaryTerm>{' '}
-              of 2022. Comments close August 31, 2026.
-            </p>
-            <p>
-              Comment data as of {formatLastPull(data.stats.last_pull)} ·{' '}
-              <a
-                href={FR_HTML}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold text-secondary underline underline-offset-2"
-              >
-                Federal Register
-              </a>
-              {' · '}
+              of 2022. Comments close August 31, 2026.{' '}
               <Link
                 href="/about#disclaimer"
                 className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
               >
                 Not legal advice
               </Link>
+              .
             </p>
           </div>
         }
