@@ -1067,7 +1067,7 @@ export default function WriteTab({
             </pre>
           </div>
 
-          <div className="rounded-xl border-2 border-warning/50 bg-warning/15 p-3 sm:p-4 space-y-3">
+          <div className="rounded-xl border-2 border-warning/50 bg-warning/15 p-3 sm:p-4 space-y-3 text-sm text-amber-950/90 leading-relaxed">
             <div className="space-y-2">
               <NprmSectionHeading
                 as="h3"
@@ -1075,17 +1075,17 @@ export default function WriteTab({
                 title="Uniqueness checklist"
                 titleClassName="text-sm font-semibold text-primary leading-snug"
               />
-              <p className="text-xs text-amber-950/80 leading-relaxed">
+              <p>
                 Agencies can bucket near-identical comments as one. Read this
                 before you copy, then again after your LLM draft.
               </p>
-              <ul className="list-disc pl-5 text-sm text-amber-950/90 space-y-1.5 leading-relaxed">
+              <ul className="list-disc pl-5 space-y-1.5">
                 {UNIQUE_COMMENT_CHECKLIST.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
               </ul>
             </div>
-            <label className="flex items-start gap-2.5 text-[11px] sm:text-xs text-amber-950/90 cursor-pointer leading-relaxed">
+            <label className="flex items-start gap-2.5 cursor-pointer">
               <input
                 type="checkbox"
                 className="checkbox checkbox-sm mt-0.5 shrink-0"

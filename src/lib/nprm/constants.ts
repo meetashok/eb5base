@@ -50,9 +50,7 @@ export const UNIQUE_COMMENT_CHECKLIST = [
   'Open with your timeline: when you put capital in or filed, and who in your family is affected. Skip generic “post-RIA investor” alone.',
   'State one concrete fear in your own words (redeployment notice, ageing-out year, funds still in escrow).',
   'Cover 1-2 issues you actually lived. Do not stack every template topic.',
-  'After the LLM draft, rewrite the opening and closing yourself. Change section labels. Cut repeated “I ask DHS/USCIS” lines.',
-  'Rewrite more than 30% of any AI draft before you file.',
-  'Never paste chat preamble into regulations.gov (no “Here is a tighter version…”, no word or character-limit talk).',
+  'After the LLM draft, rewrite the opening and closing yourself (more than 30%). Cut repeated “I ask DHS/USCIS” lines, and never paste chat preamble into regulations.gov.',
 ] as const;
 
 export const PROJECT_TYPE_OPTIONS = [
