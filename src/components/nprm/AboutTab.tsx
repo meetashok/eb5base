@@ -277,10 +277,10 @@ export default function AboutTab({
           <p className="text-sm text-neutral leading-relaxed">
             Before you copy the prompt, Step A asks you to focus on 1-2 lived
             issues, and the personal-story tips ask for timeline, one concrete
-            fear, a rule cite, and anonymized details. After your LLM draft, the
-            Copy gate shows this uniqueness checklist. Copy / Open LLM stay
-            disabled until you check that you have read it and will personalize
-            before filing:
+            fear, a rule cite, and anonymized details. Copy / Open LLM stay
+            disabled until you accept the privacy disclaimer. After you copy,
+            &quot;What to do after you copy&quot; walks through editing the LLM
+            draft in your voice with this checklist:
           </p>
           <ul className="list-disc pl-5 text-sm text-neutral space-y-1.5 leading-relaxed">
             {UNIQUE_AFTER_LLM_CHECKLIST.map((item) => (

@@ -671,7 +671,7 @@ export default function WriteTab({
   async function copyText(text: string) {
     if (!ready) {
       toast(
-        'Finish at least one topic and accept the checklist disclaimer first',
+        'Finish at least one topic and accept the privacy disclaimer first',
         'error'
       );
       return;
@@ -694,7 +694,7 @@ export default function WriteTab({
   async function openInLlm(llm: (typeof LLM_LINKS)[number]) {
     if (!ready) {
       toast(
-        'Finish at least one topic and accept the checklist disclaimer first',
+        'Finish at least one topic and accept the privacy disclaimer first',
         'error'
       );
       return;
@@ -1073,24 +1073,7 @@ export default function WriteTab({
             </pre>
           </div>
 
-          <div className="rounded-xl border-2 border-warning/50 bg-warning/15 p-3 sm:p-4 space-y-3 text-[11px] sm:text-xs text-amber-950/90 leading-relaxed">
-            <div className="space-y-2">
-              <NprmSectionHeading
-                as="h3"
-                eyebrow="After your LLM draft"
-                title="Uniqueness checklist"
-                titleClassName="text-sm font-semibold text-primary leading-snug"
-              />
-              <p>
-                Agencies can bucket near-identical comments as one. Use this
-                after the model writes, before you file.
-              </p>
-              <ul className="list-disc pl-5 space-y-1.5">
-                {UNIQUE_AFTER_LLM_CHECKLIST.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
+          <div className="rounded-xl border-2 border-warning/50 bg-warning/15 p-3 sm:p-4 text-[11px] sm:text-xs text-amber-950/90 leading-relaxed">
             <label className="flex items-start gap-2.5 cursor-pointer">
               <input
                 type="checkbox"
@@ -1099,14 +1082,13 @@ export default function WriteTab({
                 onChange={(e) => setPrivacyOk(e.target.checked)}
               />
               <span>
-                I have read the after-draft uniqueness checklist above and will
-                personalize my comment before filing. I will not include my
-                A-Number, receipt number, home address, or other sensitive
-                personal identifiers. By using this prompt, I am acting in my
-                own capacity. EB5 Base does not submit comments for me and is
-                not liable or responsible for any comment I eventually file on
-                regulations.gov or elsewhere. This tool is information only, not
-                legal advice.
+                I understand this tool drafts a prompt for me to review and edit.
+                I will not include my A-Number, receipt number, home address, or
+                other sensitive personal identifiers. By using this prompt, I am
+                acting in my own capacity. EB5 Base does not submit comments for
+                me and is not liable or responsible for any comment I eventually
+                file on regulations.gov or elsewhere. This tool is information
+                only, not legal advice.
               </span>
             </label>
           </div>
@@ -1127,7 +1109,7 @@ export default function WriteTab({
               title={
                 ready
                   ? 'Copy full prompt for your LLM'
-                  : 'Finish at least one topic and accept the checklist disclaimer first'
+                  : 'Finish at least one topic and accept the privacy disclaimer first'
               }
               onClick={() => copyText(prompt)}
             >
@@ -1156,7 +1138,7 @@ export default function WriteTab({
               title="What to do after you copy"
               titleClassName="text-sm font-semibold text-primary leading-snug"
             />
-            <ol className="list-decimal pl-5 text-sm text-neutral space-y-1.5 leading-relaxed">
+            <ol className="list-decimal pl-5 text-sm text-neutral space-y-2 leading-relaxed">
               <li>
                 Paste the prompt into your own LLM
                 {LLM_LINKS.map((llm) => (
@@ -1172,7 +1154,7 @@ export default function WriteTab({
                       title={
                         ready
                           ? `Copy prompt and open ${llm.label}`
-                          : 'Finish at least one topic and accept the checklist disclaimer first'
+                          : 'Finish at least one topic and accept the privacy disclaimer first'
                       }
                       onClick={() => openInLlm(llm)}
                     >
@@ -1182,8 +1164,15 @@ export default function WriteTab({
                 ))}
               </li>
               <li>
-                Edit the draft in your voice: rewrite the opening and closing,
-                and aim for more than 30% personal rewrite
+                <span>
+                  Edit the draft in your voice so agencies do not bucket it with
+                  near-identical filings:
+                </span>
+                <ul className="list-disc pl-5 mt-1.5 space-y-1 text-sm">
+                  {UNIQUE_AFTER_LLM_CHECKLIST.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
               </li>
               <li>
                 Paste the final comment on{' '}
@@ -1195,7 +1184,6 @@ export default function WriteTab({
                 >
                   regulations.gov
                 </a>
-                ; never paste chat preamble
               </li>
               <li>
                 Optional: ask your immigration attorney to review the draft
