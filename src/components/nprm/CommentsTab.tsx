@@ -59,8 +59,11 @@ export default function CommentsTab({
   const themeOptions = useMemo(() => {
     const counts = new Map<string, { id: string; label: string; count: number }>();
     for (const c of comments) {
-      const id = c.themeId || 'unknown';
-      const label = themeLabel(c, themes) || id;
+      const id = c.themeId || 'other';
+      const rawLabel = themeLabel(c, themes);
+      const label =
+        rawLabel ||
+        (id === 'other' || id === 'unknown' ? 'Other' : id);
       const prev = counts.get(id);
       if (prev) prev.count += 1;
       else counts.set(id, { id, label, count: 1 });
@@ -79,7 +82,7 @@ export default function CommentsTab({
       const posterType =
         c.posterType || parsePoster(c.attributes?.title).posterType;
       if (posterFilter !== 'all' && posterType !== posterFilter) return false;
-      if (themeFilter !== 'all' && (c.themeId || 'unknown') !== themeFilter) {
+      if (themeFilter !== 'all' && (c.themeId || 'other') !== themeFilter) {
         return false;
       }
       if (q) {
@@ -167,17 +170,8 @@ export default function CommentsTab({
           >
             regulations.gov
           </a>{' '}
-          (Verify link on each card). This list may lag newer filings after{' '}
-          <LocalDateTime value={lastPull} />. Source:{' '}
-          <a
-            href={DOCKET_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold underline underline-offset-2 hover:text-primary"
-          >
-            regulations.gov
-          </a>{' '}
-          via api.data.gov.
+          (see full comment on each card). This list may lag newer filings after{' '}
+          <LocalDateTime value={lastPull} />.
         </p>
       </div>
 
@@ -295,7 +289,7 @@ export default function CommentsTab({
                       rel="noopener noreferrer"
                       className="text-[11px] font-semibold text-secondary underline underline-offset-2"
                     >
-                      Verify ↗
+                      See full comment ↗
                     </a>
                   </div>
                 </header>
@@ -353,9 +347,9 @@ export default function CommentsTab({
           </p>
           <p className="text-sm text-neutral leading-relaxed">
             {totalComments ?? comments.length} comments tracked · last pull{' '}
-            <LocalDateTime value={lastPull} />. Summaries can miss nuance, so use
-            Verify on each card (and the docket) before you rely on any claim.
-            Full methodology and disclaimers are on About.
+            <LocalDateTime value={lastPull} />. Summaries can miss nuance, so open
+            See full comment on each card (and the docket) before you rely on any
+            claim. Full methodology and disclaimers are on About.
           </p>
         </div>
         {onAbout ? (
