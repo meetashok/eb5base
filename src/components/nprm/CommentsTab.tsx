@@ -289,7 +289,7 @@ export default function CommentsTab({
                       rel="noopener noreferrer"
                       className="text-[11px] font-semibold text-secondary underline underline-offset-2"
                     >
-                      Verify ↗
+                      See full comment ↗
                     </a>
                   </div>
                 </header>
@@ -347,9 +347,9 @@ export default function CommentsTab({
           </p>
           <p className="text-sm text-neutral leading-relaxed">
             {totalComments ?? comments.length} comments tracked · last pull{' '}
-            <LocalDateTime value={lastPull} />. Summaries can miss nuance, so use
-            Verify on each card (and the docket) before you rely on any claim.
-            Full methodology and disclaimers are on About.
+            <LocalDateTime value={lastPull} />. Summaries can miss nuance, so open
+            See full comment on each card (and the docket) before you rely on any
+            claim. Full methodology and disclaimers are on About.
           </p>
         </div>
         {onAbout ? (
