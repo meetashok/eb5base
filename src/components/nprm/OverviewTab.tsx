@@ -106,7 +106,7 @@ function KeyPointBody({
 }) {
   if (!links?.length) return <GlossaryText text={text} />;
 
-  const nodes: React.ReactNode[] = [];
+  const nodes: ReactNode[] = [];
   let remaining = text;
   let pending = [...links];
   let key = 0;
