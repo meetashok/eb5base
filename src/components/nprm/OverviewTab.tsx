@@ -108,13 +108,13 @@ function PolarityAngles({
           : 'border-warning bg-warning/5'
       }`}
     >
-      <p
+      <div
         className={`text-xs font-bold ${
           isAgree ? 'text-secondary' : 'text-warning'
         }`}
       >
         {title}
-      </p>
+      </div>
       <ul className="list-disc pl-4 space-y-1.5 text-sm text-neutral leading-relaxed">
         {items.map((item) => (
           <li key={item}>

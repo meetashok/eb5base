@@ -75,13 +75,13 @@ function PolaritySection({
           : 'border-warning bg-warning/5'
       }`}
     >
-      <p
+      <div
         className={`text-sm font-bold ${
           isAgree ? 'text-secondary' : 'text-warning'
         }`}
       >
         {title}
-      </p>
+      </div>
       <div className="space-y-3">
         {stances.map((s) => (
           <StanceBlock key={s.id} stance={s} />
