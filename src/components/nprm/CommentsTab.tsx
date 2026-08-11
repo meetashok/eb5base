@@ -150,8 +150,10 @@ export default function CommentsTab({
           }
         >
           <p className="text-sm text-neutral leading-relaxed">
-            <GlossaryText text="Anonymized summaries of comments filed on Docket USCIS-2026-0100. Sorted by posted date, newest first. Data as of last pull: " />
-            <LocalDateTime value={lastPull} />.
+            Anonymized summaries of comments filed so far.
+          </p>
+          <p className="text-[11px] text-neutral/70 leading-relaxed">
+            Last updated <LocalDateTime value={lastPull} />.
           </p>
         </NprmSectionHeading>
         <p className="text-xs leading-relaxed text-amber-800 bg-amber-50 border border-amber-200/80 rounded-md px-2.5 py-1.5">
