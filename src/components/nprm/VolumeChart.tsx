@@ -60,7 +60,7 @@ function axisTickIndices(length: number, count = 4): number[] {
   for (let i = 0; i < n; i++) {
     idxs.add(Math.round((i / (n - 1)) * (length - 1)));
   }
-  return [...idxs].sort((a, b) => a - b);
+  return Array.from(idxs).sort((a, b) => a - b);
 }
 
 function toSeries(data: VolumePoint[]): SeriesPoint[] {
