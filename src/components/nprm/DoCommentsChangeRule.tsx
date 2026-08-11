@@ -33,9 +33,9 @@ export default function DoCommentsChangeRule() {
         reported that comments led to substantive changes in final rules, and the
         Office of the Federal Register says persuasive comments can reshape a
         proposal. Even though this is not a vote, unique investor stories put
-        concrete harms on the record so they must be addressed,{' '}
+        concrete harms on the record so they must be addressed—{' '}
         <strong className="font-bold text-primary">
-          especially when other voices push only to tighten the program
+          including how the proposal affects families already in the process
         </strong>
         . Add yours to the record.
       </p>
