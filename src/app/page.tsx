@@ -165,18 +165,10 @@ export default function HomePage() {
 
       <section className="max-w-6xl mx-auto px-4 pb-6 text-center">
         <p className="text-sm text-neutral/60 max-w-xl mx-auto leading-relaxed">
-          Questions?{' '}
+          Questions or feedback?{' '}
           <a href="mailto:hello@eb5base.com" className="link link-secondary font-medium">
             hello@eb5base.com
           </a>
-          {' · '}
-          <Link href="/about" className="link link-secondary font-medium">
-            About EB5 Base
-          </Link>
-          {' · '}
-          <Link href="/about#disclaimer" className="link link-secondary font-medium">
-            Disclaimer
-          </Link>
         </p>
       </section>
     </div>
