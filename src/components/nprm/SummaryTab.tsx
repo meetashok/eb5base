@@ -140,7 +140,7 @@ export default function SummaryTab({
               className="block rounded-md px-2 py-1.5 text-neutral hover:bg-base-200 hover:text-primary font-medium"
             >
               <span className="text-secondary tabular-nums mr-1">{idx + 1}.</span>
-              {t.title.length > 42 ? `${t.title.slice(0, 40)}…` : t.title}
+              {t.shortTitle}
             </a>
           ))}
         </nav>
@@ -153,7 +153,7 @@ export default function SummaryTab({
                 href={`#${topicSectionId(t.id)}`}
                 className="rounded-md border border-base-300 bg-base-100 px-3 py-1 text-xs font-semibold text-neutral"
               >
-                {idx + 1}. {t.title.split(',')[0]}
+                {idx + 1}. {t.shortTitle}
               </a>
             ))}
           </div>

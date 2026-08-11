@@ -16,6 +16,7 @@ export const KEY_TOPICS: KeyTopic[] = [
     id: 'sustainment',
     title:
       'You may get your investment back after about 2 years, not after many years',
+    shortTitle: 'Capital back after about 2 years',
     body: 'Old practice often kept your money stuck until the green card path moved, which for India and China backlogs could mean years of redeployment risk. The draft says capital only needs to stay invested for about 2 years after it is made available to the JCE, once the required jobs are created. That is the sustainment clock investors have been waiting to see written into regulation. If finalized this way, many post-RIA investors can plan for return of capital even before getting CGC.',
     frHeadingId: 'h-66',
     frSectionLabel: 'IV.D.6 Duration of Investment',
@@ -76,6 +77,7 @@ export const KEY_TOPICS: KeyTopic[] = [
     id: 'bridge_financing',
     title:
       'Repaid bridge financing may no longer count toward proving your 10 jobs',
+    shortTitle: 'Bridge financing and your 10 jobs',
     body: 'Today, under the USCIS Policy Manual (not a final regulation), investors can often still claim jobs created with short-term bridge financing that EB-5 capital later repays. The NPRM would change that: jobs from financing repaid with EB-5 money would not count as jobs created by that EB-5 capital. That is draft language only. It is not law yet, and RIA itself did not ban bridge financing. DHS also says the rule would generally apply prospectively to petitions filed on or after the final rule\'s effective date, not automatically to every post-RIA filing from March 2022 onward.',
     frHeadingId: 'h-67',
     frSectionLabel: 'IV.D.7 Job Creation Requirements and Bridge Financing',
@@ -144,6 +146,7 @@ export const KEY_TOPICS: KeyTopic[] = [
     id: 'good_faith',
     title:
       'If your regional center fails, you keep your place in line for about 180 days',
+    shortTitle: 'If your regional center fails',
     body: 'When a regional center is terminated, good-faith investors have historically faced chaos over whether their petition and priority date survive. The draft formalizes a roughly 180-day window to re-associate with a compliant sponsor, keep your place in the visa line, and use Form I-527 where needed. If you already finished 2 years of sustainment and job creation, you may not need to reinvest just because the center later fails.',
     frHeadingId: 'h-72',
     frSectionLabel: 'IV.D.9.c Terminations and Debarments (good-faith protections)',
@@ -203,6 +206,7 @@ export const KEY_TOPICS: KeyTopic[] = [
     id: 'investment_amounts',
     title:
       '$800K stays for now; a new $1.4M tier and Jan 1, 2027 inflation hike are proposed',
+    shortTitle: '$800K, $1.4M tier, and 2027 hike',
     body: 'Rural and high-unemployment TEA projects stay at $800K today and the standard minimum investment amount stays at $1.05M, matching post-RIA practice. The draft also adds a new high-employment area tier around $1.4M for projects in areas with unusually low unemployment. Automatic inflation adjustments are proposed for Jan 1, 2027 and every 5 years after. Future filers should treat those dates as hard planning points; people already in should confirm their tier is locked and watch how grandfathering is written in the final rule.',
     frHeadingId: 'h-59',
     frSectionLabel: 'IV.D.4 Investment Amounts',
@@ -262,6 +266,7 @@ export const KEY_TOPICS: KeyTopic[] = [
     id: 'tea',
     title:
       'USCIS, not states, decides if a project qualifies for the lower amount',
+    shortTitle: 'Who decides TEA / $800K eligibility',
     body: 'Whether a project gets the $800K TEA amount is decided centrally by USCIS under proposed methodology for high-unemployment and rural designations, not primarily by state designation letters. That can make outcomes more consistent nationwide, but it also means investors and developers need the data sources and census boundaries to be transparent and challengeable. A wrong TEA call is the difference between $800K and a higher tier, so methodology comments matter before the rule locks in.',
     frHeadingId: 'h-73',
     frSectionLabel: 'IV.E Targeted Employment Areas',
@@ -320,6 +325,7 @@ export const KEY_TOPICS: KeyTopic[] = [
   {
     id: 'sanctions',
     title: 'More audits and fines for regional centers',
+    shortTitle: 'Audits and fines for regional centers',
     body: 'The draft expands audits, site visits, reporting duties, and tiered penalties, including examples like late annual statement fines and sanctions up to a percentage of capital. Stronger oversight can protect investors from weak sponsors, but fixed compliance costs land hardest on small and single-project centers. That may shrink the pool of sponsors, raise fees passed through to investors, or push more capital into larger multi-project operators.',
     frHeadingId: 'h-100',
     frSectionLabel: 'IV.H.8 Enforcement (penalties, terminations) and Audits',

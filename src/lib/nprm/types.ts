@@ -50,6 +50,8 @@ export interface KeyTopicInlineLink {
 export interface KeyTopic {
   id: string;
   title: string;
+  /** Compact label for Summary jump nav / mobile chips. */
+  shortTitle: string;
   body: string;
   frHeadingId: string;
   frSectionLabel: string;
