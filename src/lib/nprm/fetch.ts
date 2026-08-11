@@ -11,7 +11,7 @@ import type {
   NprmTheme,
 } from './types';
 import { toNprmThemes, toPromptTree } from './keyTopics';
-import { orderThemesForDisplay } from './utils';
+import { orderThemesForDisplay, parsePoster } from './utils';
 
 /** Accept nested regs.gov rows or flat first-party theme/summary rows. */
 export function normalizeComment(
@@ -21,7 +21,7 @@ export function normalizeComment(
   const nested = raw as NprmComment;
   const attrs = { ...(flat.attributes || nested.attributes || {}) };
 
-  const title = flat.title ?? attrs.title;
+  const rawTitle = flat.title ?? attrs.title;
   const postedDate = flat.postedDate ?? attrs.postedDate;
   const aiSummary =
     flat.ai_summary ?? nested.aiSummary ?? attrs.aiSummary ?? undefined;
@@ -31,7 +31,13 @@ export function normalizeComment(
   const originalText =
     flat.comment ?? attrs.originalText ?? undefined;
 
-  if (title) attrs.title = title;
+  const parsed = parsePoster(rawTitle);
+  const posterType =
+    flat.poster_type || nested.posterType || parsed.posterType;
+  const posterLabel =
+    flat.poster_label || nested.posterLabel || parsed.poster;
+  // Never keep real person/org names on the client comment object.
+  attrs.title = `Comment Submitted by ${posterLabel}`;
   if (postedDate) attrs.postedDate = postedDate;
   if (aiSummary) attrs.aiSummary = aiSummary;
   if (originalText) attrs.originalText = originalText;
@@ -44,6 +50,8 @@ export function normalizeComment(
     themeTitle,
     aiSummary,
     sourceLink,
+    posterType,
+    posterLabel,
   };
 }
 

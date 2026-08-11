@@ -302,7 +302,8 @@ async function main() {
     const ai_summary = buildAiSummary(body, posterType, rawName);
     comments.push({
       id,
-      title, // kept for posterType parsing; UI shows generic label only
+      // Generic title only; never persist real person/org names in public JSON.
+      title: `Comment Submitted by ${posterLabel(posterType)}`,
       postedDate: a.postedDate || null,
       source_link: `https://www.regulations.gov/comment/${id}`,
       poster_type: posterType,

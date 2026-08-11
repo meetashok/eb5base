@@ -81,19 +81,23 @@ export default function CommentsTab({
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     const list = comments.filter((c) => {
-      const { posterType } = parsePoster(c.attributes?.title);
+      const posterType =
+        c.posterType || parsePoster(c.attributes?.title).posterType;
       if (posterFilter !== 'all' && posterType !== posterFilter) return false;
       if (themeFilter !== 'all' && (c.themeId || 'unknown') !== themeFilter) {
         return false;
       }
       if (q) {
         const ai = (c.aiSummary || c.attributes?.aiSummary || '').toLowerCase();
-        const title = (c.attributes?.title || '').toLowerCase();
+        const poster = (
+          c.posterLabel ||
+          parsePoster(c.attributes?.title).poster
+        ).toLowerCase();
         const id = c.id.toLowerCase();
         const theme = (themeLabel(c, themes) || '').toLowerCase();
         if (
           !ai.includes(q) &&
-          !title.includes(q) &&
+          !poster.includes(q) &&
           !id.includes(q) &&
           !theme.includes(q)
         ) {
@@ -113,7 +117,8 @@ export default function CommentsTab({
   const posterOptions = useMemo(() => {
     const counts = { all: comments.length, anonymous: 0, named: 0, org: 0 };
     for (const c of comments) {
-      const { posterType } = parsePoster(c.attributes?.title);
+      const posterType =
+        c.posterType || parsePoster(c.attributes?.title).posterType;
       counts[posterType] += 1;
     }
     return [
@@ -245,7 +250,9 @@ export default function CommentsTab({
 
       <ul className="space-y-3">
         {filtered.map((comment) => {
-          const { poster } = parsePoster(comment.attributes?.title);
+          const poster =
+            comment.posterLabel ||
+            parsePoster(comment.attributes?.title).poster;
           const theme = themeLabel(comment, themes);
           const ai = comment.aiSummary || comment.attributes?.aiSummary;
           const source = comment.sourceLink || commentUrl(comment.id);

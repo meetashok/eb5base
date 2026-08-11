@@ -106,6 +106,10 @@ export interface NprmComment {
   /** Per-comment AI summary from feed (separate from theme). */
   aiSummary?: string;
   sourceLink?: string;
+  /** UI-safe poster class; never a real person/org name. */
+  posterType?: 'anonymous' | 'named' | 'org';
+  /** UI-safe label: Anonymous / Named person / Organization. */
+  posterLabel?: string;
 }
 
 /** Raw flat comment row in public/data/nprm/all_comments.json. */
