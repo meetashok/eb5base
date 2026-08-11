@@ -186,32 +186,6 @@ export default function NprmClient({
         </ol>
       </nav>
 
-      <div className="border-b border-base-300/80 bg-base-100">
-        <div className="max-w-6xl mx-auto px-4">
-          <ol className="flex flex-wrap gap-x-3 gap-y-1 py-2 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-neutral/60">
-            {[
-              { n: 1, label: 'Understand', tabs: ['overview', 'summary'] },
-              { n: 2, label: 'Personalize', tabs: ['write'] },
-              { n: 3, label: 'Browse comments', tabs: ['comments'] },
-              { n: 4, label: 'Submit', tabs: ['write'] },
-            ].map((step) => {
-              const on =
-                step.tabs.includes(active) ||
-                (step.n === 4 && active === 'write');
-              return (
-                <li
-                  key={step.n}
-                  className={on ? 'text-secondary' : undefined}
-                  aria-current={on ? 'step' : undefined}
-                >
-                  <span className="tabular-nums">{step.n}.</span> {step.label}
-                </li>
-              );
-            })}
-          </ol>
-        </div>
-      </div>
-
       <NprmTabBar active={active} onSelect={setTab} />
 
       <div
