@@ -68,7 +68,13 @@ function PolaritySection({
   if (!stances.length) return null;
   return (
     <div className="space-y-2">
-      <p className="text-sm font-bold text-primary">{title}</p>
+      <p
+        className={`text-sm font-bold ${
+          polarity === 'agree' ? 'text-secondary' : 'text-amber-800'
+        }`}
+      >
+        {title}
+      </p>
       <div className="space-y-3">
         {stances.map((s) => (
           <StanceBlock key={s.id} stance={s} />

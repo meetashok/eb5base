@@ -92,14 +92,22 @@ function KeyPointBody({
 function PolarityAngles({
   title,
   items,
+  tone,
 }: {
   title: string;
   items: string[];
+  tone: 'agree' | 'disagree';
 }) {
   if (!items.length) return null;
   return (
     <div className="space-y-1.5">
-      <p className="text-xs font-semibold text-primary">{title}</p>
+      <p
+        className={`text-xs font-semibold ${
+          tone === 'agree' ? 'text-secondary' : 'text-amber-800'
+        }`}
+      >
+        {title}
+      </p>
       <ul className="list-disc pl-4 space-y-1.5 text-sm text-neutral leading-relaxed">
         {items.map((item) => (
           <li key={item}>
@@ -300,16 +308,18 @@ export default function OverviewTab({
                   <KeyPointBody text={point.body} links={point.inlineLinks} />
                 </p>
                 <div className="border-t border-base-300 pt-2.5 space-y-3">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-secondary">
-                    What to comment on
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-neutral/45">
+                    Potential comments
                   </p>
                   <PolarityAngles
                     title="If you generally agree with the draft"
                     items={agree}
+                    tone="agree"
                   />
                   <PolarityAngles
                     title="If you generally disagree with the draft"
                     items={disagree}
+                    tone="disagree"
                   />
                   <div className="flex flex-wrap gap-2 pt-0.5">
                     <button
