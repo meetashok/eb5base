@@ -944,7 +944,7 @@ export default function WriteTab({
             </span>
             <textarea
               className="textarea textarea-bordered text-sm min-h-24"
-              placeholder="e.g. 5 years since I-526E filing; teen at risk of aging out before I-829; capital at risk since 2023"
+              placeholder="e.g. Filed I-526E in 2025; my biggest fear is forced redeployment before my teen ages out; capital at risk since 2023"
               value={personal.impact}
               onChange={(e) =>
                 setPersonal((p) => ({ ...p, impact: e.target.value }))
@@ -967,6 +967,11 @@ export default function WriteTab({
                 .
               </p>
               <ul className="list-disc pl-4 space-y-0.5 text-neutral/75">
+                <li>
+                  Include one concrete fear in your own words (redeployment,
+                  ageing-out, escrow still holding funds). The LLM only knows
+                  what you write here.
+                </li>
                 <li>
                   Tie the story to a rule cite (ex: proposed{' '}
                   <GlossaryText text="8 CFR 204.407(b)" /> sustainment / amounts).
