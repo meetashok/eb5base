@@ -442,7 +442,6 @@ export function toPromptTree(topics: KeyTopic[] = KEY_TOPICS): NprmPromptNode[] 
           guideline_options: [
             'length',
             'style',
-            'format',
           ],
         });
       });

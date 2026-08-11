@@ -18,7 +18,6 @@ import {
   templateSimilarity,
 } from '@/lib/nprm/prompt';
 import type {
-  FormatGuideline,
   KeyTopic,
   KeyTopicPolarity,
   LengthGuideline,
@@ -41,7 +40,7 @@ interface Props {
 }
 
 const MAX_TOPICS = 3;
-const DRAFT_KEY = 'eb5base_nprm_write_draft_v2';
+const DRAFT_KEY = 'eb5base_nprm_write_draft_v3';
 /** Browser/URL length guard for LLM ?q= prefill links. */
 const LLM_PREFILL_MAX_CHARS = 3500;
 
@@ -453,9 +452,8 @@ export default function WriteTab({
     investor_type: '',
     country: '',
   });
-  const [length, setLength] = useState<LengthGuideline>('300_450');
+  const [length, setLength] = useState<LengthGuideline>('standard');
   const [style, setStyle] = useState<StyleGuideline>('plain');
-  const [format, setFormat] = useState<FormatGuideline>('paragraphs');
   const [copyMsg, setCopyMsg] = useState<string | null>(null);
   const [privacyOk, setPrivacyOk] = useState(false);
   const [hydrated, setHydrated] = useState(false);
@@ -467,9 +465,8 @@ export default function WriteTab({
         const parsed = JSON.parse(raw) as {
           selections?: Record<string, TopicCommentSelection>;
           personal?: PersonalBlock;
-          length?: LengthGuideline;
+          length?: LengthGuideline | '150' | '300_450';
           style?: StyleGuideline;
-          format?: FormatGuideline;
         };
         if (
           parsed.selections &&
@@ -484,9 +481,14 @@ export default function WriteTab({
         if (parsed.personal) {
           setPersonal((p) => ({ ...p, ...parsed.personal }));
         }
-        if (parsed.length) setLength(parsed.length);
+        if (parsed.length === 'focused' || parsed.length === 'standard') {
+          setLength(parsed.length);
+        } else if (parsed.length === '150') {
+          setLength('focused');
+        } else if (parsed.length === '300_450') {
+          setLength('standard');
+        }
         if (parsed.style) setStyle(parsed.style);
-        if (parsed.format) setFormat(parsed.format);
       }
     } catch {
       // ignore corrupt draft
@@ -501,12 +503,12 @@ export default function WriteTab({
     try {
       localStorage.setItem(
         DRAFT_KEY,
-        JSON.stringify({ selections, personal, length, style, format })
+        JSON.stringify({ selections, personal, length, style })
       );
     } catch {
       // quota
     }
-  }, [hydrated, selections, personal, length, style, format]);
+  }, [hydrated, selections, personal, length, style]);
 
   const included = includedSelections(selections);
   const readyTopics = included.filter(isTopicSelectionReady);
@@ -522,9 +524,9 @@ export default function WriteTab({
       buildPrompt({
         selections,
         personal,
-        guidelines: { length, style, format },
+        guidelines: { length, style },
       }),
-    [selections, personal, length, style, format]
+    [selections, personal, length, style]
   );
 
   function updateSelection(next: TopicCommentSelection) {
@@ -822,7 +824,13 @@ export default function WriteTab({
             eyebrow="Step C"
             title="Guidelines"
             titleClassName="text-sm font-semibold text-primary leading-snug"
-          />
+          >
+            <p className="text-xs text-neutral leading-relaxed max-w-2xl">
+              Focused fits one issue. Standard leaves room for a personal story
+              and up to three topics. The draft uses short paragraphs; bullets
+              only for concrete asks to DHS.
+            </p>
+          </NprmSectionHeading>
           <div className="space-y-3">
             {(
               [
@@ -831,8 +839,8 @@ export default function WriteTab({
                   label: 'Length',
                   value: length,
                   options: [
-                    { id: '150' as const, label: 'Short (~150)' },
-                    { id: '300_450' as const, label: 'Standard (300-450)' },
+                    { id: 'focused' as const, label: 'Focused (250-400)' },
+                    { id: 'standard' as const, label: 'Standard (500-750)' },
                   ],
                   onChange: setLength,
                 },
@@ -845,16 +853,6 @@ export default function WriteTab({
                     { id: 'formal' as const, label: 'Formal regulatory' },
                   ],
                   onChange: setStyle,
-                },
-                {
-                  id: 'format',
-                  label: 'Format',
-                  value: format,
-                  options: [
-                    { id: 'paragraphs' as const, label: 'Paragraphs' },
-                    { id: 'bullets' as const, label: 'Bullets' },
-                  ],
-                  onChange: setFormat,
                 },
               ] as const
             ).map((row) => (

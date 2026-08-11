@@ -63,14 +63,14 @@ function polarityLabel(polarity: KeyTopicPolarity): string {
     : 'Generally want this part of the draft changed (with the asks below)';
 }
 
-function guidelinesLine(guidelines: PromptGuidelines): string {
-  const lengthLabel =
-    guidelines.length === '150' ? 'about 150 words' : '300-450 words';
-  const styleLabel =
-    guidelines.style === 'plain' ? 'plain English' : 'formal regulatory';
-  const formatLabel =
-    guidelines.format === 'bullets' ? 'bullets' : 'paragraphs';
-  return `${styleLabel}; ${lengthLabel}; ${formatLabel}`;
+function lengthLabel(length: PromptGuidelines['length']): string {
+  return length === 'focused'
+    ? 'about 250-400 words (best when covering one issue)'
+    : 'about 500-750 words (room for a personal story and up to three issues)';
+}
+
+function styleLabel(style: PromptGuidelines['style']): string {
+  return style === 'plain' ? 'plain English' : 'formal regulatory';
 }
 
 /**
@@ -159,7 +159,9 @@ export function buildPrompt(input: {
     issueBlocks.length ? issueBlocks.join('\n\n') : '(no issues fully selected)',
     '',
     'Output requirements:',
-    `- ${guidelinesLine(guidelines)}`,
+    `- Target length: ${lengthLabel(guidelines.length)}. Prefer covering my selected points over hitting an exact count.`,
+    `- Voice: ${styleLabel(guidelines.style)}.`,
+    '- Write mainly in short paragraphs. Use bullets only when listing concrete asks to DHS/USCIS; do not make the whole comment a bullet list.',
     '- Open with 1-3 sentences grounded in my situation (if provided).',
     '- One clear section per issue above, in the same order.',
     '- In each section: short accurate context, then my asks/points, then what I want DHS to do.',
