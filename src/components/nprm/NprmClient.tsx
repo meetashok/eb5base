@@ -120,7 +120,8 @@ export default function NprmClient({
           <div className="space-y-1.5 text-sm md:text-[0.95rem] text-neutral max-w-2xl leading-relaxed">
             <p>
               <GlossaryTerm term="DHS" /> published a proposed rulemaking notice
-              on July 2, 2026. EB5 Base breaks down the{' '}
+              on July 2, 2026. The draft finally codifies the EB-5{' '}
+              <GlossaryTerm term="RIA" /> of 2022. EB5 Base breaks down the{' '}
               <a
                 href={FR_PDF}
                 target="_blank"
@@ -129,9 +130,11 @@ export default function NprmClient({
               >
                 358-page rule
               </a>{' '}
-              that finally codifies the EB-5{' '}
-              <GlossaryTerm term="RIA" /> of 2022. Comments close August 31,
-              2026.{' '}
+              in plain English for investors, and helps you build an LLM prompt
+              you can use to write your public comment.
+            </p>
+            <p className="text-xs md:text-[0.8rem] text-neutral/75 leading-relaxed">
+              Comments close August 31, 2026.{' '}
               <Link
                 href="/about#disclaimer"
                 className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
