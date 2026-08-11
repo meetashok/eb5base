@@ -383,7 +383,7 @@ body {
   }
 
   .nprm-prose p {
-    @apply text-sm text-neutral leading-relaxed max-w-2xl;
+    @apply text-sm text-neutral leading-relaxed;
   }
 
   /* Keep section eyebrows on the About / page-hero scale (text-xs + secondary). */
@@ -400,7 +400,7 @@ body {
   }
 
   .nprm-tldr {
-    @apply text-sm font-medium text-primary/90 bg-secondary/10 border border-secondary/25 rounded-lg px-3 py-2 max-w-2xl leading-snug;
+    @apply text-sm font-medium text-primary/90 bg-secondary/10 border border-secondary/25 rounded-lg px-3 py-2 leading-snug;
   }
 
   .nprm-legal-ref {
