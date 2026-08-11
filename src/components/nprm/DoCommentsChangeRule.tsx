@@ -16,7 +16,7 @@ export default function DoCommentsChangeRule() {
         titleClassName="text-base font-bold text-primary leading-snug"
       />
       <p className="text-sm text-neutral leading-relaxed">
-        Yes: investor comments have moved EB-5 before. In the last major
+        Investor comments have moved EB-5 before. In the last major
         modernization (2019), <GlossaryTerm term="DHS" /> answered hundreds of
         comments{' '}
         and{' '}
