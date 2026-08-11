@@ -115,7 +115,6 @@ export default function OverviewTab({
   stats,
   comments,
   proposal,
-  onComments,
   onWrite,
   onWriteTopic,
   onSummary,
