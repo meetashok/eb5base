@@ -1,6 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
+import React from 'react';
 import { getHomeStats } from '@/lib/projects';
 import { isMaintenanceMode } from '@/lib/maintenance';
 import { isSupabaseConfigured } from '@/lib/supabase-env';
@@ -177,6 +178,257 @@ async function createMaintenanceOgImage() {
           }}
         >
           eb5base.com
+        </div>
+      </div>
+    ),
+    {
+      ...OG_SIZE,
+      fonts: fonts
+        ? [
+            { name: 'Plus Jakarta Sans', data: fonts.medium, weight: 500, style: 'normal' },
+            { name: 'Plus Jakarta Sans', data: fonts.semiBold, weight: 600, style: 'normal' },
+            { name: 'Plus Jakarta Sans', data: fonts.bold, weight: 700, style: 'normal' },
+          ]
+        : undefined,
+    }
+  );
+}
+
+/** Share card for /nprm — comment guide, not the project directory. */
+export async function createNprmOgImage() {
+  const [logoSrc, fonts] = await Promise.all([
+    loadLogoDataUrl(),
+    loadJakartaFontsSafe(),
+  ]);
+
+  const pillars = [
+    {
+      title: 'Plain-English summary',
+      body: 'What the DHS draft actually changes for investors.',
+    },
+    {
+      title: 'Comment themes',
+      body: 'See what others are filing on the docket.',
+    },
+    {
+      title: 'Build your comment',
+      body: 'Personalize a distinct prompt — you file on regulations.gov.',
+    },
+  ];
+
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          padding: '48px 56px 44px',
+          background: 'linear-gradient(135deg, #060f1a 0%, #0a1628 28%, #1a3d32 68%, #0a1628 100%)',
+          fontFamily: fonts ? 'Plus Jakarta Sans' : 'sans-serif',
+          color: '#f5f1ea',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            top: -120,
+            right: -40,
+            width: 480,
+            height: 480,
+            borderRadius: 999,
+            background:
+              'radial-gradient(circle, rgba(212, 175, 55, 0.28) 0%, rgba(184, 115, 51, 0.1) 45%, transparent 70%)',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            bottom: -160,
+            left: -100,
+            width: 540,
+            height: 540,
+            borderRadius: 999,
+            background: 'radial-gradient(circle, rgba(45, 90, 71, 0.45) 0%, transparent 68%)',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 6,
+            background: 'linear-gradient(90deg, #d4af37 0%, #b87333 55%, #2d5a47 100%)',
+          }}
+        />
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse requires raw <img> */}
+            <img
+              src={logoSrc}
+              width={68}
+              height={68}
+              alt=""
+              style={{ borderRadius: 16 }}
+            />
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+              <span
+                style={{
+                  fontSize: 34,
+                  fontWeight: 500,
+                  color: 'rgba(245, 241, 234, 0.78)',
+                  letterSpacing: '0.04em',
+                }}
+              >
+                EB5
+              </span>
+              <span
+                style={{
+                  fontSize: 34,
+                  fontWeight: 700,
+                  color: '#d4af37',
+                  letterSpacing: '-0.02em',
+                }}
+              >
+                Base
+              </span>
+            </div>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              padding: '10px 18px',
+              borderRadius: 999,
+              border: '1px solid rgba(212, 175, 55, 0.4)',
+              background: 'rgba(212, 175, 55, 0.12)',
+              color: '#d4af37',
+              fontSize: 16,
+              fontWeight: 700,
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+            }}
+          >
+            Comments due Aug 31, 2026
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 12 }}>
+          <div
+            style={{
+              fontSize: 18,
+              fontWeight: 700,
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              color: 'rgba(212, 175, 55, 0.9)',
+            }}
+          >
+            Notice of proposed rulemaking
+          </div>
+          <div
+            style={{
+              fontSize: 52,
+              fontWeight: 700,
+              letterSpacing: '-0.03em',
+              lineHeight: 1.08,
+              color: '#faf7f2',
+              maxWidth: 980,
+            }}
+          >
+            EB-5 NPRM 2026: plain-English guide
+          </div>
+          <div
+            style={{
+              fontSize: 24,
+              fontWeight: 500,
+              color: 'rgba(245, 241, 234, 0.74)',
+              lineHeight: 1.35,
+              maxWidth: 980,
+            }}
+          >
+            Understand the DHS draft, browse comment themes, and build a personal
+            filing for Docket USCIS-2026-0100.
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: 14, marginTop: 8, width: '100%' }}>
+          {pillars.map((item) => (
+            <div
+              key={item.title}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                flex: 1,
+                padding: '20px 22px',
+                borderRadius: 18,
+                background: 'rgba(250, 247, 242, 0.09)',
+                border: '1px solid rgba(45, 90, 71, 0.5)',
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 20,
+                  fontWeight: 700,
+                  color: '#d4af37',
+                  letterSpacing: '-0.01em',
+                  lineHeight: 1.2,
+                }}
+              >
+                {item.title}
+              </div>
+              <div
+                style={{
+                  marginTop: 10,
+                  fontSize: 17,
+                  fontWeight: 500,
+                  color: 'rgba(245, 241, 234, 0.7)',
+                  lineHeight: 1.35,
+                }}
+              >
+                {item.body}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginTop: 14,
+          }}
+        >
+          <div
+            style={{
+              fontSize: 22,
+              fontWeight: 600,
+              color: 'rgba(245, 241, 234, 0.78)',
+              letterSpacing: '0.02em',
+            }}
+          >
+            eb5base.com/nprm
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              fontSize: 18,
+              fontWeight: 500,
+              color: 'rgba(245, 241, 234, 0.55)',
+            }}
+          >
+            Information only
+            <span style={{ color: '#d4af37' }}>·</span>
+            Not legal advice
+          </div>
         </div>
       </div>
     ),
