@@ -315,9 +315,9 @@ export default function OverviewTab({
                   <KeyPointBody text={point.body} links={point.inlineLinks} />
                 </p>
                 <div className="border-t border-base-300 pt-2.5 space-y-3">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-neutral/45">
+                  <div className="text-[11px] font-semibold uppercase tracking-wide text-neutral/45">
                     Potential comments
-                  </p>
+                  </div>
                   <PolarityAngles
                     title="If you generally agree with the draft"
                     items={agree}
