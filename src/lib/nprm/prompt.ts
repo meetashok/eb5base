@@ -1,28 +1,12 @@
+import { KEY_TOPICS, getKeyTopic, stancesByPolarity } from './keyTopics';
 import type {
-  NprmPromptNode,
-  NprmTheme,
+  KeyTopicPolarity,
   PersonalBlock,
   PromptGuidelines,
   ProjectTypeOption,
+  TopicCommentSelection,
 } from './types';
-import { commentUrl } from './utils';
-
-/**
- * Prompt diversity math (~60k+ deterministic before personal story):
- *
- * - 6 themes × ~2.5 opinions avg ≈ 15 theme×opinion pairs
- * - × 3 phrasing variants (prompt-tree phrasing_idx 0..2) ≈ 30-45 base nodes
- *   (feed currently ships 30 nodes)
- * - × 8 guideline combos (2 length × 2 style × 2 format) ≈ 240 single-theme
- * - Multi-theme (max 3): C(6,1)+C(6,2)+C(6,3) theme sets, with opinion picks
- *   ≈ 120 single + ~750 pairs + ~2,500 triples ≈ ~3.3k structural combos
- * - × ~6 context-sample rotations (which sample_id / fragment context leads)
- *   ≈ ~20k-60k deterministic prompt skeletons before the personal block
- * - Personal block (file date + project type + free-text impact) → near-infinite
- *
- * We ship fragments + a prompt, never a canned form letter. Final wording
- * happens on the user's own LLM so USCIS/OIRA cannot bucket identical paste.
- */
+import { DOCUMENT_ID, FR_HTML, FR_PDF } from './utils';
 
 const PROJECT_TYPE_LABELS: Record<ProjectTypeOption, string> = {
   rural: 'rural',
@@ -31,123 +15,156 @@ const PROJECT_TYPE_LABELS: Record<ProjectTypeOption, string> = {
   mixed: 'mixed',
 };
 
-export function pickPromptNode(
-  tree: NprmPromptNode[],
-  themeId: string,
-  opinionId: string,
-  rotationSeed = 0
-): NprmPromptNode | undefined {
-  const matches = tree.filter(
-    (n) => n.theme_id === themeId && n.opinion_id === opinionId
-  );
-  if (matches.length === 0) return undefined;
-  return matches[Math.abs(rotationSeed) % matches.length];
+export function emptyTopicSelection(topicId: string): TopicCommentSelection {
+  return {
+    topicId,
+    include: false,
+    polarity: null,
+    angles: [],
+    extraNote: '',
+  };
 }
 
-export function buildPrompt(input: {
-  themes: NprmTheme[];
-  promptTree: NprmPromptNode[];
-  selectedThemeIds: string[];
-  opinionsByTheme: Record<string, string>;
-  personal: PersonalBlock;
-  guidelines: PromptGuidelines;
-  /** Stable seed for phrasing/sample rotation - e.g. impact length. */
-  rotationSeed?: number;
-}): string {
-  const {
-    themes,
-    promptTree,
-    selectedThemeIds,
-    opinionsByTheme,
-    personal,
-    guidelines,
-    rotationSeed = 0,
-  } = input;
-
-  const selected = themes.filter((t) => selectedThemeIds.includes(t.id));
-  const cfrs = Array.from(new Set(selected.flatMap((t) => t.cfrs)));
-  const sampleIds = Array.from(
-    new Set(selected.flatMap((t) => t.sample_ids))
+export function defaultTopicSelections(
+  topicIds: string[] = KEY_TOPICS.map((t) => t.id)
+): Record<string, TopicCommentSelection> {
+  return Object.fromEntries(
+    topicIds.map((id) => [id, emptyTopicSelection(id)])
   );
+}
 
-  const stanceLines: string[] = [];
-  const contextBlocks: string[] = [];
+/** Topics the user chose to comment on (include = true), capped externally. */
+export function includedSelections(
+  selections: Record<string, TopicCommentSelection>
+): TopicCommentSelection[] {
+  return KEY_TOPICS.map((t) => selections[t.id])
+    .filter((s): s is TopicCommentSelection => Boolean(s?.include));
+}
 
-  selected.forEach((theme, idx) => {
-    const opinionId = opinionsByTheme[theme.id];
-    const opinion = theme.opinions.find((o) => o.id === opinionId);
-    const node = opinionId
-      ? pickPromptNode(promptTree, theme.id, opinionId, rotationSeed + idx)
-      : undefined;
+/** A topic is ready when included, polarity chosen, and at least one angle or note. */
+export function isTopicSelectionReady(sel: TopicCommentSelection): boolean {
+  if (!sel.include || !sel.polarity) return false;
+  return sel.angles.length > 0 || sel.extraNote.trim().length > 0;
+}
 
-    if (opinion) {
-      stanceLines.push(
-        `- ${theme.id}: ${opinion.label}: ${opinion.stance}`
-      );
-    }
+export function investorTypeLabel(
+  value: PersonalBlock['investor_type']
+): string {
+  if (value === 'pre_ria') return 'Pre-RIA';
+  if (value === 'post_ria') return 'Post-RIA';
+  if (value === 'future') return 'Future filer';
+  if (value === 'family') return 'Family';
+  return '(investor type)';
+}
 
-    const sample =
-      sampleIds[(rotationSeed + idx) % Math.max(sampleIds.length, 1)] ||
-      theme.sample_ids[0];
-    const fragment =
-      node?.prompt_fragment ||
-      opinion?.fragments?.[rotationSeed % Math.max(opinion?.fragments?.length || 1, 1)] ||
-      theme.summary;
+function polarityLabel(polarity: KeyTopicPolarity): string {
+  return polarity === 'agree'
+    ? 'Generally support this part of the draft (with the asks below)'
+    : 'Generally want this part of the draft changed (with the asks below)';
+}
 
-    contextBlocks.push(
-      [
-        `Theme: ${theme.title}`,
-        sample
-          ? `Source: ${sample} ${commentUrl(sample)}`
-          : 'Source: (see theme sample IDs)',
-        `Summary: ${theme.summary}`,
-        fragment ? `Context fragment: ${fragment}` : null,
-      ]
-        .filter(Boolean)
-        .join('\n')
-    );
-  });
-
+function guidelinesLine(guidelines: PromptGuidelines): string {
   const lengthLabel =
     guidelines.length === '150' ? 'about 150 words' : '300-450 words';
   const styleLabel =
     guidelines.style === 'plain' ? 'plain English' : 'formal regulatory';
   const formatLabel =
     guidelines.format === 'bullets' ? 'bullets' : 'paragraphs';
+  return `${styleLabel}; ${lengthLabel}; ${formatLabel}`;
+}
+
+/**
+ * Structured LLM brief: rich instructions + selected points, not a canned letter.
+ * Personal story stays the distinctive core; topic angles are must-include asks.
+ */
+export function buildPrompt(input: {
+  selections: Record<string, TopicCommentSelection>;
+  personal: PersonalBlock;
+  guidelines: PromptGuidelines;
+}): string {
+  const { selections, personal, guidelines } = input;
+  const included = includedSelections(selections).filter(isTopicSelectionReady);
+
+  const cfrs = Array.from(
+    new Set(
+      included.flatMap((sel) => getKeyTopic(sel.topicId)?.cfrs || [])
+    )
+  );
+
+  const issueBlocks = included.map((sel, idx) => {
+    const topic = getKeyTopic(sel.topicId);
+    if (!topic || !sel.polarity) {
+      return `Issue ${idx + 1}: (missing topic data)`;
+    }
+    const stance = stancesByPolarity(topic, sel.polarity)[0];
+    const lines = [
+      `Issue ${idx + 1}: ${topic.title}`,
+      `Federal Register: ${topic.frSectionLabel} (${FR_HTML}#${topic.frHeadingId})`,
+      `Cites: ${topic.cfrs.join('; ') || '(none listed)'}`,
+      `My polarity: ${polarityLabel(sel.polarity)}`,
+      stance ? `Stance frame: ${stance.label}` : null,
+      'Background for you (do not copy verbatim; use only to stay accurate):',
+      `- Overview: ${topic.summary.overview}`,
+      topic.summary.current
+        ? `- Today: ${topic.summary.current}`
+        : null,
+      topic.summary.proposed
+        ? `- Proposed: ${topic.summary.proposed}`
+        : null,
+      'Must-include points (paraphrase in my voice; cover each):',
+      ...(sel.angles.length
+        ? sel.angles.map((a, i) => `  ${i + 1}. ${a}`)
+        : ['  (none selected; rely on my additional points below)']),
+      sel.extraNote.trim()
+        ? `My additional points for this issue:\n${sel.extraNote.trim()}`
+        : 'My additional points for this issue: (none)',
+    ];
+    return lines.filter((x) => x != null).join('\n');
+  });
 
   const projectLabel = personal.project_type
     ? PROJECT_TYPE_LABELS[personal.project_type]
     : '(project type)';
-  const investorLabel =
-    personal.investor_type === 'pre_ria'
-      ? 'Pre-RIA'
-      : personal.investor_type === 'post_ria'
-        ? 'Post-RIA'
-        : personal.investor_type === 'future'
-          ? 'Future filer'
-          : personal.investor_type === 'family'
-            ? 'Family'
-            : '(investor type)';
+
+  const personalLines = [
+    `I-526E file / plan date: ${personal.i_526e_file_date || '(not provided)'}`,
+    `Investor type: ${investorTypeLabel(personal.investor_type)}`,
+    `Country chargeability: ${personal.country || '(not provided)'}`,
+    `Project type: ${projectLabel}`,
+    `Personal story (required color for uniqueness; do not invent beyond this):`,
+    personal.impact.trim() ||
+      `(not provided — write a generic but still distinct comment; leave clear placeholders if a fact is missing)`,
+  ];
 
   return [
-    '[Docket USCIS-2026-0100]',
-    `CFR: ${cfrs.join('; ') || '(select a theme)'}`,
+    'You are helping me draft a public comment on a U.S. DHS/USCIS Notice of Proposed Rulemaking (NPRM) for the EB-5 program.',
+    'I will paste your draft onto regulations.gov myself. Write in first person as me.',
     '',
-    'Context:',
-    contextBlocks.join('\n\n') || '(select one or more themes)',
+    'Hard rules:',
+    '- Use only facts I provide below. Do not invent filing dates, amounts, family details, project names, or legal conclusions I did not state.',
+    '- Do not copy sample comments or produce a form letter. Paraphrase the must-include points in my voice.',
+    '- Cite the CFR / INA references I listed when making a regulatory ask.',
+    '- Prefer concrete asks to DHS/USCIS (what to keep, clarify, or change) over vague opposition.',
+    '- If my personal story is thin, still vary wording and structure; do not pad with fake autobiography.',
     '',
-    'Stance:',
-    stanceLines.length ? stanceLines.join('\n') : '(pick an opinion per theme)',
+    `Docket / document: ${DOCUMENT_ID} (USCIS-2026-0100)`,
+    `Federal Register HTML: ${FR_HTML}`,
+    `Federal Register PDF: ${FR_PDF}`,
+    `CFR / INA pool for this comment: ${cfrs.join('; ') || '(from selected issues)'}`,
     '',
-    `Filed: ${personal.i_526e_file_date || '(I-526E file month/year)'}`,
-    `Investor type: ${investorLabel}`,
-    `Country: ${personal.country || '(chargeability)'}`,
-    `Type: ${projectLabel}`,
-    `Impact: ${personal.impact || `(personal story, at least ${MIN_IMPACT_CHARS} characters)`}`,
+    'My situation:',
+    ...personalLines,
     '',
-    `Guidelines: ${styleLabel}, ${lengthLabel}, ${formatLabel}`,
+    `Issues to cover (${included.length} of max 3):`,
+    issueBlocks.length ? issueBlocks.join('\n\n') : '(no issues fully selected)',
     '',
-    'Instructions: Draft a distinct comment in my own voice using the personal block above. Cite CFR. Keep it specific to my filing and project type. Do not invent facts I did not provide. Do not copy any sample comment verbatim.',
+    'Output requirements:',
+    `- ${guidelinesLine(guidelines)}`,
+    '- Open with 1-3 sentences grounded in my situation (if provided).',
+    '- One clear section per issue above, in the same order.',
+    '- In each section: short accurate context, then my asks/points, then what I want DHS to do.',
+    '- Close with a brief respectful request that DHS consider these comments in the final rule.',
+    '- Do not include a subject line, email headers, or markdown code fences unless I ask.',
   ].join('\n');
 }
 

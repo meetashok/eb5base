@@ -46,10 +46,7 @@ export default function NprmClient({
 }) {
   const [active, setActive] = useState<NprmTabId>(tab);
   const [writeSeed, setWriteSeed] = useState(0);
-  const [writeThemes, setWriteThemes] = useState<string[]>([]);
-  const [writeOpinions, setWriteOpinions] = useState<Record<string, string>>(
-    {}
-  );
+  const [writeTopics, setWriteTopics] = useState<string[]>([]);
 
   // Keep client tab in sync with browser history (back/forward, deep links).
   useEffect(() => {
@@ -88,19 +85,17 @@ export default function NprmClient({
     }
   }, []);
 
-  const goWriteWithTopic = useCallback((topicId: string, opinionId?: string) => {
-    const theme = data.themes.find((t) => t.id === topicId);
-    const resolvedOpinion =
-      opinionId ||
-      theme?.opinions.find((o) => o.polarity === 'agree')?.id ||
-      theme?.opinions[0]?.id;
-    setWriteThemes([topicId]);
-    setWriteOpinions(
-      resolvedOpinion ? { [topicId]: resolvedOpinion } : {}
-    );
+  const goWrite = useCallback(() => {
+    setWriteTopics([]);
     setWriteSeed((n) => n + 1);
     setTab('write');
-  }, [data.themes, setTab]);
+  }, [setTab]);
+
+  const goWriteWithTopic = useCallback((topicId: string) => {
+    setWriteTopics([topicId]);
+    setWriteSeed((n) => n + 1);
+    setTab('write');
+  }, [setTab]);
 
   const current = tabLabel(active);
 
@@ -238,10 +233,8 @@ export default function NprmClient({
         {active === 'write' && (
           <WriteTab
             key={writeSeed}
-            themes={data.themes}
-            promptTree={data.promptTree}
-            initialThemeIds={writeThemes}
-            initialOpinions={writeOpinions}
+            initialTopicIds={writeTopics}
+            onSummary={(hash) => setTab('summary', hash)}
           />
         )}
         {active === 'about' && (

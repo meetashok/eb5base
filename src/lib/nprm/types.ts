@@ -235,6 +235,20 @@ export interface PromptGuidelines {
   format: FormatGuideline;
 }
 
+/**
+ * Write-tab decision for one key topic:
+ * include → polarity → selected angles → optional extra note.
+ */
+export interface TopicCommentSelection {
+  topicId: string;
+  include: boolean;
+  polarity: KeyTopicPolarity | null;
+  /** Angle strings selected under the chosen polarity. */
+  angles: string[];
+  /** Free-text points the commenter also wants covered for this topic. */
+  extraNote: string;
+}
+
 export interface NprmPageData {
   stats: NprmStats;
   themes: NprmTheme[];
