@@ -171,16 +171,7 @@ export default function CommentsTab({
             regulations.gov
           </a>{' '}
           (Verify link on each card). This list may lag newer filings after{' '}
-          <LocalDateTime value={lastPull} />. Source:{' '}
-          <a
-            href={DOCKET_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold underline underline-offset-2 hover:text-primary"
-          >
-            regulations.gov
-          </a>{' '}
-          via api.data.gov.
+          <LocalDateTime value={lastPull} />.
         </p>
       </div>
 
