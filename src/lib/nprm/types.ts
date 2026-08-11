@@ -108,7 +108,7 @@ export interface NprmComment {
   sourceLink?: string;
 }
 
-/** Raw flat row published by Hatch (id_link_theme_summary_only). */
+/** Raw flat comment row in public/data/nprm/all_comments.json. */
 export interface NprmFlatComment {
   id: string;
   type?: string;
@@ -119,6 +119,8 @@ export interface NprmFlatComment {
   theme_title?: string;
   ai_summary?: string;
   comment?: string;
+  poster_type?: 'anonymous' | 'named' | 'org';
+  poster_label?: string;
   attributes?: NprmCommentAttributes;
 }
 

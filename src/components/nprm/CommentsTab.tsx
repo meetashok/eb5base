@@ -3,7 +3,6 @@
 import { useMemo, useState } from 'react';
 import { GlossaryText } from '@/components/nprm/GlossaryTerm';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
-import { FEED_SHARE } from '@/lib/nprm/fetch';
 import type { NprmComment, NprmTheme } from '@/lib/nprm/types';
 import {
   commentUrl,
@@ -128,7 +127,7 @@ export default function CommentsTab({
   const topThemeNote = useMemo(() => {
     const top = themeOptions.find((t) => t.id !== 'all');
     if (!top) return null;
-    return `${top.label} is the most common theme label from the feed (not a bug). Poster names come from regulations.gov titles; AI summaries stay generic.`;
+    return `${top.label} is the most common theme label from keyword tagging of first-party summaries (not a legal classification). Poster labels are Anonymous, Named person, or Organization; AI summaries stay generic.`;
   }, [themeOptions]);
 
   function filterBtnClass(active: boolean) {
@@ -156,15 +155,16 @@ export default function CommentsTab({
           }
         >
           <p className="text-sm text-neutral leading-relaxed">
-            <GlossaryText text="Summaries of comments filed on Docket USCIS-2026-0100. Sorted by posted date, newest first. Data as of last pull: " />
+            <GlossaryText text="Anonymized summaries of comments filed on Docket USCIS-2026-0100. Sorted by posted date, newest first. Data as of last pull: " />
             {lastPullLabel}.
           </p>
         </NprmSectionHeading>
         <p className="text-xs leading-relaxed text-amber-800 bg-amber-50 border border-amber-200/80 rounded-md px-2.5 py-1.5">
-          AI summaries are for browsing only and may be incomplete. Always verify
-          against the original filing on regulations.gov (Verify link on each
-          card). This list may lag newer filings after {lastPullLabel}. Source:
-          regulations.gov via api.data.gov.
+          AI summaries are for browsing only and may be incomplete. Poster names
+          and organizations are not shown. Always verify against the original
+          filing on regulations.gov (Verify link on each card). This list may
+          lag newer filings after {lastPullLabel}. Source: regulations.gov via
+          api.data.gov.
         </p>
         {topThemeNote ? (
           <p className="text-xs text-neutral/75 leading-relaxed">
@@ -325,20 +325,10 @@ export default function CommentsTab({
             titleClassName="text-sm font-bold text-primary leading-snug"
           />
           <p className="text-sm text-neutral leading-relaxed">
-            Source: {source || 'regulations.gov via api.data.gov'}. Feed{' '}
-            <span className="font-semibold">
-              {feedSource === 'remote' ? 'live' : 'local seed'}
-            </span>
-            . Titles from regulations.gov. Explainer cites FR Doc 2026-13392.{' '}
-            <a
-              href={FEED_SHARE}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-secondary underline underline-offset-2 break-all"
-            >
-              Public JSON (CORS - agent.meta.ai)
-            </a>
-            . {totalComments ?? comments.length} comments tracked · last pull{' '}
+            Source: {source || 'regulations.gov via api.data.gov'} (first-party
+            pull). Poster labels are anonymized (Anonymous / Named person /
+            Organization). Explainer cites FR Doc 2026-13392.{' '}
+            {totalComments ?? comments.length} comments tracked · last pull{' '}
             {lastPullLabel}. Official filings may be newer; always check the
             docket.
           </p>

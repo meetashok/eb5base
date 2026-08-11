@@ -13,7 +13,7 @@ import type {
 import { toNprmThemes, toPromptTree } from './keyTopics';
 import { orderThemesForDisplay } from './utils';
 
-/** Accept nested regs.gov rows or flat Hatch theme/summary rows. */
+/** Accept nested regs.gov rows or flat first-party theme/summary rows. */
 export function normalizeComment(
   raw: NprmComment | NprmFlatComment
 ): NprmComment {
@@ -48,35 +48,25 @@ export function normalizeComment(
 }
 
 /**
- * Public share page (HTML shell):
- *   https://agent.meta.ai/s/eb5base-nprm-data-public-xlxt5sxpxm46eqp
- * Static JSON feed (CORS *): Cloudflare Space origin below.
- * Dual paths: /assets/data/ (primary) and /data/ (mirror when published).
+ * First-party NPRM comment data lives under public/data/nprm/.
+ * Refresh with: npm run nprm:pull-comments (REGULATIONS_GOV_API_KEY required).
+ * Meta CDN feed is no longer used.
  */
-export const FEED_SHARE =
-  'https://agent.meta.ai/s/eb5base-nprm-data-public-xlxt5sxpxm46eqp';
-
-export const FEED_BASE =
-  process.env.NEXT_PUBLIC_NPRM_FEED?.replace(/\/$/, '') ||
-  'https://eb5base-nprm-data-public-xlxt5sxpxm46eqp.cf.metaaiusercontent.com';
-
 export const LOCAL_DATA_BASE = '/data/nprm';
-
-const ASSET_PATHS = ['/assets/data', '/data'] as const;
 
 async function tryFetchText(
   url: string
 ): Promise<{ ok: true; text: string } | { ok: false }> {
   try {
     const res = await fetch(url, {
-      // Always hit Hatch/CDN fresh so daily publishes show up on refresh.
+      // Always read fresh so a new local pull shows up on refresh.
       cache: 'no-store',
       headers: { Accept: 'application/json, text/plain, */*' },
     });
     if (!res.ok) return { ok: false };
     const contentType = res.headers.get('content-type') || '';
     const text = await res.text();
-    // Meta share URLs return SPA HTML for unknown paths - reject those.
+    // Reject accidental HTML responses from misconfigured paths.
     if (
       contentType.includes('text/html') ||
       text.trimStart().startsWith('<!DOCTYPE') ||
@@ -105,17 +95,7 @@ async function tryFetchJson<T>(
 async function fetchNamedJson<T>(
   name: string
 ): Promise<{ data: T; base: string; source: 'remote' | 'local' } | null> {
-  for (const path of ASSET_PATHS) {
-    const url = `${FEED_BASE}${path}/${name}`;
-    const remote = await tryFetchJson<T>(url);
-    if (remote.ok) {
-      return { data: remote.data, base: FEED_BASE, source: 'remote' };
-    }
-  }
-
-  // Absolute local fallback for server components (filesystem via public URL).
   const localUrl = `${LOCAL_DATA_BASE}/${name}`;
-  // On the server during build, prefer reading from public/ when relative fetch may fail.
   if (typeof window === 'undefined') {
     try {
       const { readFile } = await import('fs/promises');
@@ -142,14 +122,6 @@ async function fetchNamedJson<T>(
 async function fetchNamedText(
   name: string
 ): Promise<{ text: string; base: string; source: 'remote' | 'local' } | null> {
-  for (const path of ASSET_PATHS) {
-    const url = `${FEED_BASE}${path}/${name}`;
-    const remote = await tryFetchText(url);
-    if (remote.ok) {
-      return { text: remote.text, base: FEED_BASE, source: 'remote' };
-    }
-  }
-
   if (typeof window === 'undefined') {
     try {
       const { readFile } = await import('fs/promises');
@@ -251,7 +223,7 @@ export async function loadNprmPageData(): Promise<NprmPageData> {
     };
   });
 
-  // stats.json can lag all_comments.json after a Hatch republish (e.g. 48 vs 49).
+  // stats.json can lag all_comments.json after a pull; prefer the larger count.
   // Treat the loaded comment list as the source of truth for counts.
   const stats = {
     ...statsR.data,

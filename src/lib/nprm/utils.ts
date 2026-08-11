@@ -39,7 +39,7 @@ export function parsePoster(title?: string): {
   poster: string;
   posterType: 'anonymous' | 'named' | 'org';
 } {
-  if (!title) return { poster: 'Unknown', posterType: 'anonymous' };
+  if (!title) return { poster: 'Anonymous', posterType: 'anonymous' };
   const m = title.match(/^Comment Submitted by\s+(.+)$/i);
   const name = (m?.[1] || title).trim().replace(/\.$/, '');
   const lower = name.toLowerCase();
@@ -47,13 +47,15 @@ export function parsePoster(title?: string): {
     return { poster: 'Anonymous', posterType: 'anonymous' };
   }
   if (
-    /\b(llc|inc|ltd|limited|corp|company|capital|management|partners|lp|llp)\b/i.test(
+    /\b(llc|inc\.?|ltd|limited|corp\.?|corporation|company|capital|management|partners|lp|llp|plc|gmbh|association|foundation|university|bank)\b/i.test(
       name
     )
   ) {
-    return { poster: name, posterType: 'org' };
+    // Never surface org names in the UI.
+    return { poster: 'Organization', posterType: 'org' };
   }
-  return { poster: name, posterType: 'named' };
+  // Never surface personal names in the UI.
+  return { poster: 'Named person', posterType: 'named' };
 }
 
 export function commentSnippet(comment: NprmComment, max = 140): string {
