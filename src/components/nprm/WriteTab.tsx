@@ -670,7 +670,7 @@ export default function WriteTab({
   async function copyText(text: string) {
     if (!ready) {
       toast(
-        'Finish at least one topic and accept the disclaimer first',
+        'Finish at least one topic and accept the checklist disclaimer first',
         'error'
       );
       return;
@@ -693,7 +693,7 @@ export default function WriteTab({
   async function openInLlm(llm: (typeof LLM_LINKS)[number]) {
     if (!ready) {
       toast(
-        'Finish at least one topic and accept the disclaimer first',
+        'Finish at least one topic and accept the checklist disclaimer first',
         'error'
       );
       return;
@@ -1052,24 +1052,6 @@ export default function WriteTab({
           </div>
         </section>
 
-        <section className="rounded-xl border-2 border-secondary/30 bg-secondary/[0.05] p-4 sm:p-5 shadow-sm space-y-2">
-          <NprmSectionHeading
-            as="h3"
-            eyebrow="Make it yours"
-            title="Uniqueness checklist"
-            titleClassName="text-sm font-semibold text-primary leading-snug"
-          />
-          <p className="text-xs text-neutral leading-relaxed">
-            Agencies can bucket near-identical comments as one. Read this
-            before you copy, then again after your LLM draft.
-          </p>
-          <ul className="list-disc pl-5 text-sm text-neutral space-y-1.5 leading-relaxed">
-            {UNIQUE_COMMENT_CHECKLIST.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </section>
-
         <div className="space-y-3">
           <div className="rounded-xl border border-base-300 bg-primary text-primary-content p-4 sm:p-5">
             <div className="flex items-center justify-between gap-2 mb-3">
@@ -1085,22 +1067,43 @@ export default function WriteTab({
             </pre>
           </div>
 
-          <label className="flex items-start gap-2.5 text-[11px] sm:text-xs text-amber-950/90 cursor-pointer rounded-xl border-2 border-warning/50 bg-warning/15 p-3 leading-relaxed">
-            <input
-              type="checkbox"
-              className="checkbox checkbox-sm mt-0.5 shrink-0"
-              checked={privacyOk}
-              onChange={(e) => setPrivacyOk(e.target.checked)}
-            />
-            <span>
-              I understand that I must not include my A-Number, receipt number,
-              home address, or other sensitive personal identifiers in a public
-              comment. By using this prompt, I am acting in my own capacity. EB5
-              Base does not submit comments for me and is not liable or
-              responsible for any comment I eventually file on regulations.gov
-              or elsewhere. This tool is information only, not legal advice.
-            </span>
-          </label>
+          <div className="rounded-xl border-2 border-warning/50 bg-warning/15 p-3 sm:p-4 space-y-3">
+            <div className="space-y-2">
+              <NprmSectionHeading
+                as="h3"
+                eyebrow="Make it yours"
+                title="Uniqueness checklist"
+                titleClassName="text-sm font-semibold text-primary leading-snug"
+              />
+              <p className="text-xs text-amber-950/80 leading-relaxed">
+                Agencies can bucket near-identical comments as one. Read this
+                before you copy, then again after your LLM draft.
+              </p>
+              <ul className="list-disc pl-5 text-sm text-amber-950/90 space-y-1.5 leading-relaxed">
+                {UNIQUE_COMMENT_CHECKLIST.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+            <label className="flex items-start gap-2.5 text-[11px] sm:text-xs text-amber-950/90 cursor-pointer leading-relaxed">
+              <input
+                type="checkbox"
+                className="checkbox checkbox-sm mt-0.5 shrink-0"
+                checked={privacyOk}
+                onChange={(e) => setPrivacyOk(e.target.checked)}
+              />
+              <span>
+                I have read the uniqueness checklist above and will personalize
+                my comment before filing. I will not include my A-Number,
+                receipt number, home address, or other sensitive personal
+                identifiers. By using this prompt, I am acting in my own
+                capacity. EB5 Base does not submit comments for me and is not
+                liable or responsible for any comment I eventually file on
+                regulations.gov or elsewhere. This tool is information only, not
+                legal advice.
+              </span>
+            </label>
+          </div>
 
           <div className="flex flex-col sm:flex-row gap-2">
             <button
@@ -1118,7 +1121,7 @@ export default function WriteTab({
               title={
                 ready
                   ? 'Copy full prompt for your LLM'
-                  : 'Finish at least one topic and accept the disclaimer first'
+                  : 'Finish at least one topic and accept the checklist disclaimer first'
               }
               onClick={() => copyText(prompt)}
             >
@@ -1163,7 +1166,7 @@ export default function WriteTab({
                       title={
                         ready
                           ? `Copy prompt and open ${llm.label}`
-                          : 'Finish at least one topic and accept the disclaimer first'
+                          : 'Finish at least one topic and accept the checklist disclaimer first'
                       }
                       onClick={() => openInLlm(llm)}
                     >

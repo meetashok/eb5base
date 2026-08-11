@@ -275,7 +275,9 @@ export default function AboutTab({
             with the same structure and rules.
           </p>
           <p className="text-sm text-neutral leading-relaxed">
-            To keep filings from clustering as form letters:
+            On Write, the uniqueness checklist sits in the same gate as the
+            privacy disclaimer. Copy / Open LLM stay disabled until you check
+            that you have read the checklist and will personalize before filing:
           </p>
           <ul className="list-disc pl-5 text-sm text-neutral space-y-1.5 leading-relaxed">
             {UNIQUE_COMMENT_CHECKLIST.map((item) => (
