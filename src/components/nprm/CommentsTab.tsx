@@ -2,12 +2,12 @@
 
 import { useMemo, useState } from 'react';
 import { GlossaryText } from '@/components/nprm/GlossaryTerm';
+import LocalDateTime from '@/components/nprm/LocalDateTime';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import type { NprmComment, NprmTheme } from '@/lib/nprm/types';
 import {
   commentUrl,
   DOCKET_URL,
-  formatLastPull,
   formatShortDate,
   parsePoster,
   plainDash,
@@ -56,7 +56,6 @@ export default function CommentsTab({
   const [themeFilter, setThemeFilter] = useState<string>('all');
   const [posterFilter, setPosterFilter] = useState<PosterFilter>('all');
   const [query, setQuery] = useState('');
-  const lastPullLabel = formatLastPull(lastPull);
 
   const themeOptions = useMemo(() => {
     const counts = new Map<string, { id: string; label: string; count: number }>();
@@ -158,15 +157,15 @@ export default function CommentsTab({
         >
           <p className="text-sm text-neutral leading-relaxed">
             <GlossaryText text="Anonymized summaries of comments filed on Docket USCIS-2026-0100. Sorted by posted date, newest first. Data as of last pull: " />
-            {lastPullLabel}.
+            <LocalDateTime value={lastPull} />.
           </p>
         </NprmSectionHeading>
         <p className="text-xs leading-relaxed text-amber-800 bg-amber-50 border border-amber-200/80 rounded-md px-2.5 py-1.5">
           AI summaries are for browsing only and may be incomplete. Poster names
           and organizations are not shown. Always verify against the original
           filing on regulations.gov (Verify link on each card). This list may
-          lag newer filings after {lastPullLabel}. Source: regulations.gov via
-          api.data.gov.
+          lag newer filings after <LocalDateTime value={lastPull} />. Source:
+          regulations.gov via api.data.gov.
         </p>
         {topThemeNote ? (
           <p className="text-xs text-neutral/75 leading-relaxed">
@@ -347,9 +346,9 @@ export default function CommentsTab({
           </p>
           <p className="text-sm text-neutral leading-relaxed">
             {totalComments ?? comments.length} comments tracked · last pull{' '}
-            {lastPullLabel}. Summaries can miss nuance, so use Verify on each
-            card (and the docket) before you rely on any claim. Full methodology
-            and disclaimers are on About.
+            <LocalDateTime value={lastPull} />. Summaries can miss nuance, so use
+            Verify on each card (and the docket) before you rely on any claim.
+            Full methodology and disclaimers are on About.
           </p>
         </div>
         {onAbout ? (

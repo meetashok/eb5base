@@ -149,11 +149,32 @@ export function commentsSince(
 
 export function formatLastPull(raw?: string): string {
   if (!raw) return 'n/a';
-  // e.g. "2026-08-09 03:32 IST" or ISO-ish strings
-  const m = raw.match(
+  const trimmed = raw.trim();
+
+  // Absolute timestamps (ISO with Z or offset) → viewer's local timezone.
+  if (
+    /^\d{4}-\d{2}-\d{2}T/.test(trimmed) ||
+    /(?:Z|[+-]\d{2}:?\d{2})$/i.test(trimmed)
+  ) {
+    const d = new Date(trimmed);
+    if (!Number.isNaN(d.getTime())) {
+      return d.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+        timeZoneName: 'short',
+      });
+    }
+  }
+
+  // Legacy wall-clock strings like "2026-08-09 03:32 IST".
+  const m = trimmed.match(
     /^(\d{4})-(\d{2})-(\d{2})[ T](\d{1,2}):(\d{2})(?::(\d{2}))?\s*([A-Za-z/_]+)?/
   );
-  if (!m) return raw;
+  if (!m) return trimmed;
   const [, y, mo, d, hh, mm, , tz] = m;
   const hour24 = Number(hh);
   const ampm = hour24 >= 12 ? 'PM' : 'AM';

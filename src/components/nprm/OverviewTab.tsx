@@ -6,6 +6,7 @@ import GlossaryTerm, {
 } from '@/components/nprm/GlossaryTerm';
 import DoCommentsChangeRule from '@/components/nprm/DoCommentsChangeRule';
 import HowCommentingWorks from '@/components/nprm/HowCommentingWorks';
+import LocalDateTime from '@/components/nprm/LocalDateTime';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import VolumeChart from '@/components/nprm/VolumeChart';
 import {
@@ -23,7 +24,6 @@ import {
   FR_HTML,
   FR_PDF,
   dailyVolume,
-  formatLastPull,
 } from '@/lib/nprm/utils';
 
 interface Props {
@@ -99,7 +99,6 @@ export default function OverviewTab({
   onComments,
 }: Props) {
   const volume = dailyVolume(comments);
-  const lastPullLabel = formatLastPull(stats.last_pull);
   const sourceUrl = proposal?.source_url || FR_PDF;
 
   return (
@@ -244,8 +243,8 @@ export default function OverviewTab({
           </div>
           <VolumeChart data={volume} />
           <p className="text-[9px] text-neutral/55 leading-snug -mt-2">
-            Last pull {lastPullLabel}. Data is not real-time; it updates daily.
-            For real-time data, visit{' '}
+            Last pull <LocalDateTime value={stats.last_pull} />. Data is not
+            real-time; it updates daily. For real-time data, visit{' '}
             <a
               href={DOCKET_URL}
               target="_blank"

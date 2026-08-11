@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { GlossaryText } from '@/components/nprm/GlossaryTerm';
+import LocalDateTime from '@/components/nprm/LocalDateTime';
 import NprmDisclaimer from '@/components/nprm/NprmDisclaimer';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import {
@@ -31,12 +32,20 @@ function parseCheckLogEntries(
     .filter(Boolean)
     .map((line) => {
       const sep = line.indexOf(' - ');
-      if (sep === -1) {
-        return { when: '', detail: plainDash(line.replace(/ - /g, ' · ')) };
+      if (sep !== -1) {
+        const when = line.slice(0, sep).trim();
+        const detail = plainDash(line.slice(sep + 3).replace(/ - /g, ' · '));
+        return { when, detail };
       }
-      const when = line.slice(0, sep).trim();
-      const detail = plainDash(line.slice(sep + 3).replace(/ - /g, ' · '));
-      return { when, detail };
+      // Pull script writes: `${isoStamp} first-party pull...`
+      const isoLead = line.match(/^(\d{4}-\d{2}-\d{2}T\S+)\s+(.*)$/);
+      if (isoLead) {
+        return {
+          when: isoLead[1],
+          detail: plainDash(isoLead[2].replace(/ - /g, ' · ')),
+        };
+      }
+      return { when: '', detail: plainDash(line.replace(/ - /g, ' · ')) };
     });
 }
 
@@ -229,7 +238,8 @@ export default function AboutTab({
             (&quot;This comment…&quot; voice); attachment-only filings get a note
             to open the original on regulations.gov. Summaries can miss context or
             mis-weight a point, so open the linked filing when it matters. Right
-            now we track {totalComments} comments. Last refresh: {lastPull}.
+            now we track {totalComments} comments. Last refresh:{' '}
+            <LocalDateTime value={lastPull} />.
           </p>
         </div>
 
@@ -272,7 +282,7 @@ export default function AboutTab({
                   <div className="min-w-0 space-y-0.5">
                     {entry.when ? (
                       <p className="text-[11px] font-bold uppercase tracking-wide text-neutral/70 tabular-nums">
-                        {entry.when}
+                        <LocalDateTime value={entry.when} />
                       </p>
                     ) : null}
                     <p>{entry.detail}</p>
