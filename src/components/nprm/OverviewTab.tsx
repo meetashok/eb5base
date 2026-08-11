@@ -9,6 +9,7 @@ import CountdownBadge from '@/components/nprm/CountdownBadge';
 import HowCommentingWorks from '@/components/nprm/HowCommentingWorks';
 import LocalDateTime from '@/components/nprm/LocalDateTime';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
+import PromptCopyCount from '@/components/nprm/PromptCopyCount';
 import VolumeChart from '@/components/nprm/VolumeChart';
 import {
   KEY_TOPICS,
@@ -186,6 +187,7 @@ export default function OverviewTab({
             What others are saying
           </button>
         </div>
+        <PromptCopyCount />
       </header>
 
       <section className="nprm-callout-action space-y-3" id="do-i-need-to-act">
