@@ -1,5 +1,6 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import GlossaryTerm, {
   GlossaryText,
 } from '@/components/nprm/GlossaryTerm';
@@ -35,6 +36,8 @@ const KEY_POINTS: {
   /** Federal Register HTML heading id (deep link). */
   frHeadingId: string;
   frSectionLabel: string;
+  /** Optional first-occurrence inline links inside body. */
+  inlineLinks?: { phrase: string; href: string; title?: string }[];
 }[] = [
   {
     title:
@@ -49,6 +52,14 @@ const KEY_POINTS: {
     body: 'Today, under the USCIS Policy Manual (not a final regulation), investors can often still claim jobs created with short-term bridge financing that EB-5 capital later repays. The NPRM would change that: jobs from financing repaid with EB-5 money would not count as jobs created by that EB-5 capital. That is draft language only. It is not law yet, and RIA itself did not ban bridge financing. DHS also says the rule would generally apply prospectively to petitions filed on or after the final rule\'s effective date, not automatically to every post-RIA filing from March 2022 onward. The open risk is I-829 and transition wording: commenters are asking DHS to say expressly that pending bridge-based projects keep the old Policy Manual treatment.',
     frHeadingId: 'h-67',
     frSectionLabel: 'IV.D.7 Job Creation Requirements and Bridge Financing',
+    inlineLinks: [
+      {
+        phrase: 'USCIS Policy Manual',
+        href: 'https://www.uscis.gov/policy-manual/volume-6-part-g-chapter-2',
+        title:
+          'USCIS Policy Manual, Volume 6, Part G, Chapter 2 (Bridge Financing, G.2(D)(1))',
+      },
+    ],
   },
   {
     title:
@@ -78,6 +89,65 @@ const KEY_POINTS: {
     frSectionLabel: 'IV.H.8 Enforcement (penalties, terminations) and Audits',
   },
 ];
+
+type KeyPointInlineLink = {
+  phrase: string;
+  href: string;
+  title?: string;
+};
+
+/** Glossary-aware body with first-occurrence inline source links. */
+function KeyPointBody({
+  text,
+  links,
+}: {
+  text: string;
+  links?: KeyPointInlineLink[];
+}) {
+  if (!links?.length) return <GlossaryText text={text} />;
+
+  const nodes: React.ReactNode[] = [];
+  let remaining = text;
+  let pending = [...links];
+  let key = 0;
+
+  while (remaining.length) {
+    let earliest = -1;
+    let matched: KeyPointInlineLink | null = null;
+    for (const link of pending) {
+      const idx = remaining.indexOf(link.phrase);
+      if (idx !== -1 && (earliest === -1 || idx < earliest)) {
+        earliest = idx;
+        matched = link;
+      }
+    }
+    if (earliest === -1 || !matched) {
+      nodes.push(<GlossaryText key={key++} text={remaining} />);
+      break;
+    }
+    if (earliest > 0) {
+      nodes.push(
+        <GlossaryText key={key++} text={remaining.slice(0, earliest)} />
+      );
+    }
+    nodes.push(
+      <a
+        key={key++}
+        href={matched.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        title={matched.title}
+        className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+      >
+        {matched.phrase}
+      </a>
+    );
+    remaining = remaining.slice(earliest + matched.phrase.length);
+    pending = pending.filter((l) => l !== matched);
+  }
+
+  return <>{nodes}</>;
+}
 
 export default function OverviewTab({
   stats,
@@ -287,7 +357,7 @@ export default function OverviewTab({
                 <GlossaryText text={point.title} />
               </p>
               <p className="text-sm text-neutral leading-relaxed">
-                <GlossaryText text={point.body} />
+                <KeyPointBody text={point.body} links={point.inlineLinks} />
               </p>
               <p className="text-xs">
                 <a
