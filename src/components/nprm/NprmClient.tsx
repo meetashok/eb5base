@@ -8,7 +8,6 @@ import CommentsTab from '@/components/nprm/CommentsTab';
 import NprmTabBar from '@/components/nprm/NprmTabBar';
 import OverviewTab from '@/components/nprm/OverviewTab';
 import SummaryTab from '@/components/nprm/SummaryTab';
-import ThemesTab from '@/components/nprm/ThemesTab';
 import WriteTab from '@/components/nprm/WriteTab';
 import type { NprmPageData } from '@/lib/nprm/types';
 import {
@@ -30,8 +29,7 @@ export { isNprmTabId, NPRM_TABS, nprmTabHref } from '@/lib/nprm/tabs';
 
 const TAB_DOCUMENT_TITLE: Record<NprmTabId, string> = {
   overview: 'EB-5 NPRM 2026: Plain-English Guide to DHS Proposed Rule',
-  summary: 'EB-5 NPRM Summary - Current vs Proposed',
-  themes: 'NPRM Comment Themes That Move the Needle',
+  summary: 'EB-5 NPRM Summary - Six Points That Matter',
   comments: 'NPRM Comments - Themes & Summaries',
   write: 'Build My EB-5 NPRM Comment',
   about: 'About the NPRM Comment Guide',
@@ -49,9 +47,6 @@ export default function NprmClient({
   tab: NprmTabId;
 }) {
   const [active, setActive] = useState<NprmTabId>(tab);
-  const [selectedOpinions, setSelectedOpinions] = useState<
-    Record<string, string>
-  >({});
   const [writeSeed, setWriteSeed] = useState(0);
   const [writeThemes, setWriteThemes] = useState<string[]>([]);
   const [writeOpinions, setWriteOpinions] = useState<Record<string, string>>(
@@ -84,19 +79,30 @@ export default function NprmClient({
       // stay mounted and only the tab panel content swaps.
       window.history.pushState(null, '', href);
     }
+    if (hash) {
+      const clean = hash.replace(/^#/, '');
+      window.requestAnimationFrame(() => {
+        document.getElementById(clean)?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      });
+    }
   }, []);
 
-  const onSelectOpinion = (themeId: string, opinionId: string) => {
-    setSelectedOpinions((prev) => ({ ...prev, [themeId]: opinionId }));
-  };
-
-  const goWriteWithTheme = (themeId: string, opinionId: string) => {
-    setWriteThemes([themeId]);
-    setWriteOpinions({ [themeId]: opinionId });
-    setSelectedOpinions((prev) => ({ ...prev, [themeId]: opinionId }));
+  const goWriteWithTopic = useCallback((topicId: string, opinionId?: string) => {
+    const theme = data.themes.find((t) => t.id === topicId);
+    const resolvedOpinion =
+      opinionId ||
+      theme?.opinions.find((o) => o.polarity === 'agree')?.id ||
+      theme?.opinions[0]?.id;
+    setWriteThemes([topicId]);
+    setWriteOpinions(
+      resolvedOpinion ? { [topicId]: resolvedOpinion } : {}
+    );
     setWriteSeed((n) => n + 1);
     setTab('write');
-  };
+  }, [data.themes, setTab]);
 
   const current = tabLabel(active);
 
@@ -201,7 +207,7 @@ export default function NprmClient({
             {[
               { n: 1, label: 'Understand', tabs: ['overview', 'summary'] },
               { n: 2, label: 'Personalize', tabs: ['write'] },
-              { n: 3, label: 'Themes', tabs: ['themes', 'comments'] },
+              { n: 3, label: 'Browse comments', tabs: ['comments'] },
               { n: 4, label: 'Submit', tabs: ['write'] },
             ].map((step) => {
               const on =
@@ -231,16 +237,8 @@ export default function NprmClient({
         {active === 'summary' && (
           <SummaryTab
             proposal={data.proposal}
-            onThemes={() => setTab('themes')}
+            onWriteTopic={goWriteWithTopic}
             onComments={() => setTab('comments')}
-          />
-        )}
-        {active === 'themes' && (
-          <ThemesTab
-            themes={data.themes}
-            selectedOpinions={selectedOpinions}
-            onSelectOpinion={onSelectOpinion}
-            onWriteWithTheme={goWriteWithTheme}
           />
         )}
         {active === 'comments' && (
@@ -276,9 +274,10 @@ export default function NprmClient({
             stats={data.stats}
             comments={data.comments}
             proposal={data.proposal}
-            onThemes={() => setTab('themes')}
+            onComments={() => setTab('comments')}
             onWrite={() => setTab('write')}
-            onSummary={() => setTab('summary')}
+            onWriteTopic={goWriteWithTopic}
+            onSummary={(hash) => setTab('summary', hash)}
           />
         )}
       </div>

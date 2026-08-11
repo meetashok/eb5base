@@ -303,7 +303,7 @@ export default function WriteTab({
 
   async function openInLlm(llm: (typeof LLM_LINKS)[number]) {
     if (!ready) {
-      toast('Select a theme and accept the disclaimer first', 'error');
+      toast('Select a topic and accept the disclaimer first', 'error');
       return;
     }
     let copied = false;
@@ -396,12 +396,13 @@ export default function WriteTab({
             <NprmSectionHeading
               as="h3"
               eyebrow="Step A"
-              title={`Themes (max ${MAX_THEMES})`}
+              title={`Topics (max ${MAX_THEMES})`}
               titleClassName="text-sm font-semibold text-primary leading-snug"
             >
               <p className="text-xs text-neutral leading-relaxed">
-                Select a theme to build your comment. Choose the themes that
-                are most important to you. Then choose your view under it.
+                Pick the points that matter most to you (same six as Overview and
+                Summary). Then choose whether you generally agree with the draft
+                or want it changed.
               </p>
             </NprmSectionHeading>
             <p className="text-xs text-neutral/70">
@@ -412,6 +413,11 @@ export default function WriteTab({
             {themes.map((t) => {
               const checked = themeIds.includes(t.id);
               const disabled = !checked && themeIds.length >= MAX_THEMES;
+              const agreeOps = t.opinions.filter((o) => o.polarity === 'agree');
+              const disagreeOps = t.opinions.filter(
+                (o) => o.polarity === 'disagree'
+              );
+              const otherOps = t.opinions.filter((o) => !o.polarity);
               return (
                 <div
                   key={t.id}
@@ -433,39 +439,58 @@ export default function WriteTab({
                     <GlossaryText text={t.title} />
                   </button>
                   {checked ? (
-                    <fieldset className="mt-2 space-y-1.5 border-t border-secondary/30 pt-2">
-                      <legend className="text-[11px] font-bold uppercase tracking-wider text-secondary px-0.5">
-                        Your view
-                      </legend>
-                      {t.opinions.map((op) => {
-                        const selected = opinions[t.id] === op.id;
-                        return (
-                          <label
-                            key={op.id}
-                            className={`flex items-start gap-2 text-xs sm:text-sm cursor-pointer rounded-md px-1.5 py-1 -mx-0.5 transition-colors ${
-                              selected
-                                ? 'bg-base-100/90 text-primary font-semibold ring-1 ring-secondary/35'
-                                : 'text-primary/90 font-medium hover:bg-base-100/70'
-                            }`}
-                          >
-                            <input
-                              type="radio"
-                              name={`opinion-${t.id}`}
-                              className="radio radio-xs radio-secondary mt-0.5 shrink-0 checked:bg-secondary"
-                              checked={selected}
-                              onChange={() =>
-                                setOpinions((prev) => ({
-                                  ...prev,
-                                  [t.id]: op.id,
-                                }))
-                              }
-                            />
-                            <span className="leading-snug">
-                              <GlossaryText text={op.label} />
-                            </span>
-                          </label>
-                        );
-                      })}
+                    <fieldset className="mt-2 space-y-2 border-t border-secondary/30 pt-2">
+                      <legend className="sr-only">Your view on {t.title}</legend>
+                      {(
+                        [
+                          {
+                            heading: 'If you generally agree with the draft',
+                            ops: agreeOps,
+                          },
+                          {
+                            heading: 'If you generally disagree with the draft',
+                            ops: disagreeOps,
+                          },
+                          { heading: 'Your view', ops: otherOps },
+                        ] as const
+                      ).map((group) =>
+                        group.ops.length ? (
+                          <div key={group.heading} className="space-y-1.5">
+                            <p className="text-[11px] font-bold uppercase tracking-wider text-secondary px-0.5">
+                              {group.heading}
+                            </p>
+                            {group.ops.map((op) => {
+                              const selected = opinions[t.id] === op.id;
+                              return (
+                                <label
+                                  key={op.id}
+                                  className={`flex items-start gap-2 text-xs sm:text-sm cursor-pointer rounded-md px-1.5 py-1 -mx-0.5 transition-colors ${
+                                    selected
+                                      ? 'bg-base-100/90 text-primary font-semibold ring-1 ring-secondary/35'
+                                      : 'text-primary/90 font-medium hover:bg-base-100/70'
+                                  }`}
+                                >
+                                  <input
+                                    type="radio"
+                                    name={`opinion-${t.id}`}
+                                    className="radio radio-xs radio-secondary mt-0.5 shrink-0 checked:bg-secondary"
+                                    checked={selected}
+                                    onChange={() =>
+                                      setOpinions((prev) => ({
+                                        ...prev,
+                                        [t.id]: op.id,
+                                      }))
+                                    }
+                                  />
+                                  <span className="leading-snug">
+                                    <GlossaryText text={op.label} />
+                                  </span>
+                                </label>
+                              );
+                            })}
+                          </div>
+                        ) : null
+                      )}
                     </fieldset>
                   ) : null}
                 </div>
@@ -727,7 +752,7 @@ export default function WriteTab({
               title={
                 ready
                   ? 'Copy full prompt for your LLM'
-                  : 'Select at least one theme and accept the disclaimer first'
+                  : 'Select at least one topic and accept the disclaimer first'
               }
               onClick={() => copyText(prompt, 'Prompt')}
             >
@@ -758,7 +783,7 @@ export default function WriteTab({
                       title={
                         ready
                           ? `Copy prompt and open ${llm.label}`
-                          : 'Select at least one theme and accept the disclaimer first'
+                          : 'Select at least one topic and accept the disclaimer first'
                       }
                       onClick={() => openInLlm(llm)}
                     >

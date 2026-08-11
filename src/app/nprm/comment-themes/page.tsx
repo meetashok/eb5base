@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 
-export default function NprmCommentThemesRedirect() {
-  redirect('/nprm/themes');
+/** Legacy Themes URL → Summary (six key topics). */
+export default function CommentThemesRedirect() {
+  redirect('/nprm/summary');
 }

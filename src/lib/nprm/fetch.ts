@@ -10,6 +10,7 @@ import type {
   NprmStats,
   NprmTheme,
 } from './types';
+import { toNprmThemes, toPromptTree } from './keyTopics';
 import { orderThemesForDisplay } from './utils';
 
 /** Accept nested regs.gov rows or flat Hatch theme/summary rows. */
@@ -224,16 +225,13 @@ export function sanitizeCheckLog(text: string): string {
 }
 
 export async function loadNprmPageData(): Promise<NprmPageData> {
-  const [statsR, themesR, promptsR, allR, proposalR, lastR, logR] =
-    await Promise.all([
-      fetchNprm.stats(),
-      fetchNprm.themes(),
-      fetchNprm.prompts(),
-      fetchNprm.all(),
-      fetchNprm.proposal().catch(() => null),
-      fetchNprm.lastCheck().catch(() => null),
-      fetchNprm.checkLog().catch(() => null),
-    ]);
+  const [statsR, allR, proposalR, lastR, logR] = await Promise.all([
+    fetchNprm.stats(),
+    fetchNprm.all(),
+    fetchNprm.proposal().catch(() => null),
+    fetchNprm.lastCheck().catch(() => null),
+    fetchNprm.checkLog().catch(() => null),
+  ]);
 
   const comments = (allR.data.comments ?? []).map(normalizeComment);
   // Prefer last-check stubs when they carry richer attributes later.
@@ -260,10 +258,15 @@ export async function loadNprmPageData(): Promise<NprmPageData> {
     total_comments: merged.length || statsR.data.total_comments,
   };
 
+  // First-party key topics power Write (and Comments theme labels). Meta
+  // themes.json / prompt-tree.json are no longer required for the builder.
+  const themes = orderThemesForDisplay(toNprmThemes());
+  const promptTree = toPromptTree();
+
   return {
     stats,
-    themes: orderThemesForDisplay(themesR.data),
-    promptTree: promptsR.data,
+    themes,
+    promptTree,
     comments: merged,
     proposal: proposalR?.data ?? null,
     lastCheck: lastR?.data ?? null,

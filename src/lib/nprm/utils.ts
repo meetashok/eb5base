@@ -70,16 +70,15 @@ export function commentSnippet(comment: NprmComment, max = 140): string {
 }
 
 /**
- * Preferred Write / Themes display order.
- * Remote feed order can reshuffle; keep Grandfather at #3 (after Sustainment + Bridge).
+ * Preferred Write / Key points display order.
  */
 export const THEME_DISPLAY_ORDER = [
   'sustainment',
   'bridge_financing',
-  'grandfather_retroactivity',
-  'tea_designation',
-  'program_integrity',
-  'definitional_asymmetry',
+  'good_faith',
+  'investment_amounts',
+  'tea',
+  'sanctions',
 ] as const;
 
 /** Sort themes into the preferred display order; unknown ids keep relative order at the end. */

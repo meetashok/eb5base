@@ -12,11 +12,9 @@ import {
 
 export default function WhyComment({
   why,
-  onThemes,
   onComments,
 }: {
   why: NprmProposalWhyComment;
-  onThemes?: () => void;
   onComments?: () => void;
 }) {
   const title = plainDash(why.title || 'Why should an investor comment?');
@@ -82,22 +80,13 @@ export default function WhyComment({
       </div>
 
       <div className="flex flex-col sm:flex-row flex-wrap gap-2">
-        {onThemes ? (
-          <button
-            type="button"
-            onClick={onThemes}
-            className="btn btn-sm btn-outline border-neutral/30"
-          >
-            Read 12 themes →
-          </button>
-        ) : null}
         {onComments ? (
           <button
             type="button"
             onClick={onComments}
             className="btn btn-sm btn-outline border-neutral/30"
           >
-            Browse existing comments →
+            Browse existing comments
           </button>
         ) : null}
         <a

@@ -11,14 +11,9 @@ const TAB_META: Record<
       'DHS published a 358-page proposed rule on July 2, 2026 to implement the 2022 RIA. Comment deadline Aug 31, 2026. Plain-English summary, impact by investor type, and comment builder.',
   },
   summary: {
-    title: 'EB-5 NPRM Summary - Current vs Proposed',
+    title: 'EB-5 NPRM Summary - Six Points That Matter',
     description:
-      'Section-by-section plain-English notes on investment amounts, TEA, sustainment, good-faith protections, sanctions, and more. Cite the Federal Register.',
-  },
-  themes: {
-    title: 'NPRM Comment Themes That Move the Needle',
-    description:
-      'Theme-by-theme guidance for commenting on the EB-5 Reform Act NPRM: sustainment, good faith, TEA, sanctions, and more.',
+      'Deep dive on sustainment, bridge financing, good-faith protections, investment amounts, TEA, and sanctions, with balanced pros and cons for each comment angle.',
   },
   comments: {
     title: 'NPRM Comments - Themes & Summaries',

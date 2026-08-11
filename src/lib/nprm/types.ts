@@ -7,11 +7,15 @@ export interface NprmStats {
   check_log?: string;
 }
 
+export type KeyTopicPolarity = 'agree' | 'disagree';
+
 export interface NprmOpinion {
   id: string;
   label: string;
   stance: string;
   fragments: string[];
+  /** Agree / disagree with the draft (first-party key topics). */
+  polarity?: KeyTopicPolarity;
 }
 
 export interface NprmTheme {
@@ -21,6 +25,42 @@ export interface NprmTheme {
   summary: string;
   sample_ids: string[];
   opinions: NprmOpinion[];
+}
+
+/** Shared Overview → Summary → Write topic (first-party). */
+export interface KeyTopicStance {
+  id: string;
+  polarity: KeyTopicPolarity;
+  /** Short Write radio label. */
+  label: string;
+  /** Overview bullets; also used as prompt fragments. */
+  angles: string[];
+  /** Summary: reasons this ask can make sense. */
+  pros: string[];
+  /** Summary: costs, integrity, or US-interest counterpoints. */
+  cons: string[];
+}
+
+export interface KeyTopicInlineLink {
+  phrase: string;
+  href: string;
+  title?: string;
+}
+
+export interface KeyTopic {
+  id: string;
+  title: string;
+  body: string;
+  frHeadingId: string;
+  frSectionLabel: string;
+  cfrs: string[];
+  inlineLinks?: KeyTopicInlineLink[];
+  summary: {
+    overview: string;
+    current?: string;
+    proposed?: string;
+  };
+  stances: KeyTopicStance[];
 }
 
 export interface NprmPromptNode {
