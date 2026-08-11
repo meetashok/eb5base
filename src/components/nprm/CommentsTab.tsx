@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { GlossaryText } from '@/components/nprm/GlossaryTerm';
 import LocalDateTime from '@/components/nprm/LocalDateTime';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import type { NprmComment, NprmTheme } from '@/lib/nprm/types';
