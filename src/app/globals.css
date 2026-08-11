@@ -209,7 +209,11 @@ body {
   }
 
   .home-tool-card {
-    @apply relative overflow-hidden rounded-2xl border-2 p-6 shadow-soft flex flex-col text-left transition-shadow duration-200;
+    @apply relative overflow-hidden rounded-2xl border-2 p-6 shadow-soft flex flex-col text-left transition-all duration-200;
+  }
+
+  .home-tool-card:hover {
+    @apply shadow-lift -translate-y-0.5;
   }
 
   .home-tool-card::before {
@@ -326,6 +330,10 @@ body {
     .home-tool-card::before {
       animation: none !important;
       transform: none !important;
+    }
+
+    .home-tool-card:hover {
+      transform: none;
     }
   }
 
