@@ -6,7 +6,9 @@
   --investor-win: #ecfdf5;
   --watch: #fffbeb;
   --risk: #fef2f2;
-  --site-sticky-offset: 7rem;
+  /* Navbar is min-h-16 (~4rem). 7rem left a visible gap under the sticky
+     site nav until StickyOffsetSync measured. Keep a close fallback. */
+  --site-sticky-offset: 4.5rem;
 }
 
 html {
