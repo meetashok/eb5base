@@ -724,7 +724,7 @@ export default function WriteTab({
     if (copied && canPrefill) {
       toast(`Opening ${llm.label} with your prompt`, 'success');
     } else if (copied) {
-      toast(`Prompt copied — paste into ${llm.label}`, 'success');
+      toast(`Prompt copied. Paste into ${llm.label}`, 'success');
     } else {
       toast(`Opened ${llm.label}. Copy the prompt from the preview.`, 'info');
     }
