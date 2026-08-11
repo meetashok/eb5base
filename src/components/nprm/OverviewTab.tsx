@@ -412,12 +412,12 @@ export default function OverviewTab({
                   type="button"
                   onClick={onWrite}
                   data-goatcounter-click="nprm-build-comment"
-                  className="text-xs font-semibold text-secondary underline underline-offset-2 hover:text-primary pt-0.5"
+                  className="text-sm font-semibold text-secondary underline underline-offset-2 hover:text-primary pt-0.5"
                 >
                   Build a comment on this
                 </button>
               </div>
-              <p className="text-xs">
+              <p className="text-[11px] leading-snug text-neutral/80">
                 <a
                   href={`${FR_HTML}#${point.frHeadingId}`}
                   target="_blank"
