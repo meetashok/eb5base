@@ -244,8 +244,7 @@ export default function OverviewTab({
           , they will publish the final rulebook.
         </p>
         <p className="font-semibold text-primary">
-          Why should you care? This draft decides four things that affect your
-          money:
+          This draft impacts your EB-5 journey:
         </p>
         <ol className="list-decimal pl-5 space-y-2">
           <li>
