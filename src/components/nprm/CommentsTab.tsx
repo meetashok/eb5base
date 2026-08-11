@@ -170,7 +170,7 @@ export default function CommentsTab({
           >
             regulations.gov
           </a>{' '}
-          (Verify link on each card). This list may lag newer filings after{' '}
+          (see full comment on each card). This list may lag newer filings after{' '}
           <LocalDateTime value={lastPull} />.
         </p>
       </div>
