@@ -222,11 +222,7 @@ export default function NprmClient({
         aria-labelledby={`nprm-tab-${active}`}
       >
         {active === 'summary' && (
-          <SummaryTab
-            proposal={data.proposal}
-            onWriteTopic={goWriteWithTopic}
-            onComments={() => setTab('comments')}
-          />
+          <SummaryTab onWriteTopic={goWriteWithTopic} />
         )}
         {active === 'comments' && (
           <CommentsTab

@@ -1,19 +1,16 @@
 'use client';
 
-import { Suspense, useEffect } from 'react';
+import { useEffect } from 'react';
 import { ExternalExplainerSection } from '@/components/nprm/ExternalExplainers';
 import { GlossaryText } from '@/components/nprm/GlossaryTerm';
-import ImpactMatrix from '@/components/nprm/ImpactMatrix';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
-import WhyComment from '@/components/nprm/WhyComment';
-import { ListSkeleton } from '@/components/LoadingSkeleton';
 import {
   KEY_TOPICS,
   stancesByPolarity,
   topicSectionId,
 } from '@/lib/nprm/keyTopics';
-import type { KeyTopic, KeyTopicStance, NprmProposalSummary } from '@/lib/nprm/types';
-import { FR_HTML, FR_PDF, mergeWhyReasons } from '@/lib/nprm/utils';
+import type { KeyTopic, KeyTopicStance } from '@/lib/nprm/types';
+import { FR_HTML, FR_PDF } from '@/lib/nprm/utils';
 
 function StanceBlock({ stance }: { stance: KeyTopicStance }) {
   return (
@@ -82,19 +79,10 @@ function PolaritySection({
 }
 
 export default function SummaryTab({
-  proposal,
   onWriteTopic,
-  onComments,
 }: {
-  proposal: NprmProposalSummary | null;
   onWriteTopic: (topicId: string) => void;
-  onComments: () => void;
 }) {
-  const whyComment = mergeWhyReasons(
-    proposal?.why_comment,
-    proposal?.why_participate
-  );
-
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const hash = window.location.hash.replace(/^#/, '');
@@ -247,14 +235,6 @@ export default function SummaryTab({
           ))}
         </div>
       </div>
-
-      <Suspense fallback={<ListSkeleton count={4} />}>
-        <ImpactMatrix />
-      </Suspense>
-
-      {whyComment ? (
-        <WhyComment why={whyComment} onComments={onComments} />
-      ) : null}
 
       <ExternalExplainerSection />
     </div>
