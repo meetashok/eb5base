@@ -230,7 +230,7 @@ export default function OverviewTab({
       <section className="space-y-4" id="comment-stats">
         <NprmSectionHeading
           eyebrow="Tracker"
-          title={`As of today, ${stats.total_comments} comments have already been made. It's your turn now.`}
+          title={`So far, ${stats.total_comments} comments have already been filed. It's your turn now.`}
         />
 
         <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft space-y-4">
