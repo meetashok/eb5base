@@ -20,6 +20,7 @@ import type {
   NprmStats,
 } from '@/lib/nprm/types';
 import {
+  DOCKET_URL,
   FR_HTML,
   FR_PDF,
   dailyVolume,
@@ -258,8 +259,18 @@ export default function OverviewTab({
             </span>
           </div>
           <VolumeChart data={volume} />
-          <p className="text-[10px] text-neutral/55 leading-snug -mt-2">
-            Last pull {lastPullLabel}
+          <p className="text-[9px] text-neutral/55 leading-snug -mt-2">
+            Last pull {lastPullLabel}. Data is not real-time; it updates daily.
+            For real-time data, visit{' '}
+            <a
+              href={DOCKET_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-secondary underline underline-offset-2 hover:text-primary"
+            >
+              regulations.gov
+            </a>
+            .
           </p>
           <div className="flex flex-col sm:flex-row flex-wrap gap-2 pt-1">
             <button
