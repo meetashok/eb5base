@@ -48,8 +48,7 @@ export const DISTINCTNESS_WARNING =
 /** Checklist shown on Write (and echoed on About) to keep filings from clustering. */
 export const UNIQUE_COMMENT_CHECKLIST = [
   'Aim for more than 30% rewrite of any AI draft before you file. Rewrite the opening and closing yourself, cut any repetitive phrases that still show up (for example the same ask opener in every section), and never paste chat preamble into regulations.gov.',
-  'Put one concrete fear in your personal story in your own words (redeployment notice, ageing-out year, funds still in escrow) so the LLM can use it.',
-  'Open with your timeline: when you put capital in or filed, and who in your family is affected.',
+  'In your personal story, include your timeline (when you put capital in or filed, who in your family is affected) and one concrete fear in your own words (redeployment notice, ageing-out year, funds still in escrow) so the LLM can use them.',
   'Cover 1-2 issues you actually lived. Do not stack every template topic.',
 ] as const;
 
