@@ -33,6 +33,7 @@ interface Props {
   onWrite: () => void;
   onWriteTopic: (topicId: string) => void;
   onSummary: (hash?: string) => void;
+  onComments: () => void;
 }
 
 /** Glossary-aware body with first-occurrence inline source links. */
@@ -95,6 +96,7 @@ export default function OverviewTab({
   onWrite,
   onWriteTopic,
   onSummary,
+  onComments,
 }: Props) {
   const volume = dailyVolume(comments);
   const lastPullLabel = formatLastPull(stats.last_pull);
@@ -173,6 +175,13 @@ export default function OverviewTab({
           >
             Read 10-min Summary
           </button>
+          <button
+            type="button"
+            onClick={onComments}
+            className="btn btn-outline border-neutral/30"
+          >
+            See what others are saying
+          </button>
         </div>
       </header>
 
@@ -247,6 +256,15 @@ export default function OverviewTab({
             </a>
             .
           </p>
+          <div className="pt-1">
+            <button
+              type="button"
+              onClick={onComments}
+              className="btn btn-outline border-neutral/30 btn-sm"
+            >
+              See what others are saying
+            </button>
+          </div>
         </div>
       </section>
 
@@ -314,7 +332,7 @@ export default function OverviewTab({
         </ol>
       </section>
 
-      <HowCommentingWorks onWrite={onWrite} />
+      <HowCommentingWorks onWrite={onWrite} onComments={onComments} />
     </div>
   );
 }

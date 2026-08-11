@@ -256,6 +256,7 @@ export default function NprmClient({
             onWrite={goWrite}
             onWriteTopic={goWriteWithTopic}
             onSummary={(hash) => setTab('summary', hash)}
+            onComments={() => setTab('comments')}
           />
         )}
       </div>

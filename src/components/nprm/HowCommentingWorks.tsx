@@ -3,7 +3,13 @@ import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import { COMMENT_ON_URL, DOCKET_URL } from '@/lib/nprm/utils';
 
 /** Overview process card: how the NPRM comment loop works. */
-export default function HowCommentingWorks({ onWrite }: { onWrite: () => void }) {
+export default function HowCommentingWorks({
+  onWrite,
+  onComments,
+}: {
+  onWrite: () => void;
+  onComments?: () => void;
+}) {
   return (
     <section
       id="how-commenting-works"
@@ -42,7 +48,7 @@ export default function HowCommentingWorks({ onWrite }: { onWrite: () => void })
         </a>
         .
       </p>
-      <div className="pt-1">
+      <div className="flex flex-wrap items-center gap-2 pt-1">
         <button
           type="button"
           onClick={onWrite}
@@ -51,6 +57,15 @@ export default function HowCommentingWorks({ onWrite }: { onWrite: () => void })
         >
           Build My Comment
         </button>
+        {onComments ? (
+          <button
+            type="button"
+            onClick={onComments}
+            className="btn btn-outline border-neutral/30"
+          >
+            See what others are saying
+          </button>
+        ) : null}
       </div>
     </section>
   );
