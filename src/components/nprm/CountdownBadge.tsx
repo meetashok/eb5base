@@ -5,8 +5,8 @@ import { countdownParts } from '@/lib/nprm/utils';
 
 type Parts = ReturnType<typeof countdownParts>;
 
-/** Compact live deadline countdown for the NPRM hero. */
-export default function CountdownBadge({ endsLabel }: { endsLabel: string }) {
+/** Compact live deadline countdown (label + timer only). */
+export default function CountdownBadge() {
   // Null until mount so SSR and first client paint match.
   const [parts, setParts] = useState<Parts | null>(null);
 
@@ -20,28 +20,29 @@ export default function CountdownBadge({ endsLabel }: { endsLabel: string }) {
   if (parts?.expired) {
     return (
       <div
-        className="inline-flex flex-col gap-0.5 rounded-xl px-3.5 py-2.5 text-sm border-2 bg-error/10 border-error/40 text-error"
+        className="inline-flex flex-wrap items-baseline gap-x-3 gap-y-0.5 rounded-lg border-2 border-error/40 bg-error/10 px-3 py-2 text-error"
         role="status"
       >
         <span className="text-[11px] uppercase tracking-wider font-bold opacity-80">
           Comment deadline
         </span>
-        <span className="font-bold tracking-tight">Window closed</span>
-        <span className="text-xs font-medium opacity-80">Ended {endsLabel}</span>
+        <span className="font-bold tracking-tight text-sm sm:text-base">
+          Window closed
+        </span>
       </div>
     );
   }
 
   return (
     <div
-      className="inline-flex flex-col gap-0.5 rounded-xl px-3.5 py-2.5 text-sm border-2 bg-accent/20 border-accent/50 text-primary shadow-sm"
+      className="inline-flex flex-wrap items-baseline gap-x-3 gap-y-0.5 rounded-lg border-2 border-accent/50 bg-accent/20 px-3 py-2 text-primary"
       role="status"
     >
       <span className="text-[11px] uppercase tracking-wider font-bold text-secondary">
         Comment deadline
       </span>
       <span
-        className="font-bold tabular-nums tracking-tight text-base sm:text-lg min-h-[1.5rem]"
+        className="font-bold tabular-nums tracking-tight text-sm sm:text-base min-h-[1.25rem]"
         aria-live="polite"
       >
         {parts ? (
@@ -50,10 +51,9 @@ export default function CountdownBadge({ endsLabel }: { endsLabel: string }) {
             <span className="sr-only"> remaining</span>
           </>
         ) : (
-          <span>Until {endsLabel}</span>
+          <span className="text-neutral/60 font-semibold">Counting down</span>
         )}
       </span>
-      <span className="text-xs font-medium text-neutral">Closes {endsLabel}</span>
     </div>
   );
 }
