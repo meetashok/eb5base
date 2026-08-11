@@ -325,7 +325,7 @@ function TopicDecisionCard({
       {sel.include ? (
         <div className="space-y-3 border-t border-secondary/25 pt-3">
           <div className="space-y-1.5">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-secondary">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-neutral/60">
               Do you generally agree with the draft on this point?
             </p>
             <div
@@ -348,6 +348,18 @@ function TopicDecisionCard({
                 ] as const
               ).map((opt) => {
                 const selected = sel.polarity === opt.id;
+                const isAgree = opt.id === 'agree';
+                const selectedClass = isAgree
+                  ? 'border-secondary bg-secondary/10 shadow-sm'
+                  : 'border-warning bg-warning/10 shadow-sm';
+                const idleClass = isAgree
+                  ? 'border-base-300 bg-base-100/70 hover:border-secondary/50'
+                  : 'border-base-300 bg-base-100/70 hover:border-warning/50';
+                const labelClass = selected
+                  ? isAgree
+                    ? 'text-secondary'
+                    : 'text-warning'
+                  : 'text-primary';
                 return (
                   <button
                     key={opt.id}
@@ -355,12 +367,10 @@ function TopicDecisionCard({
                     aria-pressed={selected}
                     onClick={() => setPolarity(opt.id)}
                     className={`flex-1 text-left rounded-lg border-2 px-3 py-2 transition-colors ${
-                      selected
-                        ? 'border-secondary bg-base-100 shadow-sm'
-                        : 'border-base-300 bg-base-100/70 hover:border-secondary/40'
+                      selected ? selectedClass : idleClass
                     }`}
                   >
-                    <span className="block text-sm font-semibold text-primary">
+                    <span className={`block text-sm font-semibold ${labelClass}`}>
                       {opt.label}
                     </span>
                     {opt.hint ? (
