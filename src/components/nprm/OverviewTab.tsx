@@ -412,17 +412,17 @@ export default function OverviewTab({
                   type="button"
                   onClick={onWrite}
                   data-goatcounter-click="nprm-build-comment"
-                  className="text-sm font-semibold text-secondary underline underline-offset-2 hover:text-primary pt-0.5"
+                  className="btn btn-primary btn-sm text-primary-content mt-1"
                 >
                   Build a comment on this
                 </button>
               </div>
-              <p className="text-[11px] leading-snug text-neutral/80">
+              <p className="text-[10px] leading-snug text-neutral/70">
                 <a
                   href={`${FR_HTML}#${point.frHeadingId}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+                  className="font-normal text-secondary underline underline-offset-2 hover:text-primary"
                 >
                   Read {point.frSectionLabel} in the Federal Register
                 </a>
@@ -431,7 +431,7 @@ export default function OverviewTab({
                   href={FR_PDF}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+                  className="font-normal text-secondary underline underline-offset-2 hover:text-primary"
                 >
                   PDF
                 </a>
