@@ -204,7 +204,7 @@ export default function SummaryTab({
                 title="If you generally disagree with the draft"
               />
 
-              <div className="flex flex-wrap items-center gap-2 pt-1">
+              <div className="flex flex-col items-start gap-2 pt-1">
                 <button
                   type="button"
                   onClick={() => onWriteTopic(topic.id)}
@@ -213,23 +213,27 @@ export default function SummaryTab({
                 >
                   Build a comment on this
                 </button>
-                <a
-                  href={`${FR_HTML}#${topic.frHeadingId}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[10px] font-normal text-secondary underline underline-offset-2 hover:text-primary"
-                >
-                  Read {topic.frSectionLabel} in the Federal Register
-                </a>
-                <span className="text-[10px] text-neutral/50">·</span>
-                <a
-                  href={FR_PDF}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[10px] font-normal text-secondary underline underline-offset-2 hover:text-primary"
-                >
-                  PDF
-                </a>
+                <p className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 text-[10px] leading-snug">
+                  <a
+                    href={`${FR_HTML}#${topic.frHeadingId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-normal text-secondary underline underline-offset-2 hover:text-primary"
+                  >
+                    Read {topic.frSectionLabel} in the Federal Register
+                  </a>
+                  <span className="text-neutral/50" aria-hidden="true">
+                    ·
+                  </span>
+                  <a
+                    href={FR_PDF}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-normal text-secondary underline underline-offset-2 hover:text-primary"
+                  >
+                    PDF
+                  </a>
+                </p>
               </div>
             </article>
           ))}
