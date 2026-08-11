@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { PROJECT_TYPE_OPTIONS } from '@/lib/nprm/constants';
 import {
   KEY_TOPICS,
@@ -198,6 +198,7 @@ function TopicDecisionCard({
   index,
   sel,
   includeDisabled,
+  highlight,
   onChange,
   onSummary,
 }: {
@@ -205,17 +206,27 @@ function TopicDecisionCard({
   index: number;
   sel: TopicCommentSelection;
   includeDisabled: boolean;
+  highlight?: boolean;
   onChange: (next: TopicCommentSelection) => void;
   onSummary?: (hash?: string) => void;
 }) {
   const agreeStance = stancesByPolarity(topic, 'agree')[0];
   const disagreeStance = stancesByPolarity(topic, 'disagree')[0];
+  const detailsRef = useRef<HTMLDivElement>(null);
   const activeAngles =
     sel.polarity === 'agree'
       ? agreeStance?.angles || []
       : sel.polarity === 'disagree'
         ? disagreeStance?.angles || []
         : [];
+
+  useEffect(() => {
+    const el = detailsRef.current;
+    if (!el) return;
+    // Keep collapsed details out of the tab order (React 18 has no inert prop).
+    if (sel.include) el.removeAttribute('inert');
+    else el.setAttribute('inert', '');
+  }, [sel.include]);
 
   function setInclude(include: boolean) {
     if (include) {
@@ -259,7 +270,9 @@ function TopicDecisionCard({
             ? 'border-secondary bg-secondary/10'
             : 'border-secondary/60 bg-secondary/5'
           : 'border-base-300 bg-base-100'
-      } ${includeDisabled && !sel.include ? 'opacity-50' : ''}`}
+      } ${includeDisabled && !sel.include ? 'opacity-50' : ''} ${
+        highlight ? 'nprm-topic-handoff-flash' : ''
+      }`}
     >
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0 space-y-1">
@@ -323,130 +336,143 @@ function TopicDecisionCard({
         })}
       </div>
 
-      {sel.include ? (
-        <div className="space-y-3 border-t border-secondary/25 pt-3">
-          <div className="space-y-1.5">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-neutral/60">
-              Do you generally agree with the draft on this point?
-            </p>
-            <div
-              className="flex flex-col sm:flex-row gap-1.5"
-              role="group"
-              aria-label="Polarity"
-            >
-              {(
-                [
-                  {
-                    id: 'agree' as const,
-                    label: 'Generally agree',
-                    hint: agreeStance?.label,
-                  },
-                  {
-                    id: 'disagree' as const,
-                    label: 'Generally disagree',
-                    hint: disagreeStance?.label,
-                  },
-                ] as const
-              ).map((opt) => {
-                const selected = sel.polarity === opt.id;
-                const isAgree = opt.id === 'agree';
-                const selectedClass = isAgree
-                  ? 'border-secondary bg-secondary/10 shadow-sm'
-                  : 'border-warning bg-warning/10 shadow-sm';
-                const idleClass = isAgree
-                  ? 'border-base-300 bg-base-100/70 hover:border-secondary/50'
-                  : 'border-base-300 bg-base-100/70 hover:border-warning/50';
-                const labelClass = selected
-                  ? isAgree
-                    ? 'text-secondary'
-                    : 'text-warning'
-                  : 'text-primary';
-                return (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    aria-pressed={selected}
-                    onClick={() => setPolarity(opt.id)}
-                    className={`flex-1 text-left rounded-lg border-2 px-3 py-2 transition-colors ${
-                      selected ? selectedClass : idleClass
-                    }`}
-                  >
-                    <span className={`block text-sm font-semibold ${labelClass}`}>
-                      {opt.label}
-                    </span>
-                    {opt.hint ? (
-                      <span className="block text-[11px] text-neutral leading-snug mt-0.5">
-                        <GlossaryText text={opt.hint} />
-                      </span>
-                    ) : null}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {sel.polarity ? (
-            <fieldset className="space-y-1.5">
-              <legend className="text-[11px] font-bold uppercase tracking-wider text-secondary">
-                Which points should the comment mention?
-              </legend>
-              <p className="text-[11px] text-neutral/80 leading-relaxed">
-                Select one or more. These become must-include asks in your LLM
-                prompt.
+      <div
+        ref={detailsRef}
+        className={`nprm-write-topic-expand ${sel.include ? 'is-open' : ''}`}
+        aria-hidden={!sel.include}
+      >
+        <div className="nprm-write-topic-expand-inner">
+          <div className="space-y-3 border-t border-secondary/25 pt-3">
+            <div className="space-y-1.5">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-neutral/60">
+                Do you generally agree with the draft on this point?
               </p>
-              <div className="space-y-1">
-                {activeAngles.map((angle) => {
-                  const checked = sel.angles.includes(angle);
+              <div
+                className="flex flex-col sm:flex-row gap-1.5"
+                role="group"
+                aria-label="Polarity"
+              >
+                {(
+                  [
+                    {
+                      id: 'agree' as const,
+                      label: 'Generally agree',
+                      hint: agreeStance?.label,
+                    },
+                    {
+                      id: 'disagree' as const,
+                      label: 'Generally disagree',
+                      hint: disagreeStance?.label,
+                    },
+                  ] as const
+                ).map((opt) => {
+                  const selected = sel.polarity === opt.id;
+                  const isAgree = opt.id === 'agree';
+                  const selectedClass = isAgree
+                    ? 'border-secondary bg-secondary/10 shadow-sm'
+                    : 'border-warning bg-warning/10 shadow-sm';
+                  const idleClass = isAgree
+                    ? 'border-base-300 bg-base-100/70 hover:border-secondary/50'
+                    : 'border-base-300 bg-base-100/70 hover:border-warning/50';
+                  const labelClass = selected
+                    ? isAgree
+                      ? 'text-secondary'
+                      : 'text-warning'
+                    : 'text-primary';
                   return (
-                    <label
-                      key={angle}
-                      className={`flex items-start gap-2 text-xs sm:text-sm cursor-pointer rounded-md px-2 py-1.5 transition-colors ${
-                        checked
-                          ? 'bg-base-100 text-primary font-semibold ring-1 ring-secondary/35'
-                          : 'text-primary/90 font-medium hover:bg-base-100/80'
+                    <button
+                      key={opt.id}
+                      type="button"
+                      aria-pressed={selected}
+                      onClick={() => setPolarity(opt.id)}
+                      tabIndex={sel.include ? undefined : -1}
+                      className={`flex-1 text-left rounded-lg border-2 px-3 py-2 transition-colors ${
+                        selected ? selectedClass : idleClass
                       }`}
                     >
-                      <input
-                        type="checkbox"
-                        className="checkbox checkbox-xs checkbox-secondary mt-0.5 shrink-0 !rounded-sm"
-                        checked={checked}
-                        onChange={() => toggleAngle(angle)}
-                      />
-                      <span className="leading-snug">
-                        <GlossaryText text={angle} />
+                      <span
+                        className={`block text-sm font-semibold ${labelClass}`}
+                      >
+                        {opt.label}
                       </span>
-                    </label>
+                      {opt.hint ? (
+                        <span className="block text-[11px] text-neutral leading-snug mt-0.5">
+                          <GlossaryText text={opt.hint} />
+                        </span>
+                      ) : null}
+                    </button>
                   );
                 })}
               </div>
-            </fieldset>
-          ) : null}
+            </div>
 
-          {sel.polarity ? (
-            <label className="form-control">
-              <span className="label-text text-xs">
-                Anything else to include for this topic? (optional)
-              </span>
-              <textarea
-                className="textarea textarea-bordered text-sm min-h-20"
-                placeholder="e.g. Also confirm return of capital after 2 years and jobs, even before CGC."
-                value={sel.extraNote}
-                onChange={(e) =>
-                  onChange({ ...sel, extraNote: e.target.value })
-                }
-              />
-            </label>
-          ) : null}
+            {sel.polarity ? (
+              <fieldset className="space-y-1.5">
+                <legend className="text-[11px] font-bold uppercase tracking-wider text-secondary">
+                  Which points should the comment mention?
+                </legend>
+                <p className="text-[11px] text-neutral/80 leading-relaxed">
+                  Select one or more. These become must-include asks in your LLM
+                  prompt.
+                </p>
+                <div className="space-y-1">
+                  {activeAngles.map((angle) => {
+                    const checked = sel.angles.includes(angle);
+                    return (
+                      <label
+                        key={angle}
+                        className={`flex items-start gap-2 text-xs sm:text-sm cursor-pointer rounded-md px-2 py-1.5 transition-colors ${
+                          checked
+                            ? 'bg-base-100 text-primary font-semibold ring-1 ring-secondary/35'
+                            : 'text-primary/90 font-medium hover:bg-base-100/80'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          className="checkbox checkbox-xs checkbox-secondary mt-0.5 shrink-0 !rounded-sm"
+                          checked={checked}
+                          disabled={!sel.include}
+                          onChange={() => toggleAngle(angle)}
+                          tabIndex={sel.include ? undefined : -1}
+                        />
+                        <span className="leading-snug">
+                          <GlossaryText text={angle} />
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </fieldset>
+            ) : null}
 
-          {sel.include && !ready ? (
-            <p className="text-[11px] text-warning leading-relaxed">
-              {!sel.polarity
-                ? 'Choose agree or disagree to continue.'
-                : 'Select at least one point, or add a note above.'}
-            </p>
-          ) : null}
+            {sel.polarity ? (
+              <label className="form-control">
+                <span className="label-text text-xs">
+                  Anything else to include for this topic? (optional)
+                </span>
+                <textarea
+                  className="textarea textarea-bordered text-sm min-h-20"
+                  placeholder="e.g. Also confirm return of capital after 2 years and jobs, even before CGC."
+                  value={sel.extraNote}
+                  disabled={!sel.include}
+                  tabIndex={sel.include ? undefined : -1}
+                  onChange={(e) =>
+                    onChange({ ...sel, extraNote: e.target.value })
+                  }
+                />
+              </label>
+            ) : null}
+
+            {sel.include && !ready ? (
+              <p className="text-[11px] text-warning leading-relaxed">
+                {!sel.polarity
+                  ? 'Choose agree or disagree to continue.'
+                  : 'Select at least one point, or add a note above.'}
+              </p>
+            ) : null}
+          </div>
         </div>
-      ) : null}
+      </div>
     </article>
   );
 }
@@ -468,6 +494,8 @@ export default function WriteTab({
   });
   const [style, setStyle] = useState<StyleGuideline>('plain');
   const [copyMsg, setCopyMsg] = useState<string | null>(null);
+  const [copyPulseKey, setCopyPulseKey] = useState(0);
+  const [flashTopicId, setFlashTopicId] = useState<string | null>(null);
   const [privacyOk, setPrivacyOk] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
@@ -506,12 +534,22 @@ export default function WriteTab({
   useEffect(() => {
     const focusId = initialTopicIds[0];
     let cancelled = false;
+    let flashClearId = 0;
     const run = () => {
       if (cancelled) return;
       if (focusId) {
         const el = document.getElementById(`write-topic-${focusId}`);
         if (el) {
           el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          const reduce =
+            typeof window !== 'undefined' &&
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          if (!reduce) {
+            setFlashTopicId(focusId);
+            flashClearId = window.setTimeout(() => {
+              if (!cancelled) setFlashTopicId(null);
+            }, 900);
+          }
           return;
         }
       }
@@ -522,6 +560,7 @@ export default function WriteTab({
     return () => {
       cancelled = true;
       window.clearTimeout(id);
+      if (flashClearId) window.clearTimeout(flashClearId);
     };
   }, [initialTopicIds]);
 
@@ -581,6 +620,7 @@ export default function WriteTab({
     try {
       await navigator.clipboard.writeText(text);
       setCopyMsg('Prompt copied');
+      setCopyPulseKey((k) => k + 1);
       track('builder_copied');
       if (personalized) track('builder_personalized');
       window.setTimeout(() => setCopyMsg(null), 2500);
@@ -604,6 +644,7 @@ export default function WriteTab({
       await navigator.clipboard.writeText(prompt);
       copied = true;
       setCopyMsg('Prompt copied');
+      setCopyPulseKey((k) => k + 1);
       track('builder_copied');
       if (personalized) track('builder_personalized');
       window.setTimeout(() => setCopyMsg(null), 2000);
@@ -714,6 +755,7 @@ export default function WriteTab({
                 index={index}
                 sel={selections[topic.id] || emptyTopicSelection(topic.id)}
                 includeDisabled={atMax}
+                highlight={flashTopicId === topic.id}
                 onChange={updateSelection}
                 onSummary={onSummary}
               />
@@ -948,9 +990,10 @@ export default function WriteTab({
 
           <button
             type="button"
+            key={copyPulseKey}
             className={`btn w-full sm:w-auto ${
               copyMsg === 'Prompt copied'
-                ? 'btn-ghost bg-base-300 text-primary border-base-300 shadow-none'
+                ? 'btn-ghost bg-base-300 text-primary border-base-300 shadow-none nprm-copy-pulse'
                 : copyMsg === 'Copy failed'
                   ? 'btn-error text-error-content'
                   : 'btn-secondary shadow-glow-green'
