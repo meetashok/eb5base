@@ -99,11 +99,18 @@ function PolarityAngles({
   tone: 'agree' | 'disagree';
 }) {
   if (!items.length) return null;
+  const isAgree = tone === 'agree';
   return (
-    <div className="space-y-1.5">
+    <div
+      className={`space-y-1.5 rounded-md border-l-4 pl-2.5 py-1 ${
+        isAgree
+          ? 'border-secondary bg-secondary/5'
+          : 'border-warning bg-warning/5'
+      }`}
+    >
       <p
-        className={`text-xs font-semibold ${
-          tone === 'agree' ? 'text-secondary' : 'text-amber-800'
+        className={`text-xs font-bold ${
+          isAgree ? 'text-secondary' : 'text-warning'
         }`}
       >
         {title}

@@ -66,11 +66,18 @@ function PolaritySection({
 }) {
   const stances = stancesByPolarity(topic, polarity);
   if (!stances.length) return null;
+  const isAgree = polarity === 'agree';
   return (
-    <div className="space-y-2">
+    <div
+      className={`space-y-2 rounded-md border-l-4 pl-3 py-1 ${
+        isAgree
+          ? 'border-secondary bg-secondary/5'
+          : 'border-warning bg-warning/5'
+      }`}
+    >
       <p
         className={`text-sm font-bold ${
-          polarity === 'agree' ? 'text-secondary' : 'text-amber-800'
+          isAgree ? 'text-secondary' : 'text-warning'
         }`}
       >
         {title}
