@@ -50,7 +50,11 @@ export default function CountdownBadge() {
       >
         {parts ? (
           <>
-            {parts.days} {dayWord} {pad(parts.hours)}:{pad(parts.minutes)}
+            {parts.days}{' '}
+            <span className="font-medium text-neutral/65 text-[0.85em]">
+              {dayWord}
+            </span>{' '}
+            {pad(parts.hours)}:{pad(parts.minutes)}
             <span className="text-error">:{pad(parts.seconds)}</span>
             <span className="sr-only"> remaining</span>
           </>
