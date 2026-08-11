@@ -69,7 +69,7 @@ export default function AboutTab({
   const logEntries = parseCheckLogEntries(checkLog);
 
   return (
-    <div className="space-y-8 max-w-3xl animate-[fadeIn_0.35s_ease-out]">
+    <div className="space-y-8 max-w-3xl mx-auto animate-[fadeIn_0.35s_ease-out]">
       <NprmDisclaimer />
 
       <section className="space-y-2 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">

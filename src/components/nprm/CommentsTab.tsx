@@ -133,8 +133,8 @@ export default function CommentsTab({
   }
 
   return (
-    <div className="space-y-6 animate-[fadeIn_0.35s_ease-out]">
-      <div className="space-y-2 max-w-2xl">
+    <div className="max-w-3xl mx-auto space-y-6 animate-[fadeIn_0.35s_ease-out]">
+      <div className="space-y-2">
         <NprmSectionHeading
           as="h2"
           eyebrow="Comments"

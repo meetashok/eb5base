@@ -279,31 +279,31 @@ function TopicDecisionCard({
         highlight ? 'nprm-topic-handoff-flash' : ''
       }`}
     >
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <div className="min-w-0 space-y-1">
+      <div className="space-y-1">
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
           <p className="text-[11px] font-bold uppercase tracking-wider text-secondary">
             Topic {index + 1}
           </p>
-          <h4 className="text-sm font-semibold text-primary leading-snug">
-            <GlossaryText text={topic.title} />
-          </h4>
+          {onSummary ? (
+            <button
+              type="button"
+              onClick={() => onSummary(topicSectionId(topic.id))}
+              className="text-[10px] font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+            >
+              Read more
+            </button>
+          ) : (
+            <a
+              href={`${nprmTabHref('summary')}#${topicSectionId(topic.id)}`}
+              className="text-[10px] font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+            >
+              Read more
+            </a>
+          )}
         </div>
-        {onSummary ? (
-          <button
-            type="button"
-            onClick={() => onSummary(topicSectionId(topic.id))}
-            className="text-[10px] font-semibold text-secondary underline underline-offset-2 hover:text-primary shrink-0"
-          >
-            Read more
-          </button>
-        ) : (
-          <a
-            href={`${nprmTabHref('summary')}#${topicSectionId(topic.id)}`}
-            className="text-[10px] font-semibold text-secondary underline underline-offset-2 hover:text-primary shrink-0"
-          >
-            Read more
-          </a>
-        )}
+        <h4 className="text-sm font-semibold text-primary leading-snug">
+          <GlossaryText text={topic.title} />
+        </h4>
       </div>
 
       <div
@@ -739,9 +739,9 @@ export default function WriteTab({
   }
 
   return (
-    <div className="space-y-4 animate-[fadeIn_0.35s_ease-out]">
+    <div className="max-w-3xl mx-auto space-y-4 animate-[fadeIn_0.35s_ease-out]">
       <NprmSectionHeading as="h2" eyebrow="Write" title="Build My Comment">
-        <p className="text-sm text-neutral leading-relaxed max-w-2xl">
+        <p className="text-sm text-neutral leading-relaxed">
           Walk each topic: skip or comment, agree or disagree, pick the points
           to mention, then add your personal story. We build an LLM prompt you
           can paste into ChatGPT, Claude, or similar. We do not submit to{' '}
@@ -797,7 +797,7 @@ export default function WriteTab({
               title={`Decide topic by topic (max ${MAX_TOPICS})`}
               titleClassName="text-sm font-semibold text-primary leading-snug"
             >
-              <p className="text-xs text-neutral leading-relaxed max-w-2xl">
+              <p className="text-xs text-neutral leading-relaxed">
                 Same six topics as Overview and Summary. Stronger comments focus
                 on up to {MAX_TOPICS} issues. For more topics, copy another
                 prompt in a second pass.
@@ -975,7 +975,7 @@ export default function WriteTab({
             title="Guidelines"
             titleClassName="text-sm font-semibold text-primary leading-snug"
           >
-            <p className="text-xs text-neutral leading-relaxed max-w-2xl">
+            <p className="text-xs text-neutral leading-relaxed">
               Target length adapts to how many topics you finish: 1 issue ~
               250-350 words, 2 issues ~ 400-500, 3 issues ~ 550-750. The draft
               uses short paragraphs; bullets only for concrete asks to DHS.

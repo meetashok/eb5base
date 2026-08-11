@@ -144,8 +144,9 @@ export default function SummaryTab({
       <div className="lg:grid lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-8 items-start">
         <nav
           aria-label="Summary sections"
-          className="hidden lg:block sticky top-[calc(var(--site-sticky-offset)+3.5rem)] space-y-1 text-sm"
+          className="hidden lg:block sticky top-[calc(var(--site-sticky-offset)+3.5rem)] space-y-1 text-sm pt-4 sm:pt-5"
         >
+          <p className="page-hero-eyebrow px-2 pb-2 mb-0">Key points</p>
           {KEY_TOPICS.map((t, idx) => (
             <a
               key={t.id}
@@ -164,8 +165,9 @@ export default function SummaryTab({
           </a>
         </nav>
 
-        <div className="space-y-6 max-w-3xl">
-          <div className="lg:hidden flex flex-wrap gap-2 pb-1">
+        <div className="max-w-3xl">
+          {/* Outside space-y so lg:hidden chips do not push topic 1 down via sibling margins */}
+          <div className="lg:hidden flex flex-wrap gap-2 pb-6">
             {KEY_TOPICS.map((t, idx) => (
               <a
                 key={t.id}
@@ -183,6 +185,7 @@ export default function SummaryTab({
             </a>
           </div>
 
+          <div className="space-y-6">
           {KEY_TOPICS.map((topic, idx) => (
             <article
               key={topic.id}
@@ -267,6 +270,7 @@ export default function SummaryTab({
               </div>
             </article>
           ))}
+          </div>
         </div>
       </div>
 
