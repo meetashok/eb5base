@@ -127,8 +127,16 @@ export default function OverviewTab({
           Think of EB-5 as an apartment building. Congress passed a big renovation
           law in 2022 (the <GlossaryTerm term="RIA" />). Since then, the building
           manager (<GlossaryTerm term="USCIS" />) has been enforcing the new rules
-          with memos. Now the manager published a formal draft of the new
-          rulebook: <GlossaryTerm term="NPRM" />,{' '}
+          with memos. Now the manager published a{' '}
+          <a
+            href={DOCKET_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+          >
+            formal draft of the new rulebook
+          </a>
+          : <GlossaryTerm term="NPRM" />,{' '}
           <a
             href={sourceUrl}
             target="_blank"
