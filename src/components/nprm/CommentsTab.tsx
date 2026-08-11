@@ -157,9 +157,26 @@ export default function CommentsTab({
         <p className="text-xs leading-relaxed text-amber-800 bg-amber-50 border border-amber-200/80 rounded-md px-2.5 py-1.5">
           AI summaries are for browsing only and may be incomplete. Poster names
           and organizations are not shown. Always verify against the original
-          filing on regulations.gov (Verify link on each card). This list may
-          lag newer filings after <LocalDateTime value={lastPull} />. Source:
-          regulations.gov via api.data.gov.
+          filing on{' '}
+          <a
+            href={DOCKET_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold underline underline-offset-2 hover:text-primary"
+          >
+            regulations.gov
+          </a>{' '}
+          (Verify link on each card). This list may lag newer filings after{' '}
+          <LocalDateTime value={lastPull} />. Source:{' '}
+          <a
+            href={DOCKET_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold underline underline-offset-2 hover:text-primary"
+          >
+            regulations.gov
+          </a>{' '}
+          via api.data.gov.
         </p>
       </div>
 
