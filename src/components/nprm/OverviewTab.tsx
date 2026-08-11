@@ -39,7 +39,7 @@ const KEY_POINTS: {
   {
     title:
       'You may get your investment back after about 2 years, not after many years',
-    body: 'Old practice often kept your money stuck until the green card path moved, which for India and China backlogs could mean a decade of redeployment risk. The draft says capital only needs to stay invested for about 2 years after it reaches the job-creating project, once the required jobs are created. That is the sustainment clock investors have been waiting to see written into regulation. If finalized this way, many post-RIA investors can plan for return of capital even before getting CGC.',
+    body: 'Old practice often kept your money stuck until the green card path moved, which for India and China backlogs could mean a years of redeployment risk. The draft says capital only needs to stay invested for about 2 years after it reaches the job-creating project, once the required jobs are created. That is the sustainment clock investors have been waiting to see written into regulation. If finalized this way, many post-RIA investors can plan for return of capital even before getting CGC.',
     frHeadingId: 'h-66',
     frSectionLabel: 'IV.D.6 Duration of Investment',
   },
