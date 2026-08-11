@@ -37,8 +37,8 @@ export default function PromptCopyCount({
       <span className="font-semibold text-primary tabular-nums">
         {formatPromptCopyCount(count)}
       </span>{' '}
-      {count === 1 ? 'investor has' : 'investors have'} already copied a prompt
-      from this builder.
+      {count === 1 ? 'investor has' : 'investors have'} already used EB5 Base to
+      build a prompt for their comment.
     </p>
   );
 }

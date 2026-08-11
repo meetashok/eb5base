@@ -121,6 +121,7 @@ export default function OverviewTab({
             before the deadline. Your comment can influence what gets finalized.
           </p>
           <CountdownBadge />
+          <PromptCopyCount />
         </div>
         <p>
           Think of EB-5 as an apartment building. Congress passed a big renovation
