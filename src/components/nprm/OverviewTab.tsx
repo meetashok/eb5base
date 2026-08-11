@@ -294,11 +294,12 @@ export default function OverviewTab({
         />
         <p id="india-china">
           Commenting can help protect your investment whether you already filed
-          or plan to file. A finalized 2-year sustainment rule and stronger
-          good-faith protections matter most if your capital would otherwise sit
-          through a long backlog or forced redeployment (especially India and
-          China waits). Future filers should also watch the proposed $1.4M high
-          employment tier and the Jan 1, 2027 inflation hike.
+          or plan to file. A finalized 2-year sustainment rule, bridge financing
+          treatment, and stronger good-faith protections matter most if your
+          capital would otherwise sit through a long backlog or forced
+          redeployment (especially India and China waits). Future filers should
+          also watch the proposed $1.4M high employment tier and the Jan 1, 2027
+          inflation hike.
         </p>
         <p>
           <strong>Action:</strong> Read the{' '}
