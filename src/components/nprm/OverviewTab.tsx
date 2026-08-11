@@ -49,7 +49,7 @@ const KEY_POINTS: {
       'Say the 2-year clock should start when capital is made available to the JCE, not when your visa becomes current.',
       'Ask DHS to confirm you can receive return of capital after 2 years and job creation, even before CGC.',
       'Oppose forced redeployment into a new project you did not choose after the sustainment period ends.',
-      'Ask for clear rules on escrowed capital: when the 2-year expectation starts after release to the project.',
+      'Ask for clear rules on escrowed capital: when the 2-year expectation starts.',
     ],
     frHeadingId: 'h-66',
     frSectionLabel: 'IV.D.6 Duration of Investment',
