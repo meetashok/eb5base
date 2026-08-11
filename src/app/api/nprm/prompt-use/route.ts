@@ -1,25 +1,24 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { getSupabaseConfig, isSupabaseConfigured } from '@/lib/supabase-env';
 import { createServiceClient } from '@/lib/supabase-service';
 
-function getReadClient() {
-  if (process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()) {
-    return createServiceClient();
-  }
+function getAnonClient() {
   const { url, key } = getSupabaseConfig();
   return createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }
 
-function getWriteClient() {
-  // Increments must use the service role (RPC is not granted to anon).
-  return createServiceClient();
+function getClient(): SupabaseClient {
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()) {
+    return createServiceClient();
+  }
+  return getAnonClient();
 }
 
 async function readCopyCount(): Promise<number | null> {
-  const supabase = getReadClient();
+  const supabase = getClient();
   const { data, error } = await supabase
     .from('nprm_prompt_stats')
     .select('copy_count')
@@ -70,16 +69,8 @@ export async function POST() {
     );
   }
 
-  if (!process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()) {
-    console.error('[nprm/prompt-use] missing SUPABASE_SERVICE_ROLE_KEY');
-    return NextResponse.json(
-      { error: 'Prompt-use counter is temporarily unavailable.' },
-      { status: 503 }
-    );
-  }
-
   try {
-    const supabase = getWriteClient();
+    const supabase = getClient();
     const { data, error } = await supabase.rpc('increment_nprm_prompt_copies');
 
     if (error) {
