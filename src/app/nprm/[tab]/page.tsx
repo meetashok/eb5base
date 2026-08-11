@@ -24,6 +24,10 @@ export default function NprmTabPage({
   if (tab === 'overview') {
     redirect('/nprm');
   }
+  // Themes tab removed: same six topics now live on Summary.
+  if (tab === 'themes' || tab === 'comment-themes') {
+    redirect('/nprm/summary');
+  }
   if (!isNprmTabId(tab)) {
     notFound();
   }

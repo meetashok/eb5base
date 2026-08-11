@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { GlossaryText } from '@/components/nprm/GlossaryTerm';
+import LocalDateTime from '@/components/nprm/LocalDateTime';
 import NprmDisclaimer from '@/components/nprm/NprmDisclaimer';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import {
@@ -11,6 +12,7 @@ import {
   ILRC_LINK,
 } from '@/lib/nprm/constants';
 import type { NprmProposalSummary } from '@/lib/nprm/types';
+import { nprmTabHref } from '@/lib/nprm/tabs';
 import { COMMENT_ON_URL, DOCKET_URL, plainDash } from '@/lib/nprm/utils';
 
 interface Props {
@@ -18,6 +20,7 @@ interface Props {
   lastPull: string;
   totalComments: number;
   proposal: NprmProposalSummary | null;
+  onWrite?: () => void;
 }
 
 function parseCheckLogEntries(
@@ -29,12 +32,20 @@ function parseCheckLogEntries(
     .filter(Boolean)
     .map((line) => {
       const sep = line.indexOf(' - ');
-      if (sep === -1) {
-        return { when: '', detail: plainDash(line.replace(/ - /g, ' · ')) };
+      if (sep !== -1) {
+        const when = line.slice(0, sep).trim();
+        const detail = plainDash(line.slice(sep + 3).replace(/ - /g, ' · '));
+        return { when, detail };
       }
-      const when = line.slice(0, sep).trim();
-      const detail = plainDash(line.slice(sep + 3).replace(/ - /g, ' · '));
-      return { when, detail };
+      // Pull script writes: `${isoStamp} first-party pull...`
+      const isoLead = line.match(/^(\d{4}-\d{2}-\d{2}T\S+)\s+(.*)$/);
+      if (isoLead) {
+        return {
+          when: isoLead[1],
+          detail: plainDash(isoLead[2].replace(/ - /g, ' · ')),
+        };
+      }
+      return { when: '', detail: plainDash(line.replace(/ - /g, ' · ')) };
     });
 }
 
@@ -43,6 +54,7 @@ export default function AboutTab({
   lastPull,
   totalComments,
   proposal,
+  onWrite,
 }: Props) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -69,39 +81,6 @@ export default function AboutTab({
         <p className="text-sm text-neutral leading-relaxed">
           <GlossaryText text="Post-RIA EB-5 investors want to comment on Docket USCIS-2026-0100 with educated personal stories, not form letters that USCIS can bucket as one. regulations.gov is hard to browse by theme. This page explains what the NPRM itself proposes in plain English, organizes the real comments, and helps you build a distinct prompt for your own LLM." />
         </p>
-      </section>
-
-      <section className="space-y-2 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
-        <NprmSectionHeading
-          as="h2"
-          eyebrow="Sources"
-          title="Proposal summary sources"
-        />
-        <p className="text-sm text-neutral leading-relaxed">
-          Overview proposal summaries are plain-language paraphrases of Federal
-          Register Doc 2026-13392 (Vol 91 No 126, July 2 2026, RIN 1615-AC94).
-          Every statement cites the FR section and page it paraphrases. We do not
-          invent facts. For the official text, read{' '}
-          <a
-            href={proposalUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold text-secondary underline underline-offset-2 break-all"
-          >
-            {proposalUrl}
-          </a>
-          .
-        </p>
-        {proposal?.plain_language_note ? (
-          <p className="text-sm text-neutral leading-relaxed">
-            {proposal.plain_language_note}
-          </p>
-        ) : null}
-        {proposal?.source_document ? (
-          <p className="text-xs text-neutral/80 leading-relaxed">
-            Source document: {proposal.source_document}
-          </p>
-        ) : null}
       </section>
 
       <section className="space-y-3 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
@@ -153,7 +132,26 @@ export default function AboutTab({
       <section className="space-y-2 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
         <NprmSectionHeading as="h2" eyebrow="How to file" title="File on regulations.gov" />
         <ol className="list-decimal list-inside space-y-2 text-sm text-neutral leading-relaxed">
-          <li>Build a prompt in the Write tab (personal block required).</li>
+          <li>
+            {onWrite ? (
+              <button
+                type="button"
+                onClick={onWrite}
+                data-goatcounter-click="nprm-build-comment"
+                className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+              >
+                Build a prompt
+              </button>
+            ) : (
+              <a
+                href={nprmTabHref('write')}
+                className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+              >
+                Build a prompt
+              </a>
+            )}{' '}
+            in the Write tab (personal block required).
+          </li>
           <li>
             Write the comment in your own words. You can draft it yourself, or
             optionally paste the prompt into your own LLM and edit the result into
@@ -189,43 +187,115 @@ export default function AboutTab({
         </p>
       </section>
 
-      <section className="space-y-3 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
+      <section className="space-y-4 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
         <NprmSectionHeading
           as="h2"
           eyebrow="Accuracy"
-          title="How we keep this accurate"
+          title="How we built this, and how we keep it honest"
         />
-        <p className="text-sm text-neutral leading-relaxed">
-          We keep a dated record of every update to this guide and the public comment
-          summaries, so you can see what changed and when. That history helps us stay
-          transparent, catch mistakes, and point each summary back to the original
-          filing on regulations.gov. Right now we track {totalComments} comments.
-          Last refresh: {lastPull}.
-        </p>
-        {logEntries.length > 0 ? (
-          <ul className="space-y-3 rounded-lg border-2 border-base-300 bg-base-200/70 p-3 sm:p-4 overflow-auto max-h-72">
-            {logEntries.map((entry, i) => (
-              <li
-                key={`${entry.when}-${i}`}
-                className="flex gap-2.5 text-sm text-neutral leading-relaxed"
-              >
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-secondary" aria-hidden />
-                <div className="min-w-0 space-y-0.5">
-                  {entry.when ? (
-                    <p className="text-[11px] font-bold uppercase tracking-wide text-neutral/70 tabular-nums">
-                      {entry.when}
-                    </p>
-                  ) : null}
-                  <p>{entry.detail}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-sm text-neutral/70 rounded-lg border-2 border-dashed border-base-300 p-3">
-            check.log unavailable
+
+        <div className="space-y-2">
+          <h3 className="text-sm font-bold text-primary">
+            Overview and Summary topics
+          </h3>
+          <p className="text-sm text-neutral leading-relaxed">
+            Every topic on Overview and Summary starts from the official draft
+            rule (Federal Register Doc 2026-13392, Vol 91 No 126, July 2 2026,
+            RIN 1615-AC94 / Docket USCIS-2026-0100). We read the notice, drafted
+            a short plain-English Overview point for each issue, then expanded it
+            into a longer Summary writeup (with AI help for drafting and
+            editing). Agree and disagree angles both show honest pros and cons so
+            the page does not push one side. These are still paraphrases. They
+            can miss nuance or get something wrong. Use the Federal Register
+            links in each topic section, or the full notice at{' '}
+            <a
+              href={proposalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-secondary underline underline-offset-2 break-all"
+            >
+              {proposalUrl}
+            </a>
+            , before you rely on any claim here.
           </p>
-        )}
+          {proposal?.source_document ? (
+            <p className="text-xs text-neutral/80 leading-relaxed">
+              Source document: {proposal.source_document}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="text-sm font-bold text-primary">Public comments</h3>
+          <p className="text-sm text-neutral leading-relaxed">
+            Comments come from the regulations.gov API for this docket, not from
+            a third-party social feed. We pull on a daily cadence, normalize each
+            filing into a common shape (id, link, posted date, theme tags, poster
+            type), and label posters only as Anonymous, Named person, or
+            Organization. Person and company names are stripped from the summary
+            voice so browsing stays comparable across filers. For each comment we
+            generate a short automated summary from the posted body text
+            (&quot;This comment…&quot; voice); attachment-only filings get a note
+            to open the original on regulations.gov. Summaries can miss context or
+            mis-weight a point, so open the linked filing when it matters. Right
+            now we track {totalComments} comments. Last refresh:{' '}
+            <LocalDateTime value={lastPull} />.
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="text-sm font-bold text-primary">
+            Write tab prompt builder
+          </h3>
+          <p className="text-sm text-neutral leading-relaxed">
+            The Write tab builds a prompt for your own LLM; we never draft or
+            POST the comment for you. You choose whether to comment on each
+            topic, and whether you generally agree or disagree with the draft.
+            The prompt only includes the angles you select plus your personal
+            story. Safeguards baked into that prompt: use only facts you
+            provided; do not invent dates, amounts, project names, or legal
+            conclusions; do not copy sample comments into a form letter; prefer
+            concrete asks to DHS/USCIS over vague opposition; and cite only the
+            FR / CFR references listed for your selected issues. The tool is
+            stance-neutral: it scaffolds whichever side you pick, with the same
+            structure and rules, so it does not lobby for agree or disagree.
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="text-sm font-bold text-primary">Change log</h3>
+          <p className="text-sm text-neutral leading-relaxed">
+            We keep a dated record of guide and comment-data refreshes so you can
+            see what changed and when.
+          </p>
+          {logEntries.length > 0 ? (
+            <ul className="space-y-3 rounded-lg border-2 border-base-300 bg-base-200/70 p-3 sm:p-4 overflow-auto max-h-72">
+              {logEntries.map((entry, i) => (
+                <li
+                  key={`${entry.when}-${i}`}
+                  className="flex gap-2.5 text-sm text-neutral leading-relaxed"
+                >
+                  <span
+                    className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-secondary"
+                    aria-hidden
+                  />
+                  <div className="min-w-0 space-y-0.5">
+                    {entry.when ? (
+                      <p className="text-[11px] font-bold uppercase tracking-wide text-neutral/70 tabular-nums">
+                        <LocalDateTime value={entry.when} />
+                      </p>
+                    ) : null}
+                    <p>{entry.detail}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-neutral/70 rounded-lg border-2 border-dashed border-base-300 p-3">
+              check.log unavailable
+            </p>
+          )}
+        </div>
       </section>
     </div>
   );

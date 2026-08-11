@@ -1,13 +1,12 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { GlossaryText } from '@/components/nprm/GlossaryTerm';
+import LocalDateTime from '@/components/nprm/LocalDateTime';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
-import { FEED_SHARE } from '@/lib/nprm/fetch';
 import type { NprmComment, NprmTheme } from '@/lib/nprm/types';
 import {
   commentUrl,
-  formatLastPull,
+  DOCKET_URL,
   formatShortDate,
   parsePoster,
   plainDash,
@@ -19,9 +18,7 @@ interface Props {
   comments: NprmComment[];
   themes: NprmTheme[];
   lastPull?: string;
-  source?: string;
   totalComments?: number;
-  feedSource?: 'remote' | 'local';
   onAbout?: () => void;
 }
 
@@ -52,15 +49,12 @@ export default function CommentsTab({
   comments,
   themes,
   lastPull,
-  source,
   totalComments,
-  feedSource = 'local',
   onAbout,
 }: Props) {
   const [themeFilter, setThemeFilter] = useState<string>('all');
   const [posterFilter, setPosterFilter] = useState<PosterFilter>('all');
   const [query, setQuery] = useState('');
-  const lastPullLabel = formatLastPull(lastPull);
 
   const themeOptions = useMemo(() => {
     const counts = new Map<string, { id: string; label: string; count: number }>();
@@ -82,19 +76,23 @@ export default function CommentsTab({
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     const list = comments.filter((c) => {
-      const { posterType } = parsePoster(c.attributes?.title);
+      const posterType =
+        c.posterType || parsePoster(c.attributes?.title).posterType;
       if (posterFilter !== 'all' && posterType !== posterFilter) return false;
       if (themeFilter !== 'all' && (c.themeId || 'unknown') !== themeFilter) {
         return false;
       }
       if (q) {
         const ai = (c.aiSummary || c.attributes?.aiSummary || '').toLowerCase();
-        const title = (c.attributes?.title || '').toLowerCase();
+        const poster = (
+          c.posterLabel ||
+          parsePoster(c.attributes?.title).poster
+        ).toLowerCase();
         const id = c.id.toLowerCase();
         const theme = (themeLabel(c, themes) || '').toLowerCase();
         if (
           !ai.includes(q) &&
-          !title.includes(q) &&
+          !poster.includes(q) &&
           !id.includes(q) &&
           !theme.includes(q)
         ) {
@@ -114,7 +112,8 @@ export default function CommentsTab({
   const posterOptions = useMemo(() => {
     const counts = { all: comments.length, anonymous: 0, named: 0, org: 0 };
     for (const c of comments) {
-      const { posterType } = parsePoster(c.attributes?.title);
+      const posterType =
+        c.posterType || parsePoster(c.attributes?.title).posterType;
       counts[posterType] += 1;
     }
     return [
@@ -124,12 +123,6 @@ export default function CommentsTab({
       { id: 'org' as const, label: `Organization (${counts.org})` },
     ];
   }, [comments]);
-
-  const topThemeNote = useMemo(() => {
-    const top = themeOptions.find((t) => t.id !== 'all');
-    if (!top) return null;
-    return `${top.label} is the most common theme label from the feed (not a bug). Poster names come from regulations.gov titles; AI summaries stay generic.`;
-  }, [themeOptions]);
 
   function filterBtnClass(active: boolean) {
     return `btn btn-xs h-7 min-h-0 px-2.5 border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-secondary ${
@@ -156,21 +149,36 @@ export default function CommentsTab({
           }
         >
           <p className="text-sm text-neutral leading-relaxed">
-            <GlossaryText text="Summaries of comments filed on Docket USCIS-2026-0100. Sorted by posted date, newest first. Data as of last pull: " />
-            {lastPullLabel}.
+            Anonymized summaries of comments filed so far.
+          </p>
+          <p className="text-[11px] text-neutral/70 leading-relaxed">
+            Last updated <LocalDateTime value={lastPull} />.
           </p>
         </NprmSectionHeading>
         <p className="text-xs leading-relaxed text-amber-800 bg-amber-50 border border-amber-200/80 rounded-md px-2.5 py-1.5">
-          AI summaries are for browsing only and may be incomplete. Always verify
-          against the original filing on regulations.gov (Verify link on each
-          card). This list may lag newer filings after {lastPullLabel}. Source:
-          regulations.gov via api.data.gov.
+          AI summaries are for browsing only and may be incomplete. Poster names
+          and organizations are not shown. Always verify against the original
+          filing on{' '}
+          <a
+            href={DOCKET_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold underline underline-offset-2 hover:text-primary"
+          >
+            regulations.gov
+          </a>{' '}
+          (Verify link on each card). This list may lag newer filings after{' '}
+          <LocalDateTime value={lastPull} />. Source:{' '}
+          <a
+            href={DOCKET_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold underline underline-offset-2 hover:text-primary"
+          >
+            regulations.gov
+          </a>{' '}
+          via api.data.gov.
         </p>
-        {topThemeNote ? (
-          <p className="text-xs text-neutral/75 leading-relaxed">
-            Theme counts: {topThemeNote}
-          </p>
-        ) : null}
       </div>
 
       <div className="space-y-3">
@@ -245,7 +253,9 @@ export default function CommentsTab({
 
       <ul className="space-y-3">
         {filtered.map((comment) => {
-          const { poster } = parsePoster(comment.attributes?.title);
+          const poster =
+            comment.posterLabel ||
+            parsePoster(comment.attributes?.title).poster;
           const theme = themeLabel(comment, themes);
           const ai = comment.aiSummary || comment.attributes?.aiSummary;
           const source = comment.sourceLink || commentUrl(comment.id);
@@ -316,31 +326,36 @@ export default function CommentsTab({
         </p>
       )}
 
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between rounded-xl border-2 border-secondary/30 bg-secondary/10 px-4 py-4">
-        <div className="space-y-1">
+      <div className="flex flex-col sm:flex-row sm:items-start gap-3 justify-between rounded-xl border-2 border-secondary/30 bg-secondary/10 px-4 py-4">
+        <div className="space-y-2 min-w-0">
           <NprmSectionHeading
             as="h3"
             eyebrow="Trust"
-            title="Source and feed status"
+            title="Where these comments come from"
             titleClassName="text-sm font-bold text-primary leading-snug"
           />
           <p className="text-sm text-neutral leading-relaxed">
-            Source: {source || 'regulations.gov via api.data.gov'}. Feed{' '}
-            <span className="font-semibold">
-              {feedSource === 'remote' ? 'live' : 'local seed'}
-            </span>
-            . Titles from regulations.gov. Explainer cites FR Doc 2026-13392.{' '}
+            We pull filings on a daily cadence from the{' '}
             <a
-              href={FEED_SHARE}
+              href={DOCKET_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-semibold text-secondary underline underline-offset-2 break-all"
+              className="font-semibold text-secondary underline underline-offset-2"
             >
-              Public JSON (CORS - agent.meta.ai)
-            </a>
-            . {totalComments ?? comments.length} comments tracked · last pull{' '}
-            {lastPullLabel}. Official filings may be newer; always check the
-            docket.
+              regulations.gov
+            </a>{' '}
+            API for Docket USCIS-2026-0100 and host them as first-party data on
+            this site. There is no third-party social feed. Poster labels are
+            only Anonymous, Named person, or Organization. Each card gets a short
+            automated summary from the posted text; attachment-only filings note
+            that you should open the original. Theme tags are keyword labels for
+            browsing, not a legal classification.
+          </p>
+          <p className="text-sm text-neutral leading-relaxed">
+            {totalComments ?? comments.length} comments tracked · last pull{' '}
+            <LocalDateTime value={lastPull} />. Summaries can miss nuance, so use
+            Verify on each card (and the docket) before you rely on any claim.
+            Full methodology and disclaimers are on About.
           </p>
         </div>
         {onAbout ? (

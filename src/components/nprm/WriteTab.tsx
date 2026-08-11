@@ -1,22 +1,33 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { PROJECT_TYPE_OPTIONS } from '@/lib/nprm/constants';
 import {
+  KEY_TOPICS,
+  stancesByPolarity,
+  topicSectionId,
+} from '@/lib/nprm/keyTopics';
+import {
   MIN_IMPACT_CHARS,
+  adaptiveLengthTarget,
   buildPrompt,
+  defaultTopicSelections,
+  emptyTopicSelection,
+  includedSelections,
   isPersonalizedEnough,
+  isTopicSelectionReady,
   templateSimilarity,
 } from '@/lib/nprm/prompt';
 import type {
-  FormatGuideline,
-  LengthGuideline,
-  NprmPromptNode,
-  NprmTheme,
+  KeyTopic,
+  KeyTopicPolarity,
   PersonalBlock,
   StyleGuideline,
+  TopicCommentSelection,
 } from '@/lib/nprm/types';
 import { COMMENT_GUIDANCE, COMMENT_ON_URL } from '@/lib/nprm/utils';
+import { SITE_URL } from '@/lib/constants';
+import { nprmTabHref } from '@/lib/nprm/tabs';
 import GlossaryTerm, {
   GlossaryText,
 } from '@/components/nprm/GlossaryTerm';
@@ -24,16 +35,19 @@ import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import { useToast } from '@/components/Toast';
 
 interface Props {
-  themes: NprmTheme[];
-  promptTree: NprmPromptNode[];
-  initialThemeIds?: string[];
-  initialOpinions?: Record<string, string>;
+  /** Prefill from Overview/Summary “Build a comment on this”. */
+  initialTopicIds?: string[];
+  onSummary?: (hash?: string) => void;
 }
 
-const MAX_THEMES = 3;
-const DRAFT_KEY = 'eb5base_nprm_write_draft_v1';
+const MAX_TOPICS = 3;
+const DRAFT_KEY = 'eb5base_nprm_write_draft_v4';
 /** Browser/URL length guard for LLM ?q= prefill links. */
 const LLM_PREFILL_MAX_CHARS = 3500;
+const NPRM_SHARE_URL = `${SITE_URL}/nprm`;
+const NPRM_SHARE_TITLE = 'EB5 Base NPRM comment guide';
+const NPRM_SHARE_TEXT =
+  'I used EB5 Base to share my view on the EB-5 NPRM. Make yourself heard:';
 
 const PERSONAL_STORY_EXAMPLES = [
   'years waiting (ex: 5 years since I-526E filing)',
@@ -153,7 +167,9 @@ function ChoiceChips<T extends string>({
   );
 }
 
-type GoatCounter = { count?: (opts: { path: string; title?: string; event?: boolean }) => void };
+type GoatCounter = {
+  count?: (opts: { path: string; title?: string; event?: boolean }) => void;
+};
 
 function track(event: string) {
   try {
@@ -164,19 +180,316 @@ function track(event: string) {
   }
 }
 
+function seedSelections(
+  initialTopicIds: string[]
+): Record<string, TopicCommentSelection> {
+  const base = defaultTopicSelections();
+  initialTopicIds.slice(0, MAX_TOPICS).forEach((id) => {
+    if (base[id]) {
+      base[id] = {
+        ...emptyTopicSelection(id),
+        include: true,
+        polarity: null,
+        angles: [],
+        extraNote: '',
+      };
+    }
+  });
+  return base;
+}
+
+function TopicDecisionCard({
+  topic,
+  index,
+  sel,
+  includeDisabled,
+  highlight,
+  onChange,
+  onSummary,
+}: {
+  topic: KeyTopic;
+  index: number;
+  sel: TopicCommentSelection;
+  includeDisabled: boolean;
+  highlight?: boolean;
+  onChange: (next: TopicCommentSelection) => void;
+  onSummary?: (hash?: string) => void;
+}) {
+  const agreeStance = stancesByPolarity(topic, 'agree')[0];
+  const disagreeStance = stancesByPolarity(topic, 'disagree')[0];
+  const detailsRef = useRef<HTMLDivElement>(null);
+  const activeAngles =
+    sel.polarity === 'agree'
+      ? agreeStance?.angles || []
+      : sel.polarity === 'disagree'
+        ? disagreeStance?.angles || []
+        : [];
+
+  useEffect(() => {
+    const el = detailsRef.current;
+    if (!el) return;
+    // Keep collapsed details out of the tab order (React 18 has no inert prop).
+    if (sel.include) el.removeAttribute('inert');
+    else el.setAttribute('inert', '');
+  }, [sel.include]);
+
+  function setInclude(include: boolean) {
+    if (include) {
+      onChange({
+        ...sel,
+        include: true,
+      });
+      return;
+    }
+    onChange(emptyTopicSelection(topic.id));
+  }
+
+  function setPolarity(polarity: KeyTopicPolarity) {
+    if (sel.polarity === polarity) return;
+    onChange({
+      ...sel,
+      include: true,
+      polarity,
+      angles: [],
+    });
+  }
+
+  function toggleAngle(angle: string) {
+    const has = sel.angles.includes(angle);
+    onChange({
+      ...sel,
+      angles: has
+        ? sel.angles.filter((a) => a !== angle)
+        : [...sel.angles, angle],
+    });
+  }
+
+  const ready = isTopicSelectionReady(sel);
+
+  return (
+    <article
+      id={`write-topic-${topic.id}`}
+      className={`scroll-mt-36 rounded-xl border-2 px-3 py-3 sm:px-4 sm:py-4 space-y-3 ${
+        sel.include
+          ? ready
+            ? 'border-secondary bg-secondary/10'
+            : 'border-secondary/60 bg-secondary/5'
+          : 'border-base-300 bg-base-100'
+      } ${includeDisabled && !sel.include ? 'opacity-50' : ''} ${
+        highlight ? 'nprm-topic-handoff-flash' : ''
+      }`}
+    >
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="min-w-0 space-y-1">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-secondary">
+            Topic {index + 1}
+          </p>
+          <h4 className="text-sm font-semibold text-primary leading-snug">
+            <GlossaryText text={topic.title} />
+          </h4>
+        </div>
+        {onSummary ? (
+          <button
+            type="button"
+            onClick={() => onSummary(topicSectionId(topic.id))}
+            className="text-[10px] font-semibold text-secondary underline underline-offset-2 hover:text-primary shrink-0"
+          >
+            Read more
+          </button>
+        ) : (
+          <a
+            href={`${nprmTabHref('summary')}#${topicSectionId(topic.id)}`}
+            className="text-[10px] font-semibold text-secondary underline underline-offset-2 hover:text-primary shrink-0"
+          >
+            Read more
+          </a>
+        )}
+      </div>
+
+      <div
+        className="inline-flex rounded-lg border-2 border-base-300 bg-base-200/60 p-0.5"
+        role="group"
+        aria-label={`Comment on topic ${index + 1}?`}
+      >
+        {(
+          [
+            { id: false as const, label: 'Skip' },
+            { id: true as const, label: 'Comment on this' },
+          ] as const
+        ).map((opt) => {
+          const selected = sel.include === opt.id;
+          const blocked = opt.id && includeDisabled && !sel.include;
+          const selectedClass = opt.id
+            ? 'bg-secondary text-secondary-content shadow-sm'
+            : 'bg-base-300 text-primary shadow-sm';
+          return (
+            <button
+              key={String(opt.id)}
+              type="button"
+              aria-pressed={selected}
+              disabled={blocked}
+              onClick={() => setInclude(opt.id)}
+              className={`min-h-9 px-3 py-1.5 text-sm font-semibold rounded-md transition-colors ${
+                selected
+                  ? selectedClass
+                  : 'text-neutral hover:bg-base-100'
+              } ${blocked ? 'opacity-40 cursor-not-allowed' : ''}`}
+            >
+              {opt.label}
+            </button>
+          );
+        })}
+      </div>
+
+      <div
+        ref={detailsRef}
+        className={`nprm-write-topic-expand ${sel.include ? 'is-open' : ''}`}
+        aria-hidden={!sel.include}
+      >
+        <div className="nprm-write-topic-expand-inner">
+          <div className="space-y-3 border-t border-secondary/25 pt-3">
+            <div className="space-y-1.5">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-neutral/60">
+                Do you generally agree with the draft on this point?
+              </p>
+              <div
+                className="flex flex-col sm:flex-row gap-1.5"
+                role="group"
+                aria-label="Polarity"
+              >
+                {(
+                  [
+                    {
+                      id: 'agree' as const,
+                      label: 'Generally agree',
+                      hint: agreeStance?.label,
+                    },
+                    {
+                      id: 'disagree' as const,
+                      label: 'Generally disagree',
+                      hint: disagreeStance?.label,
+                    },
+                  ] as const
+                ).map((opt) => {
+                  const selected = sel.polarity === opt.id;
+                  const isAgree = opt.id === 'agree';
+                  const selectedClass = isAgree
+                    ? 'border-secondary bg-secondary/10 shadow-sm'
+                    : 'border-warning bg-warning/10 shadow-sm';
+                  const idleClass = isAgree
+                    ? 'border-base-300 bg-base-100/70 hover:border-secondary/50'
+                    : 'border-base-300 bg-base-100/70 hover:border-warning/50';
+                  const labelClass = selected
+                    ? isAgree
+                      ? 'text-secondary'
+                      : 'text-warning'
+                    : 'text-primary';
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      aria-pressed={selected}
+                      onClick={() => setPolarity(opt.id)}
+                      tabIndex={sel.include ? undefined : -1}
+                      className={`flex-1 text-left rounded-lg border-2 px-3 py-2 transition-colors ${
+                        selected ? selectedClass : idleClass
+                      }`}
+                    >
+                      <span
+                        className={`block text-sm font-semibold ${labelClass}`}
+                      >
+                        {opt.label}
+                      </span>
+                      {opt.hint ? (
+                        <span className="block text-[11px] text-neutral leading-snug mt-0.5">
+                          <GlossaryText text={opt.hint} />
+                        </span>
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {sel.polarity ? (
+              <fieldset className="space-y-1.5">
+                <legend className="text-[11px] font-bold uppercase tracking-wider text-secondary">
+                  Which points should the comment mention?
+                </legend>
+                <p className="text-[11px] text-neutral/80 leading-relaxed">
+                  Select one or more. These become must-include asks in your LLM
+                  prompt.
+                </p>
+                <div className="space-y-1">
+                  {activeAngles.map((angle) => {
+                    const checked = sel.angles.includes(angle);
+                    return (
+                      <label
+                        key={angle}
+                        className={`flex items-start gap-2 text-xs sm:text-sm cursor-pointer rounded-md px-2 py-1.5 transition-colors ${
+                          checked
+                            ? 'bg-base-100 text-primary font-semibold ring-1 ring-secondary/35'
+                            : 'text-primary/90 font-medium hover:bg-base-100/80'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          className="checkbox checkbox-xs checkbox-secondary mt-0.5 shrink-0 !rounded-sm"
+                          checked={checked}
+                          disabled={!sel.include}
+                          onChange={() => toggleAngle(angle)}
+                          tabIndex={sel.include ? undefined : -1}
+                        />
+                        <span className="leading-snug">
+                          <GlossaryText text={angle} />
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </fieldset>
+            ) : null}
+
+            {sel.polarity ? (
+              <label className="form-control">
+                <span className="label-text text-xs">
+                  Anything else to include for this topic? (optional)
+                </span>
+                <textarea
+                  className="textarea textarea-bordered text-sm min-h-20"
+                  placeholder="e.g. Also confirm return of capital after 2 years and jobs, even before CGC."
+                  value={sel.extraNote}
+                  disabled={!sel.include}
+                  tabIndex={sel.include ? undefined : -1}
+                  onChange={(e) =>
+                    onChange({ ...sel, extraNote: e.target.value })
+                  }
+                />
+              </label>
+            ) : null}
+
+            {sel.include && !ready ? (
+              <p className="text-[11px] text-warning leading-relaxed">
+                {!sel.polarity
+                  ? 'Choose agree or disagree to continue.'
+                  : 'Select at least one point, or add a note above.'}
+              </p>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
+
 export default function WriteTab({
-  themes,
-  promptTree,
-  initialThemeIds = [],
-  initialOpinions = {},
+  initialTopicIds = [],
+  onSummary,
 }: Props) {
   const { toast } = useToast();
-  const [themeIds, setThemeIds] = useState<string[]>(() =>
-    initialThemeIds.slice(0, MAX_THEMES)
-  );
-  const [opinions, setOpinions] = useState<Record<string, string>>(
-    () => initialOpinions
-  );
+  const [selections, setSelections] = useState<
+    Record<string, TopicCommentSelection>
+  >(() => seedSelections(initialTopicIds));
   const [personal, setPersonal] = useState<PersonalBlock>({
     i_526e_file_date: '',
     project_type: '',
@@ -184,10 +497,10 @@ export default function WriteTab({
     investor_type: '',
     country: '',
   });
-  const [length, setLength] = useState<LengthGuideline>('300_450');
   const [style, setStyle] = useState<StyleGuideline>('plain');
-  const [format, setFormat] = useState<FormatGuideline>('paragraphs');
   const [copyMsg, setCopyMsg] = useState<string | null>(null);
+  const [copyPulseKey, setCopyPulseKey] = useState(0);
+  const [flashTopicId, setFlashTopicId] = useState<string | null>(null);
   const [privacyOk, setPrivacyOk] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
@@ -196,25 +509,24 @@ export default function WriteTab({
       const raw = localStorage.getItem(DRAFT_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as {
-          themeIds?: string[];
-          opinions?: Record<string, string>;
+          selections?: Record<string, TopicCommentSelection>;
           personal?: PersonalBlock;
-          length?: LengthGuideline;
           style?: StyleGuideline;
-          format?: FormatGuideline;
         };
-        if (parsed.themeIds?.length && initialThemeIds.length === 0) {
-          setThemeIds(parsed.themeIds.slice(0, MAX_THEMES));
-        }
-        if (parsed.opinions && Object.keys(initialOpinions).length === 0) {
-          setOpinions(parsed.opinions);
+        if (
+          parsed.selections &&
+          initialTopicIds.length === 0 &&
+          Object.keys(parsed.selections).length
+        ) {
+          setSelections({
+            ...defaultTopicSelections(),
+            ...parsed.selections,
+          });
         }
         if (parsed.personal) {
           setPersonal((p) => ({ ...p, ...parsed.personal }));
         }
-        if (parsed.length) setLength(parsed.length);
         if (parsed.style) setStyle(parsed.style);
-        if (parsed.format) setFormat(parsed.format);
       }
     } catch {
       // ignore corrupt draft
@@ -225,85 +537,143 @@ export default function WriteTab({
   }, []);
 
   useEffect(() => {
+    const focusId = initialTopicIds[0];
+    let cancelled = false;
+    let layoutId = 0;
+    let retryId = 0;
+    let afterScrollId = 0;
+    let pulseId = 0;
+    let clearId = 0;
+
+    const reduceMotion = () =>
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const startFlash = (id: string) => {
+      if (cancelled || reduceMotion()) return;
+      // Clear then set so a remounted handoff always restarts the animation.
+      setFlashTopicId(null);
+      pulseId = window.setTimeout(() => {
+        if (cancelled) return;
+        setFlashTopicId(id);
+        clearId = window.setTimeout(() => {
+          if (!cancelled) setFlashTopicId(null);
+        }, 1200);
+      }, 20);
+    };
+
+    const run = (attempt: number) => {
+      if (cancelled) return;
+      if (!focusId) {
+        window.scrollTo({
+          top: 0,
+          behavior: reduceMotion() ? 'auto' : 'smooth',
+        });
+        return;
+      }
+      const el = document.getElementById(`write-topic-${focusId}`);
+      if (!el) {
+        // Tab panel may not be laid out yet; retry briefly.
+        if (attempt < 8) {
+          retryId = window.setTimeout(() => run(attempt + 1), 50);
+        }
+        return;
+      }
+      el.scrollIntoView({
+        behavior: reduceMotion() ? 'auto' : 'smooth',
+        block: 'start',
+      });
+      // Smooth scroll finishes after the old 50ms flash window, so wait
+      // until the card is likely in view before pulsing.
+      const flashDelay = reduceMotion() ? 0 : 450;
+      afterScrollId = window.setTimeout(() => startFlash(focusId), flashDelay);
+    };
+
+    // Wait a frame after tab swap so the Write panel is laid out.
+    layoutId = window.setTimeout(() => run(0), 50);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(layoutId);
+      window.clearTimeout(retryId);
+      window.clearTimeout(afterScrollId);
+      window.clearTimeout(pulseId);
+      window.clearTimeout(clearId);
+    };
+  }, [initialTopicIds]);
+
+  useEffect(() => {
     if (!hydrated) return;
     try {
       localStorage.setItem(
         DRAFT_KEY,
-        JSON.stringify({ themeIds, opinions, personal, length, style, format })
+        JSON.stringify({ selections, personal, style })
       );
     } catch {
       // quota
     }
-  }, [hydrated, themeIds, opinions, personal, length, style, format]);
+  }, [hydrated, selections, personal, style]);
 
-  const ready = privacyOk && themeIds.length > 0;
+  const included = includedSelections(selections);
+  const readyTopics = included.filter(isTopicSelectionReady);
+  const includeCount = included.length;
+  const atMax = includeCount >= MAX_TOPICS;
+  const ready = privacyOk && readyTopics.length > 0;
   const impactLen = personal.impact.trim().length;
   const personalized = isPersonalizedEnough(personal.impact);
   const similarity = templateSimilarity(personal.impact);
+  const lengthTarget = adaptiveLengthTarget(readyTopics.length);
 
   const prompt = useMemo(
     () =>
       buildPrompt({
-        themes,
-        promptTree,
-        selectedThemeIds: themeIds,
-        opinionsByTheme: opinions,
+        selections,
         personal,
-        guidelines: { length, style, format },
-        rotationSeed: impactLen + themeIds.length,
+        guidelines: { style },
       }),
-    [
-      themes,
-      promptTree,
-      themeIds,
-      opinions,
-      personal,
-      length,
-      style,
-      format,
-      impactLen,
-    ]
+    [selections, personal, style]
   );
 
-  function toggleTheme(id: string) {
-    const removing = themeIds.includes(id);
-    if (removing) {
-      setThemeIds((prev) => prev.filter((x) => x !== id));
-      setOpinions((ops) => {
-        const next = { ...ops };
-        delete next[id];
-        return next;
-      });
-      return;
-    }
-    if (themeIds.length >= MAX_THEMES) return;
-    setThemeIds((prev) => [...prev, id]);
-    const theme = themes.find((t) => t.id === id);
-    const firstOpinion = theme?.opinions[0]?.id;
-    if (firstOpinion) {
-      setOpinions((ops) =>
-        ops[id] ? ops : { ...ops, [id]: firstOpinion }
-      );
-    }
+  function updateSelection(next: TopicCommentSelection) {
+    setSelections((prev) => {
+      if (
+        next.include &&
+        !prev[next.topicId]?.include &&
+        includedSelections(prev).length >= MAX_TOPICS
+      ) {
+        return prev;
+      }
+      return { ...prev, [next.topicId]: next };
+    });
   }
 
-  async function copyText(text: string, label: string) {
-    if (!ready) return;
+  async function copyText(text: string) {
+    if (!ready) {
+      toast(
+        'Finish at least one topic and accept the disclaimer first',
+        'error'
+      );
+      return;
+    }
     try {
       await navigator.clipboard.writeText(text);
-      setCopyMsg(`${label} copied`);
+      setCopyMsg('Prompt copied');
+      setCopyPulseKey((k) => k + 1);
       track('builder_copied');
       if (personalized) track('builder_personalized');
-      window.setTimeout(() => setCopyMsg(null), 2000);
+      window.setTimeout(() => setCopyMsg(null), 2500);
     } catch {
-      setCopyMsg('Copy failed. Select the text manually.');
+      setCopyMsg('Copy failed');
+      toast('Copy failed. Select the prompt text manually.', 'error');
       window.setTimeout(() => setCopyMsg(null), 3000);
     }
   }
 
   async function openInLlm(llm: (typeof LLM_LINKS)[number]) {
     if (!ready) {
-      toast('Select a theme and accept the disclaimer first', 'error');
+      toast(
+        'Finish at least one topic and accept the disclaimer first',
+        'error'
+      );
       return;
     }
     let copied = false;
@@ -311,6 +681,7 @@ export default function WriteTab({
       await navigator.clipboard.writeText(prompt);
       copied = true;
       setCopyMsg('Prompt copied');
+      setCopyPulseKey((k) => k + 1);
       track('builder_copied');
       if (personalized) track('builder_personalized');
       window.setTimeout(() => setCopyMsg(null), 2000);
@@ -336,15 +707,44 @@ export default function WriteTab({
     }
   }
 
+  async function shareGuide() {
+    const payload = {
+      title: NPRM_SHARE_TITLE,
+      text: NPRM_SHARE_TEXT,
+      url: NPRM_SHARE_URL,
+    };
+    const clipboardText = `${NPRM_SHARE_TEXT} ${NPRM_SHARE_URL}`;
+
+    try {
+      if (
+        typeof navigator.share === 'function' &&
+        (!navigator.canShare || navigator.canShare(payload))
+      ) {
+        await navigator.share(payload);
+        track('builder_shared');
+        return;
+      }
+    } catch (err) {
+      // User dismissed the sheet; do not fall through to clipboard noise.
+      if (err instanceof DOMException && err.name === 'AbortError') return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(clipboardText);
+      track('builder_shared');
+      toast('Share text copied. Paste it anywhere to invite others.', 'success');
+    } catch {
+      toast(`Copy this link: ${NPRM_SHARE_URL}`, 'info');
+    }
+  }
+
   return (
     <div className="space-y-4 animate-[fadeIn_0.35s_ease-out]">
-      <NprmSectionHeading
-        as="h2"
-        eyebrow="Write"
-        title="Build My Comment"
-      >
+      <NprmSectionHeading as="h2" eyebrow="Write" title="Build My Comment">
         <p className="text-sm text-neutral leading-relaxed max-w-2xl">
-          Use this page to personalize a draft for{' '}
+          Walk each topic: skip or comment, agree or disagree, pick the points
+          to mention, then add your personal story. We build an LLM prompt you
+          can paste into ChatGPT, Claude, or similar. We do not submit to{' '}
           <a
             href={COMMENT_ON_URL}
             target="_blank"
@@ -352,9 +752,8 @@ export default function WriteTab({
             className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
           >
             regulations.gov
-          </a>
-          . We do not submit the comment for you. You will need to file it
-          yourself on that site when you are ready.
+          </a>{' '}
+          for you.
         </p>
       </NprmSectionHeading>
 
@@ -372,8 +771,7 @@ export default function WriteTab({
           distill thousands of comments into a much smaller set of distinct ones.
           Federal guidance says a constructive, detailed comment with your own
           experience is more useful than identical form letters. Add your personal
-          story so yours stands alone. See why:{' '}
-          <GuidanceLinks />.
+          story so yours stands alone. See why: <GuidanceLinks />.
         </p>
       </div>
 
@@ -391,86 +789,45 @@ export default function WriteTab({
       ) : null}
 
       <div className="space-y-5">
-        <section className="space-y-2 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
+        <section className="space-y-3 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
           <div className="flex flex-wrap items-end justify-between gap-2">
             <NprmSectionHeading
               as="h3"
               eyebrow="Step A"
-              title={`Themes (max ${MAX_THEMES})`}
+              title={`Decide topic by topic (max ${MAX_TOPICS})`}
               titleClassName="text-sm font-semibold text-primary leading-snug"
             >
-              <p className="text-xs text-neutral leading-relaxed">
-                Select a theme to build your comment. Choose the themes that
-                are most important to you. Then choose your view under it.
+              <p className="text-xs text-neutral leading-relaxed max-w-2xl">
+                Same six topics as Overview and Summary. Stronger comments focus
+                on up to {MAX_TOPICS} issues. For more topics, copy another
+                prompt in a second pass.
               </p>
             </NprmSectionHeading>
             <p className="text-xs text-neutral/70">
-              {themeIds.length}/{MAX_THEMES} selected
+              {includeCount}/{MAX_TOPICS} topics · {readyTopics.length} ready
             </p>
           </div>
-          <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-2">
-            {themes.map((t) => {
-              const checked = themeIds.includes(t.id);
-              const disabled = !checked && themeIds.length >= MAX_THEMES;
-              return (
-                <div
-                  key={t.id}
-                  className={`rounded-lg border-2 px-3 py-2.5 ${
-                    checked
-                      ? 'border-secondary bg-secondary/15'
-                      : 'border-base-300 bg-base-100'
-                  } ${disabled ? 'opacity-50' : ''}`}
-                >
-                  <button
-                    type="button"
-                    aria-pressed={checked}
-                    disabled={disabled}
-                    onClick={() => toggleTheme(t.id)}
-                    className={`w-full text-left text-sm font-medium leading-snug rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary ${
-                      checked ? 'text-primary' : 'text-neutral'
-                    } ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-                  >
-                    <GlossaryText text={t.title} />
-                  </button>
-                  {checked ? (
-                    <fieldset className="mt-2 space-y-1.5 border-t border-secondary/30 pt-2">
-                      <legend className="text-[11px] font-bold uppercase tracking-wider text-secondary px-0.5">
-                        Your view
-                      </legend>
-                      {t.opinions.map((op) => {
-                        const selected = opinions[t.id] === op.id;
-                        return (
-                          <label
-                            key={op.id}
-                            className={`flex items-start gap-2 text-xs sm:text-sm cursor-pointer rounded-md px-1.5 py-1 -mx-0.5 transition-colors ${
-                              selected
-                                ? 'bg-base-100/90 text-primary font-semibold ring-1 ring-secondary/35'
-                                : 'text-primary/90 font-medium hover:bg-base-100/70'
-                            }`}
-                          >
-                            <input
-                              type="radio"
-                              name={`opinion-${t.id}`}
-                              className="radio radio-xs radio-secondary mt-0.5 shrink-0 checked:bg-secondary"
-                              checked={selected}
-                              onChange={() =>
-                                setOpinions((prev) => ({
-                                  ...prev,
-                                  [t.id]: op.id,
-                                }))
-                              }
-                            />
-                            <span className="leading-snug">
-                              <GlossaryText text={op.label} />
-                            </span>
-                          </label>
-                        );
-                      })}
-                    </fieldset>
-                  ) : null}
-                </div>
-              );
-            })}
+
+          {atMax ? (
+            <p className="text-xs text-neutral leading-relaxed rounded-lg border border-base-300 bg-base-200/50 px-3 py-2">
+              You have selected {MAX_TOPICS} topics. Skip one to add another, or
+              finish this prompt and run the builder again for more issues.
+            </p>
+          ) : null}
+
+          <div className="space-y-3">
+            {KEY_TOPICS.map((topic, index) => (
+              <TopicDecisionCard
+                key={topic.id}
+                topic={topic}
+                index={index}
+                sel={selections[topic.id] || emptyTopicSelection(topic.id)}
+                includeDisabled={atMax}
+                highlight={flashTopicId === topic.id}
+                onChange={updateSelection}
+                onSummary={onSummary}
+              />
+            ))}
           </div>
         </section>
 
@@ -486,6 +843,11 @@ export default function WriteTab({
               distinct. Federal agencies ask for constructive, detailed comments
               and say relevant personal experience helps reviewers. See why:{' '}
               <GuidanceLinks />.
+            </p>
+            <p className="text-xs text-neutral leading-relaxed">
+              <span className="font-semibold text-primary">Privacy:</span> Your
+              answers stay on this device (browser local storage). Nothing from
+              this form is uploaded to our servers.
             </p>
           </NprmSectionHeading>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -520,7 +882,11 @@ export default function WriteTab({
             <ChoiceChips
               label="Country chargeability"
               options={COUNTRY_OPTIONS}
-              value={(personal.country as (typeof COUNTRY_OPTIONS)[number]['value'] | '') || ''}
+              value={
+                (personal.country as
+                  | (typeof COUNTRY_OPTIONS)[number]['value']
+                  | '') || ''
+              }
               onChange={(next) =>
                 setPersonal((p) => ({ ...p, country: next }))
               }
@@ -608,79 +974,58 @@ export default function WriteTab({
             eyebrow="Step C"
             title="Guidelines"
             titleClassName="text-sm font-semibold text-primary leading-snug"
-          />
+          >
+            <p className="text-xs text-neutral leading-relaxed max-w-2xl">
+              Target length adapts to how many topics you finish: 1 issue ~
+              250-350 words, 2 issues ~ 400-500, 3 issues ~ 550-750. The draft
+              uses short paragraphs; bullets only for concrete asks to DHS.
+            </p>
+          </NprmSectionHeading>
           <div className="space-y-3">
-            {(
-              [
-                {
-                  id: 'length',
-                  label: 'Length',
-                  value: length,
-                  options: [
-                    { id: '150' as const, label: 'Short (~150)' },
-                    { id: '300_450' as const, label: 'Standard (300-450)' },
-                  ],
-                  onChange: setLength,
-                },
-                {
-                  id: 'style',
-                  label: 'Style',
-                  value: style,
-                  options: [
+            <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+              <span className="text-sm font-semibold text-primary shrink-0">
+                Length
+              </span>
+              <p className="text-sm text-neutral leading-snug sm:text-right">
+                {readyTopics.length === 0
+                  ? 'Finish at least one topic to set the target'
+                  : `${lengthTarget.label} (${lengthTarget.detail})`}
+              </p>
+            </div>
+            <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+              <span className="text-sm font-semibold text-primary shrink-0">
+                Style
+              </span>
+              <div
+                className="inline-flex w-full sm:w-auto rounded-lg border-2 border-base-300 bg-base-200/60 p-0.5"
+                role="group"
+                aria-label="Style"
+              >
+                {(
+                  [
                     { id: 'plain' as const, label: 'Plain English' },
                     { id: 'formal' as const, label: 'Formal regulatory' },
-                  ],
-                  onChange: setStyle,
-                },
-                {
-                  id: 'format',
-                  label: 'Format',
-                  value: format,
-                  options: [
-                    { id: 'paragraphs' as const, label: 'Paragraphs' },
-                    { id: 'bullets' as const, label: 'Bullets' },
-                  ],
-                  onChange: setFormat,
-                },
-              ] as const
-            ).map((row) => (
-              <div
-                key={row.id}
-                className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
-              >
-                <span className="text-sm font-semibold text-primary shrink-0">
-                  {row.label}
-                </span>
-                <div
-                  className="inline-flex w-full sm:w-auto rounded-lg border-2 border-base-300 bg-base-200/60 p-0.5"
-                  role="group"
-                  aria-label={row.label}
-                >
-                  {row.options.map((opt) => {
-                    const selected = row.value === opt.id;
-                    return (
-                      <button
-                        key={opt.id}
-                        type="button"
-                        aria-pressed={selected}
-                        onClick={() =>
-                          (
-                            row.onChange as (v: typeof opt.id) => void
-                          )(opt.id)
-                        }
-                        className={`flex-1 sm:flex-none min-h-9 px-3 py-1.5 text-sm font-semibold rounded-md transition-colors ${
-                          selected
-                            ? 'bg-primary text-primary-content shadow-sm'
-                            : 'text-neutral hover:bg-base-100'
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    );
-                  })}
-                </div>
+                  ] as const
+                ).map((opt) => {
+                  const selected = style === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      aria-pressed={selected}
+                      onClick={() => setStyle(opt.id)}
+                      className={`flex-1 sm:flex-none min-h-9 px-3 py-1.5 text-sm font-semibold rounded-md transition-colors ${
+                        selected
+                          ? 'bg-primary text-primary-content shadow-sm'
+                          : 'text-neutral hover:bg-base-100'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  );
+                })}
               </div>
-            ))}
+            </div>
           </div>
         </section>
 
@@ -690,12 +1035,9 @@ export default function WriteTab({
               <NprmSectionHeading
                 as="h3"
                 eyebrow="Preview"
-                title="Deterministic prompt"
+                title="LLM prompt"
                 titleClassName="text-sm font-semibold text-accent leading-snug"
               />
-              {copyMsg && (
-                <span className="text-xs text-accent">{copyMsg}</span>
-              )}
             </div>
             <pre className="whitespace-pre-wrap text-xs sm:text-sm font-mono leading-relaxed text-primary-content/90 max-h-[28rem] overflow-auto">
               {prompt}
@@ -719,19 +1061,40 @@ export default function WriteTab({
             </span>
           </label>
 
-          <div className="flex flex-col sm:flex-row flex-wrap gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <button
               type="button"
-              className="btn btn-secondary shadow-glow-green sm:w-auto"
+              key={copyPulseKey}
+              className={`btn w-full sm:w-auto ${
+                copyMsg === 'Prompt copied'
+                  ? 'btn-ghost bg-base-300 text-primary border-base-300 shadow-none nprm-copy-pulse'
+                  : copyMsg === 'Copy failed'
+                    ? 'btn-error text-error-content'
+                    : 'btn-secondary shadow-glow-green'
+              }`}
               disabled={!ready}
+              aria-live="polite"
               title={
                 ready
                   ? 'Copy full prompt for your LLM'
-                  : 'Select at least one theme and accept the disclaimer first'
+                  : 'Finish at least one topic and accept the disclaimer first'
               }
-              onClick={() => copyText(prompt, 'Prompt')}
+              onClick={() => copyText(prompt)}
             >
-              Copy prompt for LLM
+              {copyMsg === 'Prompt copied'
+                ? 'Prompt copied'
+                : copyMsg === 'Copy failed'
+                  ? 'Copy failed'
+                  : 'Copy prompt for LLM'}
+            </button>
+            <button
+              type="button"
+              onClick={shareGuide}
+              data-goatcounter-click="nprm-share-guide"
+              className="btn btn-outline border-neutral/30 w-full sm:w-auto"
+              title="Share EB5 Base NPRM with other investors"
+            >
+              Share
             </button>
           </div>
 
@@ -758,7 +1121,7 @@ export default function WriteTab({
                       title={
                         ready
                           ? `Copy prompt and open ${llm.label}`
-                          : 'Select at least one theme and accept the disclaimer first'
+                          : 'Finish at least one topic and accept the disclaimer first'
                       }
                       onClick={() => openInLlm(llm)}
                     >

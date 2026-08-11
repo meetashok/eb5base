@@ -10,8 +10,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/',
     '/nprm',
     '/nprm/summary',
-    '/nprm/themes',
-    '/nprm/comment-themes',
     '/nprm/write',
     '/nprm/builder',
     '/nprm/comments',

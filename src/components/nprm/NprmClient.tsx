@@ -8,7 +8,6 @@ import CommentsTab from '@/components/nprm/CommentsTab';
 import NprmTabBar from '@/components/nprm/NprmTabBar';
 import OverviewTab from '@/components/nprm/OverviewTab';
 import SummaryTab from '@/components/nprm/SummaryTab';
-import ThemesTab from '@/components/nprm/ThemesTab';
 import WriteTab from '@/components/nprm/WriteTab';
 import type { NprmPageData } from '@/lib/nprm/types';
 import {
@@ -20,9 +19,7 @@ import {
 import GlossaryTerm from '@/components/nprm/GlossaryTerm';
 import {
   DOCKET_URL,
-  FR_HTML,
   FR_PDF,
-  formatLastPull,
 } from '@/lib/nprm/utils';
 
 export type { NprmTabId } from '@/lib/nprm/tabs';
@@ -30,8 +27,7 @@ export { isNprmTabId, NPRM_TABS, nprmTabHref } from '@/lib/nprm/tabs';
 
 const TAB_DOCUMENT_TITLE: Record<NprmTabId, string> = {
   overview: 'EB-5 NPRM 2026: Plain-English Guide to DHS Proposed Rule',
-  summary: 'EB-5 NPRM Summary - Current vs Proposed',
-  themes: 'NPRM Comment Themes That Move the Needle',
+  summary: 'EB-5 NPRM Summary - Six Points That Matter',
   comments: 'NPRM Comments - Themes & Summaries',
   write: 'Build My EB-5 NPRM Comment',
   about: 'About the NPRM Comment Guide',
@@ -49,14 +45,8 @@ export default function NprmClient({
   tab: NprmTabId;
 }) {
   const [active, setActive] = useState<NprmTabId>(tab);
-  const [selectedOpinions, setSelectedOpinions] = useState<
-    Record<string, string>
-  >({});
   const [writeSeed, setWriteSeed] = useState(0);
-  const [writeThemes, setWriteThemes] = useState<string[]>([]);
-  const [writeOpinions, setWriteOpinions] = useState<Record<string, string>>(
-    {}
-  );
+  const [writeTopics, setWriteTopics] = useState<string[]>([]);
 
   // Keep client tab in sync with browser history (back/forward, deep links).
   useEffect(() => {
@@ -84,19 +74,28 @@ export default function NprmClient({
       // stay mounted and only the tab panel content swaps.
       window.history.pushState(null, '', href);
     }
+    if (hash) {
+      const clean = hash.replace(/^#/, '');
+      window.requestAnimationFrame(() => {
+        document.getElementById(clean)?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      });
+    }
   }, []);
 
-  const onSelectOpinion = (themeId: string, opinionId: string) => {
-    setSelectedOpinions((prev) => ({ ...prev, [themeId]: opinionId }));
-  };
-
-  const goWriteWithTheme = (themeId: string, opinionId: string) => {
-    setWriteThemes([themeId]);
-    setWriteOpinions({ [themeId]: opinionId });
-    setSelectedOpinions((prev) => ({ ...prev, [themeId]: opinionId }));
+  const goWrite = useCallback(() => {
+    setWriteTopics([]);
     setWriteSeed((n) => n + 1);
     setTab('write');
-  };
+  }, [setTab]);
+
+  const goWriteWithTopic = useCallback((topicId: string) => {
+    setWriteTopics([topicId]);
+    setWriteSeed((n) => n + 1);
+    setTab('write');
+  }, [setTab]);
 
   const current = tabLabel(active);
 
@@ -121,7 +120,8 @@ export default function NprmClient({
           <div className="space-y-1.5 text-sm md:text-[0.95rem] text-neutral max-w-2xl leading-relaxed">
             <p>
               <GlossaryTerm term="DHS" /> published a proposed rulemaking notice
-              on July 2, 2026. EB5 Base breaks down the{' '}
+              on July 2, 2026. The draft finally codifies the EB-5{' '}
+              <GlossaryTerm term="RIA" /> of 2022. EB5 Base breaks down the{' '}
               <a
                 href={FR_PDF}
                 target="_blank"
@@ -130,27 +130,18 @@ export default function NprmClient({
               >
                 358-page rule
               </a>{' '}
-              that finally codifies the EB-5{' '}
-              <GlossaryTerm term="RIA">Reform and Integrity Act</GlossaryTerm>{' '}
-              of 2022. Comments close August 31, 2026.
+              in plain English for investors, and helps you build an LLM prompt
+              you can use to write your public comment.
             </p>
-            <p>
-              Comment data as of {formatLastPull(data.stats.last_pull)} ·{' '}
-              <a
-                href={FR_HTML}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold text-secondary underline underline-offset-2"
-              >
-                Federal Register
-              </a>
-              {' · '}
+            <p className="text-xs md:text-[0.8rem] text-neutral/75 leading-relaxed">
+              Comments close August 31, 2026.{' '}
               <Link
                 href="/about#disclaimer"
                 className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
               >
                 Not legal advice
               </Link>
+              .
             </p>
           </div>
         }
@@ -201,7 +192,7 @@ export default function NprmClient({
             {[
               { n: 1, label: 'Understand', tabs: ['overview', 'summary'] },
               { n: 2, label: 'Personalize', tabs: ['write'] },
-              { n: 3, label: 'Themes', tabs: ['themes', 'comments'] },
+              { n: 3, label: 'Browse comments', tabs: ['comments'] },
               { n: 4, label: 'Submit', tabs: ['write'] },
             ].map((step) => {
               const on =
@@ -229,38 +220,22 @@ export default function NprmClient({
         aria-labelledby={`nprm-tab-${active}`}
       >
         {active === 'summary' && (
-          <SummaryTab
-            proposal={data.proposal}
-            onThemes={() => setTab('themes')}
-            onComments={() => setTab('comments')}
-          />
-        )}
-        {active === 'themes' && (
-          <ThemesTab
-            themes={data.themes}
-            selectedOpinions={selectedOpinions}
-            onSelectOpinion={onSelectOpinion}
-            onWriteWithTheme={goWriteWithTheme}
-          />
+          <SummaryTab onWriteTopic={goWriteWithTopic} />
         )}
         {active === 'comments' && (
           <CommentsTab
             comments={data.comments}
             themes={data.themes}
             lastPull={data.stats.last_pull}
-            source={data.stats.source}
             totalComments={data.stats.total_comments}
-            feedSource={data.feedSource}
             onAbout={() => setTab('about')}
           />
         )}
         {active === 'write' && (
           <WriteTab
             key={writeSeed}
-            themes={data.themes}
-            promptTree={data.promptTree}
-            initialThemeIds={writeThemes}
-            initialOpinions={writeOpinions}
+            initialTopicIds={writeTopics}
+            onSummary={(hash) => setTab('summary', hash)}
           />
         )}
         {active === 'about' && (
@@ -269,6 +244,7 @@ export default function NprmClient({
             lastPull={data.stats.last_pull}
             totalComments={data.stats.total_comments}
             proposal={data.proposal}
+            onWrite={goWrite}
           />
         )}
         {active === 'overview' && (
@@ -276,9 +252,10 @@ export default function NprmClient({
             stats={data.stats}
             comments={data.comments}
             proposal={data.proposal}
-            onThemes={() => setTab('themes')}
-            onWrite={() => setTab('write')}
-            onSummary={() => setTab('summary')}
+            onWrite={goWrite}
+            onWriteTopic={goWriteWithTopic}
+            onSummary={(hash) => setTab('summary', hash)}
+            onComments={() => setTab('comments')}
           />
         )}
       </div>

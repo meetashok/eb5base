@@ -10,7 +10,6 @@ const ROUTES: { href: string; title: string }[] = [
   { href: '/', title: 'Home' },
   { href: '/nprm', title: 'NPRM hub' },
   { href: '/nprm/summary', title: 'NPRM summary' },
-  { href: '/nprm/themes', title: 'NPRM themes' },
   { href: '/nprm/comments', title: 'NPRM comments' },
   { href: '/nprm/write', title: 'NPRM comment builder' },
   { href: '/nprm/about', title: 'NPRM about' },

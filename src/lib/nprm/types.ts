@@ -7,11 +7,15 @@ export interface NprmStats {
   check_log?: string;
 }
 
+export type KeyTopicPolarity = 'agree' | 'disagree';
+
 export interface NprmOpinion {
   id: string;
   label: string;
   stance: string;
   fragments: string[];
+  /** Agree / disagree with the draft (first-party key topics). */
+  polarity?: KeyTopicPolarity;
 }
 
 export interface NprmTheme {
@@ -21,6 +25,44 @@ export interface NprmTheme {
   summary: string;
   sample_ids: string[];
   opinions: NprmOpinion[];
+}
+
+/** Shared Overview → Summary → Write topic (first-party). */
+export interface KeyTopicStance {
+  id: string;
+  polarity: KeyTopicPolarity;
+  /** Short Write radio label. */
+  label: string;
+  /** Overview bullets; also used as prompt fragments. */
+  angles: string[];
+  /** Summary: reasons this ask can make sense. */
+  pros: string[];
+  /** Summary: costs, integrity, or US-interest counterpoints. */
+  cons: string[];
+}
+
+export interface KeyTopicInlineLink {
+  phrase: string;
+  href: string;
+  title?: string;
+}
+
+export interface KeyTopic {
+  id: string;
+  title: string;
+  /** Compact label for Summary jump nav / mobile chips. */
+  shortTitle: string;
+  body: string;
+  frHeadingId: string;
+  frSectionLabel: string;
+  cfrs: string[];
+  inlineLinks?: KeyTopicInlineLink[];
+  summary: {
+    overview: string;
+    current?: string;
+    proposed?: string;
+  };
+  stances: KeyTopicStance[];
 }
 
 export interface NprmPromptNode {
@@ -64,9 +106,13 @@ export interface NprmComment {
   /** Per-comment AI summary from feed (separate from theme). */
   aiSummary?: string;
   sourceLink?: string;
+  /** UI-safe poster class; never a real person/org name. */
+  posterType?: 'anonymous' | 'named' | 'org';
+  /** UI-safe label: Anonymous / Named person / Organization. */
+  posterLabel?: string;
 }
 
-/** Raw flat row published by Hatch (id_link_theme_summary_only). */
+/** Raw flat comment row in public/data/nprm/all_comments.json. */
 export interface NprmFlatComment {
   id: string;
   type?: string;
@@ -77,6 +123,8 @@ export interface NprmFlatComment {
   theme_title?: string;
   ai_summary?: string;
   comment?: string;
+  poster_type?: 'anonymous' | 'named' | 'org';
+  poster_label?: string;
   attributes?: NprmCommentAttributes;
 }
 
@@ -177,9 +225,7 @@ export interface NprmProposalSummary {
 
 export type ProjectTypeOption = 'rural' | 'tea_hua' | 'infrastructure' | 'mixed';
 
-export type LengthGuideline = '150' | '300_450';
 export type StyleGuideline = 'plain' | 'formal';
-export type FormatGuideline = 'paragraphs' | 'bullets';
 
 export interface PersonalBlock {
   i_526e_file_date: string;
@@ -190,9 +236,21 @@ export interface PersonalBlock {
 }
 
 export interface PromptGuidelines {
-  length: LengthGuideline;
   style: StyleGuideline;
-  format: FormatGuideline;
+}
+
+/**
+ * Write-tab decision for one key topic:
+ * include → polarity → selected angles → optional extra note.
+ */
+export interface TopicCommentSelection {
+  topicId: string;
+  include: boolean;
+  polarity: KeyTopicPolarity | null;
+  /** Angle strings selected under the chosen polarity. */
+  angles: string[];
+  /** Free-text points the commenter also wants covered for this topic. */
+  extraNote: string;
 }
 
 export interface NprmPageData {

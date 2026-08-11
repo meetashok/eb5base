@@ -29,7 +29,7 @@ const TOOLS = [
   {
     href: '/nprm',
     title: 'NPRM Comment Guide',
-    body: 'Plain-English explainer of the July 2026 EB-5 proposed rule, impact matrix, themes, and comment builder. Comments close Aug 31.',
+    body: 'Plain-English explainer of the July 2026 EB-5 proposed rule, key points, summary, and comment builder. Comments close Aug 31.',
     cta: 'Read explainer (5 min)',
     badge: 'Urgent - Comment deadline Aug 31',
     comingSoon: false,

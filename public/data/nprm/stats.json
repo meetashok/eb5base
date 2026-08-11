@@ -1,1 +1,11 @@
-{"ai_summaries_added":49,"anonymization":"ai_summary uses 'This comment' generic voice, no person/company names","anonymized":true,"comment_period_ends":"Aug 31, 2026 at 11:59 PM EDT","cors":"Access-Control-Allow-Origin: *","docket_id":"USCIS-2026-0100","last_pull":"2026-08-09 13:30 IST anonymized id+link+theme+ai_summary — no person/company names in summary — 25404 bytes","mirrors":["assets/data/all_comments.json","data/all_comments.json"],"mode":"id_link_theme_summary_only — anonymized ai_summary 49/49 — no comment body stored","size_bytes":27683,"source":"regulations.gov via api.data.gov","total_comments":49}
+{
+  "docket_id": "USCIS-2026-0100",
+  "total_comments": 49,
+  "last_pull": "2026-08-11T06:30:32.417Z",
+  "comment_period_ends": "Aug 31, 2026 at 11:59 PM EDT",
+  "source": "regulations.gov via api.data.gov",
+  "anonymization": "UI labels are Anonymous / Named person / Organization; ai_summary uses 'This comment' voice with names stripped",
+  "anonymized": true,
+  "mode": "first_party_anonymized_id_link_theme_summary",
+  "ai_summaries_added": 49
+}

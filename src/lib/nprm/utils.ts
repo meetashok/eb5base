@@ -2,7 +2,6 @@ import type {
   NprmComment,
   NprmProposalShortSummary,
   NprmProposalShortSummaryRaw,
-  NprmProposalWhyComment,
   NprmTheme,
 } from './types';
 import { COMMENT_PERIOD_END } from './config';
@@ -40,7 +39,7 @@ export function parsePoster(title?: string): {
   poster: string;
   posterType: 'anonymous' | 'named' | 'org';
 } {
-  if (!title) return { poster: 'Unknown', posterType: 'anonymous' };
+  if (!title) return { poster: 'Anonymous', posterType: 'anonymous' };
   const m = title.match(/^Comment Submitted by\s+(.+)$/i);
   const name = (m?.[1] || title).trim().replace(/\.$/, '');
   const lower = name.toLowerCase();
@@ -48,13 +47,15 @@ export function parsePoster(title?: string): {
     return { poster: 'Anonymous', posterType: 'anonymous' };
   }
   if (
-    /\b(llc|inc|ltd|limited|corp|company|capital|management|partners|lp|llp)\b/i.test(
+    /\b(llc|inc\.?|ltd|limited|corp\.?|corporation|company|capital|management|partners|lp|llp|plc|gmbh|association|foundation|university|bank)\b/i.test(
       name
     )
   ) {
-    return { poster: name, posterType: 'org' };
+    // Never surface org names in the UI.
+    return { poster: 'Organization', posterType: 'org' };
   }
-  return { poster: name, posterType: 'named' };
+  // Never surface personal names in the UI.
+  return { poster: 'Named person', posterType: 'named' };
 }
 
 export function commentSnippet(comment: NprmComment, max = 140): string {
@@ -70,16 +71,15 @@ export function commentSnippet(comment: NprmComment, max = 140): string {
 }
 
 /**
- * Preferred Write / Themes display order.
- * Remote feed order can reshuffle; keep Grandfather at #3 (after Sustainment + Bridge).
+ * Preferred Write / Key points display order.
  */
 export const THEME_DISPLAY_ORDER = [
   'sustainment',
   'bridge_financing',
-  'grandfather_retroactivity',
-  'tea_designation',
-  'program_integrity',
-  'definitional_asymmetry',
+  'good_faith',
+  'investment_amounts',
+  'tea',
+  'sanctions',
 ] as const;
 
 /** Sort themes into the preferred display order; unknown ids keep relative order at the end. */
@@ -149,11 +149,32 @@ export function commentsSince(
 
 export function formatLastPull(raw?: string): string {
   if (!raw) return 'n/a';
-  // e.g. "2026-08-09 03:32 IST" or ISO-ish strings
-  const m = raw.match(
+  const trimmed = raw.trim();
+
+  // Absolute timestamps (ISO with Z or offset) → viewer's local timezone.
+  if (
+    /^\d{4}-\d{2}-\d{2}T/.test(trimmed) ||
+    /(?:Z|[+-]\d{2}:?\d{2})$/i.test(trimmed)
+  ) {
+    const d = new Date(trimmed);
+    if (!Number.isNaN(d.getTime())) {
+      return d.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+        timeZoneName: 'short',
+      });
+    }
+  }
+
+  // Legacy wall-clock strings like "2026-08-09 03:32 IST".
+  const m = trimmed.match(
     /^(\d{4})-(\d{2})-(\d{2})[ T](\d{1,2}):(\d{2})(?::(\d{2}))?\s*([A-Za-z/_]+)?/
   );
-  if (!m) return raw;
+  if (!m) return trimmed;
   const [, y, mo, d, hh, mm, , tz] = m;
   const hour24 = Number(hh);
   const ampm = hour24 >= 12 ? 'PM' : 'AM';
@@ -216,39 +237,6 @@ export function normalizeShortSummary(
     text,
     citations,
   };
-}
-
-/** Prefer why_comment; append unique why_participate reasons (8 total when both present). */
-export function mergeWhyReasons(
-  whyComment?: NprmProposalWhyComment | null,
-  whyParticipate?: NprmProposalWhyComment | null
-): NprmProposalWhyComment | null {
-  if (!whyComment && !whyParticipate) return null;
-  const base = whyComment || whyParticipate!;
-  if (!whyComment || !whyParticipate) return base;
-  const seen = new Set(base.reasons.map((r) => r.id));
-  const extras = whyParticipate.reasons.filter((r) => !seen.has(r.id));
-  return {
-    ...base,
-    how_it_works: base.how_it_works || whyParticipate.how_it_works,
-    what_to_include: base.what_to_include?.length
-      ? base.what_to_include
-      : whyParticipate.what_to_include,
-    note: base.note || whyParticipate.note,
-    reasons: [...base.reasons, ...extras],
-  };
-}
-
-/** Split a dense paragraph into up to `max` sentence bullets for card layout. */
-export function toReasonBullets(text: string, max = 2): string[] {
-  const cleaned = plainDash(text);
-  const parts = cleaned
-    .split(/(?<=\.)\s+/)
-    .map((p) => p.trim())
-    .filter(Boolean);
-  if (parts.length <= 1) return [cleaned];
-  if (parts.length <= max) return parts;
-  return [...parts.slice(0, max - 1), parts.slice(max - 1).join(' ')];
 }
 
 export function countdownParts(now = new Date()): {

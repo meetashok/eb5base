@@ -1,13 +1,20 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import GlossaryTerm, {
   GlossaryText,
 } from '@/components/nprm/GlossaryTerm';
 import DoCommentsChangeRule from '@/components/nprm/DoCommentsChangeRule';
 import HowCommentingWorks from '@/components/nprm/HowCommentingWorks';
+import LocalDateTime from '@/components/nprm/LocalDateTime';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import VolumeChart from '@/components/nprm/VolumeChart';
+import {
+  KEY_TOPICS,
+  topicSectionId,
+} from '@/lib/nprm/keyTopics';
 import type {
+  KeyTopicInlineLink,
   NprmComment,
   NprmProposalSummary,
   NprmStats,
@@ -17,78 +24,81 @@ import {
   FR_HTML,
   FR_PDF,
   dailyVolume,
-  formatLastPull,
 } from '@/lib/nprm/utils';
 
 interface Props {
   stats: NprmStats;
   comments: NprmComment[];
   proposal: NprmProposalSummary | null;
-  onThemes: () => void;
   onWrite: () => void;
-  onSummary: () => void;
+  onWriteTopic: (topicId: string) => void;
+  onSummary: (hash?: string) => void;
+  onComments: () => void;
 }
 
-const KEY_POINTS: {
-  title: string;
-  body: string;
-  /** Federal Register HTML heading id (deep link). */
-  frHeadingId: string;
-  frSectionLabel: string;
-}[] = [
-  {
-    title:
-      'You may get your investment back after about 2 years, not after many years',
-    body: 'Old practice often kept your money stuck until the green card path moved, which for India and China backlogs could mean a decade of redeployment risk. The draft says capital only needs to stay invested for about 2 years after it reaches the job-creating project, once the required jobs are created. That is the sustainment clock investors have been waiting to see written into regulation. If finalized this way, many post-RIA investors can plan for return of capital even before getting CGC.',
-    frHeadingId: 'h-66',
-    frSectionLabel: 'IV.D.6 Duration of Investment',
-  },
-  {
-    title:
-      'Repaid bridge financing may no longer count toward proving your 10 jobs',
-    body: 'Today, under the USCIS Policy Manual (not a final regulation), investors can often still claim jobs created with short-term bridge financing that EB-5 capital later repays. The NPRM would change that: jobs from financing repaid with EB-5 money would not count as jobs created by that EB-5 capital. That is draft language only. It is not law yet, and RIA itself did not ban bridge financing. DHS also says the rule would generally apply prospectively to petitions filed on or after the final rule\'s effective date, not automatically to every post-RIA filing from March 2022 onward. The open risk is I-829 and transition wording: commenters are asking DHS to say expressly that pending bridge-based projects keep the old Policy Manual treatment.',
-    frHeadingId: 'h-67',
-    frSectionLabel: 'IV.D.7 Job Creation Requirements and Bridge Financing',
-  },
-  {
-    title:
-      'If your regional center fails, you keep your place in line for about 180 days',
-    body: 'When a regional center is terminated, good-faith investors have historically faced chaos over whether their petition and priority date survive. The draft formalizes a roughly 180-day window to re-associate with a compliant sponsor, keep your place in the visa line, and use Form I-527 where needed. If you already finished 2 years of sustainment and job creation, you may not need to reinvest just because the center later fails. The open comment fight is whether 180 days is long enough once new-sponsor diligence and paperwork stack up.',
-    frHeadingId: 'h-72',
-    frSectionLabel: 'IV.D.9.c Terminations and Debarments (good-faith protections)',
-  },
-  {
-    title:
-      '$800K stays for now; a new $1.4M tier and Jan 1, 2027 inflation hike are proposed',
-    body: 'Rural and high-unemployment TEA projects stay at $800K today and standard stays at $1.05M, matching post-RIA practice. The draft also adds a new high-employment area tier around $1.4M for projects in areas with unusually low unemployment. Automatic inflation adjustments are proposed for Jan 1, 2027 and every 5 years after. Future filers should treat those dates as hard planning points; people already in should confirm their tier is locked and watch how grandfathering is written in the final rule.',
-    frHeadingId: 'h-59',
-    frSectionLabel: 'IV.D.4 Investment Amounts',
-  },
-  {
-    title:
-      'USCIS, not states, decides if a project qualifies for the lower amount',
-    body: 'Whether a project gets the $800K TEA amount is decided centrally by USCIS under proposed methodology for high-unemployment and rural designations, not primarily by state designation letters. That can make outcomes more consistent nationwide, but it also means investors and developers need the data sources and census boundaries to be transparent and challengeable. A wrong TEA call is the difference between $800K and a higher tier, so methodology comments matter before the rule locks in.',
-    frHeadingId: 'h-73',
-    frSectionLabel: 'IV.E Targeted Employment Areas',
-  },
-  {
-    title: 'More audits and fines for regional centers',
-    body: 'The draft expands audits, site visits, reporting duties, and tiered penalties, including examples like late annual statement fines and sanctions up to a percentage of capital. Stronger oversight can protect investors from weak sponsors, but fixed compliance costs land hardest on small and single-project centers. That may shrink the pool of sponsors, raise fees passed through to investors, or push more capital into larger multi-project operators. Comments can ask for proportional rules so integrity gains do not wipe out rural and smaller projects.',
-    frHeadingId: 'h-100',
-    frSectionLabel: 'IV.H.8 Enforcement (penalties, terminations) and Audits',
-  },
-];
+/** Glossary-aware body with first-occurrence inline source links. */
+function KeyPointBody({
+  text,
+  links,
+}: {
+  text: string;
+  links?: KeyTopicInlineLink[];
+}) {
+  if (!links?.length) return <GlossaryText text={text} />;
+
+  const nodes: ReactNode[] = [];
+  let remaining = text;
+  let pending = [...links];
+  let key = 0;
+
+  while (remaining.length) {
+    let earliest = -1;
+    let matched: KeyTopicInlineLink | null = null;
+    for (const link of pending) {
+      const idx = remaining.indexOf(link.phrase);
+      if (idx !== -1 && (earliest === -1 || idx < earliest)) {
+        earliest = idx;
+        matched = link;
+      }
+    }
+    if (earliest === -1 || !matched) {
+      nodes.push(<GlossaryText key={key++} text={remaining} />);
+      break;
+    }
+    if (earliest > 0) {
+      nodes.push(
+        <GlossaryText key={key++} text={remaining.slice(0, earliest)} />
+      );
+    }
+    nodes.push(
+      <a
+        key={key++}
+        href={matched.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        title={matched.title}
+        className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+      >
+        {matched.phrase}
+      </a>
+    );
+    remaining = remaining.slice(earliest + matched.phrase.length);
+    pending = pending.filter((l) => l !== matched);
+  }
+
+  return <>{nodes}</>;
+}
 
 export default function OverviewTab({
   stats,
   comments,
   proposal,
-  onThemes,
   onWrite,
+  onWriteTopic,
   onSummary,
+  onComments,
 }: Props) {
   const volume = dailyVolume(comments);
-  const lastPullLabel = formatLastPull(stats.last_pull);
   const sourceUrl = proposal?.source_url || FR_PDF;
 
   return (
@@ -111,11 +121,8 @@ export default function OverviewTab({
           Think of EB-5 as an apartment building. Congress passed a big renovation
           law in 2022 (the <GlossaryTerm term="RIA" />). Since then, the building
           manager (<GlossaryTerm term="USCIS" />) has been enforcing the new rules
-          with memos.
-        </p>
-        <p>
-          Now the manager published a formal draft of the new rulebook:{' '}
-          <GlossaryTerm term="NPRM" />,{' '}
+          with memos. Now the manager published a formal draft of the new
+          rulebook: <GlossaryTerm term="NPRM" />,{' '}
           <a
             href={sourceUrl}
             target="_blank"
@@ -124,20 +131,11 @@ export default function OverviewTab({
           >
             358-page PDF
           </a>
-          , published July 2, 2026. After the comment period on{' '}
-          <a
-            href={DOCKET_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
-          >
-            docket USCIS-2026-0100
-          </a>
-          , they will publish the final rulebook.
+          , published July 2, 2026. After the comment period, they will publish
+          the final rulebook.
         </p>
         <p className="font-semibold text-primary">
-          Why should you care? This draft decides four things that affect your
-          money:
+          This draft impacts your EB-5 journey:
         </p>
         <ol className="list-decimal pl-5 space-y-2">
           <li>
@@ -171,10 +169,17 @@ export default function OverviewTab({
           </a>
           <button
             type="button"
-            onClick={onSummary}
+            onClick={() => onSummary()}
             className="btn btn-outline border-neutral/30"
           >
             Read 10-min Summary
+          </button>
+          <button
+            type="button"
+            onClick={onComments}
+            className="btn btn-outline border-neutral/30"
+          >
+            What others are saying
           </button>
         </div>
       </header>
@@ -186,17 +191,18 @@ export default function OverviewTab({
         />
         <p id="india-china">
           Commenting can help protect your investment whether you already filed
-          or plan to file. A finalized 2-year sustainment rule and stronger
-          good-faith protections matter most if your capital would otherwise sit
-          through a long backlog or forced redeployment (especially India and
-          China waits). Future filers should also watch the proposed $1.4M high
-          employment tier and the Jan 1, 2027 inflation hike.
+          or plan to file. A finalized 2-year sustainment rule, bridge financing
+          treatment, and stronger good-faith protections matter most if your
+          capital would otherwise sit through a long backlog or forced
+          redeployment (especially India and China waits). Future filers should
+          also watch the proposed $1.4M high employment tier and the Jan 1, 2027
+          inflation hike.
         </p>
         <p>
           <strong>Action:</strong> Read the{' '}
           <button
             type="button"
-            onClick={onSummary}
+            onClick={() => onSummary()}
             className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
           >
             10-minute summary
@@ -236,31 +242,26 @@ export default function OverviewTab({
             </span>
           </div>
           <VolumeChart data={volume} />
-          <p className="text-[10px] text-neutral/55 leading-snug -mt-2">
-            Last pull {lastPullLabel}
-          </p>
-          <div className="flex flex-col sm:flex-row flex-wrap gap-2 pt-1">
-            <button
-              type="button"
-              onClick={onWrite}
-              data-goatcounter-click="nprm-build-comment"
-              className="btn btn-primary text-primary-content"
+          <p className="text-[9px] text-neutral/55 leading-snug -mt-2">
+            Last pull <LocalDateTime value={stats.last_pull} />. Data is not
+            real-time; it updates daily. For real-time data, visit{' '}
+            <a
+              href={DOCKET_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-secondary underline underline-offset-2 hover:text-primary"
             >
-              Build My Comment
-            </button>
+              regulations.gov
+            </a>
+            .
+          </p>
+          <div className="pt-1">
             <button
               type="button"
-              onClick={onThemes}
-              className="btn btn-outline border-neutral/30"
+              onClick={onComments}
+              className="btn btn-outline border-neutral/30 btn-sm"
             >
               See what others are saying
-            </button>
-            <button
-              type="button"
-              onClick={onSummary}
-              className="btn btn-outline border-neutral/30"
-            >
-              Read 10-min Summary
             </button>
           </div>
         </div>
@@ -275,45 +276,62 @@ export default function OverviewTab({
           title="The points that actually matter to you"
         />
         <ol className="space-y-3">
-          {KEY_POINTS.map((point, idx) => (
-            <li
-              key={point.title}
-              className="rounded-xl border-2 border-base-300 bg-base-100 p-4 shadow-sm space-y-2"
-            >
-              <p className="font-bold text-primary leading-snug">
-                <span className="text-secondary tabular-nums mr-1.5">
-                  {idx + 1}.
-                </span>
-                <GlossaryText text={point.title} />
-              </p>
-              <p className="text-sm text-neutral leading-relaxed">
-                <GlossaryText text={point.body} />
-              </p>
-              <p className="text-xs">
-                <a
-                  href={`${FR_HTML}#${point.frHeadingId}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
-                >
-                  Read {point.frSectionLabel} in the Federal Register
-                </a>
-                {' · '}
-                <a
-                  href={FR_PDF}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
-                >
-                  PDF
-                </a>
-              </p>
-            </li>
+          {KEY_TOPICS.map((point, idx) => (
+              <li
+                key={point.id}
+                className="rounded-xl border-2 border-base-300 bg-base-100 p-4 shadow-sm space-y-2"
+              >
+                <p className="font-bold text-primary leading-snug">
+                  <span className="text-secondary tabular-nums mr-1.5">
+                    {idx + 1}.
+                  </span>
+                  <GlossaryText text={point.title} />
+                </p>
+                <p className="text-sm text-neutral leading-relaxed">
+                  <KeyPointBody text={point.body} links={point.inlineLinks} />
+                </p>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => onWriteTopic(point.id)}
+                    data-goatcounter-click="nprm-build-comment"
+                    className="btn btn-primary btn-sm text-primary-content"
+                  >
+                    Build a comment on this
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onSummary(topicSectionId(point.id))}
+                    className="btn btn-outline btn-sm border-neutral/30"
+                  >
+                    Read more
+                  </button>
+                </div>
+                <p className="text-[10px] leading-snug text-neutral/70">
+                  <a
+                    href={`${FR_HTML}#${point.frHeadingId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-normal text-secondary underline underline-offset-2 hover:text-primary"
+                  >
+                    Read {point.frSectionLabel} in the Federal Register
+                  </a>
+                  {' · '}
+                  <a
+                    href={FR_PDF}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-normal text-secondary underline underline-offset-2 hover:text-primary"
+                  >
+                    PDF
+                  </a>
+                </p>
+              </li>
           ))}
         </ol>
       </section>
 
-      <HowCommentingWorks onWrite={onWrite} />
+      <HowCommentingWorks onWrite={onWrite} onComments={onComments} />
     </div>
   );
 }
