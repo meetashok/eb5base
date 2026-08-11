@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import PageHero from '@/components/PageHero';
 import AboutTab from '@/components/nprm/AboutTab';
 import CommentsTab from '@/components/nprm/CommentsTab';
+import CountdownBadge from '@/components/nprm/CountdownBadge';
 import NprmTabBar from '@/components/nprm/NprmTabBar';
 import OverviewTab from '@/components/nprm/OverviewTab';
 import SummaryTab from '@/components/nprm/SummaryTab';
@@ -134,7 +135,6 @@ export default function NprmClient({
               you can use to write your public comment.
             </p>
             <p className="text-xs md:text-[0.8rem] text-neutral/75 leading-relaxed">
-              Comments close August 31, 2026.{' '}
               <Link
                 href="/about#disclaimer"
                 className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
@@ -145,7 +145,9 @@ export default function NprmClient({
             </p>
           </div>
         }
-      />
+      >
+        <CountdownBadge endsLabel="Aug 31, 2026 · 11:59pm ET" />
+      </PageHero>
 
       <nav
         aria-label="Breadcrumb"
