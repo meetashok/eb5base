@@ -252,7 +252,8 @@ function TopicDecisionCard({
 
   return (
     <article
-      className={`rounded-xl border-2 px-3 py-3 sm:px-4 sm:py-4 space-y-3 ${
+      id={`write-topic-${topic.id}`}
+      className={`scroll-mt-36 rounded-xl border-2 px-3 py-3 sm:px-4 sm:py-4 space-y-3 ${
         sel.include
           ? ready
             ? 'border-secondary bg-secondary/10'
@@ -501,6 +502,28 @@ export default function WriteTab({
     track('builder_started');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    const focusId = initialTopicIds[0];
+    let cancelled = false;
+    const run = () => {
+      if (cancelled) return;
+      if (focusId) {
+        const el = document.getElementById(`write-topic-${focusId}`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return;
+        }
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    // Wait a frame after tab swap so the Write panel is laid out.
+    const id = window.setTimeout(run, 50);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(id);
+    };
+  }, [initialTopicIds]);
 
   useEffect(() => {
     if (!hydrated) return;
