@@ -323,7 +323,7 @@ export const KEY_TOPICS: KeyTopic[] = [
     body: 'The draft expands audits, site visits, reporting duties, and tiered penalties, including examples like late annual statement fines and sanctions up to a percentage of capital. Stronger oversight can protect investors from weak sponsors, but fixed compliance costs land hardest on small and single-project centers. That may shrink the pool of sponsors, raise fees passed through to investors, or push more capital into larger multi-project operators.',
     frHeadingId: 'h-100',
     frSectionLabel: 'IV.H.8 Enforcement (penalties, terminations) and Audits',
-    cfrs: ['INA 203(b)(5)(J)', '8 CFR 204.303', 'audits / sanctions'],
+    cfrs: ['INA 203(b)(5)(J)', '8 CFR 204.303'],
     summary: {
       overview:
         'RIA gave DHS stronger integrity tools. The NPRM fleshes out audits, site visits, reporting, and tiered penalties (including examples such as late annual-statement fines and sanctions tied to a percentage of capital). Investors benefit when bad actors are removed. The tradeoff is cost: many regional centers are small entities, and fixed compliance burdens can shrink rural and single-project options or get passed through as fees.',
@@ -440,7 +440,6 @@ export function toPromptTree(topics: KeyTopic[] = KEY_TOPICS): NprmPromptNode[] 
             'personal_impact',
           ],
           guideline_options: [
-            'length',
             'style',
           ],
         });

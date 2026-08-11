@@ -63,14 +63,45 @@ function polarityLabel(polarity: KeyTopicPolarity): string {
     : 'Generally want this part of the draft changed (with the asks below)';
 }
 
-function lengthLabel(length: PromptGuidelines['length']): string {
-  return length === 'focused'
-    ? 'about 250-400 words (best when covering one issue)'
-    : 'about 500-750 words (room for a personal story and up to three issues)';
+function styleLabel(style: PromptGuidelines['style']): string {
+  return style === 'plain'
+    ? 'plain English; professional, respectful, and personal, but firm on reliance interests'
+    : 'formal regulatory; professional, respectful, and personal, but firm on reliance interests';
 }
 
-function styleLabel(style: PromptGuidelines['style']): string {
-  return style === 'plain' ? 'plain English' : 'formal regulatory';
+/** Real statute/reg cites only (exclude topic keywords like "audits / sanctions"). */
+function isLegalCite(raw: string): boolean {
+  const s = raw.trim();
+  if (!s) return false;
+  if (/^(INA|Form)\b/i.test(s)) return true;
+  if (/\b\d+\s*CFR\b/i.test(s)) return true;
+  return false;
+}
+
+/**
+ * Adaptive length from how many issues the comment covers.
+ * 1 issue stays short; 3 issues need room for personal story + asks.
+ */
+export function adaptiveLengthTarget(issueCount: number): {
+  label: string;
+  detail: string;
+} {
+  if (issueCount <= 1) {
+    return {
+      label: 'about 250-350 words',
+      detail: '1 issue',
+    };
+  }
+  if (issueCount === 2) {
+    return {
+      label: 'about 400-500 words',
+      detail: '2 issues',
+    };
+  }
+  return {
+    label: 'about 550-750 words',
+    detail: '3 issues',
+  };
 }
 
 /**
@@ -84,11 +115,12 @@ export function buildPrompt(input: {
 }): string {
   const { selections, personal, guidelines } = input;
   const included = includedSelections(selections).filter(isTopicSelectionReady);
+  const length = adaptiveLengthTarget(included.length);
 
-  const cfrs = Array.from(
-    new Set(
-      included.flatMap((sel) => getKeyTopic(sel.topicId)?.cfrs || [])
-    )
+  const allCfrs = included.flatMap((sel) => getKeyTopic(sel.topicId)?.cfrs || []);
+  const legalCites = Array.from(new Set(allCfrs.filter(isLegalCite)));
+  const topicKeywords = Array.from(
+    new Set(allCfrs.filter((c) => !isLegalCite(c)))
   );
 
   const issueBlocks = included.map((sel, idx) => {
@@ -97,13 +129,14 @@ export function buildPrompt(input: {
       return `Issue ${idx + 1}: (missing topic data)`;
     }
     const stance = stancesByPolarity(topic, sel.polarity)[0];
+    const cites = topic.cfrs.filter(isLegalCite);
     const lines = [
       `Issue ${idx + 1}: ${topic.title}`,
-      `Federal Register: ${topic.frSectionLabel} (${FR_HTML}#${topic.frHeadingId})`,
-      `Cites: ${topic.cfrs.join('; ') || '(none listed)'}`,
+      `Federal Register section (for my reference; do not browse): ${topic.frSectionLabel}`,
+      `Cites for this issue: ${cites.join('; ') || '(none listed)'}`,
       `My polarity: ${polarityLabel(sel.polarity)}`,
       stance ? `Stance frame: ${stance.label}` : null,
-      'Background for you (do not copy verbatim; use only to stay accurate):',
+      'Background for you (this is your source of truth; do not copy verbatim; do not rely on URLs):',
       `- Overview: ${topic.summary.overview}`,
       topic.summary.current
         ? `- Today: ${topic.summary.current}`
@@ -133,7 +166,7 @@ export function buildPrompt(input: {
     `Project type: ${projectLabel}`,
     `Personal story (required color for uniqueness; do not invent beyond this):`,
     personal.impact.trim() ||
-      `(not provided — write a generic but still distinct comment; leave clear placeholders if a fact is missing)`,
+      `(not provided — write a distinct comment without inventing autobiography; leave clear placeholders if a fact is missing)`,
   ];
 
   return [
@@ -141,16 +174,23 @@ export function buildPrompt(input: {
     'I will paste your draft onto regulations.gov myself. Write in first person as me.',
     '',
     'Hard rules:',
-    '- Use only facts I provide below. Do not invent filing dates, amounts, family details, project names, or legal conclusions I did not state.',
+    '- Use only facts I provide below. Do not invent filing dates, amounts, family details, project names, regional-center names, or legal conclusions I did not state.',
+    '- You may fix grammar and spelling in My Personal Story and My Additional Points, but do not add new facts, dates, emotions, or events.',
+    '- Do not include A-number, receipt number, SSN, passport number, home address, bank details, school name, employer name, job title at a named employer, or a child\'s full name.',
+    '- Do not name specific people, law firms, projects, or regional centers. Say "this investor," "my regional center," or "the project" instead.',
     '- Do not copy sample comments or produce a form letter. Paraphrase the must-include points in my voice.',
-    '- Cite the CFR / INA references I listed when making a regulatory ask.',
-    '- Prefer concrete asks to DHS/USCIS (what to keep, clarify, or change) over vague opposition.',
-    '- If my personal story is thin, still vary wording and structure; do not pad with fake autobiography.',
+    '- Do not start with a stock opener like "As an EB-5 investor..." Vary the opening, sentence length, and transitions so this does not read as a form letter.',
+    '- Treat the Background summaries below as your source of truth. The Federal Register links are for my reference; do not browse them and do not invent text from them.',
+    '- Cite only the CFR / INA references listed under each issue (or in the pool below). Prefer starting concrete asks with "I ask DHS/USCIS to..." and include one cite in that same paragraph when it fits naturally.',
+    '- Prefer concrete asks (what to keep, clarify, or change) over vague opposition.',
     '',
     `Docket / document: ${DOCUMENT_ID} (USCIS-2026-0100)`,
-    `Federal Register HTML: ${FR_HTML}`,
-    `Federal Register PDF: ${FR_PDF}`,
-    `CFR / INA pool for this comment: ${cfrs.join('; ') || '(from selected issues)'}`,
+    `Federal Register HTML (my reference only): ${FR_HTML}`,
+    `Federal Register PDF (my reference only): ${FR_PDF}`,
+    `CFR / INA pool for this comment: ${legalCites.join('; ') || '(from selected issues)'}`,
+    topicKeywords.length
+      ? `Topic keywords (do not cite as law): ${topicKeywords.join('; ')}`
+      : null,
     '',
     'My situation:',
     ...personalLines,
@@ -159,15 +199,19 @@ export function buildPrompt(input: {
     issueBlocks.length ? issueBlocks.join('\n\n') : '(no issues fully selected)',
     '',
     'Output requirements:',
-    `- Target length: ${lengthLabel(guidelines.length)}. Prefer covering my selected points over hitting an exact count.`,
+    `- Target length: ${length.label} (${length.detail}). Prefer covering every must-include point over hitting an exact count.`,
     `- Voice: ${styleLabel(guidelines.style)}.`,
     '- Write mainly in short paragraphs. Use bullets only when listing concrete asks to DHS/USCIS; do not make the whole comment a bullet list.',
     '- Open with 1-3 sentences grounded in my situation (if provided).',
     '- One clear section per issue above, in the same order.',
     '- In each section: short accurate context, then my asks/points, then what I want DHS to do.',
     '- Close with a brief respectful request that DHS consider these comments in the final rule.',
-    '- Do not include a subject line, email headers, or markdown code fences unless I ask.',
-  ].join('\n');
+    '- Output only the comment itself. Do not mention word limits, prompt instructions, or that you are an AI. Do not include a subject line, email headers, "Here is your comment:", markdown headers (#), or code fences. regulations.gov is plain text.',
+    '',
+    'Before finishing, verify: (1) you used only my facts, (2) you covered every must-include point, (3) you did not invent project, firm, or regional-center names, and (4) you cited only references from my lists. If anything is missing, add it before you stop.',
+  ]
+    .filter((line) => line != null)
+    .join('\n');
 }
 
 export function buildPersonalOnly(personal: PersonalBlock): string {

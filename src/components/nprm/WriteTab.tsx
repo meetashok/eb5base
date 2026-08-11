@@ -9,6 +9,7 @@ import {
 } from '@/lib/nprm/keyTopics';
 import {
   MIN_IMPACT_CHARS,
+  adaptiveLengthTarget,
   buildPrompt,
   defaultTopicSelections,
   emptyTopicSelection,
@@ -20,7 +21,6 @@ import {
 import type {
   KeyTopic,
   KeyTopicPolarity,
-  LengthGuideline,
   PersonalBlock,
   StyleGuideline,
   TopicCommentSelection,
@@ -40,7 +40,7 @@ interface Props {
 }
 
 const MAX_TOPICS = 3;
-const DRAFT_KEY = 'eb5base_nprm_write_draft_v3';
+const DRAFT_KEY = 'eb5base_nprm_write_draft_v4';
 /** Browser/URL length guard for LLM ?q= prefill links. */
 const LLM_PREFILL_MAX_CHARS = 3500;
 
@@ -455,7 +455,6 @@ export default function WriteTab({
     investor_type: '',
     country: '',
   });
-  const [length, setLength] = useState<LengthGuideline>('standard');
   const [style, setStyle] = useState<StyleGuideline>('plain');
   const [copyMsg, setCopyMsg] = useState<string | null>(null);
   const [privacyOk, setPrivacyOk] = useState(false);
@@ -468,7 +467,6 @@ export default function WriteTab({
         const parsed = JSON.parse(raw) as {
           selections?: Record<string, TopicCommentSelection>;
           personal?: PersonalBlock;
-          length?: LengthGuideline | '150' | '300_450';
           style?: StyleGuideline;
         };
         if (
@@ -483,13 +481,6 @@ export default function WriteTab({
         }
         if (parsed.personal) {
           setPersonal((p) => ({ ...p, ...parsed.personal }));
-        }
-        if (parsed.length === 'focused' || parsed.length === 'standard') {
-          setLength(parsed.length);
-        } else if (parsed.length === '150') {
-          setLength('focused');
-        } else if (parsed.length === '300_450') {
-          setLength('standard');
         }
         if (parsed.style) setStyle(parsed.style);
       }
@@ -506,12 +497,12 @@ export default function WriteTab({
     try {
       localStorage.setItem(
         DRAFT_KEY,
-        JSON.stringify({ selections, personal, length, style })
+        JSON.stringify({ selections, personal, style })
       );
     } catch {
       // quota
     }
-  }, [hydrated, selections, personal, length, style]);
+  }, [hydrated, selections, personal, style]);
 
   const included = includedSelections(selections);
   const readyTopics = included.filter(isTopicSelectionReady);
@@ -521,15 +512,16 @@ export default function WriteTab({
   const impactLen = personal.impact.trim().length;
   const personalized = isPersonalizedEnough(personal.impact);
   const similarity = templateSimilarity(personal.impact);
+  const lengthTarget = adaptiveLengthTarget(readyTopics.length);
 
   const prompt = useMemo(
     () =>
       buildPrompt({
         selections,
         personal,
-        guidelines: { length, style },
+        guidelines: { style },
       }),
-    [selections, personal, length, style]
+    [selections, personal, style]
   );
 
   function updateSelection(next: TopicCommentSelection) {
@@ -837,71 +829,56 @@ export default function WriteTab({
             titleClassName="text-sm font-semibold text-primary leading-snug"
           >
             <p className="text-xs text-neutral leading-relaxed max-w-2xl">
-              Focused fits one issue. Standard leaves room for a personal story
-              and up to three topics. The draft uses short paragraphs; bullets
-              only for concrete asks to DHS.
+              Target length adapts to how many topics you finish: 1 issue ~
+              250-350 words, 2 issues ~ 400-500, 3 issues ~ 550-750. The draft
+              uses short paragraphs; bullets only for concrete asks to DHS.
             </p>
           </NprmSectionHeading>
           <div className="space-y-3">
-            {(
-              [
-                {
-                  id: 'length',
-                  label: 'Length',
-                  value: length,
-                  options: [
-                    { id: 'focused' as const, label: 'Focused (250-400)' },
-                    { id: 'standard' as const, label: 'Standard (500-750)' },
-                  ],
-                  onChange: setLength,
-                },
-                {
-                  id: 'style',
-                  label: 'Style',
-                  value: style,
-                  options: [
+            <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+              <span className="text-sm font-semibold text-primary shrink-0">
+                Length
+              </span>
+              <p className="text-sm text-neutral leading-snug sm:text-right">
+                {readyTopics.length === 0
+                  ? 'Finish at least one topic to set the target'
+                  : `${lengthTarget.label} (${lengthTarget.detail})`}
+              </p>
+            </div>
+            <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+              <span className="text-sm font-semibold text-primary shrink-0">
+                Style
+              </span>
+              <div
+                className="inline-flex w-full sm:w-auto rounded-lg border-2 border-base-300 bg-base-200/60 p-0.5"
+                role="group"
+                aria-label="Style"
+              >
+                {(
+                  [
                     { id: 'plain' as const, label: 'Plain English' },
                     { id: 'formal' as const, label: 'Formal regulatory' },
-                  ],
-                  onChange: setStyle,
-                },
-              ] as const
-            ).map((row) => (
-              <div
-                key={row.id}
-                className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
-              >
-                <span className="text-sm font-semibold text-primary shrink-0">
-                  {row.label}
-                </span>
-                <div
-                  className="inline-flex w-full sm:w-auto rounded-lg border-2 border-base-300 bg-base-200/60 p-0.5"
-                  role="group"
-                  aria-label={row.label}
-                >
-                  {row.options.map((opt) => {
-                    const selected = row.value === opt.id;
-                    return (
-                      <button
-                        key={opt.id}
-                        type="button"
-                        aria-pressed={selected}
-                        onClick={() =>
-                          (row.onChange as (v: typeof opt.id) => void)(opt.id)
-                        }
-                        className={`flex-1 sm:flex-none min-h-9 px-3 py-1.5 text-sm font-semibold rounded-md transition-colors ${
-                          selected
-                            ? 'bg-primary text-primary-content shadow-sm'
-                            : 'text-neutral hover:bg-base-100'
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    );
-                  })}
-                </div>
+                  ] as const
+                ).map((opt) => {
+                  const selected = style === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      aria-pressed={selected}
+                      onClick={() => setStyle(opt.id)}
+                      className={`flex-1 sm:flex-none min-h-9 px-3 py-1.5 text-sm font-semibold rounded-md transition-colors ${
+                        selected
+                          ? 'bg-primary text-primary-content shadow-sm'
+                          : 'text-neutral hover:bg-base-100'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  );
+                })}
               </div>
-            ))}
+            </div>
           </div>
         </section>
 

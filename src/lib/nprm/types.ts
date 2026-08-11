@@ -217,7 +217,6 @@ export interface NprmProposalSummary {
 
 export type ProjectTypeOption = 'rural' | 'tea_hua' | 'infrastructure' | 'mixed';
 
-export type LengthGuideline = 'focused' | 'standard';
 export type StyleGuideline = 'plain' | 'formal';
 
 export interface PersonalBlock {
@@ -229,7 +228,6 @@ export interface PersonalBlock {
 }
 
 export interface PromptGuidelines {
-  length: LengthGuideline;
   style: StyleGuideline;
 }
 
