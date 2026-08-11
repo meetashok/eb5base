@@ -136,7 +136,8 @@ export default function OverviewTab({
           >
             358-page PDF
           </a>
-          . After the comment period, they will publish the final rulebook.
+          . You have a chance to comment on this draft. After the comment
+          period, they will publish the final rulebook.
         </p>
         <p className="font-semibold text-primary">
           This draft impacts your EB-5 journey:
