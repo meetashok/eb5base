@@ -539,33 +539,65 @@ export default function WriteTab({
   useEffect(() => {
     const focusId = initialTopicIds[0];
     let cancelled = false;
-    let flashClearId = 0;
-    const run = () => {
-      if (cancelled) return;
-      if (focusId) {
-        const el = document.getElementById(`write-topic-${focusId}`);
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          const reduce =
-            typeof window !== 'undefined' &&
-            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-          if (!reduce) {
-            setFlashTopicId(focusId);
-            flashClearId = window.setTimeout(() => {
-              if (!cancelled) setFlashTopicId(null);
-            }, 900);
-          }
-          return;
-        }
-      }
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    let layoutId = 0;
+    let retryId = 0;
+    let afterScrollId = 0;
+    let pulseId = 0;
+    let clearId = 0;
+
+    const reduceMotion = () =>
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const startFlash = (id: string) => {
+      if (cancelled || reduceMotion()) return;
+      // Clear then set so a remounted handoff always restarts the animation.
+      setFlashTopicId(null);
+      pulseId = window.setTimeout(() => {
+        if (cancelled) return;
+        setFlashTopicId(id);
+        clearId = window.setTimeout(() => {
+          if (!cancelled) setFlashTopicId(null);
+        }, 1200);
+      }, 20);
     };
+
+    const run = (attempt: number) => {
+      if (cancelled) return;
+      if (!focusId) {
+        window.scrollTo({
+          top: 0,
+          behavior: reduceMotion() ? 'auto' : 'smooth',
+        });
+        return;
+      }
+      const el = document.getElementById(`write-topic-${focusId}`);
+      if (!el) {
+        // Tab panel may not be laid out yet; retry briefly.
+        if (attempt < 8) {
+          retryId = window.setTimeout(() => run(attempt + 1), 50);
+        }
+        return;
+      }
+      el.scrollIntoView({
+        behavior: reduceMotion() ? 'auto' : 'smooth',
+        block: 'start',
+      });
+      // Smooth scroll finishes after the old 50ms flash window, so wait
+      // until the card is likely in view before pulsing.
+      const flashDelay = reduceMotion() ? 0 : 450;
+      afterScrollId = window.setTimeout(() => startFlash(focusId), flashDelay);
+    };
+
     // Wait a frame after tab swap so the Write panel is laid out.
-    const id = window.setTimeout(run, 50);
+    layoutId = window.setTimeout(() => run(0), 50);
     return () => {
       cancelled = true;
-      window.clearTimeout(id);
-      if (flashClearId) window.clearTimeout(flashClearId);
+      window.clearTimeout(layoutId);
+      window.clearTimeout(retryId);
+      window.clearTimeout(afterScrollId);
+      window.clearTimeout(pulseId);
+      window.clearTimeout(clearId);
     };
   }, [initialTopicIds]);
 

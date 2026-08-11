@@ -125,12 +125,6 @@ export default function CommentsTab({
     ];
   }, [comments]);
 
-  const topThemeNote = useMemo(() => {
-    const top = themeOptions.find((t) => t.id !== 'all');
-    if (!top) return null;
-    return `${top.label} is the most common theme label from keyword tagging of first-party summaries (not a legal classification). Poster labels are Anonymous, Named person, or Organization; AI summaries stay generic.`;
-  }, [themeOptions]);
-
   function filterBtnClass(active: boolean) {
     return `btn btn-xs h-7 min-h-0 px-2.5 border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-secondary ${
       active
@@ -167,11 +161,6 @@ export default function CommentsTab({
           lag newer filings after <LocalDateTime value={lastPull} />. Source:
           regulations.gov via api.data.gov.
         </p>
-        {topThemeNote ? (
-          <p className="text-xs text-neutral/75 leading-relaxed">
-            Theme counts: {topThemeNote}
-          </p>
-        ) : null}
       </div>
 
       <div className="space-y-3">
