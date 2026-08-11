@@ -8,6 +8,8 @@ function isStaticOrApi(pathname: string): boolean {
   return (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
+    // First-party NPRM (and other) static datasets served from public/data.
+    pathname.startsWith('/data/') ||
     pathname === '/favicon.ico' ||
     pathname === '/robots.txt' ||
     pathname === '/sitemap.xml' ||
@@ -18,7 +20,7 @@ function isStaticOrApi(pathname: string): boolean {
     pathname.startsWith('/opengraph-image/') ||
     pathname === '/twitter-image' ||
     pathname.startsWith('/twitter-image/') ||
-    /\.(?:svg|png|jpg|jpeg|gif|webp|txt|xml)$/.test(pathname)
+    /\.(?:svg|png|jpg|jpeg|gif|webp|txt|xml|json|log)$/.test(pathname)
   );
 }
 

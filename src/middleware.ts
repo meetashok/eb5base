@@ -126,6 +126,12 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
+  // Static JSON/log under /data must stay public: NPRM SSR falls back to
+  // HTTP when public/ is not on the serverless filesystem (Vercel).
+  if (pathname.startsWith('/data/')) {
+    return NextResponse.next();
+  }
+
   if (isCrawlFriendlyPublicPath(pathname)) {
     // Skip Supabase session refresh on crawl/marketing surfaces.
     if (isMaintenanceMode() && !isMaintenancePassthrough(pathname)) {
@@ -175,6 +181,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    // Skip image + public data assets (json/log) so auth/maintenance never gate them.
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|json|log)$).*)',
   ],
 };
