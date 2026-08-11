@@ -54,6 +54,9 @@ $$;
 
 REVOKE ALL ON FUNCTION public.increment_nprm_prompt_copies() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.increment_nprm_prompt_copies() TO service_role;
+-- Anon may call the SECURITY DEFINER RPC so Vercel can increment without a
+-- service-role key (function only bumps the aggregate counter).
+GRANT EXECUTE ON FUNCTION public.increment_nprm_prompt_copies() TO anon, authenticated;
 
 COMMENT ON TABLE public.nprm_prompt_stats IS
   'Aggregate NPRM prompt-copy count for public social proof. No PII.';
