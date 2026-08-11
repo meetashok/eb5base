@@ -244,8 +244,8 @@ export default function AboutPage() {
           <div className="space-y-3 text-sm text-neutral/80 leading-relaxed">
             <p>
               EB5 Base is not affiliated with USCIS, DHS, or any government agency. Nothing on
-              this site is legal or financial advice. Information is based on public Federal
-              Register documents and regulations.gov filings. Always verify on{' '}
+              this site is legal or financial advice. Information about the NPRM is based on
+              public Federal Register documents and regulations.gov filings. Always verify on{' '}
               <a
                 href={FR_HTML}
                 target="_blank"
