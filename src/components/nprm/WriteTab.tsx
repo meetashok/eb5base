@@ -546,15 +546,23 @@ export default function WriteTab({
   }
 
   async function copyText(text: string, label: string) {
-    if (!ready) return;
+    if (!ready) {
+      toast(
+        'Finish at least one topic and accept the disclaimer first',
+        'error'
+      );
+      return;
+    }
     try {
       await navigator.clipboard.writeText(text);
       setCopyMsg(`${label} copied`);
+      toast('Prompt copied. Paste it into your LLM.', 'success');
       track('builder_copied');
       if (personalized) track('builder_personalized');
-      window.setTimeout(() => setCopyMsg(null), 2000);
+      window.setTimeout(() => setCopyMsg(null), 2500);
     } catch {
       setCopyMsg('Copy failed. Select the text manually.');
+      toast('Copy failed. Select the prompt text manually.', 'error');
       window.setTimeout(() => setCopyMsg(null), 3000);
     }
   }
@@ -932,7 +940,7 @@ export default function WriteTab({
             </span>
           </label>
 
-          <div className="flex flex-col sm:flex-row flex-wrap gap-2">
+          <div className="flex flex-col sm:flex-row flex-wrap items-center gap-2">
             <button
               type="button"
               className="btn btn-secondary shadow-glow-green sm:w-auto"
@@ -944,8 +952,13 @@ export default function WriteTab({
               }
               onClick={() => copyText(prompt, 'Prompt')}
             >
-              Copy prompt for LLM
+              {copyMsg === 'Prompt copied' ? 'Prompt copied' : 'Copy prompt for LLM'}
             </button>
+            {copyMsg ? (
+              <span className="text-sm font-semibold text-secondary" role="status">
+                {copyMsg}
+              </span>
+            ) : null}
           </div>
 
           <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-3">
