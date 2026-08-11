@@ -56,6 +56,7 @@ const NPRM_SHARE_TEXT =
 
 const PERSONAL_STORY_EXAMPLES = [
   'years waiting (ex: 5 years since I-526E filing)',
+  'one concrete fear in your own words (redeployment notice, ageing-out year, funds still in escrow)',
   'capital already invested and at risk (approx amount and year, not account numbers)',
   'teen at risk of aging out before I-829 (no school name or full name)',
   'job or work-authorization timing tied to conditional residency',
