@@ -272,30 +272,6 @@ export default function OverviewTab({
             </a>
             .
           </p>
-          <div className="flex flex-col sm:flex-row flex-wrap gap-2 pt-1">
-            <button
-              type="button"
-              onClick={onWrite}
-              data-goatcounter-click="nprm-build-comment"
-              className="btn btn-primary text-primary-content"
-            >
-              Build My Comment
-            </button>
-            <button
-              type="button"
-              onClick={onComments}
-              className="btn btn-outline border-neutral/30"
-            >
-              See what others are saying
-            </button>
-            <button
-              type="button"
-              onClick={() => onSummary()}
-              className="btn btn-outline border-neutral/30"
-            >
-              Read 10-min Summary
-            </button>
-          </div>
         </div>
       </section>
 
