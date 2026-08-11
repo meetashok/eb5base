@@ -5,6 +5,7 @@ import GlossaryTerm, {
   GlossaryText,
 } from '@/components/nprm/GlossaryTerm';
 import DoCommentsChangeRule from '@/components/nprm/DoCommentsChangeRule';
+import CountdownBadge from '@/components/nprm/CountdownBadge';
 import HowCommentingWorks from '@/components/nprm/HowCommentingWorks';
 import LocalDateTime from '@/components/nprm/LocalDateTime';
 import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
@@ -117,6 +118,7 @@ export default function OverviewTab({
           investor, you have a right and a responsibility to comment on the draft
           before the deadline. Your comment can influence what gets finalized.
         </p>
+        <CountdownBadge />
         <p>
           Think of EB-5 as an apartment building. Congress passed a big renovation
           law in 2022 (the <GlossaryTerm term="RIA" />). Since then, the building
