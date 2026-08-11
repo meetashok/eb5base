@@ -397,7 +397,7 @@ function TopicDecisionCard({
                     >
                       <input
                         type="checkbox"
-                        className="checkbox checkbox-xs checkbox-secondary mt-0.5 shrink-0"
+                        className="checkbox checkbox-xs checkbox-secondary mt-0.5 shrink-0 !rounded-sm"
                         checked={checked}
                         onChange={() => toggleAngle(angle)}
                       />
