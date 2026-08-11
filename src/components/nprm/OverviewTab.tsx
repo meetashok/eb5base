@@ -20,7 +20,6 @@ import type {
   NprmStats,
 } from '@/lib/nprm/types';
 import {
-  DOCKET_URL,
   FR_HTML,
   FR_PDF,
   dailyVolume,
@@ -155,16 +154,8 @@ export default function OverviewTab({
           >
             358-page PDF
           </a>
-          , published July 2, 2026. After the comment period on{' '}
-          <a
-            href={DOCKET_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
-          >
-            docket USCIS-2026-0100
-          </a>
-          , they will publish the final rulebook.
+          , published July 2, 2026. After the comment period, they will publish
+          the final rulebook.
         </p>
         <p className="font-semibold text-primary">
           This draft impacts your EB-5 journey:
