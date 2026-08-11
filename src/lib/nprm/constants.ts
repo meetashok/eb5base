@@ -45,12 +45,6 @@ export const COMMENT_IMPACT_SOURCES = [
 export const DISTINCTNESS_WARNING =
   'If 500 people paste the same paragraph, USCIS counts it as 1. Your personal story makes it distinct. GAO notes that mass mailing campaigns can yield thousands of duplicate comments that agencies may post individually, as attachments, or as a count. OIRA tooling has distilled about 300k comments down to about 30k distinct ones.';
 
-/** Before the prompt: what to put into topics + personal story. */
-export const UNIQUE_BEFORE_PROMPT_CHECKLIST = [
-  'Cover 1-2 issues you actually lived. Do not stack every template topic.',
-  'In your personal story, include your timeline (when you put capital in or filed, who in your family is affected) and one concrete fear in your own words (redeployment notice, ageing-out year, funds still in escrow).',
-] as const;
-
 /** After the LLM draft: what to do before filing on regulations.gov. */
 export const UNIQUE_AFTER_LLM_CHECKLIST = [
   'Aim for more than 30% rewrite of the AI draft before you file.',
@@ -59,7 +53,7 @@ export const UNIQUE_AFTER_LLM_CHECKLIST = [
   'Never paste chat preamble into regulations.gov (no “Here is a tighter version…”, no word or character-limit talk).',
 ] as const;
 
-/** @deprecated use UNIQUE_BEFORE_PROMPT_CHECKLIST / UNIQUE_AFTER_LLM_CHECKLIST */
+/** @deprecated use UNIQUE_AFTER_LLM_CHECKLIST */
 export const UNIQUE_COMMENT_CHECKLIST = UNIQUE_AFTER_LLM_CHECKLIST;
 
 export const PROJECT_TYPE_OPTIONS = [

@@ -1,11 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  PROJECT_TYPE_OPTIONS,
-  UNIQUE_AFTER_LLM_CHECKLIST,
-  UNIQUE_BEFORE_PROMPT_CHECKLIST,
-} from '@/lib/nprm/constants';
+import { PROJECT_TYPE_OPTIONS, UNIQUE_AFTER_LLM_CHECKLIST } from '@/lib/nprm/constants';
 import {
   KEY_TOPICS,
   stancesByPolarity,
@@ -827,8 +823,8 @@ export default function WriteTab({
             >
               <p className="text-xs text-neutral leading-relaxed">
                 Same six topics as Overview and Summary. Stronger comments focus
-                on up to {MAX_TOPICS} issues. For more topics, copy another
-                prompt in a second pass.
+                on 1-2 issues you actually lived (max {MAX_TOPICS}). For more
+                topics, copy another prompt in a second pass.
               </p>
             </NprmSectionHeading>
             <p className="text-xs text-neutral/70">
@@ -999,24 +995,6 @@ export default function WriteTab({
               </p>
             </div>
           </label>
-
-          <div className="rounded-xl border-2 border-secondary/30 bg-secondary/[0.05] p-3 sm:p-4 space-y-2 text-[11px] sm:text-xs text-neutral leading-relaxed">
-            <NprmSectionHeading
-              as="h3"
-              eyebrow="Before you copy the prompt"
-              title="What to include"
-              titleClassName="text-sm font-semibold text-primary leading-snug"
-            />
-            <p>
-              Do this in the topics and personal story above so the LLM has real
-              material to work with.
-            </p>
-            <ul className="list-disc pl-5 space-y-1.5">
-              {UNIQUE_BEFORE_PROMPT_CHECKLIST.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
         </section>
 
         <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft space-y-3">

@@ -11,7 +11,6 @@ import {
   ILRC_CITATION,
   ILRC_LINK,
   UNIQUE_AFTER_LLM_CHECKLIST,
-  UNIQUE_BEFORE_PROMPT_CHECKLIST,
 } from '@/lib/nprm/constants';
 import type { NprmProposalSummary } from '@/lib/nprm/types';
 import { nprmTabHref } from '@/lib/nprm/tabs';
@@ -276,22 +275,12 @@ export default function AboutTab({
             with the same structure and rules.
           </p>
           <p className="text-sm text-neutral leading-relaxed">
-            Write splits uniqueness guidance into two lists:
-          </p>
-          <p className="text-sm font-semibold text-primary">
-            Before you copy the prompt (after personal story)
-          </p>
-          <ul className="list-disc pl-5 text-sm text-neutral space-y-1.5 leading-relaxed">
-            {UNIQUE_BEFORE_PROMPT_CHECKLIST.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-          <p className="text-sm font-semibold text-primary">
-            After your LLM draft (Copy gate)
-          </p>
-          <p className="text-sm text-neutral leading-relaxed">
-            Copy / Open LLM stay disabled until you check that you have read
-            this list and will personalize before filing:
+            Before you copy the prompt, Step A asks you to focus on 1-2 lived
+            issues, and the personal-story tips ask for timeline, one concrete
+            fear, a rule cite, and anonymized details. After your LLM draft, the
+            Copy gate shows this uniqueness checklist. Copy / Open LLM stay
+            disabled until you check that you have read it and will personalize
+            before filing:
           </p>
           <ul className="list-disc pl-5 text-sm text-neutral space-y-1.5 leading-relaxed">
             {UNIQUE_AFTER_LLM_CHECKLIST.map((item) => (
