@@ -37,7 +37,7 @@ export default function DoCommentsChangeRule() {
         <strong className="font-bold text-primary">
           especially when other voices push only to tighten the program
         </strong>
-        . Add your voice now.
+        . Add yours to the record.
       </p>
       <p className="text-xs text-neutral/80 leading-relaxed">
         Sources:{' '}
