@@ -188,7 +188,6 @@ export default function OverviewTab({
             What others are saying
           </button>
         </div>
-        <PromptCopyCount />
       </header>
 
       <section className="nprm-callout-action space-y-3" id="do-i-need-to-act">
