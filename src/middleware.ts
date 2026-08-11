@@ -181,7 +181,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Skip image + public data assets (json/log) so auth/maintenance never gate them.
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|json|log)$).*)',
+    // Skip image + public data/font assets so auth/maintenance never gate them.
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|json|log|ttf|otf|woff|woff2)$).*)',
   ],
 };
