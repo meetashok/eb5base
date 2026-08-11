@@ -975,7 +975,7 @@ export default function WriteTab({
             title="Guidelines"
             titleClassName="text-sm font-semibold text-primary leading-snug"
           >
-            <p className="text-xs text-neutral leading-relaxed max-w-2xl">
+            <p className="text-xs text-neutral leading-relaxed">
               Target length adapts to how many topics you finish: 1 issue ~
               250-350 words, 2 issues ~ 400-500, 3 issues ~ 550-750. The draft
               uses short paragraphs; bullets only for concrete asks to DHS.
