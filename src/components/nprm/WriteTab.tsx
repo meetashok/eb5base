@@ -776,6 +776,11 @@ export default function WriteTab({
               and say relevant personal experience helps reviewers. See why:{' '}
               <GuidanceLinks />.
             </p>
+            <p className="text-xs text-neutral leading-relaxed">
+              <span className="font-semibold text-primary">Privacy:</span> Your
+              answers stay on this device (browser local storage). Nothing from
+              this form is uploaded to our servers.
+            </p>
           </NprmSectionHeading>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <label className="form-control sm:col-span-2 lg:col-span-1">
