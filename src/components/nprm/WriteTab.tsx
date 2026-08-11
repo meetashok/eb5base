@@ -537,7 +537,7 @@ export default function WriteTab({
     });
   }
 
-  async function copyText(text: string, label: string) {
+  async function copyText(text: string) {
     if (!ready) {
       toast(
         'Finish at least one topic and accept the disclaimer first',
@@ -547,13 +547,12 @@ export default function WriteTab({
     }
     try {
       await navigator.clipboard.writeText(text);
-      setCopyMsg(`${label} copied`);
-      toast('Prompt copied. Paste it into your LLM.', 'success');
+      setCopyMsg('Prompt copied');
       track('builder_copied');
       if (personalized) track('builder_personalized');
       window.setTimeout(() => setCopyMsg(null), 2500);
     } catch {
-      setCopyMsg('Copy failed. Select the text manually.');
+      setCopyMsg('Copy failed');
       toast('Copy failed. Select the prompt text manually.', 'error');
       window.setTimeout(() => setCopyMsg(null), 3000);
     }
@@ -891,9 +890,6 @@ export default function WriteTab({
                 title="LLM prompt"
                 titleClassName="text-sm font-semibold text-accent leading-snug"
               />
-              {copyMsg && (
-                <span className="text-xs text-accent">{copyMsg}</span>
-              )}
             </div>
             <pre className="whitespace-pre-wrap text-xs sm:text-sm font-mono leading-relaxed text-primary-content/90 max-h-[28rem] overflow-auto">
               {prompt}
@@ -917,26 +913,30 @@ export default function WriteTab({
             </span>
           </label>
 
-          <div className="flex flex-col sm:flex-row flex-wrap items-center gap-2">
-            <button
-              type="button"
-              className="btn btn-secondary shadow-glow-green sm:w-auto"
-              disabled={!ready}
-              title={
-                ready
-                  ? 'Copy full prompt for your LLM'
-                  : 'Finish at least one topic and accept the disclaimer first'
-              }
-              onClick={() => copyText(prompt, 'Prompt')}
-            >
-              {copyMsg === 'Prompt copied' ? 'Prompt copied' : 'Copy prompt for LLM'}
-            </button>
-            {copyMsg ? (
-              <span className="text-sm font-semibold text-secondary" role="status">
-                {copyMsg}
-              </span>
-            ) : null}
-          </div>
+          <button
+            type="button"
+            className={`btn w-full sm:w-auto ${
+              copyMsg === 'Prompt copied'
+                ? 'btn-ghost bg-base-300 text-primary border-base-300 shadow-none'
+                : copyMsg === 'Copy failed'
+                  ? 'btn-error text-error-content'
+                  : 'btn-secondary shadow-glow-green'
+            }`}
+            disabled={!ready}
+            aria-live="polite"
+            title={
+              ready
+                ? 'Copy full prompt for your LLM'
+                : 'Finish at least one topic and accept the disclaimer first'
+            }
+            onClick={() => copyText(prompt)}
+          >
+            {copyMsg === 'Prompt copied'
+              ? 'Prompt copied'
+              : copyMsg === 'Copy failed'
+                ? 'Copy failed'
+                : 'Copy prompt for LLM'}
+          </button>
 
           <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-3">
             <NprmSectionHeading
