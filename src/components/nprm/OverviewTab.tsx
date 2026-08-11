@@ -71,7 +71,7 @@ const KEY_POINTS: {
   {
     title:
       '$800K stays for now; a new $1.4M tier and Jan 1, 2027 inflation hike are proposed',
-    body: 'Rural and high-unemployment TEA projects stay at $800K today and standard stays at $1.05M, matching post-RIA practice. The draft also adds a new high-employment area tier around $1.4M for projects in areas with unusually low unemployment. Automatic inflation adjustments are proposed for Jan 1, 2027 and every 5 years after. Future filers should treat those dates as hard planning points; people already in should confirm their tier is locked and watch how grandfathering is written in the final rule.',
+    body: 'Rural and high-unemployment TEA projects stay at $800K today and the standard minimum investment amount stays at $1.05M, matching post-RIA practice. The draft also adds a new high-employment area tier around $1.4M for projects in areas with unusually low unemployment. Automatic inflation adjustments are proposed for Jan 1, 2027 and every 5 years after. Future filers should treat those dates as hard planning points; people already in should confirm their tier is locked and watch how grandfathering is written in the final rule.',
     frHeadingId: 'h-59',
     frSectionLabel: 'IV.D.4 Investment Amounts',
   },
