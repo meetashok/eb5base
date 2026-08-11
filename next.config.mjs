@@ -1,5 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    // Keep NPRM JSON on the serverless filesystem so SSR can readFile
+    // without relying on an HTTP round-trip through middleware.
+    outputFileTracingIncludes: {
+      '/nprm': ['./public/data/nprm/**/*'],
+      '/nprm/[tab]': ['./public/data/nprm/**/*'],
+    },
+  },
   async redirects() {
     return [
       {

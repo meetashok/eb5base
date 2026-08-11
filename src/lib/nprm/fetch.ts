@@ -62,11 +62,30 @@ export function normalizeComment(
  */
 export const LOCAL_DATA_BASE = '/data/nprm';
 
+/** Resolve /data/... to an absolute URL during SSR (relative fetch is unreliable). */
+async function absoluteDataUrl(path: string): Promise<string> {
+  if (typeof window !== 'undefined') return path;
+  if (/^https?:\/\//i.test(path)) return path;
+  try {
+    const { headers } = await import('next/headers');
+    const h = await headers();
+    const host = h.get('x-forwarded-host') || h.get('host');
+    if (!host) return path;
+    const proto =
+      h.get('x-forwarded-proto') ||
+      (host.includes('localhost') || host.startsWith('127.') ? 'http' : 'https');
+    return `${proto}://${host}${path}`;
+  } catch {
+    return path;
+  }
+}
+
 async function tryFetchText(
   url: string
 ): Promise<{ ok: true; text: string } | { ok: false }> {
   try {
-    const res = await fetch(url, {
+    const resolved = await absoluteDataUrl(url);
+    const res = await fetch(resolved, {
       // Always read fresh so a new local pull shows up on refresh.
       cache: 'no-store',
       headers: { Accept: 'application/json, text/plain, */*' },
@@ -74,7 +93,7 @@ async function tryFetchText(
     if (!res.ok) return { ok: false };
     const contentType = res.headers.get('content-type') || '';
     const text = await res.text();
-    // Reject accidental HTML responses from misconfigured paths.
+    // Reject accidental HTML responses from misconfigured paths (e.g. login redirect).
     if (
       contentType.includes('text/html') ||
       text.trimStart().startsWith('<!DOCTYPE') ||
