@@ -31,7 +31,6 @@ interface Props {
   stats: NprmStats;
   comments: NprmComment[];
   proposal: NprmProposalSummary | null;
-  onComments: () => void;
   onWrite: () => void;
   onWriteTopic: (topicId: string) => void;
   onSummary: (hash?: string) => void;
