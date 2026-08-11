@@ -59,8 +59,11 @@ export default function CommentsTab({
   const themeOptions = useMemo(() => {
     const counts = new Map<string, { id: string; label: string; count: number }>();
     for (const c of comments) {
-      const id = c.themeId || 'unknown';
-      const label = themeLabel(c, themes) || id;
+      const id = c.themeId || 'other';
+      const rawLabel = themeLabel(c, themes);
+      const label =
+        rawLabel ||
+        (id === 'other' || id === 'unknown' ? 'Other' : id);
       const prev = counts.get(id);
       if (prev) prev.count += 1;
       else counts.set(id, { id, label, count: 1 });
@@ -79,7 +82,7 @@ export default function CommentsTab({
       const posterType =
         c.posterType || parsePoster(c.attributes?.title).posterType;
       if (posterFilter !== 'all' && posterType !== posterFilter) return false;
-      if (themeFilter !== 'all' && (c.themeId || 'unknown') !== themeFilter) {
+      if (themeFilter !== 'all' && (c.themeId || 'other') !== themeFilter) {
         return false;
       }
       if (q) {
