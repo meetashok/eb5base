@@ -16,7 +16,7 @@ export default function DoCommentsChangeRule() {
         titleClassName="text-base font-bold text-primary leading-snug"
       />
       <p className="text-sm text-neutral leading-relaxed">
-        Investor comments have moved EB-5 before. In the last major
+        Stakeholder comments have moved EB-5 before. In the last major
         modernization (2019), <GlossaryTerm term="DHS" /> answered hundreds of
         comments{' '}
         and{' '}
@@ -24,7 +24,7 @@ export default function DoCommentsChangeRule() {
           lowered the proposed <GlossaryTerm term="TEA" /> amount from $1.35M to
           $900K
         </strong>
-        . That is real money for families. Because investors spoke up before the
+        . That is real money for families. Because people spoke up before the
         rule was final.
       </p>
       <p className="text-sm text-neutral leading-relaxed">
