@@ -968,9 +968,9 @@ export default function WriteTab({
               </p>
               <ul className="list-disc pl-4 space-y-0.5 text-neutral/75">
                 <li>
-                  Include one concrete fear in your own words (redeployment,
-                  ageing-out, escrow still holding funds). The LLM only knows
-                  what you write here.
+                  Include your timeline and one concrete fear in your own words
+                  (when you filed or put capital in; redeployment, ageing-out,
+                  escrow). The LLM only knows what you write here.
                 </li>
                 <li>
                   Tie the story to a rule cite (ex: proposed{' '}
