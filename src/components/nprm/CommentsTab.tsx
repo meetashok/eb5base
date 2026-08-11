@@ -6,6 +6,7 @@ import NprmSectionHeading from '@/components/nprm/NprmSectionHeading';
 import type { NprmComment, NprmTheme } from '@/lib/nprm/types';
 import {
   commentUrl,
+  DOCKET_URL,
   formatLastPull,
   formatShortDate,
   parsePoster,
@@ -18,9 +19,7 @@ interface Props {
   comments: NprmComment[];
   themes: NprmTheme[];
   lastPull?: string;
-  source?: string;
   totalComments?: number;
-  feedSource?: 'remote' | 'local';
   onAbout?: () => void;
 }
 
@@ -51,9 +50,7 @@ export default function CommentsTab({
   comments,
   themes,
   lastPull,
-  source,
   totalComments,
-  feedSource = 'local',
   onAbout,
 }: Props) {
   const [themeFilter, setThemeFilter] = useState<string>('all');
@@ -323,21 +320,36 @@ export default function CommentsTab({
         </p>
       )}
 
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between rounded-xl border-2 border-secondary/30 bg-secondary/10 px-4 py-4">
-        <div className="space-y-1">
+      <div className="flex flex-col sm:flex-row sm:items-start gap-3 justify-between rounded-xl border-2 border-secondary/30 bg-secondary/10 px-4 py-4">
+        <div className="space-y-2 min-w-0">
           <NprmSectionHeading
             as="h3"
             eyebrow="Trust"
-            title="Source and feed status"
+            title="Where these comments come from"
             titleClassName="text-sm font-bold text-primary leading-snug"
           />
           <p className="text-sm text-neutral leading-relaxed">
-            Source: {source || 'regulations.gov via api.data.gov'} (first-party
-            pull). Poster labels are anonymized (Anonymous / Named person /
-            Organization). Explainer cites FR Doc 2026-13392.{' '}
+            We pull filings on a daily cadence from the{' '}
+            <a
+              href={DOCKET_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-secondary underline underline-offset-2"
+            >
+              regulations.gov
+            </a>{' '}
+            API for Docket USCIS-2026-0100 and host them as first-party data on
+            this site. There is no third-party social feed. Poster labels are
+            only Anonymous, Named person, or Organization. Each card gets a short
+            automated summary from the posted text; attachment-only filings note
+            that you should open the original. Theme tags are keyword labels for
+            browsing, not a legal classification.
+          </p>
+          <p className="text-sm text-neutral leading-relaxed">
             {totalComments ?? comments.length} comments tracked · last pull{' '}
-            {lastPullLabel}. Official filings may be newer; always check the
-            docket.
+            {lastPullLabel}. Summaries can miss nuance, so use Verify on each
+            card (and the docket) before you rely on any claim. Full methodology
+            and disclaimers are on About.
           </p>
         </div>
         {onAbout ? (
