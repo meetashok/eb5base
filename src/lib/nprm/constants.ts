@@ -47,12 +47,12 @@ export const DISTINCTNESS_WARNING =
 
 /** Checklist shown on Write (and echoed on About) to keep filings from clustering. */
 export const UNIQUE_COMMENT_CHECKLIST = [
-  'Lead with your timeline (when you committed capital or filed, and who in the family is affected) — not just “post-RIA investor.”',
-  'Name one concrete fear in your own words (redeployment notice, ageing-out year, escrow still holding funds).',
-  'Prefer 1–2 issues you actually lived over stacking every template topic.',
-  'After the LLM draft: rewrite the opening and closing yourself; change any section labels; delete repeated “I ask DHS/USCIS” lines.',
-  'Aim for more than 30% rewrite of any AI draft before you file.',
-  'Never paste chat preamble (“Here is a tighter version…”, word/character-limit talk) into regulations.gov.',
+  'Open with your timeline: when you put capital in or filed, and who in your family is affected. Skip generic “post-RIA investor” alone.',
+  'State one concrete fear in your own words (redeployment notice, ageing-out year, funds still in escrow).',
+  'Cover 1-2 issues you actually lived. Do not stack every template topic.',
+  'After the LLM draft, rewrite the opening and closing yourself. Change section labels. Cut repeated “I ask DHS/USCIS” lines.',
+  'Rewrite more than 30% of any AI draft before you file.',
+  'Never paste chat preamble into regulations.gov (no “Here is a tighter version…”, no word or character-limit talk).',
 ] as const;
 
 export const PROJECT_TYPE_OPTIONS = [

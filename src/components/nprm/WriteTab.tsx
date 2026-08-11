@@ -1052,6 +1052,24 @@ export default function WriteTab({
           </div>
         </section>
 
+        <section className="rounded-xl border-2 border-secondary/30 bg-secondary/[0.05] p-4 sm:p-5 shadow-sm space-y-2">
+          <NprmSectionHeading
+            as="h3"
+            eyebrow="Make it yours"
+            title="Uniqueness checklist"
+            titleClassName="text-sm font-semibold text-primary leading-snug"
+          />
+          <p className="text-xs text-neutral leading-relaxed">
+            Agencies can bucket near-identical comments as one. Read this
+            before you copy, then again after your LLM draft.
+          </p>
+          <ul className="list-disc pl-5 text-sm text-neutral space-y-1.5 leading-relaxed">
+            {UNIQUE_COMMENT_CHECKLIST.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </section>
+
         <div className="space-y-3">
           <div className="rounded-xl border border-base-300 bg-primary text-primary-content p-4 sm:p-5">
             <div className="flex items-center justify-between gap-2 mb-3">
@@ -1122,24 +1140,6 @@ export default function WriteTab({
           </div>
           <PromptCopyCount count={promptCopyCount} />
 
-          <section className="rounded-xl border-2 border-secondary/30 bg-secondary/[0.05] p-4 sm:p-5 shadow-sm space-y-2">
-            <NprmSectionHeading
-              as="h3"
-              eyebrow="Make it yours"
-              title="Uniqueness checklist"
-              titleClassName="text-sm font-semibold text-primary leading-snug"
-            />
-            <p className="text-xs text-neutral leading-relaxed">
-              Agencies can bucket near-identical comments as one. Use this
-              before you copy and again after your LLM draft.
-            </p>
-            <ul className="list-disc pl-5 text-sm text-neutral space-y-1.5 leading-relaxed">
-              {UNIQUE_COMMENT_CHECKLIST.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </section>
-
           <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-3">
             <NprmSectionHeading
               as="h3"
@@ -1173,7 +1173,7 @@ export default function WriteTab({
                 ))}
               </li>
               <li>
-                Edit the draft in your voice — rewrite the opening and closing,
+                Edit the draft in your voice: rewrite the opening and closing,
                 and aim for more than 30% personal rewrite
               </li>
               <li>
