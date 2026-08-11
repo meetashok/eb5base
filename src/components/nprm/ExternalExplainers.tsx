@@ -45,7 +45,7 @@ export function ExternalExplainerSection() {
   return (
     <section
       id="external-explainers"
-      className="space-y-4 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft scroll-mt-28"
+      className="space-y-4 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft scroll-mt-36"
     >
       <NprmSectionHeading
         as="h2"

@@ -143,7 +143,7 @@ export default function SummaryTab({
 
       <div className="lg:grid lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-8 items-start">
         <nav
-          aria-label="Summary topics"
+          aria-label="Summary sections"
           className="hidden lg:block sticky top-[calc(var(--site-sticky-offset)+3.5rem)] space-y-1 text-sm"
         >
           {KEY_TOPICS.map((t, idx) => (
@@ -156,6 +156,12 @@ export default function SummaryTab({
               {t.shortTitle}
             </a>
           ))}
+          <a
+            href="#external-explainers"
+            className="block rounded-md px-2 py-1.5 text-neutral hover:bg-base-200 hover:text-primary font-medium border-t border-base-300 mt-2 pt-2"
+          >
+            External blogs
+          </a>
         </nav>
 
         <div className="space-y-6 max-w-3xl">
@@ -169,6 +175,12 @@ export default function SummaryTab({
                 {idx + 1}. {t.shortTitle}
               </a>
             ))}
+            <a
+              href="#external-explainers"
+              className="rounded-md border border-base-300 bg-base-100 px-3 py-1 text-xs font-semibold text-neutral"
+            >
+              External blogs
+            </a>
           </div>
 
           {KEY_TOPICS.map((topic, idx) => (
