@@ -244,6 +244,7 @@ export default function NprmClient({
             lastPull={data.stats.last_pull}
             totalComments={data.stats.total_comments}
             proposal={data.proposal}
+            onWrite={goWrite}
           />
         )}
         {active === 'overview' && (

@@ -11,6 +11,7 @@ import {
   ILRC_LINK,
 } from '@/lib/nprm/constants';
 import type { NprmProposalSummary } from '@/lib/nprm/types';
+import { nprmTabHref } from '@/lib/nprm/tabs';
 import { COMMENT_ON_URL, DOCKET_URL, plainDash } from '@/lib/nprm/utils';
 
 interface Props {
@@ -18,6 +19,7 @@ interface Props {
   lastPull: string;
   totalComments: number;
   proposal: NprmProposalSummary | null;
+  onWrite?: () => void;
 }
 
 function parseCheckLogEntries(
@@ -43,6 +45,7 @@ export default function AboutTab({
   lastPull,
   totalComments,
   proposal,
+  onWrite,
 }: Props) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -120,7 +123,26 @@ export default function AboutTab({
       <section className="space-y-2 rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft">
         <NprmSectionHeading as="h2" eyebrow="How to file" title="File on regulations.gov" />
         <ol className="list-decimal list-inside space-y-2 text-sm text-neutral leading-relaxed">
-          <li>Build a prompt in the Write tab (personal block required).</li>
+          <li>
+            {onWrite ? (
+              <button
+                type="button"
+                onClick={onWrite}
+                data-goatcounter-click="nprm-build-comment"
+                className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+              >
+                Build a prompt
+              </button>
+            ) : (
+              <a
+                href={nprmTabHref('write')}
+                className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+              >
+                Build a prompt
+              </a>
+            )}{' '}
+            in the Write tab (personal block required).
+          </li>
           <li>
             Write the comment in your own words. You can draft it yourself, or
             optionally paste the prompt into your own LLM and edit the result into
