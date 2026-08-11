@@ -227,9 +227,7 @@ export default function NprmClient({
             comments={data.comments}
             themes={data.themes}
             lastPull={data.stats.last_pull}
-            source={data.stats.source}
             totalComments={data.stats.total_comments}
-            feedSource={data.feedSource}
             onAbout={() => setTab('about')}
           />
         )}
