@@ -28,8 +28,8 @@ export default function NotFound() {
                 <Link href="/" className="btn btn-primary rounded-full">
                   Go home
                 </Link>
-                <Link href="/projects" className="btn btn-ghost rounded-full">
-                  Browse projects
+                <Link href="/nprm" className="btn btn-ghost rounded-full">
+                  NPRM comment guide
                 </Link>
               </div>
             </div>
