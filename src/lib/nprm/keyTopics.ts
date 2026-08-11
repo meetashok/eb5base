@@ -20,6 +20,8 @@ export const KEY_TOPICS: KeyTopic[] = [
     body: 'Old practice often kept your money stuck until the green card path moved, which for India and China backlogs could mean years of redeployment risk. The draft says capital only needs to stay invested for about 2 years after it is made available to the JCE, once the required jobs are created. That is the sustainment clock investors have been waiting to see written into regulation. If finalized this way, many post-RIA investors can plan for return of capital even before getting CGC.',
     frHeadingId: 'h-66',
     frSectionLabel: 'IV.D.6 Duration of Investment',
+    // FR IV.D.6 Duration of Investment + 204.407(b) remain-invested-at-filing
+    // language; 216.6 covers I-829 removal of conditions.
     cfrs: ['INA 203(b)(5)(A)(ii)', '8 CFR 204.407(b)', '8 CFR 216.6'],
     summary: {
       overview:
@@ -150,6 +152,8 @@ export const KEY_TOPICS: KeyTopic[] = [
     body: 'When a regional center is terminated, good-faith investors have historically faced chaos over whether their petition and priority date survive. The draft formalizes a roughly 180-day window to re-associate with a compliant sponsor, keep your place in the visa line, and use Form I-527 where needed. If you already finished 2 years of sustainment and job creation, you may not need to reinvest just because the center later fails.',
     frHeadingId: 'h-72',
     frSectionLabel: 'IV.D.9.c Terminations and Debarments (good-faith protections)',
+    // FR IV.D.9 / proposed 8 CFR 204.410(c)-(e): 180-day re-association;
+    // Form I-527 is the related amendment form (separate fee NPRM).
     cfrs: ['INA 203(b)(5)(M)', '8 CFR 204.410', 'Form I-527'],
     summary: {
       overview:
@@ -210,6 +214,7 @@ export const KEY_TOPICS: KeyTopic[] = [
     body: 'Rural and high-unemployment TEA projects stay at $800K today and the standard minimum investment amount stays at $1.05M, matching post-RIA practice. The draft also adds a new high-employment area tier around $1.4M for projects in areas with unusually low unemployment. Automatic inflation adjustments are proposed for Jan 1, 2027 and every 5 years after. Future filers should treat those dates as hard planning points; people already in should confirm their tier is locked and watch how grandfathering is written in the final rule.',
     frHeadingId: 'h-59',
     frSectionLabel: 'IV.D.4 Investment Amounts',
+    // FR IV.D.4: investment amounts are proposed 8 CFR 204.407(b)(1)-(3).
     cfrs: ['INA 203(b)(5)(C)', '8 CFR 204.407(b)'],
     summary: {
       overview:
@@ -270,7 +275,9 @@ export const KEY_TOPICS: KeyTopic[] = [
     body: 'Whether a project gets the $800K TEA amount is decided centrally by USCIS under proposed methodology for high-unemployment and rural designations, not primarily by state designation letters. That can make outcomes more consistent nationwide, but it also means investors and developers need the data sources and census boundaries to be transparent and challengeable. A wrong TEA call is the difference between $800K and a higher tier, so methodology comments matter before the rule locks in.',
     frHeadingId: 'h-73',
     frSectionLabel: 'IV.E Targeted Employment Areas',
-    cfrs: ['INA 203(b)(5)(B)', '8 CFR 204.409'],
+    // FR IV.E: TEA evidence/methodology lives in proposed 8 CFR 204.408(g)
+    // (204.409 is petition decision, not TEA designation).
+    cfrs: ['INA 203(b)(5)(B)', '8 CFR 204.408(g)'],
     summary: {
       overview:
         'TEA status decides whether an investor pays the lower $800K amount. The NPRM would put USCIS-centered rural and high-unemployment methodology into regulation rather than relying mainly on state letters. Consistency is the upside. Opacity is the risk: if data sources, census tract rules, and challenge rights are unclear, investors cannot diligence the $800K path. Commenters also ask whether TEA locks at I-526E filing for later I-829 review.',
@@ -329,7 +336,8 @@ export const KEY_TOPICS: KeyTopic[] = [
     body: 'The draft expands audits, site visits, reporting duties, and tiered penalties, including examples like late annual statement fines and sanctions up to a percentage of capital. Stronger oversight can protect investors from weak sponsors, but fixed compliance costs land hardest on small and single-project centers. That may shrink the pool of sponsors, raise fees passed through to investors, or push more capital into larger multi-project operators.',
     frHeadingId: 'h-100',
     frSectionLabel: 'IV.H.8 Enforcement (penalties, terminations) and Audits',
-    cfrs: ['INA 203(b)(5)(J)', '8 CFR 204.303'],
+    // FR IV.H.8 / TOC: enforcement is proposed 8 CFR 204.431 (not 204.303).
+    cfrs: ['INA 203(b)(5)(G)', 'INA 203(b)(5)(J)', '8 CFR 204.431'],
     summary: {
       overview:
         'RIA gave DHS stronger integrity tools. The NPRM fleshes out audits, site visits, reporting, and tiered penalties (including examples such as late annual-statement fines and sanctions tied to a percentage of capital). Investors benefit when bad actors are removed. The tradeoff is cost: many regional centers are small entities, and fixed compliance burdens can shrink rural and single-project options or get passed through as fees.',

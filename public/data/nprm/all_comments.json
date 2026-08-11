@@ -1,10 +1,166 @@
 {
   "docket_id": "USCIS-2026-0100",
-  "retrieved": "2026-08-11T06:30:32.417Z",
-  "total": 49,
+  "retrieved": "2026-08-11T23:12:36.569Z",
+  "total": 62,
   "source": "regulations.gov via api.data.gov",
   "mode": "first_party_anonymized_id_link_theme_summary",
   "comments": [
+    {
+      "id": "USCIS-2026-0100-0095",
+      "title": "Comment Submitted by Named person",
+      "postedDate": "2026-08-11T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0095",
+      "poster_type": "named",
+      "poster_label": "Named person",
+      "theme_id": "good_faith",
+      "theme_title": "If your regional center fails",
+      "ai_summary": "This comment argues that the commenter value the United States deeply and want to continue building my life here. I invested $800,000 in EB-5, putting almost all of my retirement savings into the program, and that capital has already been invested and at risk for about a year.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0094",
+      "title": "Comment Submitted by Named person",
+      "postedDate": "2026-08-11T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0094",
+      "poster_type": "named",
+      "poster_label": "Named person",
+      "theme_id": "sustainment",
+      "theme_title": "Capital back after about 2 years",
+      "ai_summary": "This comment argues that the commenter filed our EB-5 application in June 2026. Before our investment, we were told that the maximum time for funds to be deployed to the JCE would be 90 days, but afterward that estimate changed to three to six months.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0093",
+      "title": "Comment Submitted by Named person",
+      "postedDate": "2026-08-11T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0093",
+      "poster_type": "named",
+      "poster_label": "Named person",
+      "theme_id": "good_faith",
+      "theme_title": "If your regional center fails",
+      "ai_summary": "This comment argues: To the Department of Homeland Security and U.S. Citizenship and Immigration Services: USCIS-2026-0100).",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0092",
+      "title": "Comment Submitted by Named person",
+      "postedDate": "2026-08-11T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0092",
+      "poster_type": "named",
+      "poster_label": "Named person",
+      "theme_id": "good_faith",
+      "theme_title": "If your regional center fails",
+      "ai_summary": "This comment argues that the commenter filed my I-526E in November 2025 as a post-RIA investor from India in a rural project. I made my investment and filing decisions under the EB-5 rules and agency guidance then in place.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0091",
+      "title": "Comment Submitted by Named person",
+      "postedDate": "2026-08-11T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0091",
+      "poster_type": "named",
+      "poster_label": "Named person",
+      "theme_id": "sustainment",
+      "theme_title": "Capital back after about 2 years",
+      "ai_summary": "This comment argues that the commenter assume you mean 5,000 characters (the regulations.gov comment field limit), not 5,000 words. Here&rsquo;s a tighter version that preserves all your required points.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0090",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-08-11T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0090",
+      "poster_type": "anonymous",
+      "poster_label": "Anonymous",
+      "theme_id": "sustainment",
+      "theme_title": "Capital back after about 2 years",
+      "ai_summary": "This comment argues that the commenter am writing on DHS Docket USCIS-2026-0100-0001. I filed my Form I-526E in January 2026 as a post-RIA investor.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0089",
+      "title": "Comment Submitted by Named person",
+      "postedDate": "2026-08-11T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0089",
+      "poster_type": "named",
+      "poster_label": "Named person",
+      "theme_id": "good_faith",
+      "theme_title": "If your regional center fails",
+      "ai_summary": "This comment argues: My I-526E petition has now been pending for one year after we applied in September 2025 as a post-arrival investor from India. Because my daughter came to the United States at the age of one and is starting college this year, we are facing the reality that she will age out in about three years and is currently missing vital internship opportunities to learn and build her future.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0088",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-08-11T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0088",
+      "poster_type": "anonymous",
+      "poster_label": "Anonymous",
+      "theme_id": "good_faith",
+      "theme_title": "If your regional center fails",
+      "ai_summary": "This comment argues that the commenter am a post-RIA investor in a rural EB-5 project. I appreciate the opportunity to comment on this proposed rule because clear and predictable rules are important to investors who rely on the EB-5 program.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0087",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-08-11T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0087",
+      "poster_type": "anonymous",
+      "poster_label": "Anonymous",
+      "theme_id": "good_faith",
+      "theme_title": "If your regional center fails",
+      "ai_summary": "This comment argues that the commenter am a post-RIA investor in a rural EB-5 project. I appreciate the opportunity to comment on this proposed rule because clear and predictable rules are important to investors who rely on the EB-5 program.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0086",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-08-11T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0086",
+      "poster_type": "anonymous",
+      "poster_label": "Anonymous",
+      "theme_id": "good_faith",
+      "theme_title": "If your regional center fails",
+      "ai_summary": "This comment argues that the commenter am a post-RIA investor from India in a high-unemployment TEA project. I have already committed my capital to the EB-5 process, and my investment was made based on the rules and USCIS guidance applicable to the project at that time.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0085",
+      "title": "Comment Submitted by Named person",
+      "postedDate": "2026-08-11T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0085",
+      "poster_type": "named",
+      "poster_label": "Named person",
+      "theme_id": "tea",
+      "theme_title": "Who decides TEA / $800K eligibility",
+      "ai_summary": "This comment argues that the commenter plan to file my I-526E petition in July 2026 as an investor chargeable to India in a high-unemployment TEA project. Because this proposed rule could affect projects that are already being structured under existing guidance, I appreciate the opportunity to submit these comments.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0084",
+      "title": "Comment Submitted by Named person",
+      "postedDate": "2026-08-11T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0084",
+      "poster_type": "named",
+      "poster_label": "Named person",
+      "theme_id": "sustainment",
+      "theme_title": "Capital back after about 2 years",
+      "ai_summary": "This comment argues that the commenter am filing this public comment as an individual EB-5 investor. In 2025, I committed $800,000 to a rural Targeted Employment Area (TEA) initiative-specifically the Yellowstone Club Phase II project in Big Sky, Montana, facilitated through an approved regional center.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0083",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-08-11T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0083",
+      "poster_type": "anonymous",
+      "poster_label": "Anonymous",
+      "theme_id": "good_faith",
+      "theme_title": "If your regional center fails",
+      "ai_summary": "This comment argues that the commenter am writing to share my comments on the proposed rules for the EB-5 program (USCIS-2026-0100). Having filed my I-526E in March 2025 for a rural project under India country chargeability, I have a direct interest in how these regulations are finalized.",
+      "type": "comments"
+    },
     {
       "id": "USCIS-2026-0100-0082",
       "title": "Comment Submitted by Organization",
@@ -14,7 +170,7 @@
       "poster_label": "Organization",
       "theme_id": null,
       "theme_title": null,
-      "ai_summary": "This comment argues that the commenter commends the Department for proposing a definition of \"infrastructure project\" and for inviting comment on that definition and the documentation needed to establish eligibility. This comment focuses on a single issue the commenter believes is critical to ensuring the set-aside functions as Congress intended: expanding the range of qualified entities that may participate in EB-5 financing while preserving the governmental role in administering public infrastructure projects.",
+      "ai_summary": "This comment argues that the commenter commend the Department for proposing a definition of \"infrastructure project\" and for inviting comment on that definition and the documentation needed to establish eligibility. This comment focuses on a single issue the commenter believes is critical to ensuring the set-aside functions as Congress intended: expanding the range of qualified entities that may participate in EB-5 financing while preserving the governmental role in administering public infrastructure projects.",
       "type": "comments"
     },
     {
@@ -38,7 +194,7 @@
       "poster_label": "Anonymous",
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
-      "ai_summary": "This comment argues that the commenter supports aligning the sustainment period to long-term job creation. Two years is insufficent for meaningful investment.",
+      "ai_summary": "This comment argues that the commenter support aligning the sustainment period to long-term job creation. Two years is insufficent for meaningful investment.",
       "type": "comments"
     },
     {
@@ -50,7 +206,7 @@
       "poster_label": "Named person",
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
-      "ai_summary": "This comment argues that the commenter supports strengthening EB-5 integrity, but the commenter urges DHS to add an explicit, lifecycle-wide grandfather clause. As drafted, the rule would apply new substantive standards to investors who committed capital and filed before this rule was proposed, and who will first encounter those standards at the Form I-829 stage, when nothing can be restructured.",
+      "ai_summary": "This comment argues that the commenter support strengthening EB-5 integrity, but I urge DHS to add an explicit, lifecycle-wide grandfather clause. As drafted, the rule would apply new substantive standards to investors who committed capital and filed before this rule was proposed, and who will first encounter those standards at the Form I-829 stage, when nothing can be restructured.",
       "type": "comments"
     },
     {
@@ -110,7 +266,7 @@
       "poster_label": "Named person",
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
-      "ai_summary": "This comment argues: In 2025, I invested $800,000 into a rural Targeted Employment Area (TEA) project through a regional center. I am writing to strongly support the proposed rule's two-year sustainment period, measured from the deployment of capital, and the commenter urges the Department of Homeland Security (DHS) to adopt this provision exactly as proposed.",
+      "ai_summary": "This comment argues: In 2025, I invested $800,000 into a rural Targeted Employment Area (TEA) project through a regional center. I am writing to strongly support the proposed rule's two-year sustainment period, measured from the deployment of capital, and I urge the Department of Homeland Security (DHS) to adopt this provision exactly as proposed.",
       "type": "comments"
     },
     {
@@ -122,7 +278,7 @@
       "poster_label": "Anonymous",
       "theme_id": "bridge_financing",
       "theme_title": "Bridge financing and your 10 jobs",
-      "ai_summary": "This comment argues that the commenter submit this as a good-faith EB-5 investor who invested in reliance on a project application (Form I-956F) and petition (Form I-526E) that USCIS approved under the rules then in effect, and who has not yet filed to remove conditions (Form I-829). the commenter supports program integrity, but three provisions, if applied to investors already in the program, would break faith with those who followed the rules as they existed.",
+      "ai_summary": "This comment argues that the commenter submit this as a good-faith EB-5 investor who invested in reliance on a project application (Form I-956F) and petition (Form I-526E) that USCIS approved under the rules then in effect, and who has not yet filed to remove conditions (Form I-829). I support program integrity, but three provisions, if applied to investors already in the program, would break faith with those who followed the rules as they existed.",
       "type": "comments"
     },
     {
@@ -338,7 +494,7 @@
       "poster_label": "Named person",
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
-      "ai_summary": "This comment argues: In 2025 I invested $800,000 into a rural targeted-employment-area project - Yellowstone Club Phase II in Big Sky, Montana - through a regional center, and I write to strongly support the proposed rule's two-year sustainment period, measured from the deployment of capital. the commenter urges DHS to keep this provision exactly as proposed.",
+      "ai_summary": "This comment argues: In 2025 I invested $800,000 into a rural targeted-employment-area project - Yellowstone Club Phase II in Big Sky, Montana - through a regional center, and I write to strongly support the proposed rule's two-year sustainment period, measured from the deployment of capital. I urge DHS to keep this provision exactly as proposed.",
       "type": "comments"
     },
     {
@@ -386,7 +542,7 @@
       "poster_label": "Anonymous",
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
-      "ai_summary": "This comment argues that the commenter strongly support extending the EB-5 investment sustainment period beyond two years. The primary purpose of the EB-5 program is to promote long-term investment, sustained economic growth, and job creation in their country.",
+      "ai_summary": "This comment argues that the commenter strongly support extending the EB-5 investment sustainment period beyond two years. The primary purpose of the EB-5 program is to promote long-term investment, sustained economic growth, and job creation in our country.",
       "type": "comments"
     },
     {
@@ -434,7 +590,7 @@
       "poster_label": "Named person",
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
-      "ai_summary": "This comment argues that the commenter invested $800,000 through a USCIS-designated regional center after the EB-5 Reform and Integrity Act. My family has already received their conditional permanent residence, and one of the reasons I was comfortable making this investment was USCIS's guidance that the required sustainment period is generally two years from deployment of the capital.",
+      "ai_summary": "This comment argues that the commenter invested $800,000 through a USCIS-designated regional center after the EB-5 Reform and Integrity Act. My family has already received our conditional permanent residence, and one of the reasons I was comfortable making this investment was USCIS's guidance that the required sustainment period is generally two years from deployment of the capital.",
       "type": "comments"
     },
     {
@@ -554,7 +710,7 @@
       "poster_label": "Named person",
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
-      "ai_summary": "This comment argues: The 2 year sustainment period makes sense, since that is a realistic time frame for creating jobs. The commenter invested the amount keeping this timeline in mind and the rule gives us peace of my mind in case there's a backlog for my country.",
+      "ai_summary": "This comment argues: The 2 year sustainment period makes sense, since that is a realistic time frame for creating jobs. We invested the amount keeping this timeline in mind and the rule gives us peace of my mind in case there's a backlog for my country.",
       "type": "comments"
     },
     {

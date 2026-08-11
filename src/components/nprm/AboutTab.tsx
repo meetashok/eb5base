@@ -10,6 +10,7 @@ import {
   APA_LINK,
   ILRC_CITATION,
   ILRC_LINK,
+  UNIQUE_COMMENT_CHECKLIST,
 } from '@/lib/nprm/constants';
 import type { NprmProposalSummary } from '@/lib/nprm/types';
 import { nprmTabHref } from '@/lib/nprm/tabs';
@@ -265,12 +266,22 @@ export default function AboutTab({
             The prompt only includes the angles you select plus your personal
             story. Safeguards baked into that prompt: use only facts you
             provided; do not invent dates, amounts, project names, or legal
-            conclusions; do not copy sample comments into a form letter; prefer
-            concrete asks to DHS/USCIS over vague opposition; and cite only the
-            FR / CFR references listed for your selected issues. The tool is
-            stance-neutral: it scaffolds whichever side you pick, with the same
-            structure and rules, so it does not lobby for agree or disagree.
+            conclusions; paraphrase must-include points (no copying 4+ words);
+            vary request verbs within the draft; skip Federal Register outline
+            titles as headers; cite only the listed INA / proposed 8 CFR
+            references; and avoid chat meta in the output. Each prompt also
+            injects one closing style so drafts do not all end the same way.
+            The tool is stance-neutral: it scaffolds whichever side you pick
+            with the same structure and rules.
           </p>
+          <p className="text-sm text-neutral leading-relaxed">
+            To keep filings from clustering as form letters:
+          </p>
+          <ul className="list-disc pl-5 text-sm text-neutral space-y-1.5 leading-relaxed">
+            {UNIQUE_COMMENT_CHECKLIST.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
         </div>
 
         <div className="space-y-2">

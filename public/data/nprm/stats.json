@@ -1,11 +1,11 @@
 {
   "docket_id": "USCIS-2026-0100",
-  "total_comments": 49,
-  "last_pull": "2026-08-11T06:30:32.417Z",
+  "total_comments": 62,
+  "last_pull": "2026-08-11T23:12:36.569Z",
   "comment_period_ends": "Aug 31, 2026 at 11:59 PM EDT",
   "source": "regulations.gov via api.data.gov",
   "anonymization": "UI labels are Anonymous / Named person / Organization; ai_summary uses 'This comment' voice with names stripped",
   "anonymized": true,
   "mode": "first_party_anonymized_id_link_theme_summary",
-  "ai_summaries_added": 49
+  "ai_summaries_added": 62
 }

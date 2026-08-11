@@ -45,6 +45,16 @@ export const COMMENT_IMPACT_SOURCES = [
 export const DISTINCTNESS_WARNING =
   'If 500 people paste the same paragraph, USCIS counts it as 1. Your personal story makes it distinct. GAO notes that mass mailing campaigns can yield thousands of duplicate comments that agencies may post individually, as attachments, or as a count. OIRA tooling has distilled about 300k comments down to about 30k distinct ones.';
 
+/** Checklist shown on Write (and echoed on About) to keep filings from clustering. */
+export const UNIQUE_COMMENT_CHECKLIST = [
+  'Lead with your timeline (when you committed capital or filed, and who in the family is affected) — not just “post-RIA investor.”',
+  'Name one concrete fear in your own words (redeployment notice, ageing-out year, escrow still holding funds).',
+  'Prefer 1–2 issues you actually lived over stacking every template topic.',
+  'After the LLM draft: rewrite the opening and closing yourself; change any section labels; delete repeated “I ask DHS/USCIS” lines.',
+  'Aim for more than 30% rewrite of any AI draft before you file.',
+  'Never paste chat preamble (“Here is a tighter version…”, word/character-limit talk) into regulations.gov.',
+] as const;
+
 export const PROJECT_TYPE_OPTIONS = [
   { value: 'rural', label: 'Rural' },
   { value: 'tea_hua', label: 'TEA high-unemployment' },

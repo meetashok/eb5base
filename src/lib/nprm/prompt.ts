@@ -15,6 +15,14 @@ const PROJECT_TYPE_LABELS: Record<ProjectTypeOption, string> = {
   mixed: 'mixed',
 };
 
+/** Closing styles injected one-per-prompt so drafts diverge without cross-user LLM awareness. */
+const CLOSING_STYLES = [
+  'End with one sentence that restates my personal stake (from My Personal Story), then stop.',
+  'End by naming the single clearest change or clarification I want DHS to make, then stop.',
+  'End with a short thank-you plus one specific clarification ask tied to my situation, then stop.',
+  'End by tying one fact from my situation to the outcome I need in the final rule, then stop.',
+] as const;
+
 export function emptyTopicSelection(topicId: string): TopicCommentSelection {
   return {
     topicId,
@@ -78,6 +86,27 @@ function isLegalCite(raw: string): boolean {
   return false;
 }
 
+/** Format a pool cite so NPRM regs read as proposed, not already-final eCFR. */
+function formatCiteForPrompt(raw: string): string {
+  const s = raw.trim();
+  if (/\b\d+\s*CFR\b/i.test(s) && !/^proposed\b/i.test(s)) {
+    return `proposed ${s}`;
+  }
+  return s;
+}
+
+/**
+ * Stable per-build pick of a closing style (not Math.random) so the same
+ * selections + story get a consistent prompt, while different users diverge.
+ */
+export function pickClosingStyle(seed: string): string {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) {
+    h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  }
+  return CLOSING_STYLES[h % CLOSING_STYLES.length];
+}
+
 /**
  * Adaptive length from how many issues the comment covers.
  * 1 issue stays short; 3 issues need room for personal story + asks.
@@ -118,10 +147,21 @@ export function buildPrompt(input: {
   const length = adaptiveLengthTarget(included.length);
 
   const allCfrs = included.flatMap((sel) => getKeyTopic(sel.topicId)?.cfrs || []);
-  const legalCites = Array.from(new Set(allCfrs.filter(isLegalCite)));
+  const legalCites = Array.from(new Set(allCfrs.filter(isLegalCite))).map(
+    formatCiteForPrompt
+  );
   const topicKeywords = Array.from(
     new Set(allCfrs.filter((c) => !isLegalCite(c)))
   );
+
+  const closingSeed = [
+    included.map((s) => `${s.topicId}:${s.polarity}:${s.angles.join('|')}`).join(';'),
+    personal.impact.trim().slice(0, 120),
+    personal.i_526e_file_date,
+    personal.country,
+    personal.investor_type,
+  ].join('||');
+  const closingStyle = pickClosingStyle(closingSeed);
 
   const issueBlocks = included.map((sel, idx) => {
     const topic = getKeyTopic(sel.topicId);
@@ -129,10 +169,10 @@ export function buildPrompt(input: {
       return `Issue ${idx + 1}: (missing topic data)`;
     }
     const stance = stancesByPolarity(topic, sel.polarity)[0];
-    const cites = topic.cfrs.filter(isLegalCite);
+    const cites = topic.cfrs.filter(isLegalCite).map(formatCiteForPrompt);
     const lines = [
       `Issue ${idx + 1}: ${topic.title}`,
-      `Federal Register section (for my reference; do not browse): ${topic.frSectionLabel}`,
+      `Federal Register section (for my reference only; do not use as a section header in the comment): ${topic.frSectionLabel}`,
       `Cites for this issue: ${cites.join('; ') || '(none listed)'}`,
       `My polarity: ${polarityLabel(sel.polarity)}`,
       stance ? `Stance frame: ${stance.label}` : null,
@@ -144,10 +184,11 @@ export function buildPrompt(input: {
       topic.summary.proposed
         ? `- Proposed: ${topic.summary.proposed}`
         : null,
-      'Must-include points (paraphrase in my voice; cover each):',
+      'Must-include points (ideas only — paraphrase in my voice; do not copy 4+ consecutive words from these lines or the Background):',
       ...(sel.angles.length
         ? sel.angles.map((a, i) => `  ${i + 1}. ${a}`)
         : ['  (none selected; rely on my additional points below)']),
+      'Prefer one concrete ask for this issue tied to one fact from my situation, rather than packing every angle into a laundry list.',
       sel.extraNote.trim()
         ? `My additional points for this issue:\n${sel.extraNote.trim()}`
         : 'My additional points for this issue: (none)',
@@ -178,10 +219,11 @@ export function buildPrompt(input: {
     '- You may fix grammar and spelling in My Personal Story and My Additional Points, but do not add new facts, dates, emotions, or events.',
     '- Do not include A-number, receipt number, SSN, passport number, home address, bank details, school name, employer name, job title at a named employer, or a child\'s full name.',
     '- Do not name specific people, law firms, projects, or regional centers. Say "this investor," "my regional center," or "the project" instead.',
-    '- Do not copy sample comments or produce a form letter. Paraphrase the must-include points in my voice.',
-    '- Do not start with a stock opener like "As an EB-5 investor..." Vary the opening, sentence length, and transitions so this does not read as a form letter.',
+    '- Do not copy sample comments or produce a form letter. Paraphrase the must-include points in my voice; never copy 4 or more consecutive words from Background or Must-include lines.',
+    '- Do not start with a stock opener like "As an EB-5 investor..." or "I am a post-RIA investor..." Vary the opening, sentence length, and transitions so this does not read as a form letter.',
     '- Treat the Background summaries below as your source of truth. The Federal Register links are for my reference; do not browse them and do not invent text from them.',
-    '- Cite only the CFR / INA references listed under each issue (or in the pool below). Prefer starting concrete asks with "I ask DHS/USCIS to..." and include one cite in that same paragraph when it fits naturally.',
+    '- Cite only the CFR / INA references listed under each issue (or in the pool below). For 8 CFR cites from this NPRM, write them as "proposed 8 CFR …" (they are not final yet). Statutory INA cites do not need "proposed".',
+    '- When making concrete asks, vary the request verbs within this draft (for example: "I urge", "Please clarify", "DHS should", "My request is"). Do not start every section with the same opener. Do not default to "I ask DHS/USCIS to...".',
     '- Prefer concrete asks (what to keep, clarify, or change) over vague opposition.',
     '',
     `Docket / document: ${DOCUMENT_ID} (USCIS-2026-0100)`,
@@ -204,11 +246,13 @@ export function buildPrompt(input: {
     '- Write mainly in short paragraphs. Use bullets only when listing concrete asks to DHS/USCIS; do not make the whole comment a bullet list.',
     '- Open with 1-3 sentences grounded in my situation (if provided).',
     '- One clear section per issue above, in the same order.',
+    '- Do not use Federal Register outline titles as section headers (for example do not write "Duration of Investment" or "IV.D.6"). Use plain investor-voice headings, or no headings.',
     '- In each section: short accurate context, then my asks/points, then what I want DHS to do.',
-    '- Close with a brief respectful request that DHS consider these comments in the final rule.',
-    '- Output only the comment itself. Do not mention word limits, prompt instructions, or that you are an AI. Do not include a subject line, email headers, "Here is your comment:", markdown headers (#), or code fences. regulations.gov is plain text.',
+    `- Closing for this draft only: ${closingStyle}`,
+    '- Do not end with the stock closer "I respectfully ask DHS/USCIS to consider these comments in the final rule" (or close variants of that sentence).',
+    '- Output only the comment body itself. Do not mention word limits, character limits, prompt instructions, or that you are an AI. Do not include chat meta such as "Here is a tighter version", "I assume you mean", a subject line, email headers, "Here is your comment:", markdown headers (#), or code fences. regulations.gov is plain text.',
     '',
-    'Before finishing, verify: (1) you used only my facts, (2) you covered every must-include point, (3) you did not invent project, firm, or regional-center names, and (4) you cited only references from my lists. If anything is missing, add it before you stop.',
+    'Before finishing, verify: (1) you used only my facts, (2) you covered every must-include point in paraphrase, (3) you did not invent project, firm, or regional-center names, (4) you cited only references from my lists (with "proposed" on 8 CFR NPRM cites), and (5) request verbs and the closing follow the rules above. If anything is missing, add it before you stop.',
   ]
     .filter((line) => line != null)
     .join('\n');

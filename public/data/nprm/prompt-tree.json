@@ -702,7 +702,7 @@
     "label": "TEA Designation & Deference - Lock TEA at filing",
     "cfrs": [
       "INA 203(b)(5)(B)",
-      "8 CFR 204.409"
+      "8 CFR 204.408(g)"
     ],
     "sample_ids": [
       "USCIS-2026-0100-0079"
@@ -729,7 +729,7 @@
     "label": "TEA Designation & Deference - Lock TEA at filing",
     "cfrs": [
       "INA 203(b)(5)(B)",
-      "8 CFR 204.409"
+      "8 CFR 204.408(g)"
     ],
     "sample_ids": [
       "USCIS-2026-0100-0079"
@@ -756,7 +756,7 @@
     "label": "TEA Designation & Deference - Allow State letter deference",
     "cfrs": [
       "INA 203(b)(5)(B)",
-      "8 CFR 204.409"
+      "8 CFR 204.408(g)"
     ],
     "sample_ids": [
       "USCIS-2026-0100-0079"
