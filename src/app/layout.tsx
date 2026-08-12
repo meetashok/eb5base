@@ -41,7 +41,6 @@ export async function generateMetadata(): Promise<Metadata> {
       ? 'EB5 Base offers information tools for EB-5 investors, including the NPRM comment guide. The project directory remains paused.'
       : 'Investor-built tools for EB-5: plain-English NPRM explainer (comments due Aug 31 2026), status update builder, and forthcoming case tracker. Not legal advice.',
     metadataBase: new URL('https://eb5base.com'),
-    alternates: { canonical: 'https://eb5base.com/' },
     openGraph: {
       type: 'website',
       locale: 'en_US',

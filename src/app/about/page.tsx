@@ -9,6 +9,7 @@ export const metadata = {
   title: 'About',
   description:
     'About EB5 Base: information tools for the EB-5 investor community. Disclaimer: not legal or financial advice, not affiliated with USCIS or DHS.',
+  alternates: { canonical: 'https://eb5base.com/about' },
 };
 
 function SectionHeading({

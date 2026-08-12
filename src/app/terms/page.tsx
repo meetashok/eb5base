@@ -2,6 +2,7 @@ import { DISCLAIMER } from '@/lib/constants';
 
 export const metadata = {
   title: 'Terms of Service',
+  alternates: { canonical: 'https://eb5base.com/terms' },
 };
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
