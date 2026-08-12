@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { BarChart, LineChart } from '@/components/charts';
 import {
   CATEGORY_OPTIONS,
   COUNTRY_OPTIONS,
@@ -63,227 +64,18 @@ function SuppressionNote({ cells }: { cells: number }) {
   );
 }
 
-function formatAxisCount(n: number): string {
-  if (n >= 1_000_000) {
-    const v = n / 1_000_000;
-    return `${Number.isInteger(v) ? v : v.toFixed(1)}M`;
-  }
-  if (n >= 1_000) {
-    const v = n / 1_000;
-    return `${Number.isInteger(v) ? v : v.toFixed(1)}k`;
-  }
-  return nf.format(n);
-}
-
-/** Round max up to a clean chart ceiling and return evenly spaced ticks (incl. 0). */
-function yAxisTicks(maxValue: number, tickCount = 4): number[] {
-  if (maxValue <= 0) return [0];
-  const raw = maxValue / tickCount;
-  const pow = 10 ** Math.floor(Math.log10(raw));
-  const normalized = raw / pow;
-  const niceStep =
-    normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10;
-  const step = niceStep * pow;
-  const ceiling = Math.ceil(maxValue / step) * step;
-  const ticks: number[] = [];
-  for (let v = 0; v <= ceiling + step / 1000; v += step) ticks.push(v);
-  return ticks;
-}
-
-/** Vertical bars with priority-date time on the X-axis and a labeled Y-axis. */
-function TimeBars({
-  data,
-  grain,
-}: {
-  data: { meta: TimeBucketMeta; bucket: AggregatedBucket }[];
-  grain: PriorityDateGrain;
-}) {
-  const [hoverKey, setHoverKey] = useState<string | null>(null);
-  const dataMax = Math.max(...data.map((d) => d.bucket.count), 1);
-  const ticks = yAxisTicks(dataMax);
-  const axisMax = ticks[ticks.length - 1] || dataMax;
-  const chartH = 180;
-  const barMin = grain === 'month' ? 8 : grain === 'quarter' ? 22 : 36;
-  const hovered = hoverKey ? data.find((d) => d.meta.key === hoverKey) : null;
-
-  // Show tick labels sparsely for months so the axis stays readable.
-  const showTick = (i: number, meta: TimeBucketMeta) => {
-    if (grain === 'year') return true;
-    if (grain === 'quarter') return true;
-    if (meta.key === '_earlier') return true;
-    // Month: January (year), or first/last bar, or every 6th after earlier.
-    if (meta.shortLabel.length > 1) return true; // year numbers
-    const offset = data[0]?.meta.key === '_earlier' ? 1 : 0;
-    const idx = i - offset;
-    return idx === 0 || i === data.length - 1 || idx % 6 === 0;
-  };
-
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center text-xs font-semibold text-neutral min-h-4">
-        {hovered && (
-          <span className="ml-auto tabular-nums text-primary">
-            {hovered.meta.label} · {bucketLabel(hovered.bucket)} pending
-          </span>
-        )}
-      </div>
-      <div className="flex gap-2">
-        {/* Y-axis (stays fixed while the bars scroll horizontally) */}
-        <div
-          className="relative shrink-0 w-10"
-          style={{ height: chartH + 28 }}
-          aria-hidden
-        >
-          <div className="absolute inset-x-0 top-0" style={{ height: chartH }}>
-            {ticks.map((t) => (
-              <div
-                key={t}
-                className="absolute right-0 flex items-center gap-1 -translate-y-1/2"
-                style={{ top: `${((axisMax - t) / axisMax) * 100}%` }}
-              >
-                <span className="text-[10px] tabular-nums text-neutral/65 leading-none">
-                  {formatAxisCount(t)}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="min-w-0 flex-1 overflow-x-auto">
-          <div
-            className="relative"
-            style={{
-              height: chartH + 28,
-              minWidth: Math.max(data.length * barMin, 240),
-            }}
-            role="img"
-            aria-label="Pending I-485 applications by priority date"
-            onMouseLeave={() => setHoverKey(null)}
-          >
-            {/* Grid lines aligned to Y ticks */}
-            <div className="absolute inset-x-0 top-0 pointer-events-none" style={{ height: chartH }}>
-              {ticks.map((t) => (
-                <div
-                  key={t}
-                  className={`absolute inset-x-0 border-t ${
-                    t === 0 ? 'border-neutral/25' : 'border-base-300/80'
-                  }`}
-                  style={{ top: `${((axisMax - t) / axisMax) * 100}%` }}
-                />
-              ))}
-            </div>
-
-            <div className="absolute inset-x-0 bottom-0 flex items-end gap-px" style={{ height: chartH + 28 }}>
-              {data.map(({ meta, bucket }, i) => {
-                const h =
-                  bucket.count > 0 ? Math.max(2, (bucket.count / axisMax) * chartH) : 0;
-                const active = hoverKey === meta.key;
-                return (
-                  <div
-                    key={meta.key}
-                    className="relative flex flex-col items-center justify-end flex-1"
-                    style={{ minWidth: barMin, height: chartH + 28 }}
-                    onMouseEnter={() => setHoverKey(meta.key)}
-                  >
-                    <div className="flex-1 w-full flex items-end justify-center" style={{ height: chartH }}>
-                      <div
-                        className={`w-full max-w-[28px] rounded-t-sm transition-colors ${
-                          active ? 'bg-accent' : 'bg-secondary/85'
-                        }`}
-                        style={{ height: h }}
-                        title={`${meta.label}: ${bucketLabel(bucket)}`}
-                      />
-                    </div>
-                    <span
-                      className={`mt-1 text-[9px] tabular-nums leading-none text-neutral/60 h-3 ${
-                        showTick(i, meta) ? 'opacity-100' : 'opacity-0'
-                      }`}
-                    >
-                      {meta.shortLabel}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/** Line chart of a cohort's pending count across snapshots. */
-function CohortLine({
-  points,
-}: {
-  points: { label: string; bucket: AggregatedBucket }[];
-}) {
-  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
-  const max = Math.max(...points.map((p) => p.bucket.count), 1);
-  const chartH = 200;
-  const padTop = 12;
-  const plotH = chartH - padTop - 8;
-
-  if (points.length === 0) return null;
-  const coords = points.map((p, i) => {
-    const x = ((i + 0.5) / points.length) * 100;
-    const y = padTop + plotH - (p.bucket.count / max) * plotH;
-    return { x, y };
-  });
-  const line = coords.map((c) => `${c.x},${(c.y / chartH) * 100}`).join(' ');
-  const hovered = hoverIdx != null ? points[hoverIdx] : null;
-
-  return (
-    <div className="space-y-1.5">
-      <div className="flex items-center text-xs font-semibold text-neutral min-h-4">
-        {hovered && (
-          <span className="ml-auto tabular-nums text-primary">
-            {hovered.label} · {bucketLabel(hovered.bucket)} pending
-          </span>
-        )}
-      </div>
-      <div
-        className="relative w-full"
-        style={{ height: chartH }}
-        role="img"
-        aria-label="Pending applications for the selected cohort across USCIS snapshots"
-        onMouseLeave={() => setHoverIdx(null)}
-      >
-        <svg
-          className="absolute inset-0 h-full w-full pointer-events-none"
-          viewBox="0 0 100 100"
-          preserveAspectRatio="none"
-          aria-hidden
-        >
-          <polyline
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            vectorEffect="non-scaling-stroke"
-            className="text-primary"
-            points={line}
-          />
-        </svg>
-        <div className="absolute inset-0" aria-hidden>
-          {coords.map((c, i) => (
-            <span
-              key={points[i].label}
-              className={`absolute block rounded-full border-2 border-base-100 shadow-sm -translate-x-1/2 -translate-y-1/2 cursor-default ${
-                hoverIdx === i ? 'bg-accent h-3 w-3' : 'bg-primary h-2 w-2'
-              }`}
-              style={{ left: `${c.x}%`, top: c.y }}
-              onMouseEnter={() => setHoverIdx(i)}
-            />
-          ))}
-        </div>
-      </div>
-      <div className="flex justify-between text-[10px] tabular-nums text-neutral/55" aria-hidden>
-        <span>{points[0].label}</span>
-        {points.length > 2 && <span>{points[Math.floor(points.length / 2)].label}</span>}
-        <span>{points[points.length - 1].label}</span>
-      </div>
-    </div>
-  );
+function showPriorityDateTick(
+  grain: PriorityDateGrain,
+  data: { meta: TimeBucketMeta }[],
+  d: { key: string; shortLabel: string },
+  i: number,
+) {
+  if (grain === 'year' || grain === 'quarter') return true;
+  if (d.key === '_earlier') return true;
+  if (d.shortLabel.length > 1) return true;
+  const offset = data[0]?.meta.key === '_earlier' ? 1 : 0;
+  const idx = i - offset;
+  return idx === 0 || i === data.length - 1 || idx % 6 === 0;
 }
 
 export interface I485ExplorerProps {
@@ -391,6 +183,18 @@ export default function I485Explorer({
     return aggregateByPriorityDateGrain(snapshotCells, grain);
   }, [snapshotCells, grain]);
 
+  const snapshotBars = useMemo(
+    () =>
+      snapshotSeries.map(({ meta, bucket }) => ({
+        key: meta.key,
+        label: meta.label,
+        shortLabel: meta.shortLabel,
+        value: bucket.count,
+        valueLabel: `${bucketLabel(bucket)} pending`,
+      })),
+    [snapshotSeries],
+  );
+
   const snapshotTotal = useMemo(
     () => totalWithNote(snapshotSeries.map((d) => d.bucket)),
     [snapshotSeries],
@@ -400,10 +204,22 @@ export default function I485Explorer({
     if (!cohortCells) return [];
     const byRelease = aggregateBy(cohortCells, (c) => c.release_id);
     return releases.map((r) => ({
+      key: String(r.id),
       label: formatAsOfShort(r.as_of_date),
       bucket: byRelease.get(r.id) ?? { count: 0, suppressedCells: 0 },
     }));
   }, [cohortCells, releases]);
+
+  const cohortLine = useMemo(
+    () =>
+      cohortSeries.map((p) => ({
+        key: p.key,
+        label: p.label,
+        value: p.bucket.count,
+        valueLabel: bucketLabel(p.bucket),
+      })),
+    [cohortSeries],
+  );
 
   const cohortSuppressed = useMemo(
     () => totalWithNote(cohortSeries.map((p) => p.bucket)).suppressedCells,
@@ -606,8 +422,14 @@ export default function I485Explorer({
                 ))}
               </div>
             </div>
-            {snapshotSeries.length > 0 ? (
-              <TimeBars data={snapshotSeries} grain={grain} />
+            {snapshotBars.length > 0 ? (
+              <BarChart
+                data={snapshotBars}
+                height={220}
+                minBarWidth={grain === 'month' ? 8 : grain === 'quarter' ? 22 : 36}
+                showTick={(d, i) => showPriorityDateTick(grain, snapshotSeries, d, i)}
+                ariaLabel="Pending I-485 applications by priority date"
+              />
             ) : (
               <p className="text-sm text-neutral">
                 No pending applications reported for this selection.
@@ -644,8 +466,12 @@ export default function I485Explorer({
                 leaving it. USCIS does not publish adjudications separately in this report.
               </p>
             </div>
-            {cohortSeries.some((p) => p.bucket.count > 0) ? (
-              <CohortLine points={cohortSeries} />
+            {cohortLine.some((p) => p.value > 0) ? (
+              <LineChart
+                data={cohortLine}
+                height={220}
+                ariaLabel="Pending applications for the selected cohort across USCIS snapshots"
+              />
             ) : (
               <p className="text-sm text-neutral">
                 No pending applications reported for this cohort in any snapshot.
