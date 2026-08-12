@@ -917,6 +917,37 @@ export default function I485Explorer({
     return parts.join(' · ');
   }, [categories, countries, selectedPdYears, cohortPdGrain, cohortFacetSplit]);
 
+  const compareContextCaption = useMemo(() => {
+    const categoryLabels = categories.map(
+      (value) =>
+        EB5_CATEGORY_BUTTONS.find((o) => o.value === value)?.label ??
+        OTHER_CATEGORY_BUTTONS.find((o) => o.value === value)?.label ??
+        value,
+    );
+    const countryLabels =
+      countries.length === 0
+        ? 'all countries'
+        : countries.map((c) => countryLabel(c)).join(', ');
+    const grainLabels: Record<PriorityDateGrain, string> = {
+      month: 'by month',
+      quarter: 'by quarter',
+      half: 'by half',
+      year: 'by fiscal year',
+    };
+    const parts = [
+      categoryLabels.join(', '),
+      countryLabels,
+      `priority dates ${formatPriorityDateYears(selectedComparePdYears)}`,
+      grainLabels[grain],
+    ];
+    if (compareFacetSplit === 'country') {
+      parts.push('separate chart per country');
+    } else if (compareFacetSplit === 'category') {
+      parts.push('separate chart per category');
+    }
+    return parts.join(' · ');
+  }, [categories, countries, selectedComparePdYears, grain, compareFacetSplit]);
+
   const compareRows = useMemo(() => {
     if (!compareFromCells || !compareToCells) return [];
     return compareByPriorityDateGrain(compareFromCells, compareToCells, grain);
