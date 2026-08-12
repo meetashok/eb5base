@@ -134,7 +134,10 @@ export default function MultiSeriesLineChart({
   const ready = width >= 10 && xAxis.length > 0 && colored.length > 0;
 
   return (
-    <div className="space-y-2 w-full">
+    <div
+      className="space-y-2 w-full"
+      onMouseLeave={() => setHoverKey(null)}
+    >
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs min-h-4">
         {colored.map((s) => (
           <span key={s.key} className="inline-flex items-center gap-1.5 text-neutral/80">
@@ -148,10 +151,14 @@ export default function MultiSeriesLineChart({
         ))}
       </div>
 
-      <div className="flex items-start text-xs font-semibold text-neutral min-h-4">
-        {hoverMeta && (
-          <div className="ml-auto text-right space-y-0.5">
-            <div className="text-primary">{hoverMeta.label}</div>
+      {/* Fixed-height readout so hover never shifts the plot. */}
+      <div
+        className="h-11 text-xs font-semibold text-neutral overflow-hidden"
+        aria-live="polite"
+      >
+        {hoverMeta ? (
+          <div className="ml-auto text-right space-y-0.5 max-w-full">
+            <div className="text-primary truncate">{hoverMeta.label}</div>
             <div className="flex flex-wrap justify-end gap-x-3 gap-y-0.5 tabular-nums font-medium text-neutral/80">
               {hoverValues.map((v) => (
                 <span key={v.key} className="inline-flex items-center gap-1">
@@ -165,7 +172,7 @@ export default function MultiSeriesLineChart({
               ))}
             </div>
           </div>
-        )}
+        ) : null}
       </div>
 
       <div ref={ref} className="w-full">
@@ -177,7 +184,6 @@ export default function MultiSeriesLineChart({
             height={height}
             role="img"
             aria-label={ariaLabel}
-            onMouseLeave={() => setHoverKey(null)}
           >
             <Group left={margin.left} top={margin.top}>
               <GridRows
