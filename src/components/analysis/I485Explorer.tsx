@@ -6,6 +6,7 @@ import { BarChart, DiffBarChart, LineChart, MultiSeriesLineChart, formatSignedCo
 import I485ViewBar, { type I485ViewId } from '@/components/analysis/I485ViewBar';
 import I485CategoryPicker from '@/components/analysis/I485CategoryPicker';
 import I485CountryPicker from '@/components/analysis/I485CountryPicker';
+import I485PriorityDateRangePicker from '@/components/analysis/I485PriorityDateRangePicker';
 import {
   COHORT_SPLIT_OPTIONS,
   DEFAULT_I485_CATEGORIES,
@@ -629,12 +630,6 @@ export default function I485Explorer({
     [compareRows],
   );
 
-  const pdYearOptions = useMemo(() => {
-    const years: number[] = [];
-    for (let y = 2026; y >= 2005; y -= 1) years.push(y);
-    return years;
-  }, []);
-
   const releaseOptionsDesc = useMemo(() => [...releases].reverse(), [releases]);
 
   if (!available) {
@@ -662,6 +657,7 @@ export default function I485Explorer({
       <div className="max-w-4xl mx-auto px-4 pt-6 sm:pt-8 space-y-5">
       {/* Filters */}
       <div className="space-y-4">
+      {(view === 'snapshot' || view === 'compare') && (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {view === 'snapshot' && (
           <label className="form-control">
@@ -717,82 +713,12 @@ export default function I485Explorer({
             </label>
           </>
         )}
-
-        {view === 'cohort' && (
-          <>
-            <label className="form-control">
-              <span className="label-text text-xs font-semibold text-neutral/80 pb-1">
-                Priority date from
-              </span>
-              <div className="flex gap-2">
-                <select
-                  className="select select-bordered select-sm min-w-0 flex-1"
-                  value={pdRange.fromYear}
-                  onChange={(e) =>
-                    setPdRange((prev) => ({ ...prev, fromYear: Number(e.target.value) }))
-                  }
-                  aria-label="Priority date from year"
-                >
-                  {pdYearOptions.map((y) => (
-                    <option key={y} value={y}>
-                      {y}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  className="select select-bordered select-sm min-w-0 flex-1"
-                  value={pdRange.fromMonth}
-                  onChange={(e) =>
-                    setPdRange((prev) => ({ ...prev, fromMonth: Number(e.target.value) }))
-                  }
-                  aria-label="Priority date from month"
-                >
-                  {MONTH_LABELS.map((m, i) => (
-                    <option key={m} value={i + 1}>
-                      {m}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </label>
-            <label className="form-control">
-              <span className="label-text text-xs font-semibold text-neutral/80 pb-1">
-                Priority date to
-              </span>
-              <div className="flex gap-2">
-                <select
-                  className="select select-bordered select-sm min-w-0 flex-1"
-                  value={pdRange.toYear}
-                  onChange={(e) =>
-                    setPdRange((prev) => ({ ...prev, toYear: Number(e.target.value) }))
-                  }
-                  aria-label="Priority date to year"
-                >
-                  {pdYearOptions.map((y) => (
-                    <option key={y} value={y}>
-                      {y}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  className="select select-bordered select-sm min-w-0 flex-1"
-                  value={pdRange.toMonth}
-                  onChange={(e) =>
-                    setPdRange((prev) => ({ ...prev, toMonth: Number(e.target.value) }))
-                  }
-                  aria-label="Priority date to month"
-                >
-                  {MONTH_LABELS.map((m, i) => (
-                    <option key={m} value={i + 1}>
-                      {m}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </label>
-          </>
-        )}
       </div>
+      )}
+
+      {view === 'cohort' && (
+        <I485PriorityDateRangePicker value={pdRange} onChange={setPdRange} />
+      )}
 
       <I485CategoryPicker value={categories} onChange={setCategories} />
       <I485CountryPicker value={countries} onChange={setCountries} />
