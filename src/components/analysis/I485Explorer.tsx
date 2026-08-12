@@ -43,6 +43,11 @@ import {
   type SnapshotSplit,
   type TimeBucketMeta,
 } from '@/lib/analysis/i485';
+import {
+  loadI485ExplorerPrefs,
+  resolveStoredReleaseIds,
+  saveI485ExplorerPrefs,
+} from '@/lib/analysis/i485Preferences';
 
 type ViewId = I485ViewId;
 
@@ -319,9 +324,76 @@ export default function I485Explorer({
   const [compareToCells, setCompareToCells] = useState<I485Cell[] | null>(null);
 
   const [loading, setLoading] = useState(false);
+  const [prefsHydrated, setPrefsHydrated] = useState(false);
   const skipInitialSnapshotFetch = useRef(
     initialSnapshotCells != null && initialReleaseId != null && initialReleases.length > 0,
   );
+
+  // Restore explorer choices from localStorage once on mount.
+  useEffect(() => {
+    const latestYear =
+      initialReleases.length > 0
+        ? new Date(
+            `${initialReleases[initialReleases.length - 1]!.as_of_date}T00:00:00Z`,
+          ).getUTCFullYear()
+        : new Date().getUTCFullYear();
+    const stored = loadI485ExplorerPrefs(latestYear);
+    if (stored) {
+      const releaseIds = initialReleases.map((r) => r.id);
+      const ids = resolveStoredReleaseIds(stored, releaseIds);
+      setView(stored.view);
+      setCountries(stored.countries);
+      setCategories(stored.categories);
+      setGrain(stored.grain);
+      setSplit(stored.split);
+      setPdYears(stored.pdYears);
+      setCohortPdSplit(stored.cohortPdSplit);
+      setCohortFacetSplit(stored.cohortFacetSplit);
+      if (ids.releaseId != null) setReleaseId(ids.releaseId);
+      if (ids.compareFromId != null) setCompareFromId(ids.compareFromId);
+      if (ids.compareToId != null) setCompareToId(ids.compareToId);
+
+      const filtersChangedFromSsr =
+        stored.countries.length > 0 ||
+        stored.categories.length !== DEFAULT_CATEGORIES.length ||
+        stored.categories.some((c, i) => c !== DEFAULT_CATEGORIES[i]) ||
+        (ids.releaseId != null && ids.releaseId !== initialReleaseId);
+      if (filtersChangedFromSsr) skipInitialSnapshotFetch.current = false;
+    }
+    setPrefsHydrated(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- hydrate once
+  }, []);
+
+  // Persist choices after hydration (and when releases change, so ids stay valid).
+  useEffect(() => {
+    if (!prefsHydrated) return;
+    saveI485ExplorerPrefs({
+      view,
+      countries,
+      categories,
+      grain,
+      split,
+      pdYears,
+      cohortPdSplit,
+      cohortFacetSplit,
+      releaseId,
+      compareFromId,
+      compareToId,
+    });
+  }, [
+    prefsHydrated,
+    view,
+    countries,
+    categories,
+    grain,
+    split,
+    pdYears,
+    cohortPdSplit,
+    cohortFacetSplit,
+    releaseId,
+    compareFromId,
+    compareToId,
+  ]);
 
   useEffect(() => {
     if (!available) return;
@@ -330,10 +402,16 @@ export default function I485Explorer({
       .then((rs) => {
         setReleases(rs);
         if (rs.length > 0) {
-          setReleaseId(rs[rs.length - 1]!.id);
-          const ids = defaultCompareIds(rs);
-          setCompareFromId(ids.fromId);
-          setCompareToId(ids.toId);
+          const stored = loadI485ExplorerPrefs(
+            new Date(`${rs[rs.length - 1]!.as_of_date}T00:00:00Z`).getUTCFullYear(),
+          );
+          const ids = stored
+            ? resolveStoredReleaseIds(stored, rs.map((r) => r.id))
+            : { releaseId: null, compareFromId: null, compareToId: null };
+          setReleaseId(ids.releaseId ?? rs[rs.length - 1]!.id);
+          const fallback = defaultCompareIds(rs);
+          setCompareFromId(ids.compareFromId ?? fallback.fromId);
+          setCompareToId(ids.compareToId ?? fallback.toId ?? rs[rs.length - 1]!.id);
         }
       })
       .catch((e: Error) => setLoadError(e.message));
