@@ -10,6 +10,7 @@ import I485PriorityDateRangePicker from '@/components/analysis/I485PriorityDateR
 import {
   COHORT_SPLIT_OPTIONS,
   DEFAULT_I485_CATEGORIES,
+  DEFAULT_PRIORITY_DATE_YEARS,
   SNAPSHOT_SPLIT_OPTIONS,
   USCIS_DATA_PAGE_URL,
   aggregateByPriorityDateGrain,
@@ -22,18 +23,18 @@ import {
   fetchI485Releases,
   formatAsOf,
   formatAsOfShort,
-  formatPriorityDateRange,
+  formatPriorityDateYears,
   isI485DataAvailable,
-  normalizePriorityDateRange,
   resolveCategorySplitSeries,
   splitCountriesForFilter,
+  yearsInPriorityDateSelection,
   type AggregatedBucket,
   type CohortSplit,
   type I485Cell,
   type I485Country,
   type I485Release,
   type PriorityDateGrain,
-  type PriorityDateRange,
+  type PriorityDateYearSelection,
   type SnapshotSplit,
   type TimeBucketMeta,
 } from '@/lib/analysis/i485';
@@ -289,11 +290,8 @@ export default function I485Explorer({
   const [snapshotCells, setSnapshotCells] = useState<I485Cell[] | null>(initialSnapshotCells);
 
   // Cohort view state
-  const [pdRange, setPdRange] = useState<PriorityDateRange>({
-    fromYear: 2024,
-    fromMonth: 1,
-    toYear: 2026,
-    toMonth: 12,
+  const [pdYears, setPdYears] = useState<PriorityDateYearSelection>({
+    ...DEFAULT_PRIORITY_DATE_YEARS,
   });
   const [cohortSnapshotGrain, setCohortSnapshotGrain] =
     useState<PriorityDateGrain>('quarter');
@@ -389,17 +387,27 @@ export default function I485Explorer({
     initialReleaseId,
   ]);
 
+  const latestAsOfYear = useMemo(() => {
+    if (releases.length === 0) return new Date().getUTCFullYear();
+    const last = releases[releases.length - 1]!;
+    return new Date(`${last.as_of_date}T00:00:00Z`).getUTCFullYear();
+  }, [releases]);
+
+  const selectedPdYears = useMemo(
+    () => yearsInPriorityDateSelection(pdYears, latestAsOfYear),
+    [pdYears, latestAsOfYear],
+  );
+
   // Cohort data
   useEffect(() => {
     if (!available || view !== 'cohort') return;
+    if (selectedPdYears.length === 0) return;
     let cancel = false;
     setLoading(true);
-    const range = normalizePriorityDateRange(pdRange);
     fetchI485Cells({
       countries: countryFilter,
       categories: members,
-      pdYearGte: range.fromYear,
-      pdYearLte: range.toYear,
+      pdYears: selectedPdYears,
     })
       .then((cells) => {
         if (!cancel) setCohortCells(cells);
@@ -409,7 +417,7 @@ export default function I485Explorer({
     return () => {
       cancel = true;
     };
-  }, [available, view, countries, countryFilter, members, pdRange]);
+  }, [available, view, countries, countryFilter, members, selectedPdYears]);
 
   // Compare data (both snapshots)
   useEffect(() => {
@@ -492,20 +500,15 @@ export default function I485Explorer({
     [snapshotSeries],
   );
 
-  const normalizedPdRange = useMemo(
-    () => normalizePriorityDateRange(pdRange),
-    [pdRange],
-  );
-
   const cohortSeries = useMemo(() => {
     if (!cohortCells) return [];
     return aggregateCohortBySnapshotGrain(
       cohortCells,
       releases,
       cohortSnapshotGrain,
-      normalizedPdRange,
+      selectedPdYears,
     );
-  }, [cohortCells, releases, cohortSnapshotGrain, normalizedPdRange]);
+  }, [cohortCells, releases, cohortSnapshotGrain, selectedPdYears]);
 
   const cohortLine = useMemo(
     () =>
@@ -525,14 +528,14 @@ export default function I485Explorer({
       releases,
       cohortSnapshotGrain,
       cohortPdGrain,
-      normalizedPdRange,
+      selectedPdYears,
     );
   }, [
     cohortCells,
     releases,
     cohortSnapshotGrain,
     cohortPdGrain,
-    normalizedPdRange,
+    selectedPdYears,
     cohortSplit,
   ]);
 
@@ -716,7 +719,11 @@ export default function I485Explorer({
       )}
 
       {view === 'cohort' && (
-        <I485PriorityDateRangePicker value={pdRange} onChange={setPdRange} />
+        <I485PriorityDateRangePicker
+          value={pdYears}
+          onChange={setPdYears}
+          latestYear={latestAsOfYear}
+        />
       )}
 
       <I485CategoryPicker value={categories} onChange={setCategories} />
@@ -963,7 +970,7 @@ export default function I485Explorer({
                     </span>
                   </div>
                   <p className="text-xs font-medium text-neutral/55">
-                    Priority dates {formatPriorityDateRange(normalizedPdRange)}, by USCIS snapshot
+                    Priority dates {formatPriorityDateYears(selectedPdYears)}, by USCIS snapshot
                   </p>
                 </div>
                 <div className="flex flex-col items-stretch sm:items-end gap-2">

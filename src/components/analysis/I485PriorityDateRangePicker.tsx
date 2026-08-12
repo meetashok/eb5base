@@ -2,137 +2,169 @@
 
 import { filterChipClass } from '@/components/analysis/filterChipClass';
 import {
-  normalizePriorityDateRange,
-  type PriorityDateRange,
+  COHORT_PREVIOUS_YEAR_MIN,
+  COHORT_RECENT_YEAR_START,
+  normalizePriorityDateYearSelection,
+  recentCohortYearChips,
+  type PriorityDateYearSelection,
 } from '@/lib/analysis/i485';
 
-const PRESETS: { id: string; label: string; range: PriorityDateRange }[] = [
-  {
-    id: '2024',
-    label: '2024',
-    range: { fromYear: 2024, fromMonth: 1, toYear: 2024, toMonth: 12 },
-  },
-  {
-    id: '2025',
-    label: '2025',
-    range: { fromYear: 2025, fromMonth: 1, toYear: 2025, toMonth: 12 },
-  },
-  {
-    id: '2026',
-    label: '2026',
-    range: { fromYear: 2026, fromMonth: 1, toYear: 2026, toMonth: 12 },
-  },
-  {
-    id: '2024-present',
-    label: '2024–present',
-    range: { fromYear: 2024, fromMonth: 1, toYear: 2026, toMonth: 12 },
-  },
-];
-
-const MIN_MONTH = '2005-01';
-const MAX_MONTH = '2026-12';
-
-function toMonthValue(year: number, month: number): string {
-  return `${year}-${String(month).padStart(2, '0')}`;
-}
-
-function parseMonthValue(value: string): { year: number; month: number } | null {
-  const match = /^(\d{4})-(\d{2})$/.exec(value);
-  if (!match) return null;
-  const year = Number(match[1]);
-  const month = Number(match[2]);
-  if (month < 1 || month > 12) return null;
-  return { year, month };
-}
-
-function rangesEqual(a: PriorityDateRange, b: PriorityDateRange): boolean {
-  const left = normalizePriorityDateRange(a);
-  const right = normalizePriorityDateRange(b);
-  return (
-    left.fromYear === right.fromYear &&
-    left.fromMonth === right.fromMonth &&
-    left.toYear === right.toYear &&
-    left.toMonth === right.toMonth
-  );
-}
-
 /**
- * Cohort priority-date range: common presets plus two native month inputs.
+ * Cohort priority-date years: multi-select recent year chips, plus an optional
+ * Previous years range (two year dropdowns).
  */
 export default function I485PriorityDateRangePicker({
   value,
   onChange,
+  latestYear,
 }: {
-  value: PriorityDateRange;
-  onChange: (next: PriorityDateRange) => void;
+  value: PriorityDateYearSelection;
+  onChange: (next: PriorityDateYearSelection) => void;
+  /** Latest calendar year to offer as a recent chip (from data / as-of). */
+  latestYear: number;
 }) {
-  const normalized = normalizePriorityDateRange(value);
-  const activePreset = PRESETS.find((p) => rangesEqual(p.range, normalized))?.id ?? null;
+  const normalized = normalizePriorityDateYearSelection(value, latestYear);
+  const recentYears = recentCohortYearChips(latestYear);
+  const previousYearOptions: number[] = [];
+  for (let y = COHORT_RECENT_YEAR_START - 1; y >= COHORT_PREVIOUS_YEAR_MIN; y -= 1) {
+    previousYearOptions.push(y);
+  }
 
-  function setFrom(monthValue: string) {
-    const parsed = parseMonthValue(monthValue);
-    if (!parsed) return;
+  function toggleYear(year: number) {
+    const selected = normalized.years.includes(year);
+    let nextYears = selected
+      ? normalized.years.filter((y) => y !== year)
+      : [...normalized.years, year].sort((a, b) => a - b);
+
+    if (nextYears.length === 0 && !normalized.previousEnabled) {
+      // Keep at least one recent year when Previous years is off.
+      nextYears = [year];
+    }
+
     onChange(
-      normalizePriorityDateRange({
-        ...normalized,
-        fromYear: parsed.year,
-        fromMonth: parsed.month,
-      }),
+      normalizePriorityDateYearSelection(
+        { ...normalized, years: nextYears },
+        latestYear,
+      ),
     );
   }
 
-  function setTo(monthValue: string) {
-    const parsed = parseMonthValue(monthValue);
-    if (!parsed) return;
+  function togglePrevious() {
+    if (normalized.previousEnabled) {
+      const nextYears =
+        normalized.years.length > 0
+          ? normalized.years
+          : [Math.min(2024, latestYear)].filter((y) => y >= COHORT_RECENT_YEAR_START);
+      onChange(
+        normalizePriorityDateYearSelection(
+          { ...normalized, previousEnabled: false, years: nextYears },
+          latestYear,
+        ),
+      );
+      return;
+    }
     onChange(
-      normalizePriorityDateRange({
-        ...normalized,
-        toYear: parsed.year,
-        toMonth: parsed.month,
-      }),
+      normalizePriorityDateYearSelection(
+        {
+          ...normalized,
+          previousEnabled: true,
+          previousFromYear: Math.min(normalized.previousFromYear, COHORT_RECENT_YEAR_START - 1),
+          previousToYear: Math.min(normalized.previousToYear, COHORT_RECENT_YEAR_START - 1),
+        },
+        latestYear,
+      ),
     );
   }
 
   return (
-    <div className="space-y-2" role="group" aria-label="Priority date range">
-      <span className="block text-xs font-semibold text-neutral/80">Priority date range</span>
+    <div className="space-y-2" role="group" aria-label="Priority date years">
+      <span className="block text-xs font-semibold text-neutral/80">
+        Priority date years
+        {normalized.years.length + (normalized.previousEnabled ? 1 : 0) > 1 ? (
+          <span className="ml-1.5 font-normal text-neutral/55">
+            (
+            {normalized.years.length}
+            {normalized.previousEnabled ? ' + previous' : ''} selected)
+          </span>
+        ) : null}
+      </span>
       <div className="flex flex-wrap gap-1.5">
-        {PRESETS.map((p) => (
-          <button
-            key={p.id}
-            type="button"
-            className={filterChipClass(activePreset === p.id)}
-            aria-pressed={activePreset === p.id}
-            onClick={() => onChange({ ...p.range })}
-          >
-            {p.label}
-          </button>
-        ))}
+        {recentYears.map((year) => {
+          const selected = normalized.years.includes(year);
+          return (
+            <button
+              key={year}
+              type="button"
+              className={filterChipClass(selected)}
+              aria-pressed={selected}
+              onClick={() => toggleYear(year)}
+            >
+              {year}
+            </button>
+          );
+        })}
+        <button
+          type="button"
+          className={filterChipClass(normalized.previousEnabled)}
+          aria-pressed={normalized.previousEnabled}
+          aria-expanded={normalized.previousEnabled}
+          onClick={togglePrevious}
+        >
+          Previous years
+        </button>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl">
-        <label className="form-control">
-          <span className="label-text text-xs font-semibold text-neutral/80 pb-1">From</span>
-          <input
-            type="month"
-            className="input input-bordered input-sm w-full"
-            min={MIN_MONTH}
-            max={MAX_MONTH}
-            value={toMonthValue(normalized.fromYear, normalized.fromMonth)}
-            onChange={(e) => setFrom(e.target.value)}
-          />
-        </label>
-        <label className="form-control">
-          <span className="label-text text-xs font-semibold text-neutral/80 pb-1">To</span>
-          <input
-            type="month"
-            className="input input-bordered input-sm w-full"
-            min={MIN_MONTH}
-            max={MAX_MONTH}
-            value={toMonthValue(normalized.toYear, normalized.toMonth)}
-            onChange={(e) => setTo(e.target.value)}
-          />
-        </label>
-      </div>
+      {normalized.previousEnabled && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl">
+          <label className="form-control">
+            <span className="label-text text-xs font-semibold text-neutral/80 pb-1">From year</span>
+            <select
+              className="select select-bordered select-sm"
+              value={normalized.previousFromYear}
+              onChange={(e) =>
+                onChange(
+                  normalizePriorityDateYearSelection(
+                    {
+                      ...normalized,
+                      previousFromYear: Number(e.target.value),
+                    },
+                    latestYear,
+                  ),
+                )
+              }
+            >
+              {previousYearOptions.map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="form-control">
+            <span className="label-text text-xs font-semibold text-neutral/80 pb-1">To year</span>
+            <select
+              className="select select-bordered select-sm"
+              value={normalized.previousToYear}
+              onChange={(e) =>
+                onChange(
+                  normalizePriorityDateYearSelection(
+                    {
+                      ...normalized,
+                      previousToYear: Number(e.target.value),
+                    },
+                    latestYear,
+                  ),
+                )
+              }
+            >
+              {previousYearOptions.map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+      )}
     </div>
   );
 }

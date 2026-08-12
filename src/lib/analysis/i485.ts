@@ -225,6 +225,8 @@ export interface CellFilters {
   pdYearGte?: number;
   /** Inclusive priority-date year upper bound (for cohort ranges). */
   pdYearLte?: number;
+  /** Exact priority-date years to include (preferred for cohort multi-select). */
+  pdYears?: number[];
 }
 
 const PAGE = 1000;
@@ -251,8 +253,12 @@ export async function fetchI485Cells(
     if (filters.categories && filters.categories.length > 0) q = q.in('category', filters.categories);
     if (filters.pdYear != null) q = q.eq('pd_year', filters.pdYear);
     if (filters.pdMonth != null) q = q.eq('pd_month', filters.pdMonth);
-    if (filters.pdYearGte != null) q = q.gte('pd_year', filters.pdYearGte);
-    if (filters.pdYearLte != null) q = q.lte('pd_year', filters.pdYearLte);
+    if (filters.pdYears && filters.pdYears.length > 0) {
+      q = q.in('pd_year', filters.pdYears);
+    } else {
+      if (filters.pdYearGte != null) q = q.gte('pd_year', filters.pdYearGte);
+      if (filters.pdYearLte != null) q = q.lte('pd_year', filters.pdYearLte);
+    }
     const { data, error } = await q;
     if (error) throw new Error(error.message);
     out.push(...((data ?? []) as I485Cell[]));
@@ -552,47 +558,117 @@ export const COHORT_SPLIT_OPTIONS: { value: CohortSplit; label: string }[] = [
   { value: 'priority_date', label: 'By priority date' },
 ];
 
-export interface PriorityDateRange {
-  fromYear: number;
-  fromMonth: number;
-  toYear: number;
-  toMonth: number;
+/** First calendar year shown as a recent multi-select chip. */
+export const COHORT_RECENT_YEAR_START = 2023;
+/** Oldest year offered in the Previous years range. */
+export const COHORT_PREVIOUS_YEAR_MIN = 2005;
+
+export interface PriorityDateYearSelection {
+  /** Discrete recent calendar years (full years). */
+  years: number[];
+  /** Include an older contiguous year range via the Previous years controls. */
+  previousEnabled: boolean;
+  previousFromYear: number;
+  previousToYear: number;
 }
 
-export function yearMonthIndex(year: number, month: number): number {
-  return year * 12 + month;
+export const DEFAULT_PRIORITY_DATE_YEARS: PriorityDateYearSelection = {
+  years: [2024, 2025, 2026],
+  previousEnabled: false,
+  previousFromYear: 2015,
+  previousToYear: COHORT_RECENT_YEAR_START - 1,
+};
+
+export function recentCohortYearChips(latestYear: number): number[] {
+  const end = Math.max(latestYear, COHORT_RECENT_YEAR_START);
+  const years: number[] = [];
+  for (let y = COHORT_RECENT_YEAR_START; y <= end; y += 1) years.push(y);
+  return years;
 }
 
-export function cellInPriorityDateRange(
-  cell: Pick<I485Cell, 'pd_year' | 'pd_month'>,
-  range: PriorityDateRange,
-): boolean {
-  if (cell.pd_year === 0) return false;
-  const v = yearMonthIndex(cell.pd_year, cell.pd_month);
-  return (
-    v >= yearMonthIndex(range.fromYear, range.fromMonth) &&
-    v <= yearMonthIndex(range.toYear, range.toMonth)
+export function normalizePriorityDateYearSelection(
+  selection: PriorityDateYearSelection,
+  latestYear = new Date().getUTCFullYear(),
+): PriorityDateYearSelection {
+  const recent = new Set(recentCohortYearChips(latestYear));
+  const years = Array.from(new Set(selection.years.filter((y) => recent.has(y)))).sort(
+    (a, b) => a - b,
   );
-}
+  const prevMax = COHORT_RECENT_YEAR_START - 1;
+  let previousFromYear = Math.min(
+    Math.max(selection.previousFromYear, COHORT_PREVIOUS_YEAR_MIN),
+    prevMax,
+  );
+  let previousToYear = Math.min(
+    Math.max(selection.previousToYear, COHORT_PREVIOUS_YEAR_MIN),
+    prevMax,
+  );
+  if (previousFromYear > previousToYear) {
+    const swap = previousFromYear;
+    previousFromYear = previousToYear;
+    previousToYear = swap;
+  }
 
-export function normalizePriorityDateRange(range: PriorityDateRange): PriorityDateRange {
-  const from = yearMonthIndex(range.fromYear, range.fromMonth);
-  const to = yearMonthIndex(range.toYear, range.toMonth);
-  if (from <= to) return range;
+  const previousEnabled = selection.previousEnabled;
+  if (years.length === 0 && !previousEnabled) {
+    return {
+      ...DEFAULT_PRIORITY_DATE_YEARS,
+      years: DEFAULT_PRIORITY_DATE_YEARS.years.filter((y) => recent.has(y)),
+      previousFromYear,
+      previousToYear,
+    };
+  }
+
   return {
-    fromYear: range.toYear,
-    fromMonth: range.toMonth,
-    toYear: range.fromYear,
-    toMonth: range.fromMonth,
+    years,
+    previousEnabled,
+    previousFromYear,
+    previousToYear,
   };
 }
 
-export function formatPriorityDateRange(range: PriorityDateRange): string {
-  const r = normalizePriorityDateRange(range);
-  const fromLabel = `${MONTH_LABELS[r.fromMonth - 1] ?? r.fromMonth} ${r.fromYear}`;
-  const toLabel = `${MONTH_LABELS[r.toMonth - 1] ?? r.toMonth} ${r.toYear}`;
-  if (fromLabel === toLabel) return fromLabel;
-  return `${fromLabel} – ${toLabel}`;
+/** Expand chip + previous-years selection into a sorted unique year list. */
+export function yearsInPriorityDateSelection(
+  selection: PriorityDateYearSelection,
+  latestYear = new Date().getUTCFullYear(),
+): number[] {
+  const normalized = normalizePriorityDateYearSelection(selection, latestYear);
+  const set = new Set(normalized.years);
+  if (normalized.previousEnabled) {
+    for (let y = normalized.previousFromYear; y <= normalized.previousToYear; y += 1) {
+      set.add(y);
+    }
+  }
+  return Array.from(set).sort((a, b) => a - b);
+}
+
+export function cellInPriorityDateYears(
+  cell: Pick<I485Cell, 'pd_year'>,
+  years: number[],
+): boolean {
+  if (cell.pd_year === 0) return false;
+  return years.includes(cell.pd_year);
+}
+
+export function formatPriorityDateYears(years: number[]): string {
+  if (years.length === 0) return 'none';
+  if (years.length === 1) return String(years[0]);
+
+  const parts: string[] = [];
+  let start = years[0]!;
+  let prev = years[0]!;
+  for (let i = 1; i < years.length; i += 1) {
+    const y = years[i]!;
+    if (y === prev + 1) {
+      prev = y;
+      continue;
+    }
+    parts.push(start === prev ? String(start) : `${start}–${prev}`);
+    start = y;
+    prev = y;
+  }
+  parts.push(start === prev ? String(start) : `${start}–${prev}`);
+  return parts.join(', ');
 }
 
 /** Bucket a USCIS as-of date for cohort X-axis grouping. */
@@ -623,22 +699,16 @@ export function latestReleasesByGrain(
   );
 }
 
-/** Enumerate priority-date series buckets covering an inclusive month range. */
-export function priorityDateSeriesInRange(
-  range: PriorityDateRange,
+/** Enumerate priority-date series buckets covering selected calendar years. */
+export function priorityDateSeriesInYears(
+  years: number[],
   grain: PriorityDateGrain,
 ): TimeBucketMeta[] {
-  const r = normalizePriorityDateRange(range);
   const seen = new Map<string, TimeBucketMeta>();
-  let y = r.fromYear;
-  let m = r.fromMonth;
-  while (yearMonthIndex(y, m) <= yearMonthIndex(r.toYear, r.toMonth)) {
-    const meta = priorityDateBucket({ pd_year: y, pd_month: m }, grain);
-    if (!seen.has(meta.key)) seen.set(meta.key, meta);
-    m += 1;
-    if (m > 12) {
-      m = 1;
-      y += 1;
+  for (const y of years) {
+    for (let m = 1; m <= 12; m += 1) {
+      const meta = priorityDateBucket({ pd_year: y, pd_month: m }, grain);
+      if (!seen.has(meta.key)) seen.set(meta.key, meta);
     }
   }
   return Array.from(seen.values());
@@ -652,9 +722,9 @@ export function aggregateCohortBySnapshotGrain(
   cells: I485Cell[],
   releases: I485Release[],
   snapshotGrain: PriorityDateGrain,
-  range: PriorityDateRange,
+  years: number[],
 ): { meta: TimeBucketMeta; bucket: AggregatedBucket; releaseId: number }[] {
-  const filtered = cells.filter((c) => cellInPriorityDateRange(c, range));
+  const filtered = cells.filter((c) => cellInPriorityDateYears(c, years));
   const byRelease = aggregateBy(filtered, (c) => c.release_id);
   return latestReleasesByGrain(releases, snapshotGrain).map(({ meta, release }) => ({
     meta,
@@ -671,12 +741,12 @@ export function aggregateCohortSplitByPriorityDate(
   releases: I485Release[],
   snapshotGrain: PriorityDateGrain,
   pdGrain: PriorityDateGrain,
-  range: PriorityDateRange,
+  years: number[],
 ): SplitPriorityDateResult {
-  const filtered = cells.filter((c) => cellInPriorityDateRange(c, range));
+  const filtered = cells.filter((c) => cellInPriorityDateYears(c, years));
   const xPoints = latestReleasesByGrain(releases, snapshotGrain);
   const xAxis = xPoints.map((p) => p.meta);
-  const seriesMetas = priorityDateSeriesInRange(range, pdGrain);
+  const seriesMetas = priorityDateSeriesInYears(years, pdGrain);
 
   const counts = new Map<string, Map<number, AggregatedBucket>>();
   for (const s of seriesMetas) counts.set(s.key, new Map());
@@ -691,7 +761,6 @@ export function aggregateCohortSplitByPriorityDate(
     byRelease.set(cell.release_id, bucket);
   }
 
-  // Keep series that have any disclosed count (avoid empty PD lines).
   const activeSeries = seriesMetas.filter((s) => {
     const byRelease = counts.get(s.key);
     if (!byRelease) return false;
