@@ -92,6 +92,10 @@ export default function I485SourceDataPage() {
               <span className="font-mono text-xs">0</span> is the USCIS &quot;Prior Years&quot;
               rollup.
             </p>
+            <p className="text-xs text-neutral/70 leading-relaxed">
+              This CSV is assembled by EB5 Base from the USCIS workbooks below. For definitive
+              figures, download and verify against the official monthly XLSX files on uscis.gov.
+            </p>
             <a
               href="/data/i485-pending-inventory.csv"
               download="i485-pending-inventory.csv"
