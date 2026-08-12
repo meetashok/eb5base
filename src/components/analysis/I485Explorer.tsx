@@ -63,7 +63,34 @@ function SuppressionNote({ cells }: { cells: number }) {
   );
 }
 
-/** Vertical bars with priority-date time on the X-axis. */
+function formatAxisCount(n: number): string {
+  if (n >= 1_000_000) {
+    const v = n / 1_000_000;
+    return `${Number.isInteger(v) ? v : v.toFixed(1)}M`;
+  }
+  if (n >= 1_000) {
+    const v = n / 1_000;
+    return `${Number.isInteger(v) ? v : v.toFixed(1)}k`;
+  }
+  return nf.format(n);
+}
+
+/** Round max up to a clean chart ceiling and return evenly spaced ticks (incl. 0). */
+function yAxisTicks(maxValue: number, tickCount = 4): number[] {
+  if (maxValue <= 0) return [0];
+  const raw = maxValue / tickCount;
+  const pow = 10 ** Math.floor(Math.log10(raw));
+  const normalized = raw / pow;
+  const niceStep =
+    normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10;
+  const step = niceStep * pow;
+  const ceiling = Math.ceil(maxValue / step) * step;
+  const ticks: number[] = [];
+  for (let v = 0; v <= ceiling + step / 1000; v += step) ticks.push(v);
+  return ticks;
+}
+
+/** Vertical bars with priority-date time on the X-axis and a labeled Y-axis. */
 function TimeBars({
   data,
   grain,
@@ -72,10 +99,11 @@ function TimeBars({
   grain: PriorityDateGrain;
 }) {
   const [hoverKey, setHoverKey] = useState<string | null>(null);
-  const max = Math.max(...data.map((d) => d.bucket.count), 1);
+  const dataMax = Math.max(...data.map((d) => d.bucket.count), 1);
+  const ticks = yAxisTicks(dataMax);
+  const axisMax = ticks[ticks.length - 1] || dataMax;
   const chartH = 180;
-  const barMin =
-    grain === 'month' ? 8 : grain === 'quarter' ? 22 : 36;
+  const barMin = grain === 'month' ? 8 : grain === 'quarter' ? 22 : 36;
   const hovered = hoverKey ? data.find((d) => d.meta.key === hoverKey) : null;
 
   // Show tick labels sparsely for months so the axis stays readable.
@@ -99,44 +127,85 @@ function TimeBars({
           </span>
         )}
       </div>
-      <div className="overflow-x-auto -mx-1 px-1">
+      <div className="flex gap-2">
+        {/* Y-axis (stays fixed while the bars scroll horizontally) */}
         <div
-          className="flex items-end gap-px"
-          style={{
-            height: chartH + 28,
-            minWidth: Math.max(data.length * barMin, 240),
-          }}
-          role="img"
-          aria-label="Pending I-485 applications by priority date"
-          onMouseLeave={() => setHoverKey(null)}
+          className="relative shrink-0 w-10"
+          style={{ height: chartH + 28 }}
+          aria-hidden
         >
-          {data.map(({ meta, bucket }, i) => {
-            const h = bucket.count > 0 ? Math.max(2, (bucket.count / max) * chartH) : 0;
-            const active = hoverKey === meta.key;
-            return (
+          <div className="absolute inset-x-0 top-0" style={{ height: chartH }}>
+            {ticks.map((t) => (
               <div
-                key={meta.key}
-                className="flex flex-col items-center justify-end flex-1"
-                style={{ minWidth: barMin }}
-                onMouseEnter={() => setHoverKey(meta.key)}
+                key={t}
+                className="absolute right-0 flex items-center gap-1 -translate-y-1/2"
+                style={{ top: `${((axisMax - t) / axisMax) * 100}%` }}
               >
-                <div
-                  className={`w-full max-w-[28px] mx-auto rounded-t-sm transition-colors ${
-                    active ? 'bg-accent' : 'bg-secondary/85'
-                  }`}
-                  style={{ height: h }}
-                  title={`${meta.label}: ${bucketLabel(bucket)}`}
-                />
-                <span
-                  className={`mt-1 text-[9px] tabular-nums leading-none text-neutral/60 h-3 ${
-                    showTick(i, meta) ? 'opacity-100' : 'opacity-0'
-                  }`}
-                >
-                  {meta.shortLabel}
+                <span className="text-[10px] tabular-nums text-neutral/65 leading-none">
+                  {formatAxisCount(t)}
                 </span>
               </div>
-            );
-          })}
+            ))}
+          </div>
+        </div>
+
+        <div className="min-w-0 flex-1 overflow-x-auto">
+          <div
+            className="relative"
+            style={{
+              height: chartH + 28,
+              minWidth: Math.max(data.length * barMin, 240),
+            }}
+            role="img"
+            aria-label="Pending I-485 applications by priority date"
+            onMouseLeave={() => setHoverKey(null)}
+          >
+            {/* Grid lines aligned to Y ticks */}
+            <div className="absolute inset-x-0 top-0 pointer-events-none" style={{ height: chartH }}>
+              {ticks.map((t) => (
+                <div
+                  key={t}
+                  className={`absolute inset-x-0 border-t ${
+                    t === 0 ? 'border-neutral/25' : 'border-base-300/80'
+                  }`}
+                  style={{ top: `${((axisMax - t) / axisMax) * 100}%` }}
+                />
+              ))}
+            </div>
+
+            <div className="absolute inset-x-0 bottom-0 flex items-end gap-px" style={{ height: chartH + 28 }}>
+              {data.map(({ meta, bucket }, i) => {
+                const h =
+                  bucket.count > 0 ? Math.max(2, (bucket.count / axisMax) * chartH) : 0;
+                const active = hoverKey === meta.key;
+                return (
+                  <div
+                    key={meta.key}
+                    className="relative flex flex-col items-center justify-end flex-1"
+                    style={{ minWidth: barMin, height: chartH + 28 }}
+                    onMouseEnter={() => setHoverKey(meta.key)}
+                  >
+                    <div className="flex-1 w-full flex items-end justify-center" style={{ height: chartH }}>
+                      <div
+                        className={`w-full max-w-[28px] rounded-t-sm transition-colors ${
+                          active ? 'bg-accent' : 'bg-secondary/85'
+                        }`}
+                        style={{ height: h }}
+                        title={`${meta.label}: ${bucketLabel(bucket)}`}
+                      />
+                    </div>
+                    <span
+                      className={`mt-1 text-[9px] tabular-nums leading-none text-neutral/60 h-3 ${
+                        showTick(i, meta) ? 'opacity-100' : 'opacity-0'
+                      }`}
+                    >
+                      {meta.shortLabel}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
     </div>
