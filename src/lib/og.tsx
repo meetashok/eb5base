@@ -730,3 +730,208 @@ export async function createOgImage() {
     }
   );
 }
+
+/** Branded share card for I-485 explorer short links (not a chart screenshot). */
+export async function createI485ShareOgImage(opts: {
+  title: string;
+  filterLine: string;
+  viewLabel: string;
+  metricLabel?: string | null;
+}) {
+  const [logoSrc, fonts] = await Promise.all([loadLogoDataUrl(), loadJakartaFontsSafe()]);
+  const filterLine =
+    opts.filterLine.length > 160 ? `${opts.filterLine.slice(0, 157)}…` : opts.filterLine;
+
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          padding: '48px 56px 44px',
+          background: 'linear-gradient(135deg, #060f1a 0%, #0a1628 28%, #1a3d32 68%, #0a1628 100%)',
+          fontFamily: fonts ? 'Plus Jakarta Sans' : 'sans-serif',
+          color: '#f5f1ea',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            top: -120,
+            right: -40,
+            width: 480,
+            height: 480,
+            borderRadius: 999,
+            background:
+              'radial-gradient(circle, rgba(47, 111, 143, 0.35) 0%, rgba(154, 91, 110, 0.12) 45%, transparent 70%)',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            bottom: -160,
+            left: -100,
+            width: 540,
+            height: 540,
+            borderRadius: 999,
+            background: 'radial-gradient(circle, rgba(45, 90, 71, 0.45) 0%, transparent 68%)',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 6,
+            background: 'linear-gradient(90deg, #2f6f8f 0%, #d4af37 55%, #9a5b6e 100%)',
+          }}
+        />
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse requires raw <img> */}
+            <img
+              src={logoSrc}
+              width={68}
+              height={68}
+              alt=""
+              style={{ borderRadius: 16 }}
+            />
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+              <span
+                style={{
+                  fontSize: 34,
+                  fontWeight: 500,
+                  color: 'rgba(245, 241, 234, 0.78)',
+                  letterSpacing: '0.04em',
+                }}
+              >
+                EB5
+              </span>
+              <span
+                style={{
+                  fontSize: 34,
+                  fontWeight: 700,
+                  color: '#d4af37',
+                  letterSpacing: '-0.02em',
+                }}
+              >
+                Base
+              </span>
+            </div>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              padding: '10px 18px',
+              borderRadius: 999,
+              border: '1px solid rgba(47, 111, 143, 0.45)',
+              background: 'rgba(47, 111, 143, 0.18)',
+              color: '#9ec9df',
+              fontSize: 16,
+              fontWeight: 700,
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+            }}
+          >
+            {opts.viewLabel}
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 8 }}>
+          <div
+            style={{
+              fontSize: 18,
+              fontWeight: 700,
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              color: 'rgba(212, 175, 55, 0.9)',
+            }}
+          >
+            I-485 pending inventory
+          </div>
+          <div
+            style={{
+              fontSize: 44,
+              fontWeight: 700,
+              letterSpacing: '-0.03em',
+              lineHeight: 1.12,
+              color: '#faf7f2',
+              maxWidth: 1000,
+            }}
+          >
+            {opts.title}
+          </div>
+          {opts.metricLabel ? (
+            <div
+              style={{
+                fontSize: 28,
+                fontWeight: 600,
+                color: '#d4af37',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              {opts.metricLabel}
+            </div>
+          ) : null}
+          <div
+            style={{
+              fontSize: 22,
+              fontWeight: 500,
+              lineHeight: 1.35,
+              color: 'rgba(245, 241, 234, 0.72)',
+              maxWidth: 980,
+            }}
+          >
+            {filterLine}
+          </div>
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginTop: 12,
+          }}
+        >
+          <div
+            style={{
+              fontSize: 20,
+              fontWeight: 600,
+              color: 'rgba(245, 241, 234, 0.55)',
+            }}
+          >
+            eb5base.com/analysis/i485
+          </div>
+          <div
+            style={{
+              fontSize: 18,
+              fontWeight: 500,
+              color: 'rgba(245, 241, 234, 0.5)',
+            }}
+          >
+            Shared chart view
+          </div>
+        </div>
+      </div>
+    ),
+    {
+      ...OG_SIZE,
+      fonts: fonts
+        ? [
+            { name: 'Plus Jakarta Sans', data: fonts.medium, weight: 500, style: 'normal' },
+            { name: 'Plus Jakarta Sans', data: fonts.semiBold, weight: 600, style: 'normal' },
+            { name: 'Plus Jakarta Sans', data: fonts.bold, weight: 700, style: 'normal' },
+          ]
+        : undefined,
+    },
+  );
+}

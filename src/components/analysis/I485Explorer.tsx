@@ -1,12 +1,14 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { BarChart, DiffBarChart, LineChart, MultiSeriesLineChart, formatSignedCount, seriesColor } from '@/components/charts';
 import I485ViewBar, { type I485ViewId } from '@/components/analysis/I485ViewBar';
 import I485CategoryPicker from '@/components/analysis/I485CategoryPicker';
 import I485CountryPicker from '@/components/analysis/I485CountryPicker';
 import I485PriorityDateRangePicker from '@/components/analysis/I485PriorityDateRangePicker';
+import I485ShareButton from '@/components/analysis/I485ShareButton';
 import {
   COHORT_FACET_SPLIT_OPTIONS,
   COHORT_PD_SPLIT_OPTIONS,
@@ -50,7 +52,14 @@ import {
   loadI485ExplorerPrefs,
   resolveStoredReleaseIds,
   saveI485ExplorerPrefs,
+  type I485ExplorerPrefs,
 } from '@/lib/analysis/i485Preferences';
+import {
+  prefsToSharePayload,
+  searchParamsToSharePayload,
+  sharePayloadToSearchParams,
+  type I485SharePayload,
+} from '@/lib/analysis/i485ShareParams';
 
 type ViewId = I485ViewId;
 
@@ -361,6 +370,8 @@ function defaultCompareIds(releases: I485Release[]): {
 export interface I485ExplorerProps {
   /** Active chart view from the URL (/inventory, /priority-date, /compare). */
   initialView?: ViewId;
+  /** Shared link payload (from /analysis/i485/s/[id]); wins over localStorage. */
+  initialSharePayload?: I485SharePayload | null;
   initialReleases?: I485Release[];
   initialReleaseId?: number | null;
   initialSnapshotCells?: I485Cell[] | null;
@@ -369,11 +380,14 @@ export interface I485ExplorerProps {
 
 export default function I485Explorer({
   initialView = 'snapshot',
+  initialSharePayload = null,
   initialReleases = [],
   initialReleaseId = null,
   initialSnapshotCells = null,
   initialError = null,
 }: I485ExplorerProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   const available = isI485DataAvailable();
   const [releases, setReleases] = useState<I485Release[]>(initialReleases);
   const [loadError, setLoadError] = useState<string | null>(initialError);
@@ -423,7 +437,35 @@ export default function I485Explorer({
     initialSnapshotCells != null && initialReleaseId != null && initialReleases.length > 0,
   );
 
-  // Restore explorer choices from localStorage once on mount.
+  function applyExplorerPrefs(stored: I485ExplorerPrefs, hide: string[] = []) {
+    const releaseIds = initialReleases.map((r) => r.id);
+    const ids = resolveStoredReleaseIds(stored, releaseIds);
+    setCountries(stored.countries);
+    setCategories(stored.categories);
+    setGrain(stored.grain);
+    setSplit(stored.split);
+    setPdYears(stored.pdYears);
+    setComparePdYears(stored.comparePdYears);
+    setCohortPdSplit(stored.cohortPdSplit);
+    setCohortFacetSplit(stored.cohortFacetSplit);
+    setCompareFacetSplit(stored.compareFacetSplit);
+    setCompareShowData(stored.compareShowData);
+    setFacetSharedYAxis(stored.facetSharedYAxis);
+    if (ids.releaseId != null) setReleaseId(ids.releaseId);
+    if (ids.compareFromId != null) setCompareFromId(ids.compareFromId);
+    if (ids.compareToId != null) setCompareToId(ids.compareToId);
+    if (hide.length > 0) setCohortSharedHiddenKeys(new Set(hide));
+
+    const filtersChangedFromSsr =
+      stored.countries.length > 0 ||
+      stored.categories.length !== DEFAULT_CATEGORIES.length ||
+      stored.categories.some((c, i) => c !== DEFAULT_CATEGORIES[i]) ||
+      (ids.releaseId != null && ids.releaseId !== initialReleaseId) ||
+      hide.length > 0;
+    if (filtersChangedFromSsr) skipInitialSnapshotFetch.current = false;
+  }
+
+  // Restore: share payload → query params → localStorage.
   useEffect(() => {
     const latestYear =
       initialReleases.length > 0
@@ -431,35 +473,90 @@ export default function I485Explorer({
             `${initialReleases[initialReleases.length - 1]!.as_of_date}T00:00:00Z`,
           ).getUTCFullYear()
         : new Date().getUTCFullYear();
-    const stored = loadI485ExplorerPrefs(latestYear);
-    if (stored) {
-      const releaseIds = initialReleases.map((r) => r.id);
-      const ids = resolveStoredReleaseIds(stored, releaseIds);
-      setCountries(stored.countries);
-      setCategories(stored.categories);
-      setGrain(stored.grain);
-      setSplit(stored.split);
-      setPdYears(stored.pdYears);
-      setComparePdYears(stored.comparePdYears);
-      setCohortPdSplit(stored.cohortPdSplit);
-      setCohortFacetSplit(stored.cohortFacetSplit);
-      setCompareFacetSplit(stored.compareFacetSplit);
-      setCompareShowData(stored.compareShowData);
-      setFacetSharedYAxis(stored.facetSharedYAxis);
-      if (ids.releaseId != null) setReleaseId(ids.releaseId);
-      if (ids.compareFromId != null) setCompareFromId(ids.compareFromId);
-      if (ids.compareToId != null) setCompareToId(ids.compareToId);
 
-      const filtersChangedFromSsr =
-        stored.countries.length > 0 ||
-        stored.categories.length !== DEFAULT_CATEGORIES.length ||
-        stored.categories.some((c, i) => c !== DEFAULT_CATEGORIES[i]) ||
-        (ids.releaseId != null && ids.releaseId !== initialReleaseId);
-      if (filtersChangedFromSsr) skipInitialSnapshotFetch.current = false;
+    if (initialSharePayload) {
+      applyExplorerPrefs(
+        {
+          view: initialSharePayload.view,
+          countries: initialSharePayload.countries,
+          categories: initialSharePayload.categories,
+          grain: initialSharePayload.grain,
+          split: initialSharePayload.split,
+          pdYears: initialSharePayload.pdYears,
+          comparePdYears: initialSharePayload.comparePdYears,
+          cohortPdSplit: initialSharePayload.cohortPdSplit,
+          cohortFacetSplit: initialSharePayload.cohortFacetSplit,
+          compareFacetSplit: initialSharePayload.compareFacetSplit,
+          compareShowData: false,
+          facetSharedYAxis: initialSharePayload.facetSharedYAxis,
+          releaseId: initialSharePayload.releaseId,
+          compareFromId: initialSharePayload.compareFromId,
+          compareToId: initialSharePayload.compareToId,
+        },
+        initialSharePayload.hide ?? [],
+      );
+      setPrefsHydrated(true);
+      return;
     }
+
+    const fromQuery = searchParamsToSharePayload(
+      new URLSearchParams(window.location.search),
+      initialView,
+      latestYear,
+    );
+    if (fromQuery) {
+      applyExplorerPrefs(
+        {
+          view: fromQuery.view,
+          countries: fromQuery.countries,
+          categories: fromQuery.categories,
+          grain: fromQuery.grain,
+          split: fromQuery.split,
+          pdYears: fromQuery.pdYears,
+          comparePdYears: fromQuery.comparePdYears,
+          cohortPdSplit: fromQuery.cohortPdSplit,
+          cohortFacetSplit: fromQuery.cohortFacetSplit,
+          compareFacetSplit: fromQuery.compareFacetSplit,
+          compareShowData: false,
+          facetSharedYAxis: fromQuery.facetSharedYAxis,
+          releaseId: fromQuery.releaseId,
+          compareFromId: fromQuery.compareFromId,
+          compareToId: fromQuery.compareToId,
+        },
+        fromQuery.hide ?? [],
+      );
+      setPrefsHydrated(true);
+      return;
+    }
+
+    const stored = loadI485ExplorerPrefs(latestYear);
+    if (stored) applyExplorerPrefs(stored);
     setPrefsHydrated(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- hydrate once
   }, []);
+
+  function currentSharePayload(): I485SharePayload {
+    return prefsToSharePayload(
+      {
+        view,
+        countries,
+        categories,
+        grain,
+        split,
+        pdYears,
+        comparePdYears,
+        cohortPdSplit,
+        cohortFacetSplit,
+        compareFacetSplit,
+        compareShowData,
+        facetSharedYAxis,
+        releaseId,
+        compareFromId,
+        compareToId,
+      },
+      Array.from(cohortSharedHiddenKeys),
+    );
+  }
 
   // Persist choices after hydration (and when releases change, so ids stay valid).
   useEffect(() => {
@@ -498,6 +595,36 @@ export default function I485Explorer({
     releaseId,
     compareFromId,
     compareToId,
+  ]);
+
+  // Mirror compact filters into the address bar (skip short-share routes).
+  useEffect(() => {
+    if (!prefsHydrated) return;
+    if (!pathname || pathname.includes('/analysis/i485/s/')) return;
+    const payload = currentSharePayload();
+    const qs = sharePayloadToSearchParams(payload).toString();
+    const next = qs ? `${pathname}?${qs}` : pathname;
+    const current = `${window.location.pathname}${window.location.search}`;
+    if (next === current) return;
+    router.replace(next, { scroll: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional filter sync
+  }, [
+    prefsHydrated,
+    pathname,
+    countries,
+    categories,
+    grain,
+    split,
+    pdYears,
+    comparePdYears,
+    cohortPdSplit,
+    cohortFacetSplit,
+    compareFacetSplit,
+    facetSharedYAxis,
+    releaseId,
+    compareFromId,
+    compareToId,
+    cohortSharedHiddenKeys,
   ]);
 
   useEffect(() => {
@@ -1253,6 +1380,7 @@ export default function I485Explorer({
                 <div className="flex flex-col items-stretch sm:items-end gap-2">
                   <GrainToggle grain={grain} onChange={setGrain} />
                   <SplitToggle split={split} onChange={setSplit} />
+                  <I485ShareButton buildPayload={currentSharePayload} />
                 </div>
               </div>
             </ChartHeader>
@@ -1337,6 +1465,7 @@ export default function I485Explorer({
                       onChange={setFacetSharedYAxis}
                     />
                   ) : null}
+                  <I485ShareButton buildPayload={currentSharePayload} />
                 </div>
               </div>
             </ChartHeader>
@@ -1502,6 +1631,7 @@ export default function I485Explorer({
                       onChange={setFacetSharedYAxis}
                     />
                   ) : null}
+                  <I485ShareButton buildPayload={currentSharePayload} />
                 </div>
               </div>
             </ChartHeader>

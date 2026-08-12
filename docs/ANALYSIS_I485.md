@@ -52,7 +52,13 @@ Routes:
 
 Each chart tab has its own URL. The sticky tab bar links Inventory, Priority
 date, Compare, and Data. Chart filters (country, category, grains, etc.) persist
-in localStorage across tabs; the active view comes from the URL.
+in localStorage across tabs; the active view comes from the URL. Filters also
+mirror into query params for bookmarking.
+
+**Share:** each chart header has a Share control that mints a short link at
+`/analysis/i485/s/{id}` (payload stored in `i485_shares`). Opening the link
+restores filters. WhatsApp/social previews use a branded Open Graph card (logo,
+title, filters) — not a screenshot of the Visx chart.
 
 Each chart shows an X-axis caption: **Priority date** on snapshot/compare,
 **USCIS snapshot** on cohort. Snapshot keeps a priority-date grain toggle
