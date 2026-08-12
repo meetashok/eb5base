@@ -383,6 +383,78 @@ export const CATEGORY_MEMBER_LABELS: Record<I485Category, string> = {
   EB5_INFRASTRUCTURE: 'Infrastructure',
 };
 
+/** Member categories that roll up into the Set-asides filter. */
+export const SET_ASIDE_MEMBER_CATEGORIES: I485Category[] = [
+  'EB5_SET_ASIDE',
+  'EB5_RURAL',
+  'EB5_HIGH_UNEMPLOYMENT',
+  'EB5_INFRASTRUCTURE',
+];
+
+/** Stable order for category-split series keys (members + virtual lumps). */
+export const CATEGORY_SPLIT_ORDER: string[] = [
+  'EB5_UNRESERVED',
+  'EB5_SET_ASIDES',
+  'EB5_SET_ASIDE',
+  'EB5_RURAL',
+  'EB5_HIGH_UNEMPLOYMENT',
+  'EB5_INFRASTRUCTURE',
+  'EB1',
+  'EB2',
+  'EB3',
+  'EW3',
+  'EB4',
+  'CRW',
+];
+
+function isSetAsideMemberCategory(category: string): boolean {
+  return (SET_ASIDE_MEMBER_CATEGORIES as readonly string[]).includes(category);
+}
+
+/**
+ * How to split the snapshot chart by category, given the active filter chips.
+ *
+ * - EB-5 (all), or Unreserved + Set-asides: two lines — Unreserved vs Set-asides lump
+ * - Set-asides alone (or individual set-aside chips): one line per set-aside member
+ * - Other filters: one line per selected member category
+ */
+export function resolveCategorySplitSeries(filters: string[]): {
+  seriesKeys: string[];
+  seriesKeyForCell: (cell: I485Cell) => string | null;
+  seriesLabel: (key: string) => string;
+} {
+  const lumpUnreservedVsSetAsides =
+    filters.includes('EB5_ALL') ||
+    (filters.includes('EB5_UNRESERVED') && filters.includes('EB5_SET_ASIDES'));
+
+  if (lumpUnreservedVsSetAsides) {
+    return {
+      seriesKeys: ['EB5_UNRESERVED', 'EB5_SET_ASIDES'],
+      seriesKeyForCell: (cell) => {
+        if (cell.category === 'EB5_UNRESERVED') return 'EB5_UNRESERVED';
+        if (isSetAsideMemberCategory(cell.category)) return 'EB5_SET_ASIDES';
+        return null;
+      },
+      seriesLabel: (key) => {
+        if (key === 'EB5_SET_ASIDES') return 'Set-asides';
+        return CATEGORY_MEMBER_LABELS[key as I485Category] ?? key;
+      },
+    };
+  }
+
+  const members = categoryMembersForMany(filters);
+  const memberSet = new Set<string>(members);
+  const seriesKeys = CATEGORY_SPLIT_ORDER.filter(
+    (key) => key !== 'EB5_SET_ASIDES' && memberSet.has(key),
+  );
+
+  return {
+    seriesKeys,
+    seriesKeyForCell: (cell) => (memberSet.has(cell.category) ? cell.category : null),
+    seriesLabel: (key) => CATEGORY_MEMBER_LABELS[key as I485Category] ?? key,
+  };
+}
+
 /** Stable country order for split series (excludes the All sentinel). */
 export const SPLIT_COUNTRY_ORDER: I485Country[] = [
   'india',
@@ -418,7 +490,7 @@ export function aggregateSplitByPriorityDateGrain(
   cells: I485Cell[],
   grain: PriorityDateGrain,
   seriesKeys: string[],
-  seriesKeyFn: (cell: I485Cell) => string,
+  seriesKeyFn: (cell: I485Cell) => string | null,
   seriesLabelFn: (key: string) => string,
 ): SplitPriorityDateResult {
   const xMap = new Map<string, TimeBucketMeta>();
@@ -430,7 +502,7 @@ export function aggregateSplitByPriorityDateGrain(
 
   for (const cell of cells) {
     const seriesKey = seriesKeyFn(cell);
-    if (!counts.has(seriesKey)) continue;
+    if (seriesKey == null || !counts.has(seriesKey)) continue;
     const meta = priorityDateBucket(cell, grain);
     xMap.set(meta.key, meta);
     const byX = counts.get(seriesKey)!;

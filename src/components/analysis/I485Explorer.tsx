@@ -7,7 +7,6 @@ import I485ViewBar, { type I485ViewId } from '@/components/analysis/I485ViewBar'
 import I485CategoryPicker from '@/components/analysis/I485CategoryPicker';
 import I485CountryPicker from '@/components/analysis/I485CountryPicker';
 import {
-  CATEGORY_MEMBER_LABELS,
   DEFAULT_I485_CATEGORIES,
   MONTH_LABELS,
   SNAPSHOT_SPLIT_OPTIONS,
@@ -22,9 +21,9 @@ import {
   formatAsOf,
   formatAsOfShort,
   isI485DataAvailable,
+  resolveCategorySplitSeries,
   splitCountriesForFilter,
   type AggregatedBucket,
-  type I485Category,
   type I485Cell,
   type I485Country,
   type I485Release,
@@ -41,21 +40,6 @@ const GRAIN_OPTIONS: { value: PriorityDateGrain; label: string }[] = [
   { value: 'month', label: 'Months' },
   { value: 'quarter', label: 'Quarters' },
   { value: 'year', label: 'Fiscal years' },
-];
-
-/** Stable member order for category-split lines. */
-const CATEGORY_SPLIT_ORDER: I485Category[] = [
-  'EB5_UNRESERVED',
-  'EB5_SET_ASIDE',
-  'EB5_RURAL',
-  'EB5_HIGH_UNEMPLOYMENT',
-  'EB5_INFRASTRUCTURE',
-  'EB1',
-  'EB2',
-  'EB3',
-  'EW3',
-  'EB4',
-  'CRW',
 ];
 
 function bucketLabel(b: AggregatedBucket): string {
@@ -386,16 +370,15 @@ export default function I485Explorer({
       );
     }
 
-    const memberSet = new Set(members);
-    const keys = CATEGORY_SPLIT_ORDER.filter((m) => memberSet.has(m));
+    const plan = resolveCategorySplitSeries(categories);
     return aggregateSplitByPriorityDateGrain(
       snapshotCells,
       grain,
-      keys,
-      (c) => c.category,
-      (key) => CATEGORY_MEMBER_LABELS[key as I485Category] ?? key,
+      plan.seriesKeys,
+      plan.seriesKeyForCell,
+      plan.seriesLabel,
     );
-  }, [snapshotCells, split, countries, grain, members]);
+  }, [snapshotCells, split, countries, grain, categories]);
 
   const snapshotSplitLines = useMemo(() => {
     if (!snapshotSplit) return [];
