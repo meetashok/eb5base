@@ -62,7 +62,7 @@ export default function I485SourceDataPage() {
           </span>
         }
         title="Source data"
-        subtitle="Every chart on the inventory explorer is built from these official USCIS workbooks. Downloads open on uscis.gov - EB5 Base does not host the files."
+        subtitle="Official USCIS workbooks power every chart on the inventory explorer. Download a consolidated CSV for your own analysis, or open individual monthly XLSX files on uscis.gov."
       />
 
       <section className="max-w-3xl mx-auto px-4 py-8 space-y-6">
@@ -79,6 +79,27 @@ export default function I485SourceDataPage() {
             </a>
           </p>
           <p className="text-xs text-neutral/75">{manifest.notes}</p>
+        </div>
+
+        <div className="space-y-3">
+          <h2 className="text-sm font-bold text-primary">Consolidated CSV</h2>
+          <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 space-y-2">
+            <p className="text-sm text-neutral leading-relaxed">
+              One file with every non-zero cell across all {files.length} monthly snapshots
+              (country, category, visa status, priority-date year/month, count). Suppressed
+              USCIS values (&quot;D&quot;) appear with an empty count and{' '}
+              <span className="font-mono text-xs">suppressed=true</span>. Priority-date year{' '}
+              <span className="font-mono text-xs">0</span> is the USCIS &quot;Prior Years&quot;
+              rollup.
+            </p>
+            <a
+              href="/data/i485-pending-inventory.csv"
+              download="i485-pending-inventory.csv"
+              className="inline-flex items-center text-sm font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+            >
+              Download i485-pending-inventory.csv
+            </a>
+          </div>
         </div>
 
         <div className="space-y-3">

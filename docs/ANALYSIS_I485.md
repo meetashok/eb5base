@@ -33,9 +33,13 @@ priority date).
 
 3. When USCIS posts a new snapshot: download the XLSX into
    `data/uscis-i485/`, add an entry to `manifest.json` (file, as_of_date,
-   published_date, source_url, source_title, source_note), and re-run the
-   ingest. Note: uscis.gov blocks non-browser requests from data centers, so
-   the download step is manual (or via a real browser session).
+   published_date, source_url, source_title, source_note), re-run the
+   ingest, then regenerate the public CSV:
+
+   ```bash
+   npm run analysis:ingest-i485
+   npm run analysis:export-i485-csv   # → public/data/i485-pending-inventory.csv
+   ```
 
 ## Data caveats (reflected in page copy)
 
