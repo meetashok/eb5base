@@ -118,7 +118,6 @@ export default function Navbar() {
       {navLink('/status', 'Status Update')}
       {caseTrackerLink}
       {navLink('/resources', 'Resources')}
-      {navLink('/about', 'About')}
     </>
   );
 
