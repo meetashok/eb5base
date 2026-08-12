@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { BarChart, DiffBarChart, LineChart, MultiSeriesLineChart, formatSignedCount } from '@/components/charts';
+import { BarChart, DiffBarChart, LineChart, MultiSeriesLineChart, formatSignedCount, seriesColor } from '@/components/charts';
 import I485ViewBar, { type I485ViewId } from '@/components/analysis/I485ViewBar';
 import I485CategoryPicker from '@/components/analysis/I485CategoryPicker';
 import I485CountryPicker from '@/components/analysis/I485CountryPicker';
@@ -303,6 +303,11 @@ export default function I485Explorer({
   const [cohortPdSplit, setCohortPdSplit] = useState<CohortPdSplit>('quarter');
   const [cohortFacetSplit, setCohortFacetSplit] = useState<CohortFacetSplit>('none');
   const [cohortCells, setCohortCells] = useState<I485Cell[] | null>(null);
+  /** Shared across country/category facet charts so legend toggles stay in sync. */
+  const [cohortSharedHiddenKeys, setCohortSharedHiddenKeys] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const [cohortSharedLegendFocus, setCohortSharedLegendFocus] = useState<string | null>(null);
 
   // Compare view state
   const initialCompare = defaultCompareIds(initialReleases);
@@ -602,6 +607,45 @@ export default function I485Explorer({
     releases,
     selectedPdYears,
   ]);
+
+  const cohortFacetSeriesKeys = useMemo(() => {
+    if (!cohortFacets) return [] as string[];
+    const seen = new Map<string, string>();
+    for (const facet of cohortFacets) {
+      for (const s of facet.splitLines) {
+        if (!seen.has(s.key)) seen.set(s.key, s.label);
+      }
+    }
+    return Array.from(seen.keys());
+  }, [cohortFacets]);
+
+  const cohortFacetSeriesColors = useMemo(() => {
+    const map: Record<string, string> = {};
+    cohortFacetSeriesKeys.forEach((key, i) => {
+      map[key] = seriesColor(i);
+    });
+    return map;
+  }, [cohortFacetSeriesKeys]);
+
+  const cohortFacetSeriesKeySig = cohortFacetSeriesKeys.join('|');
+  useEffect(() => {
+    setCohortSharedHiddenKeys(new Set());
+    setCohortSharedLegendFocus(null);
+  }, [cohortFacetSeriesKeySig, cohortFacetSplit, cohortPdSplit]);
+
+  function toggleCohortSharedSeries(key: string) {
+    setCohortSharedHiddenKeys((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+        return next;
+      }
+      const visibleCount = cohortFacetSeriesKeys.filter((k) => !next.has(k)).length;
+      if (visibleCount <= 1) return prev;
+      next.add(key);
+      return next;
+    });
+  }
 
   const cohortSuppressed = useMemo(() => {
     if (cohortFacetSplit === 'none' && cohortSplitData) {
@@ -1096,6 +1140,11 @@ export default function I485Explorer({
                           height={180}
                           xAxisLabel="USCIS snapshot"
                           hoverLabelPrefix="Snapshot date"
+                          hiddenKeys={cohortSharedHiddenKeys}
+                          onToggleSeries={toggleCohortSharedSeries}
+                          legendFocusKey={cohortSharedLegendFocus}
+                          onLegendFocusChange={setCohortSharedLegendFocus}
+                          seriesColors={cohortFacetSeriesColors}
                           showTick={(d, i) =>
                             showPriorityDateTick(
                               'month',

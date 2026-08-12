@@ -42,6 +42,19 @@ export interface MultiSeriesLineChartProps {
   /** Prefixed before the hovered X label, e.g. "Snapshot date". */
   hoverLabelPrefix?: string;
   showTick?: (d: MultiSeriesXMeta, index: number) => boolean;
+  /**
+   * Controlled hidden series keys (for syncing legends across facet charts).
+   * When set with `onToggleSeries`, visibility is owned by the parent.
+   */
+  hiddenKeys?: ReadonlySet<string>;
+  onToggleSeries?: (key: string) => void;
+  /** Controlled legend-hover focus (sync highlight across facet charts). */
+  legendFocusKey?: string | null;
+  onLegendFocusChange?: (key: string | null) => void;
+  /** Stable colors by series key (keeps India/China facets aligned). */
+  seriesColors?: Record<string, string>;
+  /** When false, hide the legend row (parent may render a shared one). */
+  showLegend?: boolean;
 }
 
 const margin = { top: 12, right: 12, bottom: 28, left: 40 };
@@ -75,25 +88,38 @@ export default function MultiSeriesLineChart({
   xAxisLabel,
   hoverLabelPrefix,
   showTick,
+  hiddenKeys: hiddenKeysProp,
+  onToggleSeries,
+  legendFocusKey: legendFocusKeyProp,
+  onLegendFocusChange,
+  seriesColors,
+  showLegend = true,
 }: MultiSeriesLineChartProps) {
   const { ref, width } = useElementWidth<HTMLDivElement>();
   const [hoverKey, setHoverKey] = useState<string | null>(null);
-  const [legendFocusKey, setLegendFocusKey] = useState<string | null>(null);
-  const [hiddenKeys, setHiddenKeys] = useState<Set<string>>(() => new Set());
+  const [internalLegendFocusKey, setInternalLegendFocusKey] = useState<string | null>(null);
+  const [internalHiddenKeys, setInternalHiddenKeys] = useState<Set<string>>(() => new Set());
+
+  const controlledHidden = hiddenKeysProp != null && onToggleSeries != null;
+  const controlledFocus = onLegendFocusChange != null;
+  const hiddenKeys = controlledHidden ? hiddenKeysProp! : internalHiddenKeys;
+  const legendFocusKey = controlledFocus
+    ? (legendFocusKeyProp ?? null)
+    : internalLegendFocusKey;
 
   const seriesKeySig = series.map((s) => s.key).join('|');
   useEffect(() => {
-    setHiddenKeys(new Set());
-    setLegendFocusKey(null);
-  }, [seriesKeySig]);
+    if (!controlledHidden) setInternalHiddenKeys(new Set());
+    if (!controlledFocus) setInternalLegendFocusKey(null);
+  }, [seriesKeySig, controlledHidden, controlledFocus]);
 
   const colored = useMemo(
     () =>
       series.map((s, i) => ({
         ...s,
-        color: s.color ?? seriesColor(i),
+        color: seriesColors?.[s.key] ?? s.color ?? seriesColor(i),
       })),
-    [series],
+    [series, seriesColors],
   );
 
   const visible = useMemo(
@@ -111,8 +137,17 @@ export default function MultiSeriesLineChart({
     });
   }, [visible, legendFocusKey]);
 
+  function setLegendFocus(key: string | null) {
+    if (controlledFocus) onLegendFocusChange!(key);
+    else setInternalLegendFocusKey(key);
+  }
+
   function toggleSeries(key: string) {
-    setHiddenKeys((prev) => {
+    if (controlledHidden) {
+      onToggleSeries!(key);
+      return;
+    }
+    setInternalHiddenKeys((prev) => {
       const next = new Set(prev);
       if (next.has(key)) {
         next.delete(key);
@@ -189,53 +224,57 @@ export default function MultiSeriesLineChart({
 
   return (
     <div className="w-full space-y-2" onMouseLeave={() => setHoverKey(null)}>
-      <div
-        className="flex min-h-4 flex-wrap items-center gap-x-1.5 gap-y-1 text-xs"
-        role="group"
-        aria-label="Toggle series"
-        onMouseLeave={() => setLegendFocusKey(null)}
-      >
-        {colored.map((s) => {
-          const on = !hiddenKeys.has(s.key);
-          const focused = legendFocusKey === s.key;
-          return (
-            <button
-              key={s.key}
-              type="button"
-              className={`inline-flex items-center gap-1.5 rounded-md px-1.5 py-0.5 transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary ${
-                on
-                  ? focused
-                    ? 'bg-base-200 text-primary'
-                    : 'text-neutral/80'
-                  : 'text-neutral/35'
-              }`}
-              aria-pressed={on}
-              title={on ? `Hide ${s.label}` : `Show ${s.label}`}
-              onClick={() => {
-                toggleSeries(s.key);
-                setLegendFocusKey(null);
-              }}
-              onMouseEnter={() => {
-                if (on) setLegendFocusKey(s.key);
-              }}
-              onFocus={() => {
-                if (on) setLegendFocusKey(s.key);
-              }}
-              onBlur={() => setLegendFocusKey((k) => (k === s.key ? null : k))}
-            >
-              <span
-                className="inline-block w-3 rounded-full"
-                style={{
-                  backgroundColor: on ? s.color : '#c4bdb2',
-                  height: focused ? 3 : 2,
+      {showLegend ? (
+        <div
+          className="flex min-h-4 flex-wrap items-center gap-x-1.5 gap-y-1 text-xs"
+          role="group"
+          aria-label="Toggle series"
+          onMouseLeave={() => setLegendFocus(null)}
+        >
+          {colored.map((s) => {
+            const on = !hiddenKeys.has(s.key);
+            const focused = legendFocusKey === s.key;
+            return (
+              <button
+                key={s.key}
+                type="button"
+                className={`inline-flex items-center gap-1.5 rounded-md px-1.5 py-0.5 transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary ${
+                  on
+                    ? focused
+                      ? 'bg-base-200 text-primary'
+                      : 'text-neutral/80'
+                    : 'text-neutral/35'
+                }`}
+                aria-pressed={on}
+                title={on ? `Hide ${s.label}` : `Show ${s.label}`}
+                onClick={() => {
+                  toggleSeries(s.key);
+                  setLegendFocus(null);
                 }}
-                aria-hidden
-              />
-              <span className={on ? undefined : 'line-through'}>{s.label}</span>
-            </button>
-          );
-        })}
-      </div>
+                onMouseEnter={() => {
+                  if (on) setLegendFocus(s.key);
+                }}
+                onFocus={() => {
+                  if (on) setLegendFocus(s.key);
+                }}
+                onBlur={() => {
+                  if (legendFocusKey === s.key) setLegendFocus(null);
+                }}
+              >
+                <span
+                  className="inline-block w-3 rounded-full"
+                  style={{
+                    backgroundColor: on ? s.color : '#c4bdb2',
+                    height: focused ? 3 : 2,
+                  }}
+                  aria-hidden
+                />
+                <span className={on ? undefined : 'line-through'}>{s.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
 
       {/*
         Reserve top padding for the hover readout; render it absolutely so
