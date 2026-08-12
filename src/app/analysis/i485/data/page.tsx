@@ -79,7 +79,7 @@ export default function I485SourceDataPage() {
             <p className="text-sm text-neutral leading-relaxed">
               One file with every non-zero cell across all {files.length} monthly snapshots
               (country, category, visa status, priority-date year/month, count). Built by EB5
-              Base from the USCIS workbooks below — verify against the official XLSX for
+              Base from the USCIS workbooks below. Verify against the official XLSX for
               definitive figures.
             </p>
             <a
