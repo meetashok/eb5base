@@ -51,10 +51,9 @@ fiscal years) and a **Split** control: None (bars), By country, or By category
 snapshot — not a time series across releases.
 
 Cohort tracks selected **priority-date years** across USCIS releases (multi-select
-chips from 2023 onward, plus an optional Previous years range). Granularity
-defaults to months (one point per USCIS release) and can group to the latest
-value in each quarter / fiscal year. Split can break the line out by
-priority-date month, quarter, or fiscal year.
+chips from 2023 onward, plus an optional Previous years range). The X axis is
+always monthly USCIS snapshots (one point per release). Split can break the
+line out by priority-date month, quarter, or fiscal year.
 
 ## Data caveats (reflected in page copy)
 

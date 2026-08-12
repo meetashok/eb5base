@@ -295,8 +295,6 @@ export default function I485Explorer({
   const [pdYears, setPdYears] = useState<PriorityDateYearSelection>({
     ...DEFAULT_PRIORITY_DATE_YEARS,
   });
-  const [cohortSnapshotGrain, setCohortSnapshotGrain] =
-    useState<PriorityDateGrain>('month');
   const [cohortSplit, setCohortSplit] = useState<CohortSplit>('none');
   const [cohortPdGrain, setCohortPdGrain] = useState<PriorityDateGrain>('quarter');
   const [cohortCells, setCohortCells] = useState<I485Cell[] | null>(null);
@@ -507,10 +505,10 @@ export default function I485Explorer({
     return aggregateCohortBySnapshotGrain(
       cohortCells,
       releases,
-      cohortSnapshotGrain,
+      'month',
       selectedPdYears,
     );
-  }, [cohortCells, releases, cohortSnapshotGrain, selectedPdYears]);
+  }, [cohortCells, releases, selectedPdYears]);
 
   const cohortLine = useMemo(
     () =>
@@ -528,18 +526,11 @@ export default function I485Explorer({
     return aggregateCohortSplitByPriorityDate(
       cohortCells,
       releases,
-      cohortSnapshotGrain,
+      'month',
       cohortPdGrain,
       selectedPdYears,
     );
-  }, [
-    cohortCells,
-    releases,
-    cohortSnapshotGrain,
-    cohortPdGrain,
-    selectedPdYears,
-    cohortSplit,
-  ]);
+  }, [cohortCells, releases, cohortPdGrain, selectedPdYears, cohortSplit]);
 
   const cohortSplitLines = useMemo(() => {
     if (!cohortSplitData) return [];
@@ -576,7 +567,7 @@ export default function I485Explorer({
       countries.length === 0
         ? 'all countries'
         : countries.map((c) => countryLabel(c)).join(', ');
-    const grainLabels: Record<PriorityDateGrain, string> = {
+    const pdGrainLabels: Record<PriorityDateGrain, string> = {
       month: 'months',
       quarter: 'quarters',
       year: 'fiscal years',
@@ -585,22 +576,13 @@ export default function I485Explorer({
       categoryLabels.join(', '),
       countryLabels,
       `priority dates ${formatPriorityDateYears(selectedPdYears)}`,
-      `snapshots by ${grainLabels[cohortSnapshotGrain]}${
-        cohortSnapshotGrain !== 'month' ? ' (latest in period)' : ''
-      }`,
+      'monthly USCIS snapshots',
     ];
     if (cohortSplit === 'priority_date') {
-      parts.push(`split by priority-date ${grainLabels[cohortPdGrain]}`);
+      parts.push(`split by priority-date ${pdGrainLabels[cohortPdGrain]}`);
     }
     return parts.join(' · ');
-  }, [
-    categories,
-    countries,
-    selectedPdYears,
-    cohortSnapshotGrain,
-    cohortSplit,
-    cohortPdGrain,
-  ]);
+  }, [categories, countries, selectedPdYears, cohortSplit, cohortPdGrain]);
 
   const compareRows = useMemo(() => {
     if (!compareFromCells || !compareToCells) return [];
@@ -1016,7 +998,6 @@ export default function I485Explorer({
                   </p>
                 </div>
                 <div className="flex flex-col items-stretch sm:items-end gap-2">
-                  <GrainToggle grain={cohortSnapshotGrain} onChange={setCohortSnapshotGrain} />
                   <CohortSplitToggle split={cohortSplit} onChange={setCohortSplit} />
                   {cohortSplit === 'priority_date' && (
                     <SeriesGrainToggle grain={cohortPdGrain} onChange={setCohortPdGrain} />
