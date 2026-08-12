@@ -44,7 +44,7 @@ priority date).
 ## Explorer
 
 `/analysis/i485` supports snapshot, compare, and cohort views. Snapshot keeps
-a priority-date grain toggle (months / quarters / fiscal years) and a
+a priority-date grain toggle (months / calendar quarters / fiscal years) and a
 **Split** control: None (bars), By country, or By category (multi-series
 lines). Split lines are still pending stock by priority date in one snapshot —
 not a time series across releases.
