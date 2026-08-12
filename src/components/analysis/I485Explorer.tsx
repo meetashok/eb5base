@@ -854,11 +854,11 @@ export default function I485Explorer({
     const valid = new Set(cohortActiveSeriesKeys);
     setCohortSharedHiddenKeys((prev) => {
       const next = new Set<string>();
-      for (const key of prev) {
+      for (const key of Array.from(prev)) {
         if (valid.has(key)) next.add(key);
       }
       if (next.size === prev.size) {
-        for (const key of prev) {
+        for (const key of Array.from(prev)) {
           if (!next.has(key)) return next;
         }
         return prev;
