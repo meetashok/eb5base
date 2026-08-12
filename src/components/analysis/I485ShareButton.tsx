@@ -122,7 +122,9 @@ export default function I485ShareButton({
           ? 'text-error'
           : status === 'copied'
             ? 'text-secondary'
-            : 'text-neutral/60 hover:bg-base-300/60 hover:text-primary'
+            : status === 'working'
+              ? 'text-secondary/70'
+              : 'text-secondary hover:bg-secondary/10 hover:text-primary'
       }`}
       onClick={() => void onShare()}
       disabled={status === 'working'}
@@ -131,7 +133,7 @@ export default function I485ShareButton({
       title={label === 'Share' ? 'Share this chart' : label}
     >
       <span>{label}</span>
-      <ShareIcon className="opacity-90" />
+      <ShareIcon />
     </button>
   );
 }
