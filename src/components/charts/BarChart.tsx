@@ -196,10 +196,11 @@ export default function BarChart({
                     tickFormat={(key) =>
                       data.find((d) => d.key === key)?.shortLabel ?? String(key)
                     }
-                    tickLabelProps={() => ({
+                    tickLabelProps={(value) => ({
                       fill: chartColors.axis,
                       fontSize: 9,
-                      textAnchor: 'middle',
+                      textAnchor: value === '_earlier' ? 'start' : 'middle',
+                      dx: value === '_earlier' ? 2 : 0,
                       dy: '0.25em',
                       fontFamily: 'inherit',
                     })}

@@ -226,7 +226,7 @@ export function priorityDateBucket(
   grain: PriorityDateGrain,
 ): TimeBucketMeta {
   if (cell.pd_year === 0) {
-    return { key: '_earlier', label: 'Earlier (prior years)', shortLabel: 'Earlier' };
+    return { key: '_earlier', label: 'Earlier (prior years)', shortLabel: 'Prior' };
   }
 
   const y = cell.pd_year;

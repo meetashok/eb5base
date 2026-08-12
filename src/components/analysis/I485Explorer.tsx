@@ -604,12 +604,12 @@ export default function I485Explorer({
           <>
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div className="space-y-1 min-w-0">
-                <h3 className="text-sm font-semibold text-primary">
+                <p className="text-xs font-medium text-neutral/55">
                   Change in pending I-485 by priority date
                   {loading ? (
-                    <span className="ml-2 font-normal text-neutral/55">Updating…</span>
+                    <span className="ml-2 font-normal text-neutral/40">Updating…</span>
                   ) : null}
-                </h3>
+                </p>
                 <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                   <span
                     className={`text-2xl font-bold tabular-nums ${
