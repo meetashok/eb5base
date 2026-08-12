@@ -659,7 +659,7 @@ export default function I485Explorer({
         {view === 'snapshot' && snapshotCells && (
           <>
             <ChartHeader>
-              <div className="flex flex-wrap items-end justify-between gap-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="space-y-1 min-w-0">
                   <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                     <span className="text-2xl font-bold tabular-nums text-primary">
@@ -742,7 +742,7 @@ export default function I485Explorer({
         {view === 'compare' && compareFromCells && compareToCells && (
           <>
             <ChartHeader>
-              <div className="flex flex-wrap items-end justify-between gap-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="space-y-1 min-w-0">
                   <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                     <span
