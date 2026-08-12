@@ -25,7 +25,7 @@ export const KEY_TOPICS: KeyTopic[] = [
     cfrs: ['INA 203(b)(5)(A)(ii)', '8 CFR 204.407(b)', '8 CFR 216.6'],
     summary: {
       overview:
-        'RIA changed the statute so investment is expected to remain invested for at least 2 years. The NPRM would write that into regulation and measure the clock from when capital is at risk and made available to the JCE, not from when a visa becomes current. For backlog countries, that is the difference between a defined sustainment period and years of forced redeployment. The open drafting fights are when the clock starts, what happens with escrow, and whether 2 years is long enough for program integrity and rural construction timelines.',
+        'RIA changed the statute so investment is expected to remain invested for at least 2 years. The NPRM would write that into regulation and measure the clock from when capital is at risk and made available to the JCE, not from when a visa becomes current. For backlog countries, that is the difference between a defined sustainment period and years of forced redeployment. Watch the start-date fine print, though: measuring from when funds are "made available to the JCE" looks investor-friendly but can quietly stretch the at-risk window, because JCEs often draw capital partially or late and that timing is outside the investor\u2019s control. Many investors will want the clock to start at escrow release to the NCE instead. The open drafting fights are when the clock starts, what happens with escrow, and whether 2 years is long enough for program integrity and rural construction timelines.',
       current:
         'After RIA, USCIS practice points to a 2-year expectation, but investors still face ambiguity and redeployment pressure when visas are delayed.',
       proposed:
@@ -37,10 +37,10 @@ export const KEY_TOPICS: KeyTopic[] = [
         polarity: 'agree',
         label: 'Support the 2-year rule; ask for clear start and exit rules',
         angles: [
-          'Say the 2-year clock should start when capital is made available to the JCE, not when your visa becomes current.',
+          'Say the 2-year clock should be measured from when your capital is at risk, not from when your visa becomes current.',
+          'Say the 2-year clock should start at escrow release to the NCE, since JCE draw timing is outside the investor\u2019s control: JCEs often draw capital partially or late, which stretches your at-risk window through no fault of your own.',
           'Ask DHS to confirm you can receive return of capital after 2 years and job creation, even before CGC.',
           'Oppose forced redeployment into a new project you did not choose after the sustainment period ends.',
-          'Ask for clear rules on escrowed capital: when the 2-year expectation starts.',
         ],
         pros: [
           'Gives backlog investors a defined end to capital lockup instead of indefinite redeployment.',
