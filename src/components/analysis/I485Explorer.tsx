@@ -117,6 +117,29 @@ function ChartHeader({ children }: { children: ReactNode }) {
   );
 }
 
+/** Right-side header controls: compact so 2–3 rows fit beside title + subtitle + Share. */
+function ChartHeaderControls({ children }: { children: ReactNode }) {
+  return (
+    <div className="flex flex-col items-stretch sm:items-end gap-1">{children}</div>
+  );
+}
+
+const headerToggleRowClass = 'flex flex-wrap items-center gap-1.5';
+const headerToggleLabelClass =
+  'text-[10px] font-semibold uppercase tracking-wide text-neutral/55';
+const headerToggleGroupClass =
+  'inline-flex max-w-full flex-wrap rounded-full border border-base-300 p-px bg-base-200/60';
+
+function headerToggleBtnClass(active: boolean, extra = ''): string {
+  return [
+    'rounded-full border-0 h-5 min-h-0 px-1.5 text-[10px] font-semibold leading-none transition-colors',
+    active ? 'bg-primary text-primary-content' : 'bg-transparent text-neutral hover:bg-base-300/70',
+    extra,
+  ]
+    .filter(Boolean)
+    .join(' ');
+}
+
 /** Chart card title + quieter metric line (number is support, not the headline). */
 function ChartTitleBlock({
   title,
@@ -168,22 +191,14 @@ function GrainToggle({
   label?: string;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral/55">
-        {label}
-      </span>
-      <div
-        className="inline-flex rounded-full border border-base-300 p-0.5 bg-base-200/60"
-        role="group"
-        aria-label="Priority-date grouping"
-      >
+    <div className={headerToggleRowClass}>
+      <span className={headerToggleLabelClass}>{label}</span>
+      <div className={headerToggleGroupClass} role="group" aria-label="Priority-date grouping">
         {GRAIN_OPTIONS.map((o) => (
           <button
             key={o.value}
             type="button"
-            className={`btn btn-xs rounded-full border-0 ${
-              grain === o.value ? 'btn-primary text-primary-content' : 'btn-ghost text-neutral'
-            }`}
+            className={headerToggleBtnClass(grain === o.value)}
             aria-pressed={grain === o.value}
             onClick={() => onChange(o.value)}
           >
@@ -203,22 +218,14 @@ function SplitToggle({
   onChange: (s: SnapshotSplit) => void;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral/55">
-        Split
-      </span>
-      <div
-        className="inline-flex rounded-full border border-base-300 p-0.5 bg-base-200/60"
-        role="group"
-        aria-label="Split series"
-      >
+    <div className={headerToggleRowClass}>
+      <span className={headerToggleLabelClass}>Split</span>
+      <div className={headerToggleGroupClass} role="group" aria-label="Split series">
         {SNAPSHOT_SPLIT_OPTIONS.map((o) => (
           <button
             key={o.value}
             type="button"
-            className={`btn btn-xs rounded-full border-0 ${
-              split === o.value ? 'btn-primary text-primary-content' : 'btn-ghost text-neutral'
-            }`}
+            className={headerToggleBtnClass(split === o.value)}
             aria-pressed={split === o.value}
             onClick={() => onChange(o.value)}
           >
@@ -238,12 +245,10 @@ function CohortPdSplitToggle({
   onChange: (v: CohortPdSplit) => void;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral/55">
-        Priority date
-      </span>
+    <div className={headerToggleRowClass}>
+      <span className={headerToggleLabelClass}>Priority date</span>
       <div
-        className="inline-flex max-w-full flex-wrap rounded-full border border-base-300 p-0.5 bg-base-200/60"
+        className={headerToggleGroupClass}
         role="group"
         aria-label="Priority-date series split"
       >
@@ -251,9 +256,7 @@ function CohortPdSplitToggle({
           <button
             key={o.value}
             type="button"
-            className={`btn btn-xs rounded-full border-0 ${
-              value === o.value ? 'btn-primary text-primary-content' : 'btn-ghost text-neutral'
-            }`}
+            className={headerToggleBtnClass(value === o.value)}
             aria-pressed={value === o.value}
             onClick={() => onChange(o.value)}
           >
@@ -273,22 +276,14 @@ function CohortFacetSplitToggle({
   onChange: (v: CohortFacetSplit) => void;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral/55">
-        Split
-      </span>
-      <div
-        className="inline-flex max-w-full flex-wrap rounded-full border border-base-300 p-0.5 bg-base-200/60"
-        role="group"
-        aria-label="Cohort facet split"
-      >
+    <div className={headerToggleRowClass}>
+      <span className={headerToggleLabelClass}>Split</span>
+      <div className={headerToggleGroupClass} role="group" aria-label="Cohort facet split">
         {COHORT_FACET_SPLIT_OPTIONS.map((o) => (
           <button
             key={o.value}
             type="button"
-            className={`btn btn-xs rounded-full border-0 ${
-              value === o.value ? 'btn-primary text-primary-content' : 'btn-ghost text-neutral'
-            }`}
+            className={headerToggleBtnClass(value === o.value)}
             aria-pressed={value === o.value}
             onClick={() => onChange(o.value)}
           >
@@ -308,20 +303,16 @@ function SharedYAxisToggle({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral/55">
-        Y-axis
-      </span>
+    <div className={headerToggleRowClass}>
+      <span className={headerToggleLabelClass}>Y-axis</span>
       <div
-        className="inline-flex rounded-full border border-base-300 p-0.5 bg-base-200/60"
+        className={headerToggleGroupClass}
         role="group"
         aria-label="Y-axis scale across facet charts"
       >
         <button
           type="button"
-          className={`btn btn-xs rounded-full border-0 min-w-[4.5rem] ${
-            value ? 'btn-primary text-primary-content' : 'btn-ghost text-neutral'
-          }`}
+          className={headerToggleBtnClass(value, 'min-w-[3.25rem]')}
           aria-pressed={value}
           onClick={() => onChange(true)}
         >
@@ -329,9 +320,7 @@ function SharedYAxisToggle({
         </button>
         <button
           type="button"
-          className={`btn btn-xs rounded-full border-0 min-w-[5.25rem] ${
-            !value ? 'btn-primary text-primary-content' : 'btn-ghost text-neutral'
-          }`}
+          className={headerToggleBtnClass(!value, 'min-w-[4.25rem]')}
           aria-pressed={!value}
           onClick={() => onChange(false)}
         >
@@ -1365,7 +1354,7 @@ export default function I485Explorer({
         {view === 'snapshot' && snapshotCells && (
           <>
             <ChartHeader>
-              <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap items-start justify-between gap-3">
                 <ChartTitleBlock
                   title="Pending I-485 by priority date"
                   metric={
@@ -1382,10 +1371,10 @@ export default function I485Explorer({
                   loading={loading}
                   action={<I485ShareButton buildPayload={currentSharePayload} />}
                 />
-                <div className="flex flex-col items-stretch sm:items-end gap-2">
+                <ChartHeaderControls>
                   <GrainToggle grain={grain} onChange={setGrain} />
                   <SplitToggle split={split} onChange={setSplit} />
-                </div>
+                </ChartHeaderControls>
               </div>
             </ChartHeader>
             {split !== 'none' && (
@@ -1439,7 +1428,7 @@ export default function I485Explorer({
         {view === 'compare' && compareFromCells && compareToCells && (
           <>
             <ChartHeader>
-              <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap items-start justify-between gap-3">
                 <ChartTitleBlock
                   title="Change in pending I-485 between two snapshots"
                   metric={formatSignedCount(compareNet.delta)}
@@ -1458,7 +1447,7 @@ export default function I485Explorer({
                   loading={loading}
                   action={<I485ShareButton buildPayload={currentSharePayload} />}
                 />
-                <div className="flex flex-col items-stretch sm:items-end gap-2">
+                <ChartHeaderControls>
                   <GrainToggle grain={grain} onChange={setGrain} />
                   <CohortFacetSplitToggle
                     value={compareFacetSplit}
@@ -1470,7 +1459,7 @@ export default function I485Explorer({
                       onChange={setFacetSharedYAxis}
                     />
                   ) : null}
-                </div>
+                </ChartHeaderControls>
               </div>
             </ChartHeader>
             <p className="text-xs text-neutral/70">{compareContextCaption}</p>
@@ -1611,7 +1600,7 @@ export default function I485Explorer({
         {view === 'cohort' && cohortCells && (
           <>
             <ChartHeader>
-              <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap items-start justify-between gap-3">
                 <ChartTitleBlock
                   title="Pending I-485 across USCIS snapshots"
                   metric={
@@ -1624,7 +1613,7 @@ export default function I485Explorer({
                   loading={loading}
                   action={<I485ShareButton buildPayload={currentSharePayload} />}
                 />
-                <div className="flex flex-col items-stretch sm:items-end gap-2">
+                <ChartHeaderControls>
                   <CohortPdSplitToggle value={cohortPdSplit} onChange={setCohortPdSplit} />
                   <CohortFacetSplitToggle
                     value={cohortFacetSplit}
@@ -1636,7 +1625,7 @@ export default function I485Explorer({
                       onChange={setFacetSharedYAxis}
                     />
                   ) : null}
-                </div>
+                </ChartHeaderControls>
               </div>
             </ChartHeader>
             <p className="text-xs text-neutral/70">{cohortContextCaption}</p>
