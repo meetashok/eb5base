@@ -124,21 +124,27 @@ function ChartTitleBlock({
   metricClassName = 'text-primary',
   metricNote,
   loading,
+  action,
 }: {
   title: ReactNode;
   metric?: ReactNode;
   metricClassName?: string;
   metricNote?: ReactNode;
   loading?: boolean;
+  /** Compact action (e.g. Share) aligned with the title, not stacked in controls. */
+  action?: ReactNode;
 }) {
   return (
-    <div className="min-w-0 space-y-1">
-      <h2 className="text-sm font-semibold leading-snug text-primary sm:text-base">
-        {title}
-        {loading ? (
-          <span className="ml-2 text-xs font-normal text-neutral/40">Updating…</span>
-        ) : null}
-      </h2>
+    <div className="min-w-0 flex-1 space-y-1">
+      <div className="flex items-start justify-between gap-2">
+        <h2 className="min-w-0 text-sm font-semibold leading-snug text-primary sm:text-base">
+          {title}
+          {loading ? (
+            <span className="ml-2 text-xs font-normal text-neutral/40">Updating…</span>
+          ) : null}
+        </h2>
+        {action ? <div className="shrink-0 pt-0.5">{action}</div> : null}
+      </div>
       {metric != null || metricNote != null ? (
         <p className="text-sm leading-snug text-neutral/70">
           {metric != null ? (
@@ -1452,6 +1458,7 @@ export default function I485Explorer({
                       : 'net change'
                   }
                   loading={loading}
+                  action={<I485ShareButton buildPayload={currentSharePayload} />}
                 />
                 <div className="flex flex-col items-stretch sm:items-end gap-2">
                   <GrainToggle grain={grain} onChange={setGrain} />
@@ -1465,7 +1472,6 @@ export default function I485Explorer({
                       onChange={setFacetSharedYAxis}
                     />
                   ) : null}
-                  <I485ShareButton buildPayload={currentSharePayload} />
                 </div>
               </div>
             </ChartHeader>
@@ -1618,6 +1624,7 @@ export default function I485Explorer({
                   }
                   metricNote="pending in the latest snapshot"
                   loading={loading}
+                  action={<I485ShareButton buildPayload={currentSharePayload} />}
                 />
                 <div className="flex flex-col items-stretch sm:items-end gap-2">
                   <CohortPdSplitToggle value={cohortPdSplit} onChange={setCohortPdSplit} />
@@ -1631,7 +1638,6 @@ export default function I485Explorer({
                       onChange={setFacetSharedYAxis}
                     />
                   ) : null}
-                  <I485ShareButton buildPayload={currentSharePayload} />
                 </div>
               </div>
             </ChartHeader>
