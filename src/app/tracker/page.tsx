@@ -88,6 +88,9 @@ export default async function TrackerLandingPage() {
 
       <div className="max-w-4xl mx-auto px-4 py-10 space-y-6">
         <section className="card-elevated p-6 md:p-8 space-y-4 text-center">
+          <div className="flex items-center justify-center gap-2 flex-wrap">
+            <span className="status-badge">Coming soon</span>
+          </div>
           <h2 className="text-xl md:text-2xl font-bold text-primary">
             Case Tracker is coming soon
           </h2>
