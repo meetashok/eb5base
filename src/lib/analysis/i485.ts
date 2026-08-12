@@ -585,7 +585,7 @@ export interface PriorityDateYearSelection {
 }
 
 export const DEFAULT_PRIORITY_DATE_YEARS: PriorityDateYearSelection = {
-  years: [2024, 2025, 2026],
+  years: [2024, 2025],
   previousEnabled: false,
   previousFromYear: 2015,
   previousToYear: COHORT_RECENT_YEAR_START - 1,
