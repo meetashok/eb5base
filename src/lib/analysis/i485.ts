@@ -617,6 +617,14 @@ export const DEFAULT_PRIORITY_DATE_YEARS: PriorityDateYearSelection = {
   previousToYear: COHORT_RECENT_YEAR_START - 1,
 };
 
+/** Compare-tab default: slightly older years so recent growth does not dominate the diff. */
+export const DEFAULT_COMPARE_PRIORITY_DATE_YEARS: PriorityDateYearSelection = {
+  years: [2023, 2024],
+  previousEnabled: false,
+  previousFromYear: 2015,
+  previousToYear: COHORT_RECENT_YEAR_START - 1,
+};
+
 export function recentCohortYearChips(latestYear: number): number[] {
   const end = Math.max(latestYear, COHORT_RECENT_YEAR_START);
   const years: number[] = [];
@@ -916,6 +924,102 @@ export function aggregateCohortFacets(
         : aggregateCohortSplitByPriorityDate(facetCells, releases, 'month', pdGrain, years);
     if (split && split.series.length === 0) return [];
     return [{ key, label: facetLabelFn(key), series, split }];
+  });
+}
+
+export interface ComparePriorityDateRow {
+  meta: TimeBucketMeta;
+  earlier: AggregatedBucket;
+  later: AggregatedBucket;
+  delta: number;
+}
+
+/** Diff two snapshots by priority-date grain (later − earlier). */
+export function compareByPriorityDateGrain(
+  earlierCells: I485Cell[],
+  laterCells: I485Cell[],
+  grain: PriorityDateGrain,
+): ComparePriorityDateRow[] {
+  const fromSeries = aggregateByPriorityDateGrain(earlierCells, grain);
+  const toSeries = aggregateByPriorityDateGrain(laterCells, grain);
+  const byKey = new Map<
+    string,
+    { meta: TimeBucketMeta; earlier: AggregatedBucket; later: AggregatedBucket }
+  >();
+  for (const row of fromSeries) {
+    byKey.set(row.meta.key, {
+      meta: row.meta,
+      earlier: row.bucket,
+      later: { count: 0, suppressedCells: 0 },
+    });
+  }
+  for (const row of toSeries) {
+    const existing = byKey.get(row.meta.key);
+    if (existing) existing.later = row.bucket;
+    else {
+      byKey.set(row.meta.key, {
+        meta: row.meta,
+        earlier: { count: 0, suppressedCells: 0 },
+        later: row.bucket,
+      });
+    }
+  }
+  return Array.from(byKey.values())
+    .map((row) => ({
+      ...row,
+      delta: row.later.count - row.earlier.count,
+    }))
+    .sort((a, b) => a.meta.key.localeCompare(b.meta.key));
+}
+
+export interface CompareFacetChart {
+  key: string;
+  label: string;
+  rows: ComparePriorityDateRow[];
+}
+
+/** Compare small multiples: one diff chart per country or category facet. */
+export function compareFacetsByPriorityDateGrain(
+  earlierCells: I485Cell[],
+  laterCells: I485Cell[],
+  grain: PriorityDateGrain,
+  facetKeys: string[],
+  facetKeyFn: (cell: I485Cell) => string | null,
+  facetLabelFn: (key: string) => string,
+): CompareFacetChart[] {
+  const earlierBy = new Map<string, I485Cell[]>();
+  const laterBy = new Map<string, I485Cell[]>();
+  for (const key of facetKeys) {
+    earlierBy.set(key, []);
+    laterBy.set(key, []);
+  }
+  for (const cell of earlierCells) {
+    const key = facetKeyFn(cell);
+    if (key == null) continue;
+    earlierBy.get(key)?.push(cell);
+  }
+  for (const cell of laterCells) {
+    const key = facetKeyFn(cell);
+    if (key == null) continue;
+    laterBy.get(key)?.push(cell);
+  }
+
+  return facetKeys.flatMap((key) => {
+    const rows = compareByPriorityDateGrain(
+      earlierBy.get(key) ?? [],
+      laterBy.get(key) ?? [],
+      grain,
+    );
+    const hasData = rows.some(
+      (r) =>
+        r.delta !== 0 ||
+        r.earlier.count > 0 ||
+        r.later.count > 0 ||
+        r.earlier.suppressedCells > 0 ||
+        r.later.suppressedCells > 0,
+    );
+    if (!hasData) return [];
+    return [{ key, label: facetLabelFn(key), rows }];
   });
 }
 

@@ -21,6 +21,12 @@ export interface DiffBarDatum {
   /** Signed change (later − earlier). */
   value: number;
   valueLabel?: string;
+  /** Absolute pending count in the earlier snapshot (for hover). */
+  earlierValue?: number;
+  earlierValueLabel?: string;
+  /** Absolute pending count in the later snapshot (for hover). */
+  laterValue?: number;
+  laterValueLabel?: string;
 }
 
 export interface DiffBarChartProps {
@@ -119,9 +125,20 @@ export default function DiffBarChart({
     <div className="space-y-1 w-full">
       <div className="flex items-center text-xs font-semibold text-neutral min-h-4">
         {hovered && (
-          <span className="ml-auto tabular-nums text-primary">
-            {hovered.label} ·{' '}
-            {hovered.valueLabel ?? formatSignedCount(hovered.value)}
+          <span className="ml-auto max-w-full truncate text-right tabular-nums text-primary">
+            {hovered.label}
+            {hovered.earlierValueLabel != null && hovered.laterValueLabel != null ? (
+              <>
+                {' · '}
+                <span className="font-medium text-neutral/75">
+                  {hovered.earlierValueLabel} → {hovered.laterValueLabel}
+                </span>
+              </>
+            ) : null}
+            {' · '}
+            <span className="tabular-nums">
+              {hovered.valueLabel ?? formatSignedCount(hovered.value)}
+            </span>
           </span>
         )}
       </div>

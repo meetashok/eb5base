@@ -8,6 +8,7 @@ import {
   COHORT_PREVIOUS_YEAR_MIN,
   COHORT_RECENT_YEAR_START,
   COUNTRY_OPTIONS,
+  DEFAULT_COMPARE_PRIORITY_DATE_YEARS,
   DEFAULT_I485_CATEGORIES,
   DEFAULT_PRIORITY_DATE_YEARS,
   EB5_CATEGORY_BUTTONS,
@@ -33,8 +34,11 @@ export interface I485ExplorerPrefs {
   grain: PriorityDateGrain;
   split: SnapshotSplit;
   pdYears: PriorityDateYearSelection;
+  comparePdYears: PriorityDateYearSelection;
   cohortPdSplit: CohortPdSplit;
   cohortFacetSplit: CohortFacetSplit;
+  compareFacetSplit: CohortFacetSplit;
+  compareShowData: boolean;
   /** Snapshot as-of release id, when still present in the catalog. */
   releaseId: number | null;
   compareFromId: number | null;
@@ -100,8 +104,11 @@ export function defaultI485ExplorerPrefs(): I485ExplorerPrefs {
     grain: 'quarter',
     split: 'none',
     pdYears: { ...DEFAULT_PRIORITY_DATE_YEARS },
+    comparePdYears: { ...DEFAULT_COMPARE_PRIORITY_DATE_YEARS },
     cohortPdSplit: 'quarter',
     cohortFacetSplit: 'none',
+    compareFacetSplit: 'none',
+    compareShowData: false,
     releaseId: null,
     compareFromId: null,
     compareToId: null,
@@ -133,6 +140,11 @@ export function parseI485ExplorerPrefs(
     COHORT_FACET.has(o.cohortFacetSplit as CohortFacetSplit)
       ? (o.cohortFacetSplit as CohortFacetSplit)
       : 'none';
+  const compareFacetSplit =
+    typeof o.compareFacetSplit === 'string' &&
+    COHORT_FACET.has(o.compareFacetSplit as CohortFacetSplit)
+      ? (o.compareFacetSplit as CohortFacetSplit)
+      : 'none';
 
   return {
     view,
@@ -141,8 +153,14 @@ export function parseI485ExplorerPrefs(
     grain,
     split,
     pdYears: sanitizePdYears(o.pdYears, latestYear),
+    comparePdYears: sanitizePdYears(
+      o.comparePdYears ?? DEFAULT_COMPARE_PRIORITY_DATE_YEARS,
+      latestYear,
+    ),
     cohortPdSplit,
     cohortFacetSplit,
+    compareFacetSplit,
+    compareShowData: Boolean(o.compareShowData),
     releaseId: asNumber(o.releaseId),
     compareFromId: asNumber(o.compareFromId),
     compareToId: asNumber(o.compareToId),

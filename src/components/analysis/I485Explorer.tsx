@@ -10,6 +10,7 @@ import I485PriorityDateRangePicker from '@/components/analysis/I485PriorityDateR
 import {
   COHORT_FACET_SPLIT_OPTIONS,
   COHORT_PD_SPLIT_OPTIONS,
+  DEFAULT_COMPARE_PRIORITY_DATE_YEARS,
   DEFAULT_I485_CATEGORIES,
   DEFAULT_PRIORITY_DATE_YEARS,
   EB5_CATEGORY_BUTTONS,
@@ -22,6 +23,8 @@ import {
   aggregateCohortSplitByPriorityDate,
   aggregateSplitByPriorityDateGrain,
   categoryMembersForMany,
+  compareByPriorityDateGrain,
+  compareFacetsByPriorityDateGrain,
   countryLabel,
   fetchI485Cells,
   fetchI485Releases,
@@ -108,14 +111,16 @@ function ChartHeader({ children }: { children: ReactNode }) {
 function GrainToggle({
   grain,
   onChange,
+  label = 'Priority date',
 }: {
   grain: PriorityDateGrain;
   onChange: (g: PriorityDateGrain) => void;
+  label?: string;
 }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral/55">
-        Granularity
+        {label}
       </span>
       <div
         className="inline-flex rounded-full border border-base-300 p-0.5 bg-base-200/60"
@@ -305,8 +310,13 @@ export default function I485Explorer({
   const [pdYears, setPdYears] = useState<PriorityDateYearSelection>({
     ...DEFAULT_PRIORITY_DATE_YEARS,
   });
+  const [comparePdYears, setComparePdYears] = useState<PriorityDateYearSelection>({
+    ...DEFAULT_COMPARE_PRIORITY_DATE_YEARS,
+  });
   const [cohortPdSplit, setCohortPdSplit] = useState<CohortPdSplit>('quarter');
   const [cohortFacetSplit, setCohortFacetSplit] = useState<CohortFacetSplit>('none');
+  const [compareFacetSplit, setCompareFacetSplit] = useState<CohortFacetSplit>('none');
+  const [compareShowData, setCompareShowData] = useState(false);
   const [cohortCells, setCohortCells] = useState<I485Cell[] | null>(null);
   /** Shared across country/category facet charts so legend toggles stay in sync. */
   const [cohortSharedHiddenKeys, setCohortSharedHiddenKeys] = useState<Set<string>>(
@@ -347,8 +357,11 @@ export default function I485Explorer({
       setGrain(stored.grain);
       setSplit(stored.split);
       setPdYears(stored.pdYears);
+      setComparePdYears(stored.comparePdYears);
       setCohortPdSplit(stored.cohortPdSplit);
       setCohortFacetSplit(stored.cohortFacetSplit);
+      setCompareFacetSplit(stored.compareFacetSplit);
+      setCompareShowData(stored.compareShowData);
       if (ids.releaseId != null) setReleaseId(ids.releaseId);
       if (ids.compareFromId != null) setCompareFromId(ids.compareFromId);
       if (ids.compareToId != null) setCompareToId(ids.compareToId);
@@ -374,8 +387,11 @@ export default function I485Explorer({
       grain,
       split,
       pdYears,
+      comparePdYears,
       cohortPdSplit,
       cohortFacetSplit,
+      compareFacetSplit,
+      compareShowData,
       releaseId,
       compareFromId,
       compareToId,
@@ -388,8 +404,11 @@ export default function I485Explorer({
     grain,
     split,
     pdYears,
+    comparePdYears,
     cohortPdSplit,
     cohortFacetSplit,
+    compareFacetSplit,
+    compareShowData,
     releaseId,
     compareFromId,
     compareToId,
@@ -486,6 +505,11 @@ export default function I485Explorer({
     [pdYears, latestAsOfYear],
   );
 
+  const selectedComparePdYears = useMemo(
+    () => yearsInPriorityDateSelection(comparePdYears, latestAsOfYear),
+    [comparePdYears, latestAsOfYear],
+  );
+
   // Cohort data
   useEffect(() => {
     if (!available || view !== 'cohort') return;
@@ -511,11 +535,13 @@ export default function I485Explorer({
   useEffect(() => {
     if (!available || view !== 'compare') return;
     if (compareFromId == null || compareToId == null) return;
+    if (selectedComparePdYears.length === 0) return;
     let cancel = false;
     setLoading(true);
     const filters = {
       countries: countryFilter,
       categories: members,
+      pdYears: selectedComparePdYears,
     };
     Promise.all([
       fetchI485Cells({ ...filters, releaseId: compareFromId }),
@@ -531,7 +557,16 @@ export default function I485Explorer({
     return () => {
       cancel = true;
     };
-  }, [available, view, compareFromId, compareToId, countries, countryFilter, members]);
+  }, [
+    available,
+    view,
+    compareFromId,
+    compareToId,
+    countries,
+    countryFilter,
+    members,
+    selectedComparePdYears,
+  ]);
 
   const snapshotSeries = useMemo(() => {
     if (!snapshotCells) return [];
@@ -783,40 +818,7 @@ export default function I485Explorer({
 
   const compareRows = useMemo(() => {
     if (!compareFromCells || !compareToCells) return [];
-    const fromSeries = aggregateByPriorityDateGrain(compareFromCells, grain);
-    const toSeries = aggregateByPriorityDateGrain(compareToCells, grain);
-    const byKey = new Map<
-      string,
-      {
-        meta: TimeBucketMeta;
-        earlier: AggregatedBucket;
-        later: AggregatedBucket;
-      }
-    >();
-    for (const row of fromSeries) {
-      byKey.set(row.meta.key, {
-        meta: row.meta,
-        earlier: row.bucket,
-        later: { count: 0, suppressedCells: 0 },
-      });
-    }
-    for (const row of toSeries) {
-      const existing = byKey.get(row.meta.key);
-      if (existing) existing.later = row.bucket;
-      else {
-        byKey.set(row.meta.key, {
-          meta: row.meta,
-          earlier: { count: 0, suppressedCells: 0 },
-          later: row.bucket,
-        });
-      }
-    }
-    return Array.from(byKey.values())
-      .map((row) => ({
-        ...row,
-        delta: row.later.count - row.earlier.count,
-      }))
-      .sort((a, b) => a.meta.key.localeCompare(b.meta.key));
+    return compareByPriorityDateGrain(compareFromCells, compareToCells, grain);
   }, [compareFromCells, compareToCells, grain]);
 
   const compareDiffBars = useMemo(
@@ -826,10 +828,71 @@ export default function I485Explorer({
         label: row.meta.label,
         shortLabel: row.meta.shortLabel,
         value: row.delta,
-        valueLabel: `${formatSignedCount(row.delta)} pending`,
+        valueLabel: formatSignedCount(row.delta),
+        earlierValue: row.earlier.count,
+        earlierValueLabel: bucketLabel(row.earlier),
+        laterValue: row.later.count,
+        laterValueLabel: bucketLabel(row.later),
       })),
     [compareRows],
   );
+
+  const compareFacets = useMemo(() => {
+    if (!compareFromCells || !compareToCells || compareFacetSplit === 'none') return null;
+
+    const facets =
+      compareFacetSplit === 'country'
+        ? compareFacetsByPriorityDateGrain(
+            compareFromCells,
+            compareToCells,
+            grain,
+            splitCountriesForFilter(countries),
+            (c) => c.country,
+            (key) => countryLabel(key as I485Country),
+          )
+        : (() => {
+            const plan = resolveCategorySplitSeries(categories);
+            return compareFacetsByPriorityDateGrain(
+              compareFromCells,
+              compareToCells,
+              grain,
+              plan.seriesKeys,
+              plan.seriesKeyForCell,
+              plan.seriesLabel,
+            );
+          })();
+
+    return facets.map((facet) => ({
+      ...facet,
+      bars: facet.rows.map((row) => ({
+        key: row.meta.key,
+        label: row.meta.label,
+        shortLabel: row.meta.shortLabel,
+        value: row.delta,
+        valueLabel: formatSignedCount(row.delta),
+        earlierValue: row.earlier.count,
+        earlierValueLabel: bucketLabel(row.earlier),
+        laterValue: row.later.count,
+        laterValueLabel: bucketLabel(row.later),
+      })),
+      net: (() => {
+        const earlier = totalWithNote(facet.rows.map((r) => r.earlier));
+        const later = totalWithNote(facet.rows.map((r) => r.later));
+        return {
+          earlier,
+          later,
+          delta: later.count - earlier.count,
+        };
+      })(),
+    }));
+  }, [
+    compareFromCells,
+    compareToCells,
+    compareFacetSplit,
+    grain,
+    countries,
+    categories,
+  ]);
 
   const compareNet = useMemo(() => {
     const earlierTotal = totalWithNote(compareRows.map((r) => r.earlier));
@@ -842,13 +905,45 @@ export default function I485Explorer({
     };
   }, [compareRows]);
 
-  const compareTableRows = useMemo(
-    () =>
-      [...compareRows]
-        .filter((r) => r.delta !== 0 || r.earlier.count > 0 || r.later.count > 0)
-        .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta)),
-    [compareRows],
-  );
+  const compareTableRows = useMemo(() => {
+    type Row = {
+      key: string;
+      facetLabel: string | null;
+      pdLabel: string;
+      earlier: AggregatedBucket;
+      later: AggregatedBucket;
+      delta: number;
+    };
+    const keep = (r: { delta: number; earlier: AggregatedBucket; later: AggregatedBucket }) =>
+      r.delta !== 0 || r.earlier.count > 0 || r.later.count > 0;
+
+    if (compareFacetSplit !== 'none' && compareFacets) {
+      return compareFacets
+        .flatMap((facet) =>
+          facet.rows.filter(keep).map((row) => ({
+            key: `${facet.key}:${row.meta.key}`,
+            facetLabel: facet.label,
+            pdLabel: row.meta.label,
+            earlier: row.earlier,
+            later: row.later,
+            delta: row.delta,
+          })),
+        )
+        .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta)) as Row[];
+    }
+
+    return compareRows
+      .filter(keep)
+      .map((row) => ({
+        key: row.meta.key,
+        facetLabel: null,
+        pdLabel: row.meta.label,
+        earlier: row.earlier,
+        later: row.later,
+        delta: row.delta,
+      }))
+      .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta)) as Row[];
+  }, [compareRows, compareFacets, compareFacetSplit]);
 
   const releaseOptionsDesc = useMemo(() => [...releases].reverse(), [releases]);
 
@@ -940,6 +1035,14 @@ export default function I485Explorer({
         <I485PriorityDateRangePicker
           value={pdYears}
           onChange={setPdYears}
+          latestYear={latestAsOfYear}
+        />
+      )}
+
+      {view === 'compare' && (
+        <I485PriorityDateRangePicker
+          value={comparePdYears}
+          onChange={setComparePdYears}
           latestYear={latestAsOfYear}
         />
       )}
@@ -1082,18 +1185,77 @@ export default function I485Explorer({
                   </div>
                   <p className="text-xs font-medium text-neutral/55">
                     Change in pending I-485 by priority date
+                    {selectedComparePdYears.length > 0
+                      ? ` · ${formatPriorityDateYears(selectedComparePdYears)}`
+                      : ''}
                     {loading ? (
                       <span className="ml-2 font-normal text-neutral/40">Updating…</span>
                     ) : null}
                   </p>
                 </div>
-                <GrainToggle grain={grain} onChange={setGrain} />
+                <div className="flex flex-col items-stretch sm:items-end gap-2">
+                  <GrainToggle grain={grain} onChange={setGrain} />
+                  <CohortFacetSplitToggle
+                    value={compareFacetSplit}
+                    onChange={setCompareFacetSplit}
+                  />
+                </div>
               </div>
             </ChartHeader>
             <p className="text-xs text-neutral/70">
               Green rose and red fell between snapshots; change mixes new filings with completions.
             </p>
-            {compareDiffBars.some((d) => d.value !== 0) ? (
+            {compareFacetSplit !== 'none' ? (
+              compareFacets && compareFacets.length > 0 ? (
+                <div className="divide-y divide-base-300">
+                  {compareFacets.map((facet) => (
+                    <div key={facet.key} className="space-y-1.5 py-5 first:pt-0 last:pb-0">
+                      <div className="flex flex-wrap items-baseline justify-between gap-2">
+                        <h3 className="text-sm font-semibold text-primary">{facet.label}</h3>
+                        <span
+                          className={`text-xs font-semibold tabular-nums ${
+                            facet.net.delta > 0
+                              ? 'text-secondary'
+                              : facet.net.delta < 0
+                                ? 'text-error'
+                                : 'text-neutral/70'
+                          }`}
+                        >
+                          {formatSignedCount(facet.net.delta)}
+                          {' · '}
+                          {nf.format(facet.net.earlier.count)} → {nf.format(facet.net.later.count)}
+                        </span>
+                      </div>
+                      {facet.bars.some((d) => d.value !== 0) ? (
+                        <DiffBarChart
+                          data={facet.bars}
+                          height={200}
+                          minBarWidth={grain === 'month' ? 8 : grain === 'quarter' ? 22 : 36}
+                          showTick={(d, i) =>
+                            showPriorityDateTick(
+                              grain,
+                              facet.rows.map((r) => ({ meta: r.meta })),
+                              d,
+                              i,
+                            )
+                          }
+                          xAxisLabel="Priority date"
+                          ariaLabel={`${facet.label} change in pending I-485 by priority date`}
+                        />
+                      ) : (
+                        <p className="text-sm text-neutral">
+                          No change in disclosed pending counts for this selection.
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-neutral">
+                  No change in disclosed pending counts for this selection.
+                </p>
+              )
+            ) : compareDiffBars.some((d) => d.value !== 0) ? (
               <DiffBarChart
                 data={compareDiffBars}
                 height={240}
@@ -1126,49 +1288,73 @@ export default function I485Explorer({
             )}
 
             {compareTableRows.length > 0 && (
-              <div className="overflow-x-auto border border-base-300 rounded-lg">
-                <table className="table table-sm">
-                  <thead>
-                    <tr className="text-xs text-neutral/70">
-                      <th>Priority date</th>
-                      <th className="text-right">
-                        {compareFromRelease
-                          ? formatAsOfShort(compareFromRelease.as_of_date)
-                          : 'From'}
-                      </th>
-                      <th className="text-right">
-                        {compareToRelease ? formatAsOfShort(compareToRelease.as_of_date) : 'To'}
-                      </th>
-                      <th className="text-right">Change</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {compareTableRows.slice(0, 40).map((row) => (
-                      <tr key={row.meta.key} className="text-sm">
-                        <td className="font-medium text-primary">{row.meta.label}</td>
-                        <td className="text-right tabular-nums">{bucketLabel(row.earlier)}</td>
-                        <td className="text-right tabular-nums">{bucketLabel(row.later)}</td>
-                        <td
-                          className={`text-right tabular-nums font-semibold ${
-                            row.delta > 0
-                              ? 'text-secondary'
-                              : row.delta < 0
-                                ? 'text-error'
-                                : 'text-neutral'
-                          }`}
-                        >
-                          {formatSignedCount(row.delta)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {compareTableRows.length > 40 && (
-                  <p className="text-xs text-neutral/60 px-3 py-2 border-t border-base-300">
-                    Showing the 40 largest absolute changes of {compareTableRows.length} priority-date
-                    buckets.
-                  </p>
-                )}
+              <div className="space-y-2">
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-xs text-neutral/70 hover:text-primary"
+                  aria-expanded={compareShowData}
+                  onClick={() => setCompareShowData((v) => !v)}
+                >
+                  {compareShowData ? 'Hide data' : 'Show data'}
+                </button>
+                {compareShowData ? (
+                  <div className="overflow-x-auto border border-base-300 rounded-lg">
+                    <table className="table table-sm">
+                      <thead>
+                        <tr className="text-xs text-neutral/70">
+                          {compareFacetSplit !== 'none' ? (
+                            <th>
+                              {compareFacetSplit === 'country' ? 'Country' : 'Category'}
+                            </th>
+                          ) : null}
+                          <th>Priority date</th>
+                          <th className="text-right">
+                            {compareFromRelease
+                              ? formatAsOfShort(compareFromRelease.as_of_date)
+                              : 'From'}
+                          </th>
+                          <th className="text-right">
+                            {compareToRelease
+                              ? formatAsOfShort(compareToRelease.as_of_date)
+                              : 'To'}
+                          </th>
+                          <th className="text-right">Change</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {compareTableRows.slice(0, 40).map((row) => (
+                          <tr key={row.key} className="text-sm">
+                            {compareFacetSplit !== 'none' ? (
+                              <td className="text-neutral/80">{row.facetLabel}</td>
+                            ) : null}
+                            <td className="font-medium text-primary">{row.pdLabel}</td>
+                            <td className="text-right tabular-nums">
+                              {bucketLabel(row.earlier)}
+                            </td>
+                            <td className="text-right tabular-nums">{bucketLabel(row.later)}</td>
+                            <td
+                              className={`text-right tabular-nums font-semibold ${
+                                row.delta > 0
+                                  ? 'text-secondary'
+                                  : row.delta < 0
+                                    ? 'text-error'
+                                    : 'text-neutral'
+                              }`}
+                            >
+                              {formatSignedCount(row.delta)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {compareTableRows.length > 40 && (
+                      <p className="text-xs text-neutral/60 px-3 py-2 border-t border-base-300">
+                        Showing the 40 largest absolute changes of {compareTableRows.length}{' '}
+                        rows.
+                      </p>
+                    )}
+                  </div>
+                ) : null}
               </div>
             )}
           </>

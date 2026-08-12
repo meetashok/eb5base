@@ -61,6 +61,13 @@ always monthly USCIS snapshots (one point per release). Two independent controls
   per facet** (small multiples). Combines with priority-date series when both
   are set
 
+Compare diffs two snapshot releases by priority-date bucket (later − earlier).
+It uses the same priority-date year chips as cohort (defaults **2023–2024** so
+recent growth does not dominate older cohorts), a **Priority date** grain toggle
+(months / quarters / fiscal years), and **Split** into faceted diff charts by
+country or category. Hover on a bar shows earlier → later counts and the signed
+change; **Show data** reveals the underlying table.
+
 ## Data caveats (reflected in page copy)
 
 - Counts are pending applications at USCIS only: no DOS consular queue, no
