@@ -675,9 +675,8 @@ export default function I485Explorer({
               </div>
             </div>
             {split !== 'none' && (
-              <p className="text-xs text-neutral/70 leading-relaxed">
-                Lines show pending stock by priority date in this snapshot — not how inventory
-                changed across releases. Use Cohort to follow a priority-date group over time.
+              <p className="text-xs text-neutral/70">
+                Pending stock by priority date in this snapshot, not change across releases.
               </p>
             )}
             {split === 'none' ? (
