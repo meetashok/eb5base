@@ -1250,8 +1250,8 @@ export default function I485Explorer({
       <I485ViewBar active={view} />
 
       <div className="max-w-4xl mx-auto px-4 pt-6 sm:pt-8 space-y-5">
-      {/* Filters */}
-      <div className="space-y-4">
+      {/* Filters — contained so controls are anchored, not floating on the page surface */}
+      <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4">
       {(view === 'snapshot' || view === 'compare') && (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {view === 'snapshot' && (
