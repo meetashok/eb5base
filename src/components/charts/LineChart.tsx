@@ -91,12 +91,16 @@ function LineChartInner({
 
   return (
     <div className="space-y-1 w-full">
-      <div className="flex items-center text-xs font-semibold text-neutral min-h-4">
+      <div className="flex items-center text-xs min-h-4">
         {hovered && (
-          <span className="ml-auto tabular-nums text-primary">
-            {hoverLabelPrefix ? `${hoverLabelPrefix} ${hovered.label}` : hovered.label}
+          <span className="ml-auto max-w-full truncate text-right">
+            <span className="font-medium text-neutral/55">
+              {hoverLabelPrefix ? `${hoverLabelPrefix} ${hovered.label}` : hovered.label}
+            </span>
             {' · '}
-            {hovered.valueLabel ?? formatAxisCount(hovered.value)} pending
+            <span className="font-semibold tabular-nums text-primary">
+              {hovered.valueLabel ?? formatAxisCount(hovered.value)} pending
+            </span>
           </span>
         )}
       </div>

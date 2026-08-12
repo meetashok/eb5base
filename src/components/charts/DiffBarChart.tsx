@@ -133,20 +133,20 @@ export default function DiffBarChart({
 
   return (
     <div className="space-y-1 w-full">
-      <div className="flex items-center text-xs font-semibold text-neutral min-h-4">
+      <div className="flex items-center text-xs min-h-4">
         {hovered && (
-          <span className="ml-auto max-w-full truncate text-right tabular-nums text-primary">
-            {hovered.label}
+          <span className="ml-auto max-w-full truncate text-right">
+            <span className="font-medium text-neutral/55">{hovered.label}</span>
             {hovered.earlierValueLabel != null && hovered.laterValueLabel != null ? (
               <>
                 {' · '}
-                <span className="font-medium text-neutral/75">
+                <span className="font-semibold tabular-nums text-neutral/70">
                   {hovered.earlierValueLabel} → {hovered.laterValueLabel}
                 </span>
               </>
             ) : null}
             {' · '}
-            <span className="tabular-nums">
+            <span className="font-semibold tabular-nums text-primary">
               {hovered.valueLabel ?? formatSignedCount(hovered.value)}
             </span>
           </span>

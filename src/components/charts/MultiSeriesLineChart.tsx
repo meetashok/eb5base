@@ -297,12 +297,12 @@ export default function MultiSeriesLineChart({
         >
           {hoverMeta ? (
             <div className="ml-auto max-w-full space-y-0.5 text-right">
-              <div className="truncate text-primary">
+              <div className="truncate font-medium text-neutral/55">
                 {hoverLabelPrefix
                   ? `${hoverLabelPrefix} ${hoverMeta.label}`
                   : hoverMeta.label}
               </div>
-              <div className="flex flex-wrap justify-end gap-x-3 gap-y-0.5 font-medium tabular-nums text-neutral/80">
+              <div className="flex flex-wrap justify-end gap-x-3 gap-y-0.5 font-semibold tabular-nums text-primary">
                 {hoverValues.map((v) => (
                   <span key={v.key} className="inline-flex items-center gap-1">
                     <span
@@ -310,7 +310,8 @@ export default function MultiSeriesLineChart({
                       style={{ backgroundColor: v.color }}
                       aria-hidden
                     />
-                    {v.label} {nf.format(v.value)}
+                    <span className="font-medium text-neutral/55">{v.label}</span>{' '}
+                    {nf.format(v.value)}
                   </span>
                 ))}
               </div>
