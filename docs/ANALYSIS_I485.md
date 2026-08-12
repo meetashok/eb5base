@@ -52,14 +52,14 @@ snapshot — not a time series across releases.
 
 Cohort tracks selected **priority-date years** across USCIS releases (multi-select
 chips from 2023 onward, plus an optional Previous years range). The X axis is
-always monthly USCIS snapshots (one point per release). **Split** options:
+always monthly USCIS snapshots (one point per release). Two independent controls:
 
-- **None** — one line for the selected cohort
-- **By priority date** — multi-series lines at Months / Quarters / Halves /
-  Fiscal years; each series starts at the first snapshot where that cohort can
-  exist
-- **By country** / **By category** — one separate chart per country or category
-  (small multiples), not overlaid lines
+- **Priority date**: None · Months · Quarters (default) · Halves · Fiscal years —
+  multi-series lines when not None; each series starts at the first feasible
+  snapshot
+- **Split**: None · By country · By category — country/category open **one chart
+  per facet** (small multiples). Combines with priority-date series when both
+  are set
 
 ## Data caveats (reflected in page copy)
 

@@ -577,13 +577,23 @@ export function splitCountriesForFilter(selected: I485Country[]): I485Country[] 
   return SPLIT_COUNTRY_ORDER.filter((c) => selected.includes(c));
 }
 
-export type CohortSplit = 'none' | 'priority_date' | 'country' | 'category';
+export type CohortFacetSplit = 'none' | 'country' | 'category';
 
-export const COHORT_SPLIT_OPTIONS: { value: CohortSplit; label: string }[] = [
+export const COHORT_FACET_SPLIT_OPTIONS: { value: CohortFacetSplit; label: string }[] = [
   { value: 'none', label: 'None' },
-  { value: 'priority_date', label: 'By priority date' },
   { value: 'country', label: 'By country' },
   { value: 'category', label: 'By category' },
+];
+
+/** Priority-date series split on cohort charts (independent of country/category facets). */
+export type CohortPdSplit = 'none' | PriorityDateGrain;
+
+export const COHORT_PD_SPLIT_OPTIONS: { value: CohortPdSplit; label: string }[] = [
+  { value: 'none', label: 'None' },
+  { value: 'month', label: 'Months' },
+  { value: 'quarter', label: 'Quarters' },
+  { value: 'half', label: 'Halves' },
+  { value: 'year', label: 'Fiscal years' },
 ];
 
 /** First calendar year shown as a recent multi-select chip. */
@@ -861,12 +871,16 @@ export function aggregateCohortSplitByPriorityDate(
 export interface CohortFacetChart {
   key: string;
   label: string;
+  /** Single-series totals across monthly snapshots (always computed). */
   series: { meta: TimeBucketMeta; bucket: AggregatedBucket; releaseId: number }[];
+  /** Present when priority-date series split is active. */
+  split: SplitPriorityDateResult | null;
 }
 
 /**
- * Cohort small multiples: one monthly snapshot line per facet key
- * (country or category). Facets with no disclosed pending stock are omitted.
+ * Cohort small multiples: one chart per facet key (country or category).
+ * Facets with no disclosed pending stock are omitted.
+ * When `pdGrain` is set, each facet also gets a priority-date multi-series split.
  */
 export function aggregateCohortFacets(
   cells: I485Cell[],
@@ -875,6 +889,7 @@ export function aggregateCohortFacets(
   facetKeys: string[],
   facetKeyFn: (cell: I485Cell) => string | null,
   facetLabelFn: (key: string) => string,
+  pdGrain: PriorityDateGrain | null = null,
 ): CohortFacetChart[] {
   const filtered = cells.filter((c) => cellInPriorityDateYears(c, years));
   const byFacet = new Map<string, I485Cell[]>();
@@ -895,7 +910,12 @@ export function aggregateCohortFacets(
       (p) => p.bucket.count > 0 || p.bucket.suppressedCells > 0,
     );
     if (!hasData) return [];
-    return [{ key, label: facetLabelFn(key), series }];
+    const split =
+      pdGrain == null
+        ? null
+        : aggregateCohortSplitByPriorityDate(facetCells, releases, 'month', pdGrain, years);
+    if (split && split.series.length === 0) return [];
+    return [{ key, label: facetLabelFn(key), series, split }];
   });
 }
 

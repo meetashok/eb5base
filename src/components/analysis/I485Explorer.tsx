@@ -8,7 +8,8 @@ import I485CategoryPicker from '@/components/analysis/I485CategoryPicker';
 import I485CountryPicker from '@/components/analysis/I485CountryPicker';
 import I485PriorityDateRangePicker from '@/components/analysis/I485PriorityDateRangePicker';
 import {
-  COHORT_SPLIT_OPTIONS,
+  COHORT_FACET_SPLIT_OPTIONS,
+  COHORT_PD_SPLIT_OPTIONS,
   DEFAULT_I485_CATEGORIES,
   DEFAULT_PRIORITY_DATE_YEARS,
   EB5_CATEGORY_BUTTONS,
@@ -32,7 +33,8 @@ import {
   splitCountriesForFilter,
   yearsInPriorityDateSelection,
   type AggregatedBucket,
-  type CohortSplit,
+  type CohortFacetSplit,
+  type CohortPdSplit,
   type I485Cell,
   type I485Country,
   type I485Release,
@@ -50,13 +52,6 @@ const DEFAULT_CATEGORIES = DEFAULT_I485_CATEGORIES;
 const GRAIN_OPTIONS: { value: PriorityDateGrain; label: string }[] = [
   { value: 'month', label: 'Months' },
   { value: 'quarter', label: 'Quarters' },
-  { value: 'year', label: 'Fiscal years' },
-];
-/** Cohort priority-date series grain (includes calendar halves). */
-const SERIES_GRAIN_OPTIONS: { value: PriorityDateGrain; label: string }[] = [
-  { value: 'month', label: 'Months' },
-  { value: 'quarter', label: 'Quarters' },
-  { value: 'half', label: 'Halves' },
   { value: 'year', label: 'Fiscal years' },
 ];
 
@@ -175,31 +170,31 @@ function SplitToggle({
   );
 }
 
-function CohortSplitToggle({
-  split,
+function CohortPdSplitToggle({
+  value,
   onChange,
 }: {
-  split: CohortSplit;
-  onChange: (s: CohortSplit) => void;
+  value: CohortPdSplit;
+  onChange: (v: CohortPdSplit) => void;
 }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral/55">
-        Split
+        Priority date
       </span>
       <div
         className="inline-flex max-w-full flex-wrap rounded-full border border-base-300 p-0.5 bg-base-200/60"
         role="group"
-        aria-label="Cohort split"
+        aria-label="Priority-date series split"
       >
-        {COHORT_SPLIT_OPTIONS.map((o) => (
+        {COHORT_PD_SPLIT_OPTIONS.map((o) => (
           <button
             key={o.value}
             type="button"
             className={`btn btn-xs rounded-full border-0 ${
-              split === o.value ? 'btn-primary text-primary-content' : 'btn-ghost text-neutral'
+              value === o.value ? 'btn-primary text-primary-content' : 'btn-ghost text-neutral'
             }`}
-            aria-pressed={split === o.value}
+            aria-pressed={value === o.value}
             onClick={() => onChange(o.value)}
           >
             {o.label}
@@ -210,31 +205,31 @@ function CohortSplitToggle({
   );
 }
 
-function SeriesGrainToggle({
-  grain,
+function CohortFacetSplitToggle({
+  value,
   onChange,
 }: {
-  grain: PriorityDateGrain;
-  onChange: (g: PriorityDateGrain) => void;
+  value: CohortFacetSplit;
+  onChange: (v: CohortFacetSplit) => void;
 }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral/55">
-        Series
+        Split
       </span>
       <div
-        className="inline-flex rounded-full border border-base-300 p-0.5 bg-base-200/60"
+        className="inline-flex max-w-full flex-wrap rounded-full border border-base-300 p-0.5 bg-base-200/60"
         role="group"
-        aria-label="Priority-date series grouping"
+        aria-label="Cohort facet split"
       >
-        {SERIES_GRAIN_OPTIONS.map((o) => (
+        {COHORT_FACET_SPLIT_OPTIONS.map((o) => (
           <button
             key={o.value}
             type="button"
             className={`btn btn-xs rounded-full border-0 ${
-              grain === o.value ? 'btn-primary text-primary-content' : 'btn-ghost text-neutral'
+              value === o.value ? 'btn-primary text-primary-content' : 'btn-ghost text-neutral'
             }`}
-            aria-pressed={grain === o.value}
+            aria-pressed={value === o.value}
             onClick={() => onChange(o.value)}
           >
             {o.label}
@@ -305,8 +300,8 @@ export default function I485Explorer({
   const [pdYears, setPdYears] = useState<PriorityDateYearSelection>({
     ...DEFAULT_PRIORITY_DATE_YEARS,
   });
-  const [cohortSplit, setCohortSplit] = useState<CohortSplit>('none');
-  const [cohortPdGrain, setCohortPdGrain] = useState<PriorityDateGrain>('quarter');
+  const [cohortPdSplit, setCohortPdSplit] = useState<CohortPdSplit>('quarter');
+  const [cohortFacetSplit, setCohortFacetSplit] = useState<CohortFacetSplit>('none');
   const [cohortCells, setCohortCells] = useState<I485Cell[] | null>(null);
 
   // Compare view state
@@ -531,8 +526,10 @@ export default function I485Explorer({
     [cohortSeries],
   );
 
+  const cohortPdGrain = cohortPdSplit === 'none' ? null : cohortPdSplit;
+
   const cohortSplitData = useMemo(() => {
-    if (!cohortCells || cohortSplit !== 'priority_date') return null;
+    if (!cohortCells || cohortPdGrain == null || cohortFacetSplit !== 'none') return null;
     return aggregateCohortSplitByPriorityDate(
       cohortCells,
       releases,
@@ -540,7 +537,7 @@ export default function I485Explorer({
       cohortPdGrain,
       selectedPdYears,
     );
-  }, [cohortCells, releases, cohortPdGrain, selectedPdYears, cohortSplit]);
+  }, [cohortCells, releases, cohortPdGrain, selectedPdYears, cohortFacetSplit]);
 
   const cohortSplitLines = useMemo(() => {
     if (!cohortSplitData) return [];
@@ -552,12 +549,10 @@ export default function I485Explorer({
   }, [cohortSplitData]);
 
   const cohortFacets = useMemo(() => {
-    if (!cohortCells || (cohortSplit !== 'country' && cohortSplit !== 'category')) {
-      return null;
-    }
+    if (!cohortCells || cohortFacetSplit === 'none') return null;
 
     const facets =
-      cohortSplit === 'country'
+      cohortFacetSplit === 'country'
         ? aggregateCohortFacets(
             cohortCells,
             releases,
@@ -565,6 +560,7 @@ export default function I485Explorer({
             splitCountriesForFilter(countries),
             (c) => c.country,
             (key) => countryLabel(key as I485Country),
+            cohortPdGrain,
           )
         : (() => {
             const plan = resolveCategorySplitSeries(categories);
@@ -575,6 +571,7 @@ export default function I485Explorer({
               plan.seriesKeys,
               plan.seriesKeyForCell,
               plan.seriesLabel,
+              cohortPdGrain,
             );
           })();
 
@@ -588,11 +585,26 @@ export default function I485Explorer({
         value: p.bucket.count,
         valueLabel: bucketLabel(p.bucket),
       })),
+      split: facet.split,
+      splitLines:
+        facet.split?.series.map((s) => ({
+          key: s.key,
+          label: s.label,
+          data: s.points.map((p) => ({ key: p.key, value: p.value })),
+        })) ?? [],
     }));
-  }, [cohortCells, cohortSplit, countries, categories, releases, selectedPdYears]);
+  }, [
+    cohortCells,
+    cohortFacetSplit,
+    cohortPdGrain,
+    countries,
+    categories,
+    releases,
+    selectedPdYears,
+  ]);
 
   const cohortSuppressed = useMemo(() => {
-    if (cohortSplit === 'priority_date' && cohortSplitData) {
+    if (cohortFacetSplit === 'none' && cohortSplitData) {
       return cohortSplitData.series.reduce(
         (sum, s) => sum + s.points.reduce((a, p) => a + p.suppressedCells, 0),
         0,
@@ -606,7 +618,7 @@ export default function I485Explorer({
       );
     }
     return totalWithNote(cohortSeries.map((p) => p.bucket)).suppressedCells;
-  }, [cohortSplit, cohortSplitData, cohortFacets, cohortSeries]);
+  }, [cohortFacetSplit, cohortSplitData, cohortFacets, cohortSeries]);
 
   const cohortLatestTotal = useMemo(() => {
     if (cohortSeries.length === 0) return { count: 0, suppressedCells: 0 };
@@ -636,15 +648,16 @@ export default function I485Explorer({
       `priority dates ${formatPriorityDateYears(selectedPdYears)}`,
       'monthly USCIS snapshots',
     ];
-    if (cohortSplit === 'priority_date') {
-      parts.push(`split by priority-date ${pdGrainLabels[cohortPdGrain]}`);
-    } else if (cohortSplit === 'country') {
+    if (cohortPdGrain) {
+      parts.push(`priority-date series by ${pdGrainLabels[cohortPdGrain]}`);
+    }
+    if (cohortFacetSplit === 'country') {
       parts.push('separate chart per country');
-    } else if (cohortSplit === 'category') {
+    } else if (cohortFacetSplit === 'category') {
       parts.push('separate chart per category');
     }
     return parts.join(' · ');
-  }, [categories, countries, selectedPdYears, cohortSplit, cohortPdGrain]);
+  }, [categories, countries, selectedPdYears, cohortPdGrain, cohortFacetSplit]);
 
   const compareRows = useMemo(() => {
     if (!compareFromCells || !compareToCells) return [];
@@ -1061,15 +1074,56 @@ export default function I485Explorer({
                   </p>
                 </div>
                 <div className="flex flex-col items-stretch sm:items-end gap-2">
-                  <CohortSplitToggle split={cohortSplit} onChange={setCohortSplit} />
-                  {cohortSplit === 'priority_date' && (
-                    <SeriesGrainToggle grain={cohortPdGrain} onChange={setCohortPdGrain} />
-                  )}
+                  <CohortPdSplitToggle value={cohortPdSplit} onChange={setCohortPdSplit} />
+                  <CohortFacetSplitToggle
+                    value={cohortFacetSplit}
+                    onChange={setCohortFacetSplit}
+                  />
                 </div>
               </div>
             </ChartHeader>
             <p className="text-xs text-neutral/70">{cohortContextCaption}</p>
-            {cohortSplit === 'priority_date' ? (
+            {cohortFacetSplit !== 'none' ? (
+              cohortFacets && cohortFacets.length > 0 ? (
+                <div className="space-y-6">
+                  {cohortFacets.map((facet) => (
+                    <div key={facet.key} className="space-y-1.5">
+                      <h3 className="text-sm font-semibold text-primary">{facet.label}</h3>
+                      {facet.split && facet.split.series.length > 0 ? (
+                        <MultiSeriesLineChart
+                          xAxis={facet.split.xAxis}
+                          series={facet.splitLines}
+                          height={180}
+                          xAxisLabel="USCIS snapshot"
+                          hoverLabelPrefix="Snapshot date"
+                          showTick={(d, i) =>
+                            showPriorityDateTick(
+                              'month',
+                              facet.split!.xAxis.map((meta) => ({ meta })),
+                              d,
+                              i,
+                            )
+                          }
+                          ariaLabel={`${facet.label} cohort split by priority date across snapshots`}
+                        />
+                      ) : (
+                        <LineChart
+                          data={facet.line}
+                          height={180}
+                          xAxisLabel="USCIS snapshot"
+                          hoverLabelPrefix="Snapshot date"
+                          ariaLabel={`${facet.label} pending applications across USCIS snapshots`}
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-neutral">
+                  No pending applications reported for this cohort in any snapshot.
+                </p>
+              )
+            ) : cohortPdGrain != null ? (
               cohortSplitData && cohortSplitData.series.length > 0 ? (
                 <MultiSeriesLineChart
                   xAxis={cohortSplitData.xAxis}
@@ -1087,27 +1141,6 @@ export default function I485Explorer({
                   }
                   ariaLabel="Pending I-485 cohort split by priority date across snapshots"
                 />
-              ) : (
-                <p className="text-sm text-neutral">
-                  No pending applications reported for this cohort in any snapshot.
-                </p>
-              )
-            ) : cohortSplit === 'country' || cohortSplit === 'category' ? (
-              cohortFacets && cohortFacets.length > 0 ? (
-                <div className="space-y-6">
-                  {cohortFacets.map((facet) => (
-                    <div key={facet.key} className="space-y-1.5">
-                      <h3 className="text-sm font-semibold text-primary">{facet.label}</h3>
-                      <LineChart
-                        data={facet.line}
-                        height={180}
-                        xAxisLabel="USCIS snapshot"
-                        hoverLabelPrefix="Snapshot date"
-                        ariaLabel={`${facet.label} pending applications across USCIS snapshots`}
-                      />
-                    </div>
-                  ))}
-                </div>
               ) : (
                 <p className="text-sm text-neutral">
                   No pending applications reported for this cohort in any snapshot.
