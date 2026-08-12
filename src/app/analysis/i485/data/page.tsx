@@ -67,7 +67,7 @@ export default function I485SourceDataPage() {
           </span>
         }
         title="I-485 inventory source files"
-        subtitle="Official monthly USCIS workbooks, plus one CSV we consolidate from them for trend analysis."
+        subtitle="USCIS posts one Excel workbook per monthly snapshot. We consolidate those releases into one CSV for trend work, and still link every official file on uscis.gov."
       />
 
       <I485ViewBar active="data" />
@@ -77,8 +77,11 @@ export default function I485SourceDataPage() {
           <h2 className="text-sm font-bold text-primary">Consolidated CSV</h2>
           <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 space-y-2">
             <p className="text-sm text-neutral leading-relaxed">
-              One file with every non-zero cell across all {files.length} monthly snapshots
-              (country, category, visa status, priority-date year/month, count).
+              USCIS publishes one Excel workbook per release. Fine for a single snapshot, awkward
+              for trends: you would otherwise download, open, and stitch {files.length} files by
+              hand. EB5 Base does that consolidation for you. One CSV with every non-zero cell
+              across all monthly snapshots (country, category, visa status, priority-date
+              year/month, count).
             </p>
             <a
               href="/data/i485-pending-inventory.csv"
@@ -93,8 +96,8 @@ export default function I485SourceDataPage() {
               <span className="font-mono">0</span> is the USCIS &quot;Prior Years&quot; rollup.
             </p>
             <p className="text-xs text-neutral/70 leading-relaxed">
-              Built by EB5 Base from the official workbooks below. For definitive figures, verify
-              against the monthly XLSX files on uscis.gov.
+              The CSV is built and maintained by EB5 Base from the official workbooks below. For
+              definitive figures, verify against the monthly XLSX files on uscis.gov.
             </p>
           </div>
         </div>
