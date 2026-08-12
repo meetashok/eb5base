@@ -1,10 +1,69 @@
 {
   "docket_id": "USCIS-2026-0100",
-  "retrieved": "2026-08-12T15:13:17.188Z",
-  "total": 74,
+  "retrieved": "2026-08-12T16:18:55.790Z",
+  "total": 76,
   "source": "regulations.gov via api.data.gov",
   "mode": "first_party_anonymized_id_link_theme_summary",
+  "eb5base_attribution_version": 1,
+  "eb5base_attribution": {
+    "likely": 15,
+    "possible": 6,
+    "unlikely": 55
+  },
   "comments": [
+    {
+      "id": "USCIS-2026-0100-0109",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-08-12T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0109",
+      "poster_type": "anonymous",
+      "poster_label": "Anonymous",
+      "theme_id": "sustainment",
+      "theme_title": "Capital back after about 2 years",
+      "ai_summary": "This comment argues that the commenter am planning to file my I-526E in August 2026 for an investment in a rural EB-5 project. Because my investment is being made under the current rules, clear transition rules and predictable handling of my case are very important to me.",
+      "eb5base_likelihood": "likely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [
+        "proposed_8_cfr",
+        "verb_please_clarify",
+        "verb_dhs_should",
+        "escrow_nce",
+        "policy_manual",
+        "bridge_prospective",
+        "personal_open_long",
+        "varied_verbs"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0108",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-08-12T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0108",
+      "poster_type": "anonymous",
+      "poster_label": "Anonymous",
+      "theme_id": "sustainment",
+      "theme_title": "Capital back after about 2 years",
+      "ai_summary": "This comment argues that the commenter filed my I-526E petition in July 2026 for a rural project, and my family has put absolutely everything we have into this process. Because we are subject to the visa backlog for India, my biggest fear is the severe delays and apparent inefficiency at USCIS.",
+      "eb5base_likelihood": "likely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [
+        "proposed_8_cfr",
+        "verb_urge",
+        "verb_dhs_should",
+        "escrow_nce",
+        "i527",
+        "180_day",
+        "no_redeploy",
+        "personal_open_long",
+        "varied_verbs"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
+      "type": "comments"
+    },
     {
       "id": "USCIS-2026-0100-0107",
       "title": "Comment Submitted by Anonymous",
@@ -15,6 +74,19 @@
       "theme_id": "bridge_financing",
       "theme_title": "Bridge financing and your 10 jobs",
       "ai_summary": "This comment argues that the commenter invested through the post-RIA EB-5 program in a rural project, and I currently have an I-829 petition pending that I filed in May 2026. The proposed rule addresses important integrity concerns, but it also raises a serious issue for investors and projects that relied on the rules and agency guidance in place when their transactions were structured.",
+      "eb5base_likelihood": "likely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [
+        "proposed_8_cfr",
+        "verb_please_clarify",
+        "verb_dhs_should",
+        "policy_manual",
+        "bridge_prospective",
+        "personal_open_long",
+        "varied_verbs"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -27,6 +99,13 @@
       "theme_id": "bridge_financing",
       "theme_title": "Bridge financing and your 10 jobs",
       "ai_summary": "This comment argues that the commenter have already invested into a project which got initial support from bridge loan and got clear post receiving EB5 investor. I feel that having bridge loan supports project development and reduce risk of project timeline and possible going into default.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "verb_dhs_should"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -39,6 +118,22 @@
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
       "ai_summary": "This comment argues: To USCIS, Preparing to file my I-526E petition for a high-unemployment targeted employment area project in the second quarter of 2026 has demanded immense planning. I appreciate the opportunity to provide feedback on this proposed rule.",
+      "eb5base_likelihood": "likely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [
+        "proposed_8_cfr",
+        "verb_urge",
+        "verb_dhs_should",
+        "escrow_nce",
+        "i527",
+        "180_day",
+        "policy_manual",
+        "no_redeploy",
+        "personal_open_long",
+        "varied_verbs"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -51,6 +146,16 @@
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
       "ai_summary": "This comment argues that the commenter filed my I-526E petition in March 2024 based on a rural project, and my I-485 was approved in May 2025. Because my application was approved under an already approved I-956F, my investment should be governed by the laws in place at that time.",
+      "eb5base_likelihood": "likely",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "proposed_8_cfr",
+        "verb_dhs_should",
+        "escrow_nce",
+        "personal_open_long"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -63,6 +168,15 @@
       "theme_id": "bridge_financing",
       "theme_title": "Bridge financing and your 10 jobs",
       "ai_summary": "This comment argues: On bridge financing, I am concerned about the proposed change and how it would reach projects already underway. Bridge financing is standard in real estate and infrastructure - a large share of projects rely on temporary capital that EB-5 funds later replace - so a rule that stops counting jobs tied to repaid bridge loans would unsettle deals structured in good faith under current guidance.",
+      "eb5base_likelihood": "possible",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "proposed_8_cfr",
+        "verb_dhs_should",
+        "policy_manual"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -75,6 +189,21 @@
       "theme_id": "good_faith",
       "theme_title": "If your regional center fails",
       "ai_summary": "This comment argues that the commenter filed my I-526E for a rural EB-5 project in September 2026, and I am concerned about how the proposed changes could affect investors who have already made decisions based on the rules and guidance in place when their projects were structured. I appreciate DHS&rsquo;s effort to provide clearer rules, but the final rule should protect reasonable reliance by investors in pending cases.",
+      "eb5base_likelihood": "likely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [
+        "proposed_8_cfr",
+        "verb_urge",
+        "verb_please_clarify",
+        "verb_dhs_should",
+        "i527",
+        "180_day",
+        "policy_manual",
+        "personal_open_long",
+        "varied_verbs"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -87,6 +216,11 @@
       "theme_id": "bridge_financing",
       "theme_title": "Bridge financing and your 10 jobs",
       "ai_summary": "This comment argues: Bridge loans Allow bridge financing but impose restrictions, such as: * maximum bridge-loan maturity; * limiting the percentage of project costs funded through bridge financing; * requiring a stronger connection between the bridge financing and the EB-5 capital.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -99,6 +233,19 @@
       "theme_id": "good_faith",
       "theme_title": "If your regional center fails",
       "ai_summary": "This comment argues: My capital sits in a high-unemployment targeted employment area project, my petition falls on the post-RIA side of the line, and my country of chargeability is India. That combination means the rules this proposal settles will govern my case for years, and the details of the drafting matter more to me than the general direction.",
+      "eb5base_likelihood": "likely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [
+        "proposed_8_cfr",
+        "verb_urge",
+        "verb_please_clarify",
+        "i527",
+        "bridge_prospective",
+        "personal_open_long",
+        "varied_verbs"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -111,6 +258,18 @@
       "theme_id": "investment_amounts",
       "theme_title": "$800K, $1.4M tier, and 2027 hike",
       "ai_summary": "This comment argues that the commenter am planning to become an EB-5 investor as a future filer from India. Before making such a major financial commitment, two points are especially important to me: how long my capital will remain invested and how much I will be required to invest.",
+      "eb5base_likelihood": "likely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [
+        "proposed_8_cfr",
+        "verb_urge",
+        "verb_dhs_should",
+        "verb_my_request",
+        "personal_open_long",
+        "varied_verbs"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -123,6 +282,21 @@
       "theme_id": "good_faith",
       "theme_title": "If your regional center fails",
       "ai_summary": "This comment argues: In April 2026, I filed my Form I-526E petition for a rural project. Facing India chargeability, my main anxiety stems from the potential for endless capital redeployment, where investors are routinely left with unsatisfactory choices.",
+      "eb5base_likelihood": "likely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [
+        "proposed_8_cfr",
+        "verb_urge",
+        "verb_please_clarify",
+        "verb_dhs_should",
+        "verb_my_request",
+        "i527",
+        "180_day",
+        "personal_open_long",
+        "varied_verbs"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -135,6 +309,21 @@
       "theme_id": "good_faith",
       "theme_title": "If your regional center fails",
       "ai_summary": "This comment argues that the commenter filed my I-526E in November 2025, and I am now about one year into the process. I am a post-RIA investor from India in a rural project.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "jce_clock",
+        "i527",
+        "180_day",
+        "return_before_cgc",
+        "personal_open_long"
+      ],
+      "eb5base_anti_signals": [
+        "fr_header_duration",
+        "stock_ask_x3",
+        "bare_cfr_no_proposed"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -147,6 +336,17 @@
       "theme_id": "bridge_financing",
       "theme_title": "Bridge financing and your 10 jobs",
       "ai_summary": "This comment argues that the commenter have been in this country since 2012, legally working and maintaining the required paperwork. After waiting since 2015 for an employment-based green card through EB-2 for India, my family and I relied on the EB-5 process created by Congress.",
+      "eb5base_likelihood": "likely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [
+        "proposed_8_cfr",
+        "verb_urge",
+        "verb_dhs_should",
+        "personal_open_long",
+        "varied_verbs"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -159,6 +359,21 @@
       "theme_id": "good_faith",
       "theme_title": "If your regional center fails",
       "ai_summary": "This comment argues that the commenter value the United States deeply and want to continue building my life here. I invested $800,000 in EB-5, putting almost all of my retirement savings into the program, and that capital has already been invested and at risk for about a year.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "i527",
+        "180_day",
+        "no_redeploy",
+        "bridge_prospective",
+        "personal_open_long"
+      ],
+      "eb5base_anti_signals": [
+        "fr_header_duration",
+        "stock_ask_x3",
+        "bare_cfr_no_proposed"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -171,6 +386,21 @@
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
       "ai_summary": "This comment argues that the commenter filed our EB-5 application in June 2026. Before our investment, we were told that the maximum time for funds to be deployed to the JCE would be 90 days, but afterward that estimate changed to three to six months.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "jce_clock",
+        "no_redeploy",
+        "return_before_cgc",
+        "personal_open_long"
+      ],
+      "eb5base_anti_signals": [
+        "fr_header_duration",
+        "stock_ask_x2",
+        "stock_closer",
+        "bare_cfr_no_proposed"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -183,6 +413,20 @@
       "theme_id": "good_faith",
       "theme_title": "If your regional center fails",
       "ai_summary": "This comment argues: To the Department of Homeland Security and U.S. Citizenship and Immigration Services: USCIS-2026-0100).",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [
+        "proposed_8_cfr",
+        "i527",
+        "180_day",
+        "policy_manual",
+        "no_redeploy"
+      ],
+      "eb5base_anti_signals": [
+        "stock_ask_x3",
+        "formal_docket_header"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -195,6 +439,20 @@
       "theme_id": "good_faith",
       "theme_title": "If your regional center fails",
       "ai_summary": "This comment argues that the commenter filed my I-526E in November 2025 as a post-RIA investor from India in a rural project. I made my investment and filing decisions under the EB-5 rules and agency guidance then in place.",
+      "eb5base_likelihood": "likely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [
+        "proposed_8_cfr",
+        "i527",
+        "180_day",
+        "policy_manual",
+        "bridge_prospective",
+        "personal_open_long"
+      ],
+      "eb5base_anti_signals": [
+        "stock_ask_x4"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -207,6 +465,21 @@
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
       "ai_summary": "This comment argues that the commenter assume you mean 5,000 characters (the regulations.gov comment field limit), not 5,000 words. Here&rsquo;s a tighter version that preserves all your required points.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [
+        "jce_clock",
+        "no_redeploy",
+        "personal_open_long"
+      ],
+      "eb5base_anti_signals": [
+        "fr_header_duration",
+        "stock_ask_x3",
+        "stock_closer",
+        "llm_chat_meta",
+        "bare_cfr_no_proposed"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -219,6 +492,21 @@
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
       "ai_summary": "This comment argues that the commenter am writing on DHS Docket USCIS-2026-0100-0001. I filed my Form I-526E in January 2026 as a post-RIA investor.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "jce_clock",
+        "i527",
+        "180_day",
+        "no_redeploy",
+        "return_before_cgc",
+        "personal_open_long"
+      ],
+      "eb5base_anti_signals": [
+        "stock_ask_x2",
+        "bare_cfr_no_proposed"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -231,6 +519,20 @@
       "theme_id": "good_faith",
       "theme_title": "If your regional center fails",
       "ai_summary": "This comment argues: My I-526E petition has now been pending for one year after we applied in September 2025 as a post-arrival investor from India. Because my daughter came to the United States at the age of one and is starting college this year, we are facing the reality that she will age out in about three years and is currently missing vital internship opportunities to learn and build her future.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "i527",
+        "180_day",
+        "policy_manual",
+        "no_redeploy",
+        "personal_open_long"
+      ],
+      "eb5base_anti_signals": [
+        "fr_header_duration",
+        "bare_cfr_no_proposed"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -243,6 +545,25 @@
       "theme_id": "good_faith",
       "theme_title": "If your regional center fails",
       "ai_summary": "This comment argues that the commenter am a post-RIA investor in a rural EB-5 project. I appreciate the opportunity to comment on this proposed rule because clear and predictable rules are important to investors who rely on the EB-5 program.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [
+        "jce_clock",
+        "i527",
+        "180_day",
+        "no_redeploy",
+        "return_before_cgc",
+        "personal_open_long"
+      ],
+      "eb5base_anti_signals": [
+        "fr_header_duration",
+        "fr_header_goodfaith",
+        "fr_header_sanctions",
+        "stock_ask_x4",
+        "generic_opener_dup",
+        "bare_cfr_no_proposed"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -255,6 +576,25 @@
       "theme_id": "good_faith",
       "theme_title": "If your regional center fails",
       "ai_summary": "This comment argues that the commenter am a post-RIA investor in a rural EB-5 project. I appreciate the opportunity to comment on this proposed rule because clear and predictable rules are important to investors who rely on the EB-5 program.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [
+        "jce_clock",
+        "i527",
+        "180_day",
+        "no_redeploy",
+        "return_before_cgc",
+        "personal_open_long"
+      ],
+      "eb5base_anti_signals": [
+        "fr_header_duration",
+        "fr_header_goodfaith",
+        "fr_header_sanctions",
+        "stock_ask_x4",
+        "generic_opener_dup",
+        "bare_cfr_no_proposed"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -267,6 +607,23 @@
       "theme_id": "good_faith",
       "theme_title": "If your regional center fails",
       "ai_summary": "This comment argues that the commenter am a post-RIA investor from India in a high-unemployment TEA project. I have already committed my capital to the EB-5 process, and my investment was made based on the rules and USCIS guidance applicable to the project at that time.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "jce_clock",
+        "i527",
+        "180_day",
+        "policy_manual",
+        "no_redeploy",
+        "bridge_prospective",
+        "personal_open_long"
+      ],
+      "eb5base_anti_signals": [
+        "fr_header_duration",
+        "stock_ask_x3",
+        "bare_cfr_no_proposed"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -279,6 +636,16 @@
       "theme_id": "tea",
       "theme_title": "Who decides TEA / $800K eligibility",
       "ai_summary": "This comment argues that the commenter plan to file my I-526E petition in July 2026 as an investor chargeable to India in a high-unemployment TEA project. Because this proposed rule could affect projects that are already being structured under existing guidance, I appreciate the opportunity to submit these comments.",
+      "eb5base_likelihood": "likely",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "proposed_8_cfr",
+        "policy_manual",
+        "bridge_prospective",
+        "personal_open_long"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -291,6 +658,17 @@
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
       "ai_summary": "This comment argues that the commenter am filing this public comment as an individual EB-5 investor. In 2025, I committed $800,000 to a rural Targeted Employment Area (TEA) initiative-specifically the Yellowstone Club Phase II project in Big Sky, Montana, facilitated through an approved regional center.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [
+        "verb_urge",
+        "personal_open_long"
+      ],
+      "eb5base_anti_signals": [
+        "project_campaign",
+        "formal_docket_header"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -303,6 +681,20 @@
       "theme_id": "good_faith",
       "theme_title": "If your regional center fails",
       "ai_summary": "This comment argues that the commenter am writing to share my comments on the proposed rules for the EB-5 program (USCIS-2026-0100). Having filed my I-526E in March 2025 for a rural project under India country chargeability, I have a direct interest in how these regulations are finalized.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "i527",
+        "180_day",
+        "no_redeploy",
+        "bridge_prospective",
+        "personal_open_long"
+      ],
+      "eb5base_anti_signals": [
+        "stock_ask_x3",
+        "bare_cfr_no_proposed"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -315,6 +707,11 @@
       "theme_id": null,
       "theme_title": null,
       "ai_summary": "This comment argues that the commenter commend the Department for proposing a definition of \"infrastructure project\" and for inviting comment on that definition and the documentation needed to establish eligibility. This comment focuses on a single issue the commenter believes is critical to ensuring the set-aside functions as Congress intended: expanding the range of qualified entities that may participate in EB-5 financing while preserving the governmental role in administering public infrastructure projects.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -327,6 +724,13 @@
       "theme_id": null,
       "theme_title": null,
       "ai_summary": "This comment includes an attachment on regulations.gov. Open the filing to read the full text; no separate body text was posted in the API.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [
+        "attachment_stub"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -339,6 +743,13 @@
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
       "ai_summary": "This comment argues that the commenter support aligning the sustainment period to long-term job creation. Two years is insufficent for meaningful investment.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [
+        "project_campaign"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -351,6 +762,17 @@
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
       "ai_summary": "This comment argues that the commenter support strengthening EB-5 integrity, but I urge DHS to add an explicit, lifecycle-wide grandfather clause. As drafted, the rule would apply new substantive standards to investors who committed capital and filed before this rule was proposed, and who will first encounter those standards at the Form I-829 stage, when nothing can be restructured.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [
+        "proposed_8_cfr",
+        "verb_urge",
+        "bridge_prospective"
+      ],
+      "eb5base_anti_signals": [
+        "formal_docket_header"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -363,6 +785,13 @@
       "theme_id": null,
       "theme_title": null,
       "ai_summary": "This comment includes an attachment on regulations.gov. Open the filing to read the full text; no separate body text was posted in the API.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [
+        "attachment_stub"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -375,6 +804,15 @@
       "theme_id": null,
       "theme_title": null,
       "ai_summary": "This comment includes an attachment on regulations.gov. Open the filing to read the full text; no separate body text was posted in the API.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [
+        "proposed_8_cfr"
+      ],
+      "eb5base_anti_signals": [
+        "attachment_stub"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -387,6 +825,13 @@
       "theme_id": "good_faith",
       "theme_title": "If your regional center fails",
       "ai_summary": "This comment argues: 2770-24; RIN 1615-AC94 - \"EB-5 Reform and Integrity Act of 2022; Ensuring the Integrity of the EB-5 Program; Automatic Revocation of Petitions for Immigrant Classification,\" 91 Fed. The full comment is attached as a PDF; this field summarizes it.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [
+        "formal_docket_header"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -399,6 +844,11 @@
       "theme_id": null,
       "theme_title": null,
       "ai_summary": "This comment argues: Defining qualifying infrastructure projects generically leaves decision-making too arbitrary. Providing more specific examples, or at least providing a more detailed definition of categories, would reduce confusion and increase the probability of approval.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -411,6 +861,14 @@
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
       "ai_summary": "This comment argues: In 2025, I invested $800,000 into a rural Targeted Employment Area (TEA) project through a regional center. I am writing to strongly support the proposed rule's two-year sustainment period, measured from the deployment of capital, and I urge the Department of Homeland Security (DHS) to adopt this provision exactly as proposed.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "verb_urge",
+        "personal_open_long"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -423,6 +881,16 @@
       "theme_id": "bridge_financing",
       "theme_title": "Bridge financing and your 10 jobs",
       "ai_summary": "This comment argues that the commenter submit this as a good-faith EB-5 investor who invested in reliance on a project application (Form I-956F) and petition (Form I-526E) that USCIS approved under the rules then in effect, and who has not yet filed to remove conditions (Form I-829). I support program integrity, but three provisions, if applied to investors already in the program, would break faith with those who followed the rules as they existed.",
+      "eb5base_likelihood": "likely",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "proposed_8_cfr",
+        "policy_manual",
+        "bridge_prospective",
+        "personal_open_long"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -435,6 +903,16 @@
       "theme_id": "bridge_financing",
       "theme_title": "Bridge financing and your 10 jobs",
       "ai_summary": "This comment argues: DHS should expressly confirm that the new job-creation standards in proposed 8 CFR 204.407(e) - particularly the elimination of bridge financing and the \"but-for\" nexus requirement - will not be applied at the removal-of-conditions (Form I-829) stage to investors whose project applications (Form I-956F) and petitions were approved before the effective date. Applying these standards to such investors would give the rule an impermissible retroactive effect on completed trans...",
+      "eb5base_likelihood": "likely",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "proposed_8_cfr",
+        "verb_dhs_should",
+        "policy_manual",
+        "bridge_prospective"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -447,6 +925,14 @@
       "theme_id": "bridge_financing",
       "theme_title": "Bridge financing and your 10 jobs",
       "ai_summary": "This comment argues: As a good-faith EB-5 investor whose project application and petition were approved by USCIS under the rules in effect at the time of my investment, I respectfully urge DHS to apply the substantive job-creation changes in this rule particularly the elimination of bridge financing (proposed 8 CFR 204.407(e)(1)), the \"but-for\" job-creation nexus, and the prohibition on visitor-spending methodologies (proposed 8 CFR 204.407(e)(3)(iv)) prospectively to new investors only, and n...",
+      "eb5base_likelihood": "possible",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "proposed_8_cfr",
+        "bridge_prospective"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -459,6 +945,15 @@
       "theme_id": "bridge_financing",
       "theme_title": "Bridge financing and your 10 jobs",
       "ai_summary": "This comment argues that the commenter am a conditional permanent resident who invested in the EB-5 program in good faith and whose project application and petition were approved by USCIS under the rules in effect at the time. I have not yet filed to remove conditions.",
+      "eb5base_likelihood": "likely",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "proposed_8_cfr",
+        "policy_manual",
+        "personal_open_long"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -471,6 +966,13 @@
       "theme_id": "good_faith",
       "theme_title": "If your regional center fails",
       "ai_summary": "This comment argues: 2770-24; RIN 1615-AC94 - \"EB-5 Reform and Integrity Act of 2022; Ensuring the Integrity of the EB-5 Program; Automatic Revocation of Petitions for Immigrant Classification,\" 91 Fed. The complete comment, with full analysis and proposed regulatory text, is attached as a PDF; this field summarizes it.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [
+        "formal_docket_header"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -483,6 +985,14 @@
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
       "ai_summary": "This comment addresses proposed 8 CFR 204.407(c) and 204.401, which appear to require EB-5 petitioners to document the lawful source of ALL capital in the NCE - including funds from non-petitioner co-investors not seeking EB-5 classification. I respectfully submit this requirement is inconsistent with the existing regulatory framework, practically unworkable, and has already been rejected by a federal court.",
+      "eb5base_likelihood": "possible",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "proposed_8_cfr",
+        "verb_urge"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -495,6 +1005,14 @@
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
       "ai_summary": "This comment argues: COMMENT SUMMARY - Docket USCIS-2026-0100 This comment addresses two interconnected concerns with the proposed rule implementing the EB-5 Reform and Integrity Act of 2022: COMMENT ONE - Sustainment Standard (Proposed 8 CFR 216.6(d)(1), 91 FR at 40770-72): The proposed rule creates a two-tier sustainment system that subjects pre-RIA investors to an open-ended sustainment obligation lasting fourteen to sixteen years due to visa retrogression, while post-RIA investors satisfy...",
+      "eb5base_likelihood": "possible",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "proposed_8_cfr",
+        "verb_urge"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -507,6 +1025,13 @@
       "theme_id": "tea",
       "theme_title": "Who decides TEA / $800K eligibility",
       "ai_summary": "This comment argues: Elimination of Repaid Bridge Financing as Qualifying Capital Prohibiting the use of EB-5 capital to repay bridge financing severely prejudices existing EB-5 applicants and Regional Centers (RCs) that structured their financial and job creation plans around established USCIS policies. Regional Centers routinely rely on bridge loans to advance critical funds to Job-Creating Entities (JCEs) while I-956F applications remain pending.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "180_day"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -519,6 +1044,16 @@
       "theme_id": "bridge_financing",
       "theme_title": "Bridge financing and your 10 jobs",
       "ai_summary": "This comment argues: USCIS-2026-0100) that seeks to eliminate the use of bridge financing for job creation in the EB-5 program. While I fully support USCIS&rsquo;s overarching goal of ensuring program integrity under the EB-5 Reform and Integrity Act of 2022 (RIA), a blanket ban on bridge financing is a fundamentally flawed approach that will severely undermine the legislative intent of the EB-5 program: economic growth and job creation.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [
+        "verb_urge",
+        "personal_open_long"
+      ],
+      "eb5base_anti_signals": [
+        "formal_docket_header"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -531,6 +1066,11 @@
       "theme_id": "bridge_financing",
       "theme_title": "Bridge financing and your 10 jobs",
       "ai_summary": "This comment argues: As an existing investor in EB5, I find the clause about prohibiting the use of EB5 capital as a bridge loan concerning. Applying such a new enforcement for existing investors may jeopardize their immigration plans and may cause financial loss as well.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -543,6 +1083,13 @@
       "theme_id": null,
       "theme_title": null,
       "ai_summary": "This comment includes an attachment on regulations.gov. Open the filing to read the full text; no separate body text was posted in the API.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [
+        "attachment_stub"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -555,6 +1102,13 @@
       "theme_id": null,
       "theme_title": null,
       "ai_summary": "This comment includes an attachment on regulations.gov. Open the filing to read the full text; no separate body text was posted in the API.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [
+        "attachment_stub"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -567,6 +1121,13 @@
       "theme_id": null,
       "theme_title": null,
       "ai_summary": "This comment includes an attachment on regulations.gov. Open the filing to read the full text; no separate body text was posted in the API.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [
+        "attachment_stub"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -579,6 +1140,15 @@
       "theme_id": null,
       "theme_title": null,
       "ai_summary": "This comment argues: On behalf of , please find attached This comment on the proposed rule, EB-5 Reform and Integrity Act of 2022; Ensuring the Integrity of the EB-5 Program (DHS Docket No. This comment addresses the proposed definition of \"Infrastructure Project\" at proposed 8 CFR 204.401 and the scope of \"public works project,\" and responds to the Department's specific request for comment on the types of projects that may meet the definition of an infrastructure project (Public Participation,...",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [
+        "proposed_8_cfr"
+      ],
+      "eb5base_anti_signals": [
+        "formal_docket_header"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -591,6 +1161,13 @@
       "theme_id": null,
       "theme_title": null,
       "ai_summary": "This comment includes an attachment on regulations.gov. Open the filing to read the full text; no separate body text was posted in the API.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [
+        "attachment_stub"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -603,6 +1180,15 @@
       "theme_id": "good_faith",
       "theme_title": "If your regional center fails",
       "ai_summary": "This comment argues: USCIS-2026-0100 Comment on proposed 8 C.F.R. &sect; 204.410(b)(1) - material changes; source of capital I am an immigration attorney with more than 15 years of EB-5 experience representing hundreds of investors worldwide, especially H-1B professionals who have spent years contributing to the U.S.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [
+        "verb_urge"
+      ],
+      "eb5base_anti_signals": [
+        "formal_docket_header"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -615,6 +1201,11 @@
       "theme_id": null,
       "theme_title": null,
       "ai_summary": "This comment argues: Comment on Proposed Rule Regarding Full-Time Employment I respectfully urge DHS to retain the current allowance for job-sharing arrangements within the definition of full-time employment. While job-sharing may have been used infrequently in prior EB-5 petitions, it remains critically important for many direct EB-5 businesses, particularly in the food and beverage (F&B), hospitality, retail, and franchise industries.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -627,6 +1218,13 @@
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
       "ai_summary": "This comment argues that the commenter am writing to submit a formal comment regarding the proposed rule implementing the EB-5 Reform and Integrity Act of 2022 (RIA), specifically concerning the definition and commencement trigger of the 2-year sustainment period for post-RIA Regional Center investors. While the proposed rule helpfully codifies the transition to an investment-based timeline rather than a residency-based timeline, the current language regarding when capital is considered \"placed at risk\" and \"...",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "personal_open_long"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -639,6 +1237,16 @@
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
       "ai_summary": "This comment argues: In 2025 I invested $800,000 into a rural targeted-employment-area project - Yellowstone Club Phase II in Big Sky, Montana - through a regional center, and I write to strongly support the proposed rule's two-year sustainment period, measured from the deployment of capital. I urge DHS to keep this provision exactly as proposed.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [
+        "verb_urge",
+        "personal_open_long"
+      ],
+      "eb5base_anti_signals": [
+        "project_campaign"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -651,6 +1259,11 @@
       "theme_id": null,
       "theme_title": null,
       "ai_summary": "This comment argues: This proposed change is going to hurt the US economy more than help since it will prevent from a lot of potential investors to invest capital in US markets and eventually hurt economic development and local economy in general.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -663,6 +1276,14 @@
       "theme_id": "sanctions",
       "theme_title": "Audits and fines for regional centers",
       "ai_summary": "This comment argues: The proposed rule grants DHS broad authority to impose monetary penalties, suspensions, debarments, and terminations on regional centers, but it does not clearly specify evidentiary standards, appeal timelines, or proportionality guidelines for these sanctions. Without more precise procedural limits, this creates a real risk of arbitrary or inconsistent enforcement, and could expose good-faith investors to loss of status or capital based on a regional center&rsquo;s miscon...",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "verb_urge",
+        "personal_open_long"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -675,6 +1296,11 @@
       "theme_id": "good_faith",
       "theme_title": "If your regional center fails",
       "ai_summary": "This comment argues: Thank you for the opportunity to comment on this proposed rule implementing the EB-5 Reform and Integrity Act of 2022. I appreciate USCIS&rsquo;s efforts to strengthen program integrity, improve transparency, and protect good-faith investors.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -687,6 +1313,11 @@
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
       "ai_summary": "This comment argues that the commenter strongly support extending the EB-5 investment sustainment period beyond two years. The primary purpose of the EB-5 program is to promote long-term investment, sustained economic growth, and job creation in our country.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -699,6 +1330,13 @@
       "theme_id": "bridge_financing",
       "theme_title": "Bridge financing and your 10 jobs",
       "ai_summary": "This comment argues that the commenter strongly support the proposal to eliminate the use of repaid bridge financing as a basis for demonstrating EB-5 job creation. In EB-5 practice, it creates significant abuse.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "personal_open_long"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -711,6 +1349,13 @@
       "theme_id": "good_faith",
       "theme_title": "If your regional center fails",
       "ai_summary": "This comment argues: While supporting the goal of protecting genuine good-faith investors when a Regional Center is terminated or an NCE/JCE is debarred through no fault of the investor, I believe the proposed regulation may generate potential collusion and moral hazard. Specific Recommendations: Expand the circumstances where priority date retention should be denied to include situations involving the investor&rsquo;s own fault or lack of due diligence, not only proven fraud.",
+      "eb5base_likelihood": "possible",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "proposed_8_cfr"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -723,6 +1368,13 @@
       "theme_id": "good_faith",
       "theme_title": "If your regional center fails",
       "ai_summary": "This comment argues: Comment 1 - 8 CFR 204.425(a)(2): Define how the fund administrator's \"cosignature\" is executed. The rule requires the fund administrator to \"serve as a cosignatory on all separate accounts\" and to approve transfers \"with a written or electronic signature,\" but does not say how - bank signature card, dual-authorization on each wire, or platform-based electronic approval.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [
+        "bare_cfr_no_proposed"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -735,6 +1387,11 @@
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
       "ai_summary": "This comment argues that the commenter invested $800,000 through a USCIS-designated regional center after the EB-5 Reform and Integrity Act. My family has already received our conditional permanent residence, and one of the reasons I was comfortable making this investment was USCIS's guidance that the required sustainment period is generally two years from deployment of the capital.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -747,6 +1404,14 @@
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
       "ai_summary": "This comment argues: Re: Proposed 8 CFR 204.401, Definition of \"Capital\" - Treatment of Trust Structures and Retirement-Account-Sourced Funds; Request for Transition Clarity Given the September 30, 2026 Grandfathering Deadline I. Introduction This comment addresses the proposed definition of \"capital\" at 8 CFR 204.401, limiting trust-held capital to assets \"held in a revocable living trust of which the investor is the settlor and beneficiary and to which the investor has unrestricted access.\"...",
+      "eb5base_likelihood": "possible",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "proposed_8_cfr",
+        "verb_dhs_should"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -759,6 +1424,13 @@
       "theme_id": "good_faith",
       "theme_title": "If your regional center fails",
       "ai_summary": "This comment argues: Supplemental Comment Regarding the Meaning of &ldquo;Qualifying Investment&rdquo; Under INA Section 203(b)(5)(M) I respectfully submit this supplemental comment regarding DHS&rsquo;s proposed implementation of INA section 203(b)(5)(M), specifically the meaning of &ldquo;qualifying investment&rdquo; when a good-faith investor seeks to preserve eligibility after regional center termination or NCE/JCE debarment. The proposed rule should clarify how USCIS will interpret &ldquo...",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "verb_dhs_should"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -771,6 +1443,11 @@
       "theme_id": "tea",
       "theme_title": "Who decides TEA / $800K eligibility",
       "ai_summary": "This comment argues: INTRODUCTION This comment is submitted in strong SUPPORT of the Notice of Proposed Rulemaking (NPRM) regarding the EB-5 Regional Center Program (91 FR 40676). The commenter is an advocate for working-class economic integrity.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -783,6 +1460,11 @@
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
       "ai_summary": "This comment argues: As an individual EB-5 investor, I strongly support the proposed rule&rsquo;s codification of the two-year sustainment period measured from the date capital is fully deployed and made available to the job-creating entity. I made my investment under the post-RIA framework with the understanding that my capital would need to remain at risk for at least two years, not for an open-ended period tied to unpredictable visa backlogs or processing delays.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -795,6 +1477,11 @@
       "theme_id": null,
       "theme_title": null,
       "ai_summary": "This comment argues: Please release my investment in 2 years. I trust Reform Integrity Act & am awaiting my funds for leading a better life in USA.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -807,6 +1494,13 @@
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
       "ai_summary": "This comment argues: EB5 United/RC gave me confidence that my capital wouldn't be trapped indefinitely, and it was mentioned in the PP that the investment&rsquo;s sustainment period is 2 years from the date deployment in the project. Extending this period would have made me reconsider the investment entirely.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [
+        "project_campaign"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -819,6 +1513,11 @@
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
       "ai_summary": "This comment argues: USCIS should adopt a clear rule that the EB-5 sustainment period ends two years after capital deployment. This approach provides certainty, treats investors from all countries fairly regardless of visa backlogs, and encourages continued participation in the EB-5 program while fully preserving the program&rsquo;s job creation objectives.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -831,6 +1530,11 @@
       "theme_id": null,
       "theme_title": null,
       "ai_summary": "This comment argues: Reform Integrity Act is a soule of EB5 program. That 800k repayment help me for start ups and Make America Great Again.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -843,6 +1547,11 @@
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
       "ai_summary": "This comment argues that the commenter chose to invest $800,000 in an EB-5 project in Montana because the two-year sustainment period provided clarity and confidence that my investment would not remain tied up indefinitely. If the rules had allowed for an open-ended investment period, I likely would not have moved forward with the investment.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -855,6 +1564,11 @@
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
       "ai_summary": "This comment argues: The 2 year sustainment period makes sense, since that is a realistic time frame for creating jobs. We invested the amount keeping this timeline in mind and the rule gives us peace of my mind in case there's a backlog for my country.",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -867,6 +1581,15 @@
       "theme_id": "sustainment",
       "theme_title": "Capital back after about 2 years",
       "ai_summary": "This comment argues that the commenter am writing to express my strong opposition to any extension of the EB-5 sustainment period.As an immigrant investor, I committed $800,000 of my personal capital into a project in YellowStone Big Sky.My decision to invest was heavily based on the clear, structured rules in place-specifically, the two-year sustainment period. Extending this period retroactively or changing the expectations mid-stream undermines investor trust and creates severe financial unpredictability f...",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [
+        "verb_urge"
+      ],
+      "eb5base_anti_signals": [
+        "project_campaign"
+      ],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -879,6 +1602,11 @@
       "theme_id": "bridge_financing",
       "theme_title": "Bridge financing and your 10 jobs",
       "ai_summary": "This comment argues: Eliminating the use of repaid bridge financing as a basis to demonstrate - This elimination will create tremendous problem for the existing EB5 visa applicants who has filed petition based on regional center operation where investment are made based on I-956F filing and RC has already structured the project financials and job creation planning based on existing USCIS policies. Bridge finance is a widely used strategy for Regional Centers when they accept EB5 applicants bas...",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "high",
+      "eb5base_signals": [],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     },
     {
@@ -891,6 +1619,14 @@
       "theme_id": "good_faith",
       "theme_title": "If your regional center fails",
       "ai_summary": "This comment argues that the commenter respectfully submit this comment regarding the proposed implementation of protections for good-faith EB-5 investors, including the provisions related to INA section 203(b)(5)(M), amendments, subsequent investments, and removal of conditions. DHS should clarify in the final rule that, for a good-faith investor who previously invested the full required amount of capital and whose capital was sustained at risk but later lost due to business failure, fraud, receivership, reg...",
+      "eb5base_likelihood": "unlikely",
+      "eb5base_confidence": "medium",
+      "eb5base_signals": [
+        "verb_dhs_should",
+        "personal_open_long"
+      ],
+      "eb5base_anti_signals": [],
+      "eb5base_attribution_version": 1,
       "type": "comments"
     }
   ]

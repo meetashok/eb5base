@@ -1,1 +1,56 @@
-{"base_url_note":"Use the URL of this page + /assets/data/ for fetching. Assets are served with CORS enabled.","cors":{"enabled":true,"header":"Access-Control-Allow-Origin: *","methods":"GET, HEAD, OPTIONS"},"docket":"USCIS-2026-0100","feed":"eb5base-nprm-data-public","files":[{"content_type":"application/json","description":"Raw regulations.gov comments - 74 items - pull Aug 12 2026 (anonymized id/link/theme/summary)","name":"all_comments.json","path":"assets/data/all_comments.json"},{"content_type":"application/json","description":"6 grounded themes - grandfather/retroactivity, sustainment 2yr vs jobs, bridge 204.407(e)(1), asymmetry 204.432/33, TEA, program integrity","name":"themes.json","path":"assets/data/themes.json"},{"content_type":"application/json","description":"Deterministic prompt tree - 30 base combos expanding to ~3,300 single/multi-theme and ~60k with phrasing variants","name":"prompt-tree.json","path":"assets/data/prompt-tree.json"},{"content_type":"application/json","description":"Counts, docket_id, last_pull, comment period ends","name":"stats.json","path":"assets/data/stats.json"},{"content_type":"application/json","description":"Full metadata + all comment stubs - federal_register_citation 91 FR 40676, RIN 1615-AC94","name":"last-check.json","path":"assets/data/last-check.json"},{"content_type":"text/plain","description":"Daily pull chain of custody - CloudFront 403 Aug 7-8, unblocked Aug 9 via api.data.gov key","name":"check.log","path":"assets/data/check.log"}],"last_updated":"2026-08-12T15:13:17Z","total_comments":74,"usage_hint":"NEXT_PUBLIC_NPRM_FEED = thispage_origin - then fetch FEED + '/assets/data/all_comments.json' with { next: { revalidate: 3600 } } in Next.js"}
+{
+  "base_url_note": "Use the URL of this page + /assets/data/ for fetching. Assets are served with CORS enabled.",
+  "cors": {
+    "enabled": true,
+    "header": "Access-Control-Allow-Origin: *",
+    "methods": "GET, HEAD, OPTIONS"
+  },
+  "docket": "USCIS-2026-0100",
+  "feed": "eb5base-nprm-data-public",
+  "files": [
+    {
+      "content_type": "application/json",
+      "description": "Raw regulations.gov comments - 76 items - pull Aug 12 2026 (anonymized id/link/theme/summary + eb5base attribution)",
+      "name": "all_comments.json",
+      "path": "assets/data/all_comments.json"
+    },
+    {
+      "content_type": "application/json",
+      "description": "6 grounded themes - grandfather/retroactivity, sustainment 2yr vs jobs, bridge 204.407(e)(1), asymmetry 204.432/33, TEA, program integrity",
+      "name": "themes.json",
+      "path": "assets/data/themes.json"
+    },
+    {
+      "content_type": "application/json",
+      "description": "Deterministic prompt tree - 30 base combos expanding to ~3,300 single/multi-theme and ~60k with phrasing variants",
+      "name": "prompt-tree.json",
+      "path": "assets/data/prompt-tree.json"
+    },
+    {
+      "content_type": "application/json",
+      "description": "Counts, docket_id, last_pull, comment period ends, eb5base_attribution",
+      "name": "stats.json",
+      "path": "assets/data/stats.json"
+    },
+    {
+      "content_type": "application/json",
+      "description": "Full metadata + all comment stubs - federal_register_citation 91 FR 40676, RIN 1615-AC94",
+      "name": "last-check.json",
+      "path": "assets/data/last-check.json"
+    },
+    {
+      "content_type": "text/plain",
+      "description": "Daily pull chain of custody - CloudFront 403 Aug 7-8, unblocked Aug 9 via api.data.gov key",
+      "name": "check.log",
+      "path": "assets/data/check.log"
+    }
+  ],
+  "last_updated": "2026-08-12T16:18:55.790Z",
+  "total_comments": 76,
+  "usage_hint": "NEXT_PUBLIC_NPRM_FEED = thispage_origin - then fetch FEED + '/assets/data/all_comments.json' with { next: { revalidate: 3600 } } in Next.js",
+  "eb5base_attribution": {
+    "likely": 15,
+    "possible": 6,
+    "unlikely": 55
+  }
+}
