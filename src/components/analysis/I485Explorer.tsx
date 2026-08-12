@@ -17,6 +17,7 @@ import {
   USCIS_DATA_PAGE_URL,
   aggregateByPriorityDateGrain,
   aggregateCohortBySnapshotGrain,
+  aggregateCohortFacets,
   aggregateCohortSplitByPriorityDate,
   aggregateSplitByPriorityDateGrain,
   categoryMembersForMany,
@@ -45,9 +46,17 @@ type ViewId = I485ViewId;
 
 const nf = new Intl.NumberFormat('en-US');
 const DEFAULT_CATEGORIES = DEFAULT_I485_CATEGORIES;
+/** Snapshot / compare X-axis grain (no halves). */
 const GRAIN_OPTIONS: { value: PriorityDateGrain; label: string }[] = [
   { value: 'month', label: 'Months' },
   { value: 'quarter', label: 'Quarters' },
+  { value: 'year', label: 'Fiscal years' },
+];
+/** Cohort priority-date series grain (includes calendar halves). */
+const SERIES_GRAIN_OPTIONS: { value: PriorityDateGrain; label: string }[] = [
+  { value: 'month', label: 'Months' },
+  { value: 'quarter', label: 'Quarters' },
+  { value: 'half', label: 'Halves' },
   { value: 'year', label: 'Fiscal years' },
 ];
 
@@ -179,9 +188,9 @@ function CohortSplitToggle({
         Split
       </span>
       <div
-        className="inline-flex rounded-full border border-base-300 p-0.5 bg-base-200/60"
+        className="inline-flex max-w-full flex-wrap rounded-full border border-base-300 p-0.5 bg-base-200/60"
         role="group"
-        aria-label="Cohort split series"
+        aria-label="Cohort split"
       >
         {COHORT_SPLIT_OPTIONS.map((o) => (
           <button
@@ -218,7 +227,7 @@ function SeriesGrainToggle({
         role="group"
         aria-label="Priority-date series grouping"
       >
-        {GRAIN_OPTIONS.map((o) => (
+        {SERIES_GRAIN_OPTIONS.map((o) => (
           <button
             key={o.value}
             type="button"
@@ -242,7 +251,7 @@ function showPriorityDateTick(
   d: { key: string; shortLabel: string },
   i: number,
 ) {
-  if (grain === 'year' || grain === 'quarter') return true;
+  if (grain === 'year' || grain === 'quarter' || grain === 'half') return true;
   if (d.key === '_earlier') return true;
   const hasPrior = data[0]?.meta.key === '_earlier';
   const offset = hasPrior ? 1 : 0;
@@ -542,6 +551,46 @@ export default function I485Explorer({
     }));
   }, [cohortSplitData]);
 
+  const cohortFacets = useMemo(() => {
+    if (!cohortCells || (cohortSplit !== 'country' && cohortSplit !== 'category')) {
+      return null;
+    }
+
+    const facets =
+      cohortSplit === 'country'
+        ? aggregateCohortFacets(
+            cohortCells,
+            releases,
+            selectedPdYears,
+            splitCountriesForFilter(countries),
+            (c) => c.country,
+            (key) => countryLabel(key as I485Country),
+          )
+        : (() => {
+            const plan = resolveCategorySplitSeries(categories);
+            return aggregateCohortFacets(
+              cohortCells,
+              releases,
+              selectedPdYears,
+              plan.seriesKeys,
+              plan.seriesKeyForCell,
+              plan.seriesLabel,
+            );
+          })();
+
+    return facets.map((facet) => ({
+      key: facet.key,
+      label: facet.label,
+      series: facet.series,
+      line: facet.series.map((p) => ({
+        key: p.meta.key,
+        label: p.meta.label,
+        value: p.bucket.count,
+        valueLabel: bucketLabel(p.bucket),
+      })),
+    }));
+  }, [cohortCells, cohortSplit, countries, categories, releases, selectedPdYears]);
+
   const cohortSuppressed = useMemo(() => {
     if (cohortSplit === 'priority_date' && cohortSplitData) {
       return cohortSplitData.series.reduce(
@@ -549,8 +598,15 @@ export default function I485Explorer({
         0,
       );
     }
+    if (cohortFacets) {
+      return cohortFacets.reduce(
+        (sum, f) =>
+          sum + totalWithNote(f.series.map((p) => p.bucket)).suppressedCells,
+        0,
+      );
+    }
     return totalWithNote(cohortSeries.map((p) => p.bucket)).suppressedCells;
-  }, [cohortSplit, cohortSplitData, cohortSeries]);
+  }, [cohortSplit, cohortSplitData, cohortFacets, cohortSeries]);
 
   const cohortLatestTotal = useMemo(() => {
     if (cohortSeries.length === 0) return { count: 0, suppressedCells: 0 };
@@ -571,6 +627,7 @@ export default function I485Explorer({
     const pdGrainLabels: Record<PriorityDateGrain, string> = {
       month: 'months',
       quarter: 'quarters',
+      half: 'halves',
       year: 'fiscal years',
     };
     const parts = [
@@ -581,6 +638,10 @@ export default function I485Explorer({
     ];
     if (cohortSplit === 'priority_date') {
       parts.push(`split by priority-date ${pdGrainLabels[cohortPdGrain]}`);
+    } else if (cohortSplit === 'country') {
+      parts.push('separate chart per country');
+    } else if (cohortSplit === 'category') {
+      parts.push('separate chart per category');
     }
     return parts.join(' · ');
   }, [categories, countries, selectedPdYears, cohortSplit, cohortPdGrain]);
@@ -1026,6 +1087,27 @@ export default function I485Explorer({
                   }
                   ariaLabel="Pending I-485 cohort split by priority date across snapshots"
                 />
+              ) : (
+                <p className="text-sm text-neutral">
+                  No pending applications reported for this cohort in any snapshot.
+                </p>
+              )
+            ) : cohortSplit === 'country' || cohortSplit === 'category' ? (
+              cohortFacets && cohortFacets.length > 0 ? (
+                <div className="space-y-6">
+                  {cohortFacets.map((facet) => (
+                    <div key={facet.key} className="space-y-1.5">
+                      <h3 className="text-sm font-semibold text-primary">{facet.label}</h3>
+                      <LineChart
+                        data={facet.line}
+                        height={180}
+                        xAxisLabel="USCIS snapshot"
+                        hoverLabelPrefix="Snapshot date"
+                        ariaLabel={`${facet.label} pending applications across USCIS snapshots`}
+                      />
+                    </div>
+                  ))}
+                </div>
               ) : (
                 <p className="text-sm text-neutral">
                   No pending applications reported for this cohort in any snapshot.

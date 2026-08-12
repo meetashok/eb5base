@@ -300,7 +300,7 @@ export function aggregateBy<K extends string | number>(
 }
 
 /** Grain for snapshot time-axis charts. */
-export type PriorityDateGrain = 'month' | 'quarter' | 'year';
+export type PriorityDateGrain = 'month' | 'quarter' | 'half' | 'year';
 
 /**
  * Federal / USCIS fiscal year: Oct 1 – Sep 30.
@@ -317,6 +317,11 @@ export function calendarQuarter(month: number): 1 | 2 | 3 | 4 {
   if (month <= 6) return 2;
   if (month <= 9) return 3;
   return 4;
+}
+
+/** Calendar half: H1 Jan–Jun, H2 Jul–Dec. */
+export function calendarHalf(month: number): 1 | 2 {
+  return month <= 6 ? 1 : 2;
 }
 
 export interface TimeBucketMeta {
@@ -357,6 +362,15 @@ export function priorityDateBucket(
       key: `${y}-q${q}`,
       label: `Q${q} ${y}`,
       shortLabel: q === 1 ? String(y) : `Q${q}`,
+    };
+  }
+
+  if (grain === 'half') {
+    const h = calendarHalf(m);
+    return {
+      key: `${y}-h${h}`,
+      label: `H${h} ${y}`,
+      shortLabel: h === 1 ? String(y) : `H${h}`,
     };
   }
 
@@ -563,11 +577,13 @@ export function splitCountriesForFilter(selected: I485Country[]): I485Country[] 
   return SPLIT_COUNTRY_ORDER.filter((c) => selected.includes(c));
 }
 
-export type CohortSplit = 'none' | 'priority_date';
+export type CohortSplit = 'none' | 'priority_date' | 'country' | 'category';
 
 export const COHORT_SPLIT_OPTIONS: { value: CohortSplit; label: string }[] = [
   { value: 'none', label: 'None' },
   { value: 'priority_date', label: 'By priority date' },
+  { value: 'country', label: 'By country' },
+  { value: 'category', label: 'By category' },
 ];
 
 /** First calendar year shown as a recent multi-select chip. */
@@ -754,6 +770,11 @@ export function priorityDateBucketEarliestAsOf(
     return `${y}-${String(startMonth).padStart(2, '0')}-01`;
   }
 
+  if (grain === 'half') {
+    const startMonth = calendarHalf(m) === 1 ? 1 : 7;
+    return `${y}-${String(startMonth).padStart(2, '0')}-01`;
+  }
+
   const fy = fiscalYear(y, m);
   return `${fy - 1}-10-01`;
 }
@@ -835,6 +856,47 @@ export function aggregateCohortSplitByPriorityDate(
   });
 
   return { xAxis, series };
+}
+
+export interface CohortFacetChart {
+  key: string;
+  label: string;
+  series: { meta: TimeBucketMeta; bucket: AggregatedBucket; releaseId: number }[];
+}
+
+/**
+ * Cohort small multiples: one monthly snapshot line per facet key
+ * (country or category). Facets with no disclosed pending stock are omitted.
+ */
+export function aggregateCohortFacets(
+  cells: I485Cell[],
+  releases: I485Release[],
+  years: number[],
+  facetKeys: string[],
+  facetKeyFn: (cell: I485Cell) => string | null,
+  facetLabelFn: (key: string) => string,
+): CohortFacetChart[] {
+  const filtered = cells.filter((c) => cellInPriorityDateYears(c, years));
+  const byFacet = new Map<string, I485Cell[]>();
+  for (const key of facetKeys) byFacet.set(key, []);
+
+  for (const cell of filtered) {
+    const key = facetKeyFn(cell);
+    if (key == null) continue;
+    const list = byFacet.get(key);
+    if (!list) continue;
+    list.push(cell);
+  }
+
+  return facetKeys.flatMap((key) => {
+    const facetCells = byFacet.get(key) ?? [];
+    const series = aggregateCohortBySnapshotGrain(facetCells, releases, 'month', years);
+    const hasData = series.some(
+      (p) => p.bucket.count > 0 || p.bucket.suppressedCells > 0,
+    );
+    if (!hasData) return [];
+    return [{ key, label: facetLabelFn(key), series }];
+  });
 }
 
 export function formatAsOf(iso: string): string {
