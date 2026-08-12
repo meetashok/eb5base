@@ -24,6 +24,8 @@ export interface LineChartProps {
   ariaLabel?: string;
   /** Caption under the plot clarifying what the X axis measures. */
   xAxisLabel?: string;
+  /** Prefixed before the hovered X label, e.g. "Snapshot date". */
+  hoverLabelPrefix?: string;
   lineColor?: string;
   pointColor?: string;
   pointHoverColor?: string;
@@ -36,6 +38,7 @@ function LineChartInner({
   width,
   height,
   ariaLabel,
+  hoverLabelPrefix,
   lineColor,
   pointColor,
   pointHoverColor,
@@ -84,7 +87,9 @@ function LineChartInner({
       <div className="flex items-center text-xs font-semibold text-neutral min-h-4">
         {hovered && (
           <span className="ml-auto tabular-nums text-primary">
-            {hovered.label} · {hovered.valueLabel ?? formatAxisCount(hovered.value)} pending
+            {hoverLabelPrefix ? `${hoverLabelPrefix} ${hovered.label}` : hovered.label}
+            {' · '}
+            {hovered.valueLabel ?? formatAxisCount(hovered.value)} pending
           </span>
         )}
       </div>
@@ -187,6 +192,7 @@ export default function LineChart({
   height = 220,
   ariaLabel = 'Line chart',
   xAxisLabel,
+  hoverLabelPrefix,
   lineColor = chartColors.line,
   pointColor = chartColors.point,
   pointHoverColor = chartColors.pointHover,
@@ -201,6 +207,7 @@ export default function LineChart({
               width={width}
               height={height}
               ariaLabel={ariaLabel}
+              hoverLabelPrefix={hoverLabelPrefix}
               lineColor={lineColor}
               pointColor={pointColor}
               pointHoverColor={pointHoverColor}

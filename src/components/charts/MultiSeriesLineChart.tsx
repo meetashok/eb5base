@@ -39,6 +39,8 @@ export interface MultiSeriesLineChartProps {
   ariaLabel?: string;
   /** Caption under the plot clarifying what the X axis measures. */
   xAxisLabel?: string;
+  /** Prefixed before the hovered X label, e.g. "Snapshot date". */
+  hoverLabelPrefix?: string;
   showTick?: (d: MultiSeriesXMeta, index: number) => boolean;
 }
 
@@ -71,6 +73,7 @@ export default function MultiSeriesLineChart({
   height = 240,
   ariaLabel = 'Multi-series line chart',
   xAxisLabel,
+  hoverLabelPrefix,
   showTick,
 }: MultiSeriesLineChartProps) {
   const { ref, width } = useElementWidth<HTMLDivElement>();
@@ -208,7 +211,11 @@ export default function MultiSeriesLineChart({
         >
           {hoverMeta ? (
             <div className="ml-auto max-w-full space-y-0.5 text-right">
-              <div className="truncate text-primary">{hoverMeta.label}</div>
+              <div className="truncate text-primary">
+                {hoverLabelPrefix
+                  ? `${hoverLabelPrefix} ${hoverMeta.label}`
+                  : hoverMeta.label}
+              </div>
               <div className="flex flex-wrap justify-end gap-x-3 gap-y-0.5 font-medium tabular-nums text-neutral/80">
                 {hoverValues.map((v) => (
                   <span key={v.key} className="inline-flex items-center gap-1">

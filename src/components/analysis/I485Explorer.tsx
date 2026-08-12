@@ -249,8 +249,9 @@ function showPriorityDateTick(
   const idx = i - offset;
   // Leave room after the Prior label so it does not collide with the next year tick.
   if (hasPrior && idx < 5) return false;
-  if (d.shortLabel.length > 1) return true; // year numbers
-  return idx === 0 || i === data.length - 1 || idx % 6 === 0;
+  // January ticks include the year (e.g. "Jan 26").
+  if (d.key.endsWith('-01')) return true;
+  return idx === 0 || i === data.length - 1 || idx % 3 === 0;
 }
 
 function defaultCompareIds(releases: I485Release[]): {
@@ -828,6 +829,7 @@ export default function I485Explorer({
                   showPriorityDateTick(grain, snapshotSplit.xAxis.map((meta) => ({ meta })), d, i)
                 }
                 xAxisLabel="Priority date"
+                hoverLabelPrefix="Priority date"
                 ariaLabel={
                   split === 'country'
                     ? 'Pending I-485 by priority date, split by country'
@@ -1013,6 +1015,15 @@ export default function I485Explorer({
                   series={cohortSplitLines}
                   height={240}
                   xAxisLabel="USCIS snapshot"
+                  hoverLabelPrefix="Snapshot date"
+                  showTick={(d, i) =>
+                    showPriorityDateTick(
+                      'month',
+                      cohortSplitData.xAxis.map((meta) => ({ meta })),
+                      d,
+                      i,
+                    )
+                  }
                   ariaLabel="Pending I-485 cohort split by priority date across snapshots"
                 />
               ) : (
@@ -1025,6 +1036,7 @@ export default function I485Explorer({
                 data={cohortLine}
                 height={220}
                 xAxisLabel="USCIS snapshot"
+                hoverLabelPrefix="Snapshot date"
                 ariaLabel="Pending applications for the selected cohort across USCIS snapshots"
               />
             ) : (

@@ -342,10 +342,12 @@ export function priorityDateBucket(
 
   if (grain === 'month') {
     const monthName = MONTH_LABELS[m - 1] ?? String(m);
+    const yy = String(y).slice(-2);
     return {
       key: `${y}-${String(m).padStart(2, '0')}`,
-      label: `${monthName} ${y}`,
-      shortLabel: m === 1 ? String(y) : MONTH_LABELS[m - 1]?.slice(0, 1) ?? '',
+      label: `${monthName} ${yy}`,
+      // January carries the year; other months stay as Jan/Feb/… for denser ticks.
+      shortLabel: m === 1 ? `${monthName} ${yy}` : monthName,
     };
   }
 
