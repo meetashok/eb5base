@@ -1,5 +1,10 @@
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase';
 import { isSupabaseConfigured } from '@/lib/supabase-env';
+
+function clientOrBrowser(client?: SupabaseClient) {
+  return client ?? createClient();
+}
 
 /** One USCIS snapshot (report release). */
 export interface I485Release {
@@ -84,8 +89,8 @@ export function isI485DataAvailable(): boolean {
   return isSupabaseConfigured();
 }
 
-export async function fetchI485Releases(): Promise<I485Release[]> {
-  const supabase = createClient();
+export async function fetchI485Releases(client?: SupabaseClient): Promise<I485Release[]> {
+  const supabase = clientOrBrowser(client);
   const { data, error } = await supabase
     .from('i485_releases')
     .select('id, as_of_date, published_date, source_url, source_title')
@@ -105,8 +110,11 @@ export interface CellFilters {
 const PAGE = 1000;
 
 /** Fetch matching cells, paging past PostgREST's 1000-row limit. */
-export async function fetchI485Cells(filters: CellFilters): Promise<I485Cell[]> {
-  const supabase = createClient();
+export async function fetchI485Cells(
+  filters: CellFilters,
+  client?: SupabaseClient,
+): Promise<I485Cell[]> {
+  const supabase = clientOrBrowser(client);
   const out: I485Cell[] = [];
   for (let from = 0; ; from += PAGE) {
     let q = supabase

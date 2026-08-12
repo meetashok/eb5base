@@ -2,6 +2,15 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import PageHero from '@/components/PageHero';
 import I485Explorer from '@/components/analysis/I485Explorer';
+import {
+  CATEGORY_OPTIONS,
+  fetchI485Cells,
+  fetchI485Releases,
+  isI485DataAvailable,
+  type I485Cell,
+  type I485Release,
+} from '@/lib/analysis/i485';
+import { createClient } from '@/lib/supabase-server';
 
 export const metadata: Metadata = {
   title: 'I-485 Pending Inventory - USCIS employment-based data | EB5 Base',
@@ -16,7 +25,42 @@ export const metadata: Metadata = {
   },
 };
 
-export default function I485InventoryPage() {
+export const dynamic = 'force-dynamic';
+
+async function loadInitialInventory(): Promise<{
+  releases: I485Release[];
+  releaseId: number | null;
+  cells: I485Cell[] | null;
+  error: string | null;
+}> {
+  if (!isI485DataAvailable()) {
+    return { releases: [], releaseId: null, cells: null, error: null };
+  }
+
+  try {
+    const supabase = createClient();
+    const releases = await fetchI485Releases(supabase);
+    if (releases.length === 0) {
+      return { releases, releaseId: null, cells: null, error: null };
+    }
+    const releaseId = releases[releases.length - 1].id;
+    const cells = await fetchI485Cells(
+      {
+        releaseId,
+        categories: CATEGORY_OPTIONS[0].members,
+      },
+      supabase,
+    );
+    return { releases, releaseId, cells, error: null };
+  } catch (e) {
+    const message = e instanceof Error ? e.message : 'Unknown error';
+    return { releases: [], releaseId: null, cells: null, error: message };
+  }
+}
+
+export default async function I485InventoryPage() {
+  const initial = await loadInitialInventory();
+
   return (
     <div>
       <PageHero
@@ -33,7 +77,12 @@ export default function I485InventoryPage() {
       />
 
       <section className="max-w-4xl mx-auto px-4 py-8 space-y-6">
-        <I485Explorer />
+        <I485Explorer
+          initialReleases={initial.releases}
+          initialReleaseId={initial.releaseId}
+          initialSnapshotCells={initial.cells}
+          initialError={initial.error}
+        />
 
         <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 text-sm text-neutral leading-relaxed space-y-2">
           <h2 className="text-sm font-bold text-primary">How to read this data</h2>

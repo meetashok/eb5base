@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   CATEGORY_OPTIONS,
   COUNTRY_OPTIONS,
@@ -22,6 +22,7 @@ import {
 type ViewId = 'snapshot' | 'cohort';
 
 const nf = new Intl.NumberFormat('en-US');
+const DEFAULT_CATEGORY = 'EB5_ALL';
 
 function categoryMembers(value: string) {
   return CATEGORY_OPTIONS.find((o) => o.value === value)?.members ?? [];
@@ -151,18 +152,30 @@ function CohortLine({
   );
 }
 
-export default function I485Explorer() {
+export interface I485ExplorerProps {
+  initialReleases?: I485Release[];
+  initialReleaseId?: number | null;
+  initialSnapshotCells?: I485Cell[] | null;
+  initialError?: string | null;
+}
+
+export default function I485Explorer({
+  initialReleases = [],
+  initialReleaseId = null,
+  initialSnapshotCells = null,
+  initialError = null,
+}: I485ExplorerProps) {
   const available = isI485DataAvailable();
-  const [releases, setReleases] = useState<I485Release[]>([]);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [releases, setReleases] = useState<I485Release[]>(initialReleases);
+  const [loadError, setLoadError] = useState<string | null>(initialError);
 
   const [view, setView] = useState<ViewId>('snapshot');
   const [country, setCountry] = useState<string>('all');
-  const [category, setCategory] = useState<string>('EB5_ALL');
+  const [category, setCategory] = useState<string>(DEFAULT_CATEGORY);
 
   // Snapshot view state
-  const [releaseId, setReleaseId] = useState<number | null>(null);
-  const [snapshotCells, setSnapshotCells] = useState<I485Cell[] | null>(null);
+  const [releaseId, setReleaseId] = useState<number | null>(initialReleaseId);
+  const [snapshotCells, setSnapshotCells] = useState<I485Cell[] | null>(initialSnapshotCells);
 
   // Cohort view state
   const [pdYear, setPdYear] = useState<number>(2024);
@@ -170,16 +183,20 @@ export default function I485Explorer() {
   const [cohortCells, setCohortCells] = useState<I485Cell[] | null>(null);
 
   const [loading, setLoading] = useState(false);
+  const skipInitialSnapshotFetch = useRef(
+    initialSnapshotCells != null && initialReleaseId != null && initialReleases.length > 0,
+  );
 
   useEffect(() => {
     if (!available) return;
+    if (initialReleases.length > 0) return;
     fetchI485Releases()
       .then((rs) => {
         setReleases(rs);
         if (rs.length > 0) setReleaseId(rs[rs.length - 1].id);
       })
       .catch((e: Error) => setLoadError(e.message));
-  }, [available]);
+  }, [available, initialReleases.length]);
 
   const selectedRelease = releases.find((r) => r.id === releaseId) ?? null;
   const members = useMemo(() => categoryMembers(category), [category]);
@@ -187,6 +204,15 @@ export default function I485Explorer() {
   // Snapshot data
   useEffect(() => {
     if (!available || releaseId == null) return;
+    if (
+      skipInitialSnapshotFetch.current &&
+      releaseId === initialReleaseId &&
+      country === 'all' &&
+      category === DEFAULT_CATEGORY
+    ) {
+      skipInitialSnapshotFetch.current = false;
+      return;
+    }
     let cancel = false;
     setLoading(true);
     fetchI485Cells({
@@ -202,7 +228,7 @@ export default function I485Explorer() {
     return () => {
       cancel = true;
     };
-  }, [available, releaseId, country, members]);
+  }, [available, releaseId, country, members, category, initialReleaseId]);
 
   // Cohort data
   useEffect(() => {
@@ -316,6 +342,7 @@ export default function I485Explorer() {
               value={releaseId ?? ''}
               onChange={(e) => setReleaseId(Number(e.target.value))}
             >
+              {releases.length === 0 && <option value="">Loading snapshots…</option>}
               {[...releases].reverse().map((r) => (
                 <option key={r.id} value={r.id}>
                   As of {formatAsOf(r.as_of_date)}
@@ -402,13 +429,19 @@ export default function I485Explorer() {
 
       {/* Results */}
       <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4">
-        {loading && <p className="text-sm text-neutral/70">Loading…</p>}
+        {loading && !snapshotCells && view === 'snapshot' && (
+          <p className="text-sm text-neutral/70">Loading inventory…</p>
+        )}
+        {loading && view === 'cohort' && !cohortCells && (
+          <p className="text-sm text-neutral/70">Loading cohort…</p>
+        )}
 
-        {view === 'snapshot' && !loading && snapshotCells && (
+        {view === 'snapshot' && snapshotCells && (
           <>
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <h3 className="text-sm font-semibold text-primary">
                 Pending I-485 by priority-date year
+                {loading ? <span className="ml-2 font-normal text-neutral/55">Updating…</span> : null}
               </h3>
               <span className="text-2xl font-bold tabular-nums text-primary">
                 {nf.format(snapshotTotal.count)}
@@ -429,12 +462,17 @@ export default function I485Explorer() {
           </>
         )}
 
-        {view === 'cohort' && !loading && cohortCells && (
+        {view === 'snapshot' && !loading && !snapshotCells && !loadError && (
+          <p className="text-sm text-neutral/70">Loading inventory…</p>
+        )}
+
+        {view === 'cohort' && cohortCells && (
           <>
             <div className="space-y-1">
               <h3 className="text-sm font-semibold text-primary">
                 Pending I-485 with a {pdMonth === 'all' ? '' : `${MONTH_LABELS[(pdMonth as number) - 1]} `}
                 {pdYear} priority date, snapshot by snapshot
+                {loading ? <span className="ml-2 font-normal text-neutral/55">Updating…</span> : null}
               </h3>
               <p className="text-xs text-neutral/70 leading-relaxed">
                 The month-over-month change mixes new filings into the cohort with completed cases
@@ -461,6 +499,7 @@ export default function I485Explorer() {
           </Link>
           {' · '}
           official USCIS XLSX downloads
+          {releases.length > 0 ? ` · ${releases.length} monthly reports` : ''}
         </p>
       </div>
     </div>
