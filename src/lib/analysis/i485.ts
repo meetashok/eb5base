@@ -61,10 +61,13 @@ export const COUNTRY_OPTIONS: { value: I485Country | 'all'; label: string }[] = 
 /**
  * Category filter options. "EB5_ALL" sums every EB-5 sub-bucket
  * (unreserved + set-asides, including the short-lived 2024 lump bucket).
+ * "EB5_SET_ASIDES" is the reserved/set-aside group only (RIA rural,
+ * high-unemployment, and infrastructure, plus the early-2024 lump).
  */
 export const CATEGORY_OPTIONS: { value: string; label: string; members: I485Category[] }[] = [
   { value: 'EB5_ALL', label: 'EB-5 (all)', members: ['EB5_UNRESERVED', 'EB5_SET_ASIDE', 'EB5_RURAL', 'EB5_HIGH_UNEMPLOYMENT', 'EB5_INFRASTRUCTURE'] },
   { value: 'EB5_UNRESERVED', label: 'EB-5 Unreserved', members: ['EB5_UNRESERVED'] },
+  { value: 'EB5_SET_ASIDES', label: 'EB-5 set-asides (all)', members: ['EB5_SET_ASIDE', 'EB5_RURAL', 'EB5_HIGH_UNEMPLOYMENT', 'EB5_INFRASTRUCTURE'] },
   { value: 'EB5_RURAL', label: 'EB-5 Rural set-aside', members: ['EB5_RURAL'] },
   { value: 'EB5_HIGH_UNEMPLOYMENT', label: 'EB-5 High-unemployment set-aside', members: ['EB5_HIGH_UNEMPLOYMENT'] },
   { value: 'EB5_INFRASTRUCTURE', label: 'EB-5 Infrastructure set-aside', members: ['EB5_INFRASTRUCTURE'] },
