@@ -1129,9 +1129,9 @@ export default function I485Explorer({
             <p className="text-xs text-neutral/70">{cohortContextCaption}</p>
             {cohortFacetSplit !== 'none' ? (
               cohortFacets && cohortFacets.length > 0 ? (
-                <div className="space-y-6">
+                <div className="divide-y divide-base-300">
                   {cohortFacets.map((facet) => (
-                    <div key={facet.key} className="space-y-1.5">
+                    <div key={facet.key} className="space-y-1.5 py-5 first:pt-0 last:pb-0">
                       <h3 className="text-sm font-semibold text-primary">{facet.label}</h3>
                       {facet.split && facet.split.series.length > 0 ? (
                         <MultiSeriesLineChart
