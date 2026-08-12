@@ -104,9 +104,12 @@ function showPriorityDateTick(
 ) {
   if (grain === 'year' || grain === 'quarter') return true;
   if (d.key === '_earlier') return true;
-  if (d.shortLabel.length > 1) return true;
-  const offset = data[0]?.meta.key === '_earlier' ? 1 : 0;
+  const hasPrior = data[0]?.meta.key === '_earlier';
+  const offset = hasPrior ? 1 : 0;
   const idx = i - offset;
+  // Leave room after the Prior label so it does not collide with the next year tick.
+  if (hasPrior && idx < 5) return false;
+  if (d.shortLabel.length > 1) return true; // year numbers
   return idx === 0 || i === data.length - 1 || idx % 6 === 0;
 }
 
