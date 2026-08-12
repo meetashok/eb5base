@@ -45,6 +45,7 @@ function isPublicPath(pathname: string): boolean {
       '/status-update',
       '/eb5status',
       '/nprm',
+      '/analysis',
       '/maintenance',
       '/debug',
     ].includes(pathname)
@@ -54,6 +55,7 @@ function isPublicPath(pathname: string): boolean {
   if (pathname.startsWith('/auth')) return true;
   if (pathname.startsWith('/debug/')) return true;
   if (pathname.startsWith('/nprm/') || pathname.startsWith('/nrpm')) return true;
+  if (pathname.startsWith('/analysis/')) return true;
   if (pathname.startsWith('/status/') || pathname.startsWith('/eb5status/')) return true;
   if (pathname.startsWith('/resources/')) return true;
 
