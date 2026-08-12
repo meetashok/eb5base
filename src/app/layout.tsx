@@ -59,6 +59,9 @@ export async function generateMetadata(): Promise<Metadata> {
     robots: indexable
       ? { index: true, follow: true }
       : { index: false, follow: false },
+    verification: {
+      google: '5IID_7Txj5GyFoVFQNqkNlBqHvrAUCOCpVnfRuJqmiY',
+    },
     icons: {
       icon: [
         { url: '/favicon-32.png', sizes: '32x32', type: 'image/png' },
