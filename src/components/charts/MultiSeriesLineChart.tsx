@@ -2,7 +2,6 @@
 
 import { AxisBottom, AxisLeft } from '@visx/axis';
 import { curveMonotoneX } from '@visx/curve';
-import { localPoint } from '@visx/event';
 import { GridRows } from '@visx/grid';
 import { Group } from '@visx/group';
 import { scaleLinear, scalePoint } from '@visx/scale';
@@ -134,11 +133,8 @@ export default function MultiSeriesLineChart({
   const ready = width >= 10 && xAxis.length > 0 && colored.length > 0;
 
   return (
-    <div
-      className="space-y-2 w-full"
-      onMouseLeave={() => setHoverKey(null)}
-    >
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs min-h-4">
+    <div className="w-full space-y-2" onMouseLeave={() => setHoverKey(null)}>
+      <div className="flex min-h-4 flex-wrap items-center gap-x-3 gap-y-1 text-xs">
         {colored.map((s) => (
           <span key={s.key} className="inline-flex items-center gap-1.5 text-neutral/80">
             <span
@@ -151,153 +147,150 @@ export default function MultiSeriesLineChart({
         ))}
       </div>
 
-      {/* Fixed-height readout so hover never shifts the plot. */}
-      <div
-        className="h-11 text-xs font-semibold text-neutral overflow-hidden"
-        aria-live="polite"
-      >
-        {hoverMeta ? (
-          <div className="ml-auto text-right space-y-0.5 max-w-full">
-            <div className="text-primary truncate">{hoverMeta.label}</div>
-            <div className="flex flex-wrap justify-end gap-x-3 gap-y-0.5 tabular-nums font-medium text-neutral/80">
-              {hoverValues.map((v) => (
-                <span key={v.key} className="inline-flex items-center gap-1">
-                  <span
-                    className="inline-block h-1.5 w-1.5 rounded-full"
-                    style={{ backgroundColor: v.color }}
-                    aria-hidden
-                  />
-                  {v.label} {nf.format(v.value)}
-                </span>
-              ))}
-            </div>
-          </div>
-        ) : null}
-      </div>
-
-      <div ref={ref} className="w-full">
-        {!ready ? (
-          <div style={{ height }} aria-hidden />
-        ) : (
-          <svg
-            width={width}
-            height={height}
-            role="img"
-            aria-label={ariaLabel}
-          >
-            <Group left={margin.left} top={margin.top}>
-              <GridRows
-                scale={yScale}
-                width={innerWidth}
-                tickValues={ticks}
-                stroke={chartColors.grid}
-                pointerEvents="none"
-              />
-              <AxisLeft
-                scale={yScale}
-                tickValues={ticks}
-                tickFormat={(v) => formatAxisCount(v as number)}
-                stroke={chartColors.zero}
-                tickStroke="transparent"
-                tickLabelProps={() => ({
-                  fill: chartColors.axis,
-                  fontSize: 10,
-                  textAnchor: 'end',
-                  dx: -4,
-                  dy: '0.35em',
-                  fontFamily: 'inherit',
-                })}
-                hideAxisLine
-                hideTicks
-              />
-              <AxisBottom
-                top={innerHeight}
-                scale={xScale}
-                tickValues={xTickKeys}
-                tickFormat={(key) =>
-                  xAxis.find((d) => d.key === key)?.shortLabel ?? String(key)
-                }
-                stroke={chartColors.zero}
-                tickStroke="transparent"
-                tickLabelProps={(value) => ({
-                  fill: chartColors.axis,
-                  fontSize: 9,
-                  textAnchor: value === '_earlier' ? 'start' : 'middle',
-                  dx: value === '_earlier' ? 2 : 0,
-                  dy: '0.25em',
-                  fontFamily: 'inherit',
-                })}
-                hideTicks
-              />
-
-              {colored.map((s) => (
-                <LinePath
-                  key={s.key}
-                  data={s.data}
-                  x={(d) => xScale(d.key) ?? 0}
-                  y={(d) => yScale(d.value) ?? 0}
-                  curve={curveMonotoneX}
-                  stroke={s.color}
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              ))}
-
-              {xAxis.map((meta) => {
-                const cx = xScale(meta.key) ?? 0;
-                const active = hoverKey === meta.key;
-                const band = Math.max(innerWidth / Math.max(xAxis.length, 1), 8);
-                return (
-                  <g key={meta.key}>
-                    <rect
-                      x={cx - band / 2}
-                      y={0}
-                      width={band}
-                      height={innerHeight}
-                      fill="transparent"
-                      onMouseEnter={() => setHoverKey(meta.key)}
-                      onMouseMove={(event) => {
-                        const point = localPoint(event);
-                        if (point) setHoverKey(meta.key);
-                      }}
+      {/*
+        Reserve top padding for the hover readout; render it absolutely so
+        appearing/disappearing values never change layout height.
+      */}
+      <div className="relative w-full pt-12">
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 z-10 h-11 overflow-hidden text-xs font-semibold text-neutral"
+          aria-live="polite"
+        >
+          {hoverMeta ? (
+            <div className="ml-auto max-w-full space-y-0.5 text-right">
+              <div className="truncate text-primary">{hoverMeta.label}</div>
+              <div className="flex flex-wrap justify-end gap-x-3 gap-y-0.5 font-medium tabular-nums text-neutral/80">
+                {hoverValues.map((v) => (
+                  <span key={v.key} className="inline-flex items-center gap-1">
+                    <span
+                      className="inline-block h-1.5 w-1.5 rounded-full"
+                      style={{ backgroundColor: v.color }}
+                      aria-hidden
                     />
-                    {active && (
-                      <line
-                        x1={cx}
-                        x2={cx}
-                        y1={0}
-                        y2={innerHeight}
-                        stroke={chartColors.zero}
-                        strokeWidth={1}
-                        strokeDasharray="3 3"
-                        pointerEvents="none"
+                    {v.label} {nf.format(v.value)}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ) : null}
+        </div>
+
+        <div ref={ref} className="w-full">
+          {!ready ? (
+            <div style={{ height }} aria-hidden />
+          ) : (
+            <svg width={width} height={height} role="img" aria-label={ariaLabel}>
+              <Group left={margin.left} top={margin.top}>
+                <GridRows
+                  scale={yScale}
+                  width={innerWidth}
+                  tickValues={ticks}
+                  stroke={chartColors.grid}
+                  pointerEvents="none"
+                />
+                <AxisLeft
+                  scale={yScale}
+                  tickValues={ticks}
+                  tickFormat={(v) => formatAxisCount(v as number)}
+                  stroke={chartColors.zero}
+                  tickStroke="transparent"
+                  tickLabelProps={() => ({
+                    fill: chartColors.axis,
+                    fontSize: 10,
+                    textAnchor: 'end',
+                    dx: -4,
+                    dy: '0.35em',
+                    fontFamily: 'inherit',
+                  })}
+                  hideAxisLine
+                  hideTicks
+                />
+                <AxisBottom
+                  top={innerHeight}
+                  scale={xScale}
+                  tickValues={xTickKeys}
+                  tickFormat={(key) =>
+                    xAxis.find((d) => d.key === key)?.shortLabel ?? String(key)
+                  }
+                  stroke={chartColors.zero}
+                  tickStroke="transparent"
+                  tickLabelProps={(value) => ({
+                    fill: chartColors.axis,
+                    fontSize: 9,
+                    textAnchor: value === '_earlier' ? 'start' : 'middle',
+                    dx: value === '_earlier' ? 2 : 0,
+                    dy: '0.25em',
+                    fontFamily: 'inherit',
+                  })}
+                  hideTicks
+                />
+
+                {colored.map((s) => (
+                  <LinePath
+                    key={s.key}
+                    data={s.data}
+                    x={(d) => xScale(d.key) ?? 0}
+                    y={(d) => yScale(d.value) ?? 0}
+                    curve={curveMonotoneX}
+                    stroke={s.color}
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                ))}
+
+                {xAxis.map((meta) => {
+                  const cx = xScale(meta.key) ?? 0;
+                  const active = hoverKey === meta.key;
+                  const band = Math.max(innerWidth / Math.max(xAxis.length, 1), 8);
+                  return (
+                    <g key={meta.key}>
+                      <rect
+                        x={cx - band / 2}
+                        y={0}
+                        width={band}
+                        height={innerHeight}
+                        fill="transparent"
+                        onMouseEnter={() => setHoverKey(meta.key)}
+                        onMouseMove={() => setHoverKey(meta.key)}
                       />
-                    )}
-                    {colored.map((s) => {
-                      const pt = s.data.find((d) => d.key === meta.key);
-                      if (!pt) return null;
-                      const cy = yScale(pt.value) ?? 0;
-                      return (
-                        <circle
-                          key={`${s.key}-${meta.key}`}
-                          cx={cx}
-                          cy={cy}
-                          r={active ? 4.5 : 2.5}
-                          fill={s.color}
-                          stroke="#faf7f2"
-                          strokeWidth={active ? 2 : 1}
-                          opacity={active ? 1 : 0.85}
+                      {active && (
+                        <line
+                          x1={cx}
+                          x2={cx}
+                          y1={0}
+                          y2={innerHeight}
+                          stroke={chartColors.zero}
+                          strokeWidth={1}
+                          strokeDasharray="3 3"
                           pointerEvents="none"
                         />
-                      );
-                    })}
-                  </g>
-                );
-              })}
-            </Group>
-          </svg>
-        )}
+                      )}
+                      {colored.map((s) => {
+                        const pt = s.data.find((d) => d.key === meta.key);
+                        if (!pt) return null;
+                        const cy = yScale(pt.value) ?? 0;
+                        return (
+                          <circle
+                            key={`${s.key}-${meta.key}`}
+                            cx={cx}
+                            cy={cy}
+                            r={active ? 4.5 : 2.5}
+                            fill={s.color}
+                            stroke="#faf7f2"
+                            strokeWidth={active ? 2 : 1}
+                            opacity={active ? 1 : 0.85}
+                            pointerEvents="none"
+                          />
+                        );
+                      })}
+                    </g>
+                  );
+                })}
+              </Group>
+            </svg>
+          )}
+        </div>
       </div>
     </div>
   );
