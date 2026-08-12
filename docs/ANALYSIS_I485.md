@@ -41,6 +41,14 @@ priority date).
    npm run analysis:export-i485-csv   # → public/data/i485-pending-inventory.csv
    ```
 
+## Explorer
+
+`/analysis/i485` supports snapshot, compare, and cohort views. Snapshot keeps
+a priority-date grain toggle (months / quarters / fiscal years) and a
+**Split** control: None (bars), By country, or By category (multi-series
+lines). Split lines are still pending stock by priority date in one snapshot —
+not a time series across releases.
+
 ## Data caveats (reflected in page copy)
 
 - Counts are pending applications at USCIS only: no DOS consular queue, no
