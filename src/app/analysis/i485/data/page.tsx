@@ -78,9 +78,7 @@ export default function I485SourceDataPage() {
           <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 space-y-2">
             <p className="text-sm text-neutral leading-relaxed">
               One file with every non-zero cell across all {files.length} monthly snapshots
-              (country, category, visa status, priority-date year/month, count). Built by EB5
-              Base from the USCIS workbooks below. Verify against the official XLSX for
-              definitive figures.
+              (country, category, visa status, priority-date year/month, count).
             </p>
             <a
               href="/data/i485-pending-inventory.csv"
@@ -89,6 +87,15 @@ export default function I485SourceDataPage() {
             >
               Download i485-pending-inventory.csv
             </a>
+            <p className="text-xs text-neutral/70 leading-relaxed">
+              Suppressed USCIS values (&quot;D&quot;) appear with an empty count and{' '}
+              <span className="font-mono">suppressed=true</span>. Priority-date year{' '}
+              <span className="font-mono">0</span> is the USCIS &quot;Prior Years&quot; rollup.
+            </p>
+            <p className="text-xs text-neutral/70 leading-relaxed">
+              Built by EB5 Base from the official workbooks below. For definitive figures, verify
+              against the monthly XLSX files on uscis.gov.
+            </p>
           </div>
         </div>
 
@@ -166,12 +173,10 @@ export default function I485SourceDataPage() {
               USCIS Immigration and Citizenship Data
             </a>
           </p>
-          <p className="text-xs text-neutral/75">
+          <p className="text-xs text-neutral/70 leading-relaxed">
             In the workbooks, <span className="font-medium">D</span> means suppressed (count under
             10); <span className="font-medium">&quot;-&quot;</span> means zero. Priority-date years
-            outside the 10-year window are rolled into &quot;Prior Years&quot; (year{' '}
-            <span className="font-mono">0</span> in the CSV). In the CSV, suppressed cells have an
-            empty count and <span className="font-mono">suppressed=true</span>.
+            outside the 10-year window are rolled into &quot;Prior Years&quot;.
           </p>
         </div>
 
