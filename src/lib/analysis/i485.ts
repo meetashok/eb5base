@@ -713,15 +713,47 @@ export function latestReleasesByGrain(
 export function priorityDateSeriesInYears(
   years: number[],
   grain: PriorityDateGrain,
-): TimeBucketMeta[] {
-  const seen = new Map<string, TimeBucketMeta>();
+): { meta: TimeBucketMeta; earliestAsOf: string | null }[] {
+  const seen = new Map<string, { meta: TimeBucketMeta; earliestAsOf: string | null }>();
   for (const y of years) {
     for (let m = 1; m <= 12; m += 1) {
-      const meta = priorityDateBucket({ pd_year: y, pd_month: m }, grain);
-      if (!seen.has(meta.key)) seen.set(meta.key, meta);
+      const cell = { pd_year: y, pd_month: m };
+      const meta = priorityDateBucket(cell, grain);
+      if (!seen.has(meta.key)) {
+        seen.set(meta.key, {
+          meta,
+          earliestAsOf: priorityDateBucketEarliestAsOf(cell, grain),
+        });
+      }
     }
   }
   return Array.from(seen.values());
+}
+
+/**
+ * Earliest USCIS as-of date when a priority-date bucket can appear in inventory.
+ * Snapshots before this date cannot contain that cohort (omit chart points).
+ * Returns null for the "Earlier" rollup (no start bound).
+ */
+export function priorityDateBucketEarliestAsOf(
+  cell: Pick<I485Cell, 'pd_year' | 'pd_month'>,
+  grain: PriorityDateGrain,
+): string | null {
+  if (cell.pd_year === 0) return null;
+  const y = cell.pd_year;
+  const m = cell.pd_month;
+
+  if (grain === 'month') {
+    return `${y}-${String(m).padStart(2, '0')}-01`;
+  }
+
+  if (grain === 'quarter') {
+    const startMonth = (calendarQuarter(m) - 1) * 3 + 1;
+    return `${y}-${String(startMonth).padStart(2, '0')}-01`;
+  }
+
+  const fy = fiscalYear(y, m);
+  return `${fy - 1}-10-01`;
 }
 
 /**
@@ -745,6 +777,8 @@ export function aggregateCohortBySnapshotGrain(
 
 /**
  * Cohort multi-series: X = snapshot grain, series = priority-date grain buckets.
+ * Each series omits snapshots before that priority-date cohort can exist
+ * (e.g. Jan 2026 has no points before the Jan 2026 as-of; Q1 2026 starts at Jan).
  */
 export function aggregateCohortSplitByPriorityDate(
   cells: I485Cell[],
@@ -756,10 +790,10 @@ export function aggregateCohortSplitByPriorityDate(
   const filtered = cells.filter((c) => cellInPriorityDateYears(c, years));
   const xPoints = latestReleasesByGrain(releases, snapshotGrain);
   const xAxis = xPoints.map((p) => p.meta);
-  const seriesMetas = priorityDateSeriesInYears(years, pdGrain);
+  const seriesDefs = priorityDateSeriesInYears(years, pdGrain);
 
   const counts = new Map<string, Map<number, AggregatedBucket>>();
-  for (const s of seriesMetas) counts.set(s.key, new Map());
+  for (const s of seriesDefs) counts.set(s.meta.key, new Map());
 
   for (const cell of filtered) {
     const seriesMeta = priorityDateBucket(cell, pdGrain);
@@ -771,25 +805,30 @@ export function aggregateCohortSplitByPriorityDate(
     byRelease.set(cell.release_id, bucket);
   }
 
-  const activeSeries = seriesMetas.filter((s) => {
-    const byRelease = counts.get(s.key);
+  const activeSeries = seriesDefs.filter((s) => {
+    const byRelease = counts.get(s.meta.key);
     if (!byRelease) return false;
     return Array.from(byRelease.values()).some((b) => b.count > 0 || b.suppressedCells > 0);
   });
 
   const series: SplitSeries[] = activeSeries.map((s) => {
-    const byRelease = counts.get(s.key)!;
+    const byRelease = counts.get(s.meta.key)!;
     return {
-      key: s.key,
-      label: s.label,
-      points: xPoints.map(({ meta, release }) => {
-        const bucket = byRelease.get(release.id) ?? { count: 0, suppressedCells: 0 };
-        return {
-          key: meta.key,
-          value: bucket.count,
-          suppressedCells: bucket.suppressedCells,
-        };
-      }),
+      key: s.meta.key,
+      label: s.meta.label,
+      points: xPoints
+        .filter(
+          ({ release }) =>
+            s.earliestAsOf == null || release.as_of_date >= s.earliestAsOf,
+        )
+        .map(({ meta, release }) => {
+          const bucket = byRelease.get(release.id) ?? { count: 0, suppressedCells: 0 };
+          return {
+            key: meta.key,
+            value: bucket.count,
+            suppressedCells: bucket.suppressedCells,
+          };
+        }),
     };
   });
 

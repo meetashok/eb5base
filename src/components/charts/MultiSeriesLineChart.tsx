@@ -150,12 +150,18 @@ export default function MultiSeriesLineChart({
 
   const hoverMeta = hoverKey ? xAxis.find((d) => d.key === hoverKey) : null;
   const hoverValues = hoverKey
-    ? visible.map((s) => ({
-        key: s.key,
-        label: s.label,
-        color: s.color,
-        value: s.data.find((d) => d.key === hoverKey)?.value ?? 0,
-      }))
+    ? visible.flatMap((s) => {
+        const pt = s.data.find((d) => d.key === hoverKey);
+        if (!pt) return [];
+        return [
+          {
+            key: s.key,
+            label: s.label,
+            color: s.color,
+            value: pt.value,
+          },
+        ];
+      })
     : [];
 
   const ready = width >= 10 && xAxis.length > 0 && colored.length > 0;

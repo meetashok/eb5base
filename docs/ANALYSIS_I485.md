@@ -53,7 +53,8 @@ snapshot — not a time series across releases.
 Cohort tracks selected **priority-date years** across USCIS releases (multi-select
 chips from 2023 onward, plus an optional Previous years range). The X axis is
 always monthly USCIS snapshots (one point per release). Split can break the
-line out by priority-date month, quarter, or fiscal year.
+line out by priority-date month, quarter, or fiscal year; each series starts at
+the first snapshot where that cohort can exist (no leading zeros before then).
 
 ## Data caveats (reflected in page copy)
 
