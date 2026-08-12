@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { BarChart, DiffBarChart, LineChart, MultiSeriesLineChart, formatSignedCount } from '@/components/charts';
 import I485ViewBar, { type I485ViewId } from '@/components/analysis/I485ViewBar';
 import I485CategoryPicker from '@/components/analysis/I485CategoryPicker';
@@ -76,6 +76,14 @@ function ChartFooter({ cells }: { cells: number }) {
         Source data
       </Link>
     </p>
+  );
+}
+
+function ChartHeader({ children }: { children: ReactNode }) {
+  return (
+    <header className="rounded-lg border border-base-300 border-b-2 bg-base-200/50 px-3 py-3 sm:px-3.5 sm:py-3.5">
+      {children}
+    </header>
   );
 }
 
@@ -650,30 +658,32 @@ export default function I485Explorer({
 
         {view === 'snapshot' && snapshotCells && (
           <>
-            <div className="flex flex-wrap items-end justify-between gap-3">
-              <div className="space-y-1 min-w-0">
-                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <span className="text-2xl font-bold tabular-nums text-primary">
-                    {nf.format(snapshotTotal.count)}
-                    {snapshotTotal.suppressedCells > 0 ? '+' : ''}
-                  </span>
-                  <span className="text-xs text-neutral/70">
-                    total pending
-                    {selectedRelease ? ` as of ${formatAsOf(selectedRelease.as_of_date)}` : ''}
-                  </span>
+            <ChartHeader>
+              <div className="flex flex-wrap items-end justify-between gap-3">
+                <div className="space-y-1 min-w-0">
+                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <span className="text-2xl font-bold tabular-nums text-primary">
+                      {nf.format(snapshotTotal.count)}
+                      {snapshotTotal.suppressedCells > 0 ? '+' : ''}
+                    </span>
+                    <span className="text-xs text-neutral/70">
+                      total pending
+                      {selectedRelease ? ` as of ${formatAsOf(selectedRelease.as_of_date)}` : ''}
+                    </span>
+                  </div>
+                  <p className="text-xs font-medium text-neutral/55">
+                    Pending I-485 by priority date
+                    {loading ? (
+                      <span className="ml-2 font-normal text-neutral/40">Updating…</span>
+                    ) : null}
+                  </p>
                 </div>
-                <p className="text-xs font-medium text-neutral/55">
-                  Pending I-485 by priority date
-                  {loading ? (
-                    <span className="ml-2 font-normal text-neutral/40">Updating…</span>
-                  ) : null}
-                </p>
+                <div className="flex flex-col items-stretch sm:items-end gap-2">
+                  <GrainToggle grain={grain} onChange={setGrain} />
+                  <SplitToggle split={split} onChange={setSplit} />
+                </div>
               </div>
-              <div className="flex flex-col items-stretch sm:items-end gap-2">
-                <GrainToggle grain={grain} onChange={setGrain} />
-                <SplitToggle split={split} onChange={setSplit} />
-              </div>
-            </div>
+            </ChartHeader>
             {split !== 'none' && (
               <p className="text-xs text-neutral/70">
                 Pending stock by priority date in this snapshot, not change across releases.
@@ -731,38 +741,40 @@ export default function I485Explorer({
 
         {view === 'compare' && compareFromCells && compareToCells && (
           <>
-            <div className="flex flex-wrap items-end justify-between gap-3">
-              <div className="space-y-1 min-w-0">
-                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <span
-                    className={`text-2xl font-bold tabular-nums ${
-                      compareNet.delta > 0
-                        ? 'text-secondary'
-                        : compareNet.delta < 0
-                          ? 'text-error'
-                          : 'text-primary'
-                    }`}
-                  >
-                    {formatSignedCount(compareNet.delta)}
-                  </span>
-                  <span className="text-xs text-neutral/70">
-                    net change
-                    {compareFromRelease && compareToRelease
-                      ? ` from ${formatAsOfShort(compareFromRelease.as_of_date)} to ${formatAsOfShort(compareToRelease.as_of_date)}`
-                      : ''}
-                    {' · '}
-                    {nf.format(compareNet.earlier.count)} → {nf.format(compareNet.later.count)}
-                  </span>
+            <ChartHeader>
+              <div className="flex flex-wrap items-end justify-between gap-3">
+                <div className="space-y-1 min-w-0">
+                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <span
+                      className={`text-2xl font-bold tabular-nums ${
+                        compareNet.delta > 0
+                          ? 'text-secondary'
+                          : compareNet.delta < 0
+                            ? 'text-error'
+                            : 'text-primary'
+                      }`}
+                    >
+                      {formatSignedCount(compareNet.delta)}
+                    </span>
+                    <span className="text-xs text-neutral/70">
+                      net change
+                      {compareFromRelease && compareToRelease
+                        ? ` from ${formatAsOfShort(compareFromRelease.as_of_date)} to ${formatAsOfShort(compareToRelease.as_of_date)}`
+                        : ''}
+                      {' · '}
+                      {nf.format(compareNet.earlier.count)} → {nf.format(compareNet.later.count)}
+                    </span>
+                  </div>
+                  <p className="text-xs font-medium text-neutral/55">
+                    Change in pending I-485 by priority date
+                    {loading ? (
+                      <span className="ml-2 font-normal text-neutral/40">Updating…</span>
+                    ) : null}
+                  </p>
                 </div>
-                <p className="text-xs font-medium text-neutral/55">
-                  Change in pending I-485 by priority date
-                  {loading ? (
-                    <span className="ml-2 font-normal text-neutral/40">Updating…</span>
-                  ) : null}
-                </p>
+                <GrainToggle grain={grain} onChange={setGrain} />
               </div>
-              <GrainToggle grain={grain} onChange={setGrain} />
-            </div>
+            </ChartHeader>
             <p className="text-xs text-neutral/70">
               Green rose and red fell between snapshots; change mixes new filings with completions.
             </p>
@@ -848,7 +860,7 @@ export default function I485Explorer({
 
         {view === 'cohort' && cohortCells && (
           <>
-            <div className="space-y-1">
+            <ChartHeader>
               <h3 className="text-sm font-semibold text-primary">
                 Pending I-485 with a{' '}
                 {pdMonth === 'all' ? '' : `${MONTH_LABELS[(pdMonth as number) - 1]} `}
@@ -857,10 +869,10 @@ export default function I485Explorer({
                   <span className="ml-2 font-normal text-neutral/55">Updating…</span>
                 ) : null}
               </h3>
-              <p className="text-xs text-neutral/70">
-                Change mixes new filings into the cohort with completions leaving it.
-              </p>
-            </div>
+            </ChartHeader>
+            <p className="text-xs text-neutral/70">
+              Change mixes new filings into the cohort with completions leaving it.
+            </p>
             {cohortLine.some((p) => p.value > 0) ? (
               <LineChart
                 data={cohortLine}
