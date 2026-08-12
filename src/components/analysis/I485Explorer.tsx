@@ -296,7 +296,7 @@ export default function I485Explorer({
     ...DEFAULT_PRIORITY_DATE_YEARS,
   });
   const [cohortSnapshotGrain, setCohortSnapshotGrain] =
-    useState<PriorityDateGrain>('quarter');
+    useState<PriorityDateGrain>('month');
   const [cohortSplit, setCohortSplit] = useState<CohortSplit>('none');
   const [cohortPdGrain, setCohortPdGrain] = useState<PriorityDateGrain>('quarter');
   const [cohortCells, setCohortCells] = useState<I485Cell[] | null>(null);
