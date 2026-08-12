@@ -20,7 +20,7 @@ function isStaticOrApi(pathname: string): boolean {
     pathname.startsWith('/opengraph-image/') ||
     pathname === '/twitter-image' ||
     pathname.startsWith('/twitter-image/') ||
-    /\.(?:svg|png|jpg|jpeg|gif|webp|txt|xml|json|log|ttf|otf|woff|woff2)$/.test(pathname)
+    /\.(?:svg|png|jpg|jpeg|gif|webp|txt|xml|json|log|ttf|otf|woff|woff2|html)$/.test(pathname)
   );
 }
 

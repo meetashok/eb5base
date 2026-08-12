@@ -22,6 +22,7 @@ function isMaintenancePassthrough(pathname: string): boolean {
     pathname === '/robots.txt' ||
     pathname === '/sitemap.xml' ||
     pathname === '/llms.txt' ||
+    (pathname.startsWith('/google') && pathname.endsWith('.html')) ||
     pathname === '/debug' ||
     pathname.startsWith('/debug/') ||
     pathname === '/api/crawl-test' ||
@@ -108,6 +109,7 @@ function isCrawlFriendlyPublicPath(pathname: string): boolean {
     pathname === '/robots.txt' ||
     pathname === '/sitemap.xml' ||
     pathname === '/llms.txt' ||
+    (pathname.startsWith('/google') && pathname.endsWith('.html')) ||
     pathname === '/debug' ||
     pathname.startsWith('/debug/') ||
     pathname === '/api/crawl-test' ||
@@ -191,6 +193,6 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // Skip image + public data/font assets so auth/maintenance never gate them.
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|json|log|ttf|otf|woff|woff2)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|json|log|ttf|otf|woff|woff2|html)$).*)',
   ],
 };
