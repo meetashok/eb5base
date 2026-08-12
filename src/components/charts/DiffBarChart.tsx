@@ -12,6 +12,7 @@ import {
   formatSignedCount,
   niceSignedTicks,
 } from '@/lib/charts/theme';
+import ChartXAxisLabel from '@/components/charts/ChartXAxisLabel';
 
 export interface DiffBarDatum {
   key: string;
@@ -225,14 +226,7 @@ export default function DiffBarChart({
           </div>
         )}
       </div>
-      {xAxisLabel ? (
-        <p
-          className="text-center text-[11px] font-medium text-neutral/50"
-          style={{ paddingLeft: margin.left }}
-        >
-          {xAxisLabel}
-        </p>
-      ) : null}
+      {xAxisLabel ? <ChartXAxisLabel label={xAxisLabel} paddingLeft={margin.left} /> : null}
     </div>
   );
 }

@@ -10,6 +10,7 @@ import { LinePath } from '@visx/shape';
 import { ParentSize } from '@visx/responsive';
 import { useMemo, useState } from 'react';
 import { chartColors, formatAxisCount, niceTicks } from '@/lib/charts/theme';
+import ChartXAxisLabel from '@/components/charts/ChartXAxisLabel';
 
 export interface LineChartDatum {
   key: string;
@@ -215,14 +216,7 @@ export default function LineChart({
           )}
         </ParentSize>
       </div>
-      {xAxisLabel ? (
-        <p
-          className="text-center text-[11px] font-medium text-neutral/50"
-          style={{ paddingLeft: margin.left }}
-        >
-          {xAxisLabel}
-        </p>
-      ) : null}
+      {xAxisLabel ? <ChartXAxisLabel label={xAxisLabel} paddingLeft={margin.left} /> : null}
     </div>
   );
 }

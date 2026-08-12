@@ -7,6 +7,7 @@ import { scaleBand, scaleLinear } from '@visx/scale';
 import { Bar } from '@visx/shape';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { chartColors, formatAxisCount, niceTicks } from '@/lib/charts/theme';
+import ChartXAxisLabel from '@/components/charts/ChartXAxisLabel';
 
 export interface BarChartDatum {
   key: string;
@@ -216,14 +217,7 @@ export default function BarChart({
           </div>
         )}
       </div>
-      {xAxisLabel ? (
-        <p
-          className="text-center text-[11px] font-medium text-neutral/50"
-          style={{ paddingLeft: margin.left }}
-        >
-          {xAxisLabel}
-        </p>
-      ) : null}
+      {xAxisLabel ? <ChartXAxisLabel label={xAxisLabel} paddingLeft={margin.left} /> : null}
     </div>
   );
 }
