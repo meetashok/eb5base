@@ -157,6 +157,92 @@ export function aggregateBy<K extends string | number>(
   return map;
 }
 
+/** Grain for snapshot time-axis charts. */
+export type PriorityDateGrain = 'month' | 'quarter' | 'year';
+
+/**
+ * Federal / USCIS fiscal year: Oct 1 – Sep 30.
+ * October–December of calendar year Y belong to FY Y+1.
+ */
+export function fiscalYear(calendarYear: number, month: number): number {
+  return month >= 10 ? calendarYear + 1 : calendarYear;
+}
+
+/**
+ * Fiscal quarter within a federal FY:
+ * Q1 Oct–Dec, Q2 Jan–Mar, Q3 Apr–Jun, Q4 Jul–Sep.
+ */
+export function fiscalQuarter(month: number): 1 | 2 | 3 | 4 {
+  if (month >= 10) return 1;
+  if (month <= 3) return 2;
+  if (month <= 6) return 3;
+  return 4;
+}
+
+export interface TimeBucketMeta {
+  /** Sortable key (Earlier sorts first via leading underscore). */
+  key: string;
+  /** Full label for tooltips / axis hover. */
+  label: string;
+  /** Compact axis tick. */
+  shortLabel: string;
+}
+
+/** Map a cell onto a time-axis bucket for the chosen grain. */
+export function priorityDateBucket(
+  cell: Pick<I485Cell, 'pd_year' | 'pd_month'>,
+  grain: PriorityDateGrain,
+): TimeBucketMeta {
+  if (cell.pd_year === 0) {
+    return { key: '_earlier', label: 'Earlier (prior years)', shortLabel: 'Earlier' };
+  }
+
+  const y = cell.pd_year;
+  const m = cell.pd_month;
+
+  if (grain === 'month') {
+    const monthName = MONTH_LABELS[m - 1] ?? String(m);
+    return {
+      key: `${y}-${String(m).padStart(2, '0')}`,
+      label: `${monthName} ${y}`,
+      shortLabel: m === 1 ? String(y) : MONTH_LABELS[m - 1]?.slice(0, 1) ?? '',
+    };
+  }
+
+  if (grain === 'quarter') {
+    const fy = fiscalYear(y, m);
+    const q = fiscalQuarter(m);
+    return {
+      key: `fy${fy}-q${q}`,
+      label: `FY${fy} Q${q}`,
+      shortLabel: q === 1 ? `FY${String(fy).slice(2)}` : `Q${q}`,
+    };
+  }
+
+  const fy = fiscalYear(y, m);
+  return {
+    key: `fy${fy}`,
+    label: `FY${fy}`,
+    shortLabel: `FY${String(fy).slice(2)}`,
+  };
+}
+
+/** Aggregate cells onto a sorted time series for the snapshot chart. */
+export function aggregateByPriorityDateGrain(
+  cells: I485Cell[],
+  grain: PriorityDateGrain,
+): { meta: TimeBucketMeta; bucket: AggregatedBucket }[] {
+  const map = new Map<string, { meta: TimeBucketMeta; bucket: AggregatedBucket }>();
+  for (const c of cells) {
+    const meta = priorityDateBucket(c, grain);
+    const entry = map.get(meta.key) ?? { meta, bucket: { count: 0, suppressedCells: 0 } };
+    if (c.suppressed) entry.bucket.suppressedCells += 1;
+    else entry.bucket.count += c.count ?? 0;
+    map.set(meta.key, entry);
+  }
+  return Array.from(map.values()).sort((a, b) => a.meta.key.localeCompare(b.meta.key));
+}
+
 export function formatAsOf(iso: string): string {
   const d = new Date(`${iso}T00:00:00Z`);
   return d.toLocaleDateString('en-US', {

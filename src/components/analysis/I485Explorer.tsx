@@ -8,6 +8,7 @@ import {
   MONTH_LABELS,
   USCIS_DATA_PAGE_URL,
   aggregateBy,
+  aggregateByPriorityDateGrain,
   fetchI485Cells,
   fetchI485Releases,
   formatAsOf,
@@ -17,12 +18,19 @@ import {
   type I485Cell,
   type I485Country,
   type I485Release,
+  type PriorityDateGrain,
+  type TimeBucketMeta,
 } from '@/lib/analysis/i485';
 
 type ViewId = 'snapshot' | 'cohort';
 
 const nf = new Intl.NumberFormat('en-US');
 const DEFAULT_CATEGORY = 'EB5_ALL';
+const GRAIN_OPTIONS: { value: PriorityDateGrain; label: string }[] = [
+  { value: 'month', label: 'Months' },
+  { value: 'quarter', label: 'Quarters' },
+  { value: 'year', label: 'Fiscal years' },
+];
 
 function categoryMembers(value: string) {
   return CATEGORY_OPTIONS.find((o) => o.value === value)?.members ?? [];
@@ -55,25 +63,82 @@ function SuppressionNote({ cells }: { cells: number }) {
   );
 }
 
-/** Horizontal bar list: pending count by priority-date year. */
-function YearBars({ data }: { data: { label: string; bucket: AggregatedBucket }[] }) {
+/** Vertical bars with priority-date time on the X-axis. */
+function TimeBars({
+  data,
+  grain,
+}: {
+  data: { meta: TimeBucketMeta; bucket: AggregatedBucket }[];
+  grain: PriorityDateGrain;
+}) {
+  const [hoverKey, setHoverKey] = useState<string | null>(null);
   const max = Math.max(...data.map((d) => d.bucket.count), 1);
+  const chartH = 180;
+  const barMin =
+    grain === 'month' ? 8 : grain === 'quarter' ? 22 : 36;
+  const hovered = hoverKey ? data.find((d) => d.meta.key === hoverKey) : null;
+
+  // Show tick labels sparsely for months so the axis stays readable.
+  const showTick = (i: number, meta: TimeBucketMeta) => {
+    if (grain === 'year') return true;
+    if (grain === 'quarter') return true;
+    if (meta.key === '_earlier') return true;
+    // Month: January (year), or first/last bar, or every 6th after earlier.
+    if (meta.shortLabel.length > 1) return true; // year numbers
+    const offset = data[0]?.meta.key === '_earlier' ? 1 : 0;
+    const idx = i - offset;
+    return idx === 0 || i === data.length - 1 || idx % 6 === 0;
+  };
+
   return (
-    <div className="space-y-1.5">
-      {data.map(({ label, bucket }) => (
-        <div key={label} className="flex items-center gap-2 text-xs">
-          <span className="w-16 shrink-0 text-right tabular-nums font-medium text-neutral/80">
-            {label}
+    <div className="space-y-2">
+      <div className="flex items-center text-xs font-semibold text-neutral min-h-4">
+        {hovered && (
+          <span className="ml-auto tabular-nums text-primary">
+            {hovered.meta.label} · {bucketLabel(hovered.bucket)} pending
           </span>
-          <div className="flex-1 h-5 rounded-sm bg-base-200 overflow-hidden">
-            <div
-              className="h-full rounded-sm bg-secondary/85"
-              style={{ width: `${Math.max(bucket.count > 0 ? 1.2 : 0, (bucket.count / max) * 100)}%` }}
-            />
-          </div>
-          <span className="w-20 shrink-0 tabular-nums text-neutral">{bucketLabel(bucket)}</span>
+        )}
+      </div>
+      <div className="overflow-x-auto -mx-1 px-1">
+        <div
+          className="flex items-end gap-px"
+          style={{
+            height: chartH + 28,
+            minWidth: Math.max(data.length * barMin, 240),
+          }}
+          role="img"
+          aria-label="Pending I-485 applications by priority date"
+          onMouseLeave={() => setHoverKey(null)}
+        >
+          {data.map(({ meta, bucket }, i) => {
+            const h = bucket.count > 0 ? Math.max(2, (bucket.count / max) * chartH) : 0;
+            const active = hoverKey === meta.key;
+            return (
+              <div
+                key={meta.key}
+                className="flex flex-col items-center justify-end flex-1"
+                style={{ minWidth: barMin }}
+                onMouseEnter={() => setHoverKey(meta.key)}
+              >
+                <div
+                  className={`w-full max-w-[28px] mx-auto rounded-t-sm transition-colors ${
+                    active ? 'bg-accent' : 'bg-secondary/85'
+                  }`}
+                  style={{ height: h }}
+                  title={`${meta.label}: ${bucketLabel(bucket)}`}
+                />
+                <span
+                  className={`mt-1 text-[9px] tabular-nums leading-none text-neutral/60 h-3 ${
+                    showTick(i, meta) ? 'opacity-100' : 'opacity-0'
+                  }`}
+                >
+                  {meta.shortLabel}
+                </span>
+              </div>
+            );
+          })}
         </div>
-      ))}
+      </div>
     </div>
   );
 }
@@ -172,6 +237,7 @@ export default function I485Explorer({
   const [view, setView] = useState<ViewId>('snapshot');
   const [country, setCountry] = useState<string>('all');
   const [category, setCategory] = useState<string>(DEFAULT_CATEGORY);
+  const [grain, setGrain] = useState<PriorityDateGrain>('month');
 
   // Snapshot view state
   const [releaseId, setReleaseId] = useState<number | null>(initialReleaseId);
@@ -251,20 +317,14 @@ export default function I485Explorer({
     };
   }, [available, view, country, members, pdYear, pdMonth]);
 
-  const snapshotByYear = useMemo(() => {
+  const snapshotSeries = useMemo(() => {
     if (!snapshotCells) return [];
-    const byYear = aggregateBy(snapshotCells, (c) => c.pd_year);
-    return Array.from(byYear.entries())
-      .sort((a, b) => a[0] - b[0])
-      .map(([year, bucket]) => ({
-        label: year === 0 ? 'Earlier' : String(year),
-        bucket,
-      }));
-  }, [snapshotCells]);
+    return aggregateByPriorityDateGrain(snapshotCells, grain);
+  }, [snapshotCells, grain]);
 
   const snapshotTotal = useMemo(
-    () => totalWithNote(snapshotByYear.map((d) => d.bucket)),
-    [snapshotByYear],
+    () => totalWithNote(snapshotSeries.map((d) => d.bucket)),
+    [snapshotSeries],
   );
 
   const cohortSeries = useMemo(() => {
@@ -438,24 +498,60 @@ export default function I485Explorer({
 
         {view === 'snapshot' && snapshotCells && (
           <>
-            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <h3 className="text-sm font-semibold text-primary">
-                Pending I-485 by priority-date year
-                {loading ? <span className="ml-2 font-normal text-neutral/55">Updating…</span> : null}
-              </h3>
-              <span className="text-2xl font-bold tabular-nums text-primary">
-                {nf.format(snapshotTotal.count)}
-                {snapshotTotal.suppressedCells > 0 ? '+' : ''}
-              </span>
-              <span className="text-xs text-neutral/70">
-                total pending{selectedRelease ? ` as of ${formatAsOf(selectedRelease.as_of_date)}` : ''}
-              </span>
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <h3 className="text-sm font-semibold text-primary">
+                  Pending I-485 by priority date
+                  {loading ? (
+                    <span className="ml-2 font-normal text-neutral/55">Updating…</span>
+                  ) : null}
+                </h3>
+                <span className="text-2xl font-bold tabular-nums text-primary">
+                  {nf.format(snapshotTotal.count)}
+                  {snapshotTotal.suppressedCells > 0 ? '+' : ''}
+                </span>
+                <span className="text-xs text-neutral/70">
+                  total pending
+                  {selectedRelease ? ` as of ${formatAsOf(selectedRelease.as_of_date)}` : ''}
+                </span>
+              </div>
+              <div
+                className="inline-flex rounded-full border border-base-300 p-0.5 bg-base-200/60"
+                role="group"
+                aria-label="Priority-date grouping"
+              >
+                {GRAIN_OPTIONS.map((o) => (
+                  <button
+                    key={o.value}
+                    type="button"
+                    className={`btn btn-xs rounded-full border-0 ${
+                      grain === o.value
+                        ? 'btn-primary text-primary-content'
+                        : 'btn-ghost text-neutral'
+                    }`}
+                    aria-pressed={grain === o.value}
+                    onClick={() => setGrain(o.value)}
+                  >
+                    {o.label}
+                  </button>
+                ))}
+              </div>
             </div>
-            {snapshotByYear.length > 0 ? (
-              <YearBars data={snapshotByYear} />
+            {snapshotSeries.length > 0 ? (
+              <TimeBars data={snapshotSeries} grain={grain} />
             ) : (
               <p className="text-sm text-neutral">
                 No pending applications reported for this selection.
+              </p>
+            )}
+            {grain === 'year' && (
+              <p className="text-xs text-neutral/70">
+                Fiscal years run October–September (FY2025 = Oct 2024 through Sep 2025).
+              </p>
+            )}
+            {grain === 'quarter' && (
+              <p className="text-xs text-neutral/70">
+                Quarters follow the federal fiscal year (Q1 = Oct–Dec).
               </p>
             )}
             <SuppressionNote cells={snapshotTotal.suppressedCells} />
