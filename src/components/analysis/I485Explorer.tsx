@@ -1206,16 +1206,6 @@ export default function I485Explorer({
                 No pending applications reported for this selection.
               </p>
             )}
-            {grain === 'year' && (
-              <p className="text-xs text-neutral/70">
-                Fiscal years run October–September (FY2025 = Oct 2024 through Sep 2025).
-              </p>
-            )}
-            {grain === 'quarter' && (
-              <p className="text-xs text-neutral/70">
-                Quarters are calendar year (Q1 = Jan–Mar).
-              </p>
-            )}
           </>
         )}
 
@@ -1335,16 +1325,6 @@ export default function I485Explorer({
             ) : (
               <p className="text-sm text-neutral">
                 No change in disclosed pending counts for this selection.
-              </p>
-            )}
-            {grain === 'year' && (
-              <p className="text-xs text-neutral/70">
-                Fiscal years run October–September (FY2025 = Oct 2024 through Sep 2025).
-              </p>
-            )}
-            {grain === 'quarter' && (
-              <p className="text-xs text-neutral/70">
-                Quarters are calendar year (Q1 = Jan–Mar).
               </p>
             )}
 
