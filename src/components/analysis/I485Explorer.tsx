@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { BarChart, LineChart } from '@/components/charts';
+import { BarChart, DiffBarChart, LineChart, formatSignedCount } from '@/components/charts';
 import {
   CATEGORY_OPTIONS,
   COUNTRY_OPTIONS,
@@ -23,7 +23,7 @@ import {
   type TimeBucketMeta,
 } from '@/lib/analysis/i485';
 
-type ViewId = 'snapshot' | 'cohort';
+type ViewId = 'snapshot' | 'cohort' | 'compare';
 
 const nf = new Intl.NumberFormat('en-US');
 const DEFAULT_CATEGORY = 'EB5_ALL';
@@ -64,6 +64,36 @@ function SuppressionNote({ cells }: { cells: number }) {
   );
 }
 
+function GrainToggle({
+  grain,
+  onChange,
+}: {
+  grain: PriorityDateGrain;
+  onChange: (g: PriorityDateGrain) => void;
+}) {
+  return (
+    <div
+      className="inline-flex rounded-full border border-base-300 p-0.5 bg-base-200/60"
+      role="group"
+      aria-label="Priority-date grouping"
+    >
+      {GRAIN_OPTIONS.map((o) => (
+        <button
+          key={o.value}
+          type="button"
+          className={`btn btn-xs rounded-full border-0 ${
+            grain === o.value ? 'btn-primary text-primary-content' : 'btn-ghost text-neutral'
+          }`}
+          aria-pressed={grain === o.value}
+          onClick={() => onChange(o.value)}
+        >
+          {o.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function showPriorityDateTick(
   grain: PriorityDateGrain,
   data: { meta: TimeBucketMeta }[],
@@ -76,6 +106,17 @@ function showPriorityDateTick(
   const offset = data[0]?.meta.key === '_earlier' ? 1 : 0;
   const idx = i - offset;
   return idx === 0 || i === data.length - 1 || idx % 6 === 0;
+}
+
+function defaultCompareIds(releases: I485Release[]): {
+  fromId: number | null;
+  toId: number | null;
+} {
+  if (releases.length === 0) return { fromId: null, toId: null };
+  const toId = releases[releases.length - 1]!.id;
+  const fromId =
+    releases.length >= 2 ? releases[releases.length - 2]!.id : releases[0]!.id;
+  return { fromId, toId };
 }
 
 export interface I485ExplorerProps {
@@ -109,6 +150,15 @@ export default function I485Explorer({
   const [pdMonth, setPdMonth] = useState<number | 'all'>('all');
   const [cohortCells, setCohortCells] = useState<I485Cell[] | null>(null);
 
+  // Compare view state
+  const initialCompare = defaultCompareIds(initialReleases);
+  const [compareFromId, setCompareFromId] = useState<number | null>(initialCompare.fromId);
+  const [compareToId, setCompareToId] = useState<number | null>(
+    initialCompare.toId ?? initialReleaseId,
+  );
+  const [compareFromCells, setCompareFromCells] = useState<I485Cell[] | null>(null);
+  const [compareToCells, setCompareToCells] = useState<I485Cell[] | null>(null);
+
   const [loading, setLoading] = useState(false);
   const skipInitialSnapshotFetch = useRef(
     initialSnapshotCells != null && initialReleaseId != null && initialReleases.length > 0,
@@ -120,12 +170,27 @@ export default function I485Explorer({
     fetchI485Releases()
       .then((rs) => {
         setReleases(rs);
-        if (rs.length > 0) setReleaseId(rs[rs.length - 1].id);
+        if (rs.length > 0) {
+          setReleaseId(rs[rs.length - 1]!.id);
+          const ids = defaultCompareIds(rs);
+          setCompareFromId(ids.fromId);
+          setCompareToId(ids.toId);
+        }
       })
       .catch((e: Error) => setLoadError(e.message));
   }, [available, initialReleases.length]);
 
+  // When SSR releases arrive without compare defaults (shouldn't happen), sync once.
+  useEffect(() => {
+    if (compareFromId != null || releases.length === 0) return;
+    const ids = defaultCompareIds(releases);
+    setCompareFromId(ids.fromId);
+    setCompareToId(ids.toId);
+  }, [releases, compareFromId]);
+
   const selectedRelease = releases.find((r) => r.id === releaseId) ?? null;
+  const compareFromRelease = releases.find((r) => r.id === compareFromId) ?? null;
+  const compareToRelease = releases.find((r) => r.id === compareToId) ?? null;
   const members = useMemo(() => categoryMembers(category), [category]);
 
   // Snapshot data
@@ -178,6 +243,32 @@ export default function I485Explorer({
     };
   }, [available, view, country, members, pdYear, pdMonth]);
 
+  // Compare data (both snapshots)
+  useEffect(() => {
+    if (!available || view !== 'compare') return;
+    if (compareFromId == null || compareToId == null) return;
+    let cancel = false;
+    setLoading(true);
+    const filters = {
+      country: country === 'all' ? undefined : (country as I485Country),
+      categories: members,
+    };
+    Promise.all([
+      fetchI485Cells({ ...filters, releaseId: compareFromId }),
+      fetchI485Cells({ ...filters, releaseId: compareToId }),
+    ])
+      .then(([fromCells, toCells]) => {
+        if (cancel) return;
+        setCompareFromCells(fromCells);
+        setCompareToCells(toCells);
+      })
+      .catch((e: Error) => !cancel && setLoadError(e.message))
+      .finally(() => !cancel && setLoading(false));
+    return () => {
+      cancel = true;
+    };
+  }, [available, view, compareFromId, compareToId, country, members]);
+
   const snapshotSeries = useMemo(() => {
     if (!snapshotCells) return [];
     return aggregateByPriorityDateGrain(snapshotCells, grain);
@@ -226,11 +317,82 @@ export default function I485Explorer({
     [cohortSeries],
   );
 
+  const compareRows = useMemo(() => {
+    if (!compareFromCells || !compareToCells) return [];
+    const fromSeries = aggregateByPriorityDateGrain(compareFromCells, grain);
+    const toSeries = aggregateByPriorityDateGrain(compareToCells, grain);
+    const byKey = new Map<
+      string,
+      {
+        meta: TimeBucketMeta;
+        earlier: AggregatedBucket;
+        later: AggregatedBucket;
+      }
+    >();
+    for (const row of fromSeries) {
+      byKey.set(row.meta.key, {
+        meta: row.meta,
+        earlier: row.bucket,
+        later: { count: 0, suppressedCells: 0 },
+      });
+    }
+    for (const row of toSeries) {
+      const existing = byKey.get(row.meta.key);
+      if (existing) existing.later = row.bucket;
+      else {
+        byKey.set(row.meta.key, {
+          meta: row.meta,
+          earlier: { count: 0, suppressedCells: 0 },
+          later: row.bucket,
+        });
+      }
+    }
+    return Array.from(byKey.values())
+      .map((row) => ({
+        ...row,
+        delta: row.later.count - row.earlier.count,
+      }))
+      .sort((a, b) => a.meta.key.localeCompare(b.meta.key));
+  }, [compareFromCells, compareToCells, grain]);
+
+  const compareDiffBars = useMemo(
+    () =>
+      compareRows.map((row) => ({
+        key: row.meta.key,
+        label: row.meta.label,
+        shortLabel: row.meta.shortLabel,
+        value: row.delta,
+        valueLabel: `${formatSignedCount(row.delta)} pending`,
+      })),
+    [compareRows],
+  );
+
+  const compareNet = useMemo(() => {
+    const earlierTotal = totalWithNote(compareRows.map((r) => r.earlier));
+    const laterTotal = totalWithNote(compareRows.map((r) => r.later));
+    return {
+      earlier: earlierTotal,
+      later: laterTotal,
+      delta: laterTotal.count - earlierTotal.count,
+      suppressedCells: earlierTotal.suppressedCells + laterTotal.suppressedCells,
+    };
+  }, [compareRows]);
+
+  const compareTableRows = useMemo(
+    () =>
+      [...compareRows]
+        .filter((r) => r.delta !== 0 || r.earlier.count > 0 || r.later.count > 0)
+        .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta)),
+    [compareRows],
+  );
+
   const pdYearOptions = useMemo(() => {
     const years: number[] = [];
     for (let y = 2026; y >= 2005; y -= 1) years.push(y);
     return years;
   }, []);
+
+  const releaseOptionsDesc = useMemo(() => [...releases].reverse(), [releases]);
 
   if (!available) {
     return (
@@ -257,6 +419,7 @@ export default function I485Explorer({
         {(
           [
             { id: 'snapshot', label: 'Inventory at a point in time' },
+            { id: 'compare', label: 'Compare two snapshots' },
             { id: 'cohort', label: 'Track a priority-date cohort' },
           ] as { id: ViewId; label: string }[]
         ).map((v) => (
@@ -277,7 +440,7 @@ export default function I485Explorer({
 
       {/* Filters */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        {view === 'snapshot' ? (
+        {view === 'snapshot' && (
           <label className="form-control">
             <span className="label-text text-xs font-semibold text-neutral/80 pb-1">
               USCIS snapshot
@@ -288,7 +451,7 @@ export default function I485Explorer({
               onChange={(e) => setReleaseId(Number(e.target.value))}
             >
               {releases.length === 0 && <option value="">Loading snapshots…</option>}
-              {[...releases].reverse().map((r, i) => (
+              {releaseOptionsDesc.map((r, i) => (
                 <option key={r.id} value={r.id}>
                   As of {formatAsOf(r.as_of_date)}
                   {i === 0 ? ' (latest)' : ''}
@@ -296,7 +459,43 @@ export default function I485Explorer({
               ))}
             </select>
           </label>
-        ) : (
+        )}
+
+        {view === 'compare' && (
+          <>
+            <label className="form-control">
+              <span className="label-text text-xs font-semibold text-neutral/80 pb-1">From</span>
+              <select
+                className="select select-bordered select-sm"
+                value={compareFromId ?? ''}
+                onChange={(e) => setCompareFromId(Number(e.target.value))}
+              >
+                {releaseOptionsDesc.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    As of {formatAsOf(r.as_of_date)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="form-control">
+              <span className="label-text text-xs font-semibold text-neutral/80 pb-1">To</span>
+              <select
+                className="select select-bordered select-sm"
+                value={compareToId ?? ''}
+                onChange={(e) => setCompareToId(Number(e.target.value))}
+              >
+                {releaseOptionsDesc.map((r, i) => (
+                  <option key={r.id} value={r.id}>
+                    As of {formatAsOf(r.as_of_date)}
+                    {i === 0 ? ' (latest)' : ''}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </>
+        )}
+
+        {view === 'cohort' && (
           <>
             <label className="form-control">
               <span className="label-text text-xs font-semibold text-neutral/80 pb-1">
@@ -335,6 +534,7 @@ export default function I485Explorer({
             </label>
           </>
         )}
+
         <label className="form-control">
           <span className="label-text text-xs font-semibold text-neutral/80 pb-1">Category</span>
           <select
@@ -381,6 +581,11 @@ export default function I485Explorer({
         {loading && view === 'cohort' && !cohortCells && (
           <p className="text-sm text-neutral/70">Loading cohort…</p>
         )}
+        {loading &&
+          view === 'compare' &&
+          (!compareFromCells || !compareToCells) && (
+            <p className="text-sm text-neutral/70">Loading comparison…</p>
+          )}
 
         {view === 'snapshot' && snapshotCells && (
           <>
@@ -401,27 +606,7 @@ export default function I485Explorer({
                   {selectedRelease ? ` as of ${formatAsOf(selectedRelease.as_of_date)}` : ''}
                 </span>
               </div>
-              <div
-                className="inline-flex rounded-full border border-base-300 p-0.5 bg-base-200/60"
-                role="group"
-                aria-label="Priority-date grouping"
-              >
-                {GRAIN_OPTIONS.map((o) => (
-                  <button
-                    key={o.value}
-                    type="button"
-                    className={`btn btn-xs rounded-full border-0 ${
-                      grain === o.value
-                        ? 'btn-primary text-primary-content'
-                        : 'btn-ghost text-neutral'
-                    }`}
-                    aria-pressed={grain === o.value}
-                    onClick={() => setGrain(o.value)}
-                  >
-                    {o.label}
-                  </button>
-                ))}
-              </div>
+              <GrainToggle grain={grain} onChange={setGrain} />
             </div>
             {snapshotBars.length > 0 ? (
               <BarChart
@@ -454,13 +639,137 @@ export default function I485Explorer({
           <p className="text-sm text-neutral/70">Loading inventory…</p>
         )}
 
+        {view === 'compare' && compareFromCells && compareToCells && (
+          <>
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div className="space-y-1 min-w-0">
+                <h3 className="text-sm font-semibold text-primary">
+                  Change in pending I-485 by priority date
+                  {loading ? (
+                    <span className="ml-2 font-normal text-neutral/55">Updating…</span>
+                  ) : null}
+                </h3>
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <span
+                    className={`text-2xl font-bold tabular-nums ${
+                      compareNet.delta > 0
+                        ? 'text-secondary'
+                        : compareNet.delta < 0
+                          ? 'text-error'
+                          : 'text-primary'
+                    }`}
+                  >
+                    {formatSignedCount(compareNet.delta)}
+                  </span>
+                  <span className="text-xs text-neutral/70">
+                    net change
+                    {compareFromRelease && compareToRelease
+                      ? ` from ${formatAsOfShort(compareFromRelease.as_of_date)} to ${formatAsOfShort(compareToRelease.as_of_date)}`
+                      : ''}
+                    {' · '}
+                    {nf.format(compareNet.earlier.count)} → {nf.format(compareNet.later.count)}
+                  </span>
+                </div>
+              </div>
+              <GrainToggle grain={grain} onChange={setGrain} />
+            </div>
+            <p className="text-xs text-neutral/70 leading-relaxed">
+              Green bars rose between the two snapshots; red bars fell. The change mixes new
+              filings into a priority-date bucket with cases that left it (approvals, denials,
+              withdrawals, or other completions). USCIS does not publish adjudications in this
+              report.
+            </p>
+            {compareDiffBars.some((d) => d.value !== 0) ? (
+              <DiffBarChart
+                data={compareDiffBars}
+                height={240}
+                minBarWidth={grain === 'month' ? 8 : grain === 'quarter' ? 22 : 36}
+                showTick={(d, i) =>
+                  showPriorityDateTick(
+                    grain,
+                    compareRows.map((r) => ({ meta: r.meta })),
+                    d,
+                    i,
+                  )
+                }
+                ariaLabel="Change in pending I-485 by priority date between two snapshots"
+              />
+            ) : (
+              <p className="text-sm text-neutral">
+                No change in disclosed pending counts for this selection.
+              </p>
+            )}
+            {grain === 'year' && (
+              <p className="text-xs text-neutral/70">
+                Fiscal years run October–September (FY2025 = Oct 2024 through Sep 2025).
+              </p>
+            )}
+            {grain === 'quarter' && (
+              <p className="text-xs text-neutral/70">
+                Quarters follow the federal fiscal year (Q1 = Oct–Dec).
+              </p>
+            )}
+            <SuppressionNote cells={compareNet.suppressedCells} />
+
+            {compareTableRows.length > 0 && (
+              <div className="overflow-x-auto border border-base-300 rounded-lg">
+                <table className="table table-sm">
+                  <thead>
+                    <tr className="text-xs text-neutral/70">
+                      <th>Priority date</th>
+                      <th className="text-right">
+                        {compareFromRelease
+                          ? formatAsOfShort(compareFromRelease.as_of_date)
+                          : 'From'}
+                      </th>
+                      <th className="text-right">
+                        {compareToRelease ? formatAsOfShort(compareToRelease.as_of_date) : 'To'}
+                      </th>
+                      <th className="text-right">Change</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {compareTableRows.slice(0, 40).map((row) => (
+                      <tr key={row.meta.key} className="text-sm">
+                        <td className="font-medium text-primary">{row.meta.label}</td>
+                        <td className="text-right tabular-nums">{bucketLabel(row.earlier)}</td>
+                        <td className="text-right tabular-nums">{bucketLabel(row.later)}</td>
+                        <td
+                          className={`text-right tabular-nums font-semibold ${
+                            row.delta > 0
+                              ? 'text-secondary'
+                              : row.delta < 0
+                                ? 'text-error'
+                                : 'text-neutral'
+                          }`}
+                        >
+                          {formatSignedCount(row.delta)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {compareTableRows.length > 40 && (
+                  <p className="text-xs text-neutral/60 px-3 py-2 border-t border-base-300">
+                    Showing the 40 largest absolute changes of {compareTableRows.length} priority-date
+                    buckets.
+                  </p>
+                )}
+              </div>
+            )}
+          </>
+        )}
+
         {view === 'cohort' && cohortCells && (
           <>
             <div className="space-y-1">
               <h3 className="text-sm font-semibold text-primary">
-                Pending I-485 with a {pdMonth === 'all' ? '' : `${MONTH_LABELS[(pdMonth as number) - 1]} `}
+                Pending I-485 with a{' '}
+                {pdMonth === 'all' ? '' : `${MONTH_LABELS[(pdMonth as number) - 1]} `}
                 {pdYear} priority date, snapshot by snapshot
-                {loading ? <span className="ml-2 font-normal text-neutral/55">Updating…</span> : null}
+                {loading ? (
+                  <span className="ml-2 font-normal text-neutral/55">Updating…</span>
+                ) : null}
               </h3>
               <p className="text-xs text-neutral/70 leading-relaxed">
                 The month-over-month change mixes new filings into the cohort with completed cases

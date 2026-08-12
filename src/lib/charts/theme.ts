@@ -3,6 +3,8 @@
 export const chartColors = {
   bar: '#2d5a47', // secondary
   barHover: '#d4af37', // accent
+  barUp: '#2d5a47', // inventory increase
+  barDown: '#9e3a3a', // inventory decrease (error)
   line: '#0a1628', // primary
   point: '#0a1628',
   pointHover: '#d4af37',
@@ -14,15 +16,23 @@ export const chartColors = {
 const nf = new Intl.NumberFormat('en-US');
 
 export function formatAxisCount(n: number): string {
-  if (n >= 1_000_000) {
-    const v = n / 1_000_000;
-    return `${Number.isInteger(v) ? v : v.toFixed(1)}M`;
+  const abs = Math.abs(n);
+  const sign = n < 0 ? '-' : '';
+  if (abs >= 1_000_000) {
+    const v = abs / 1_000_000;
+    return `${sign}${Number.isInteger(v) ? v : v.toFixed(1)}M`;
   }
-  if (n >= 1_000) {
-    const v = n / 1_000;
-    return `${Number.isInteger(v) ? v : v.toFixed(1)}k`;
+  if (abs >= 1_000) {
+    const v = abs / 1_000;
+    return `${sign}${Number.isInteger(v) ? v : v.toFixed(1)}k`;
   }
-  return nf.format(n);
+  return `${sign}${nf.format(abs)}`;
+}
+
+export function formatSignedCount(n: number): string {
+  if (n > 0) return `+${nf.format(n)}`;
+  if (n < 0) return nf.format(n); // already has minus
+  return '0';
 }
 
 /** Round max up to a clean chart ceiling and return evenly spaced ticks (incl. 0). */
@@ -37,5 +47,17 @@ export function niceTicks(maxValue: number, tickCount = 4): number[] {
   const ceiling = Math.ceil(maxValue / step) * step;
   const ticks: number[] = [];
   for (let v = 0; v <= ceiling + step / 1000; v += step) ticks.push(v);
+  return ticks;
+}
+
+/** Symmetric ticks around zero for signed (delta) charts. */
+export function niceSymmetricTicks(maxAbs: number, tickCount = 4): number[] {
+  const positive = niceTicks(Math.max(maxAbs, 1), tickCount);
+  const ceiling = positive[positive.length - 1] || 1;
+  const step = positive.length > 1 ? positive[1]! : ceiling;
+  const ticks: number[] = [];
+  for (let v = -ceiling; v <= ceiling + step / 1000; v += step) {
+    ticks.push(Math.round(v * 1e6) / 1e6);
+  }
   return ticks;
 }

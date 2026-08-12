@@ -73,7 +73,7 @@ export default async function I485InventoryPage() {
           </span>
         }
         title="Employment-based I-485 pending inventory"
-        subtitle="USCIS publishes a monthly count of pending adjustment-of-status applications by preference category, country of chargeability, and priority date. See the queue at any snapshot, or follow how a priority-date cohort has moved since February 2024."
+        subtitle="USCIS publishes a monthly count of pending adjustment-of-status applications by preference category, country of chargeability, and priority date. See the queue at any snapshot, compare two dates, or follow how a priority-date cohort has moved since February 2024."
       />
 
       <section className="max-w-4xl mx-auto px-4 py-8 space-y-6">

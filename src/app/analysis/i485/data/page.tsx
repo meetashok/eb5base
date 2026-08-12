@@ -183,3 +183,9 @@ function formatAsOfLong(iso: string): string {
     timeZone: 'UTC',
   });
 }
+
+/** Numeric mm/dd/yyyy (UTC). */
+function formatMdY(iso: string): string {
+  const [y, m, d] = iso.split('-');
+  return `${m}/${d}/${y}`;
+}
