@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "next lint && bash scripts/check-emdash.sh",
     "lint:emdash": "bash scripts/check-emdash.sh",
-    "nprm:pull-comments": "node scripts/nprm/pull-comments.mjs"
+    "nprm:pull-comments": "node scripts/nprm/pull-comments.mjs",
+    "analysis:ingest-i485": "node scripts/analysis/ingest-i485.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",
@@ -28,6 +29,7 @@
     "eslint-config-next": "14.2.35",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "xlsx": "^0.18.5"
   }
 }

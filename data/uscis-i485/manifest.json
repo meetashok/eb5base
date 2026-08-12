@@ -1,0 +1,215 @@
+{
+  "dataset": "USCIS Form I-485 pending inventory, employment-based preference categories",
+  "source_page": "https://www.uscis.gov/tools/reports-and-studies/immigration-and-citizenship-data",
+  "notes": "D = disclosure standards not met (count under 10, suppressed). \"-\" = zero or rounds to 0. Priority-date years outside the 10-year window are combined under \"Prior Years\". June and July 2025 snapshots were never published by USCIS.",
+  "files": [
+    {
+      "file": "eb_inventory_02222024.xlsx",
+      "as_of_date": "2024-02-22",
+      "published_date": "2024-06-12",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/reports/eb_inventory_02222024.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of February 22, 2024",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried February 2024 and updated May 30, 2024."
+    },
+    {
+      "file": "eb_inventory_march_2024_061224.xlsx",
+      "as_of_date": "2024-03-03",
+      "published_date": "2024-06-18",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/reports/eb_inventory_march_2024_061224.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of March 3, 2024",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried March 2024 and updated June 12, 2024."
+    },
+    {
+      "file": "eb_inventory_april_2024_071924.xlsx",
+      "as_of_date": "2024-04-03",
+      "published_date": "2024-07-09",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/eb_inventory_april_2024_071924.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of April 3, 2024",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried May 2024 and updated July 19 2024."
+    },
+    {
+      "file": "eb_inventory_may_2024_081324.xlsx",
+      "as_of_date": "2024-05-03",
+      "published_date": "2024-09-13",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/reports/eb_inventory_may_2024_081324.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of May 3, 2024",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried May 2024 and updated August 13, 2024."
+    },
+    {
+      "file": "eb_inventory_june_2024_081324.xlsx",
+      "as_of_date": "2024-06-03",
+      "published_date": "2024-09-13",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/reports/eb_inventory_june_2024_081324.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of June 3, 2024",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried June 2024 and updated August 13, 2024."
+    },
+    {
+      "file": "eb_inventory_july_2024_081324.xlsx",
+      "as_of_date": "2024-07-03",
+      "published_date": "2024-09-13",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/reports/eb_inventory_july_2024_081324.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of July 3, 2024",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried July 2024 and updated August 13, 2024."
+    },
+    {
+      "file": "eb_inventory_august_2024_081324.xlsx",
+      "as_of_date": "2024-08-03",
+      "published_date": "2024-09-13",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/reports/eb_inventory_august_2024_081324.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of August 3, 2024",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried August 2024 and updated August 13, 2024."
+    },
+    {
+      "file": "eb_inventory_september_2024.xlsx",
+      "as_of_date": "2024-09-03",
+      "published_date": "2024-12-16",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/eb_inventory_september_2024.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of September 3, 2024",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried September 2024 and updated November 25, 2024."
+    },
+    {
+      "file": "eb_inventory_october_2024.xlsx",
+      "as_of_date": "2024-10-03",
+      "published_date": "2024-12-16",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/eb_inventory_october_2024.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of October 3, 2024",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried October 2024 and updated November 25, 2024."
+    },
+    {
+      "file": "eb_inventory_november_2024.xlsx",
+      "as_of_date": "2024-11-03",
+      "published_date": "2024-12-16",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/eb_inventory_november_2024.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of November 3, 2024",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried November 2024 and updated November 25, 2024."
+    },
+    {
+      "file": "eb_inventory_december_2024.xlsx",
+      "as_of_date": "2024-12-03",
+      "published_date": "2025-01-23",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/eb_inventory_december_2024.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of December 3, 2024",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried December 2024 and updated January 10, 2025."
+    },
+    {
+      "file": "eb_inventory_january_2025.xlsx",
+      "as_of_date": "2025-01-03",
+      "published_date": "2025-05-21",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/eb_inventory_january_2025.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of January 3, 2025",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried January 2025 and updated February 5, 2025."
+    },
+    {
+      "file": "eb_inventory_february_2025.xlsx",
+      "as_of_date": "2025-02-03",
+      "published_date": "2025-06-30",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/eb_inventory_february_2025.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of February 3, 2025",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried February 2025 and updated March 31, 2025."
+    },
+    {
+      "file": "eb_inventory_march_2025.xlsx",
+      "as_of_date": "2025-03-03",
+      "published_date": "2025-06-30",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/eb_inventory_march_2025.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of March 3, 2025",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried March 2025 and updated March 31, 2025."
+    },
+    {
+      "file": "eb_inventory_april_2025.xlsx",
+      "as_of_date": "2025-04-07",
+      "published_date": "2025-06-30",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/eb_inventory_april_2025.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of April 7, 2025",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried April 2025 and updated April 9, 2025."
+    },
+    {
+      "file": "eb_inventory_may_2025.xlsx",
+      "as_of_date": "2025-05-05",
+      "published_date": "2025-07-21",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/eb_inventory_may_2025.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of May 5, 2025",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried May 2025 and updated May 20, 2025."
+    },
+    {
+      "file": "eb_inventory_august_2025.xlsx",
+      "as_of_date": "2025-08-05",
+      "published_date": "2025-10-14",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/reports/eb_inventory_august_2025.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of August 5, 2025",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried August 2025 and updated August 14, 2025."
+    },
+    {
+      "file": "eb_inventory_september_2025.xlsx",
+      "as_of_date": "2025-09-03",
+      "published_date": "2025-10-14",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/reports/eb_inventory_september_2025.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of September 3, 2025",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried September 2025 and updated September 12, 2025."
+    },
+    {
+      "file": "eb_inventory_october_2025.xlsx",
+      "as_of_date": "2025-10-02",
+      "published_date": "2025-11-12",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/eb_inventory_october_2025.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of October 2, 2025",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried October 2025 and updated October 15, 2025."
+    },
+    {
+      "file": "eb_inventory_november_2025.xlsx",
+      "as_of_date": "2025-11-03",
+      "published_date": "2026-03-23",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/eb_inventory_november_2025.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of November 3, 2025",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried November 2025 and updated November 26, 2025."
+    },
+    {
+      "file": "eb_inventory_december_2025.xlsx",
+      "as_of_date": "2025-12-03",
+      "published_date": "2026-03-24",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/eb_inventory_december_2025.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of December 3, 2025",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried December 2025 and updated January 2, 2026."
+    },
+    {
+      "file": "eb_inventory_january_2026.xlsx",
+      "as_of_date": "2026-01-02",
+      "published_date": "2026-03-24",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/eb_inventory_january_2026.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of January 2, 2026",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried January 2026 and updated January 2, 2026."
+    },
+    {
+      "file": "eb_inventory_february_2026.xlsx",
+      "as_of_date": "2026-02-03",
+      "published_date": "2026-06-04",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/eb_inventory_february_2026.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of February 3, 2026",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried February 2026 and updated February 3, 2026."
+    },
+    {
+      "file": "eb_inventory_march_2026.xlsx",
+      "as_of_date": "2026-03-03",
+      "published_date": "2026-06-08",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/eb_inventory_march_2026.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of March 3, 2026",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried March 2026 and updated March 3, 2026."
+    },
+    {
+      "file": "eb_inventory_april_2026.xlsx",
+      "as_of_date": "2026-04-03",
+      "published_date": "2026-06-10",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/eb_inventory_april_2026.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of April 3, 2026",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services, Office of Performance and Quality, CLAIMS 3, ELIS, queried April 2026 and updated April 3, 2026."
+    },
+    {
+      "file": "eb_inventory_may_2026_v1.0.xlsx",
+      "as_of_date": "2026-05-06",
+      "published_date": "2026-08-10",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/eb_inventory_may_2026_v1.0.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of May 6, 2026",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services,Chief Data and Analytics Office (CDAO) , CLAIMS 3, ELIS, queried May 2026 and updated May 6, 2026."
+    }
+  ]
+}

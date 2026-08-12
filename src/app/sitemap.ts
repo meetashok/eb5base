@@ -16,6 +16,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/nprm/about',
     '/status',
     '/status-update',
+    '/analysis',
+    '/analysis/i485',
     '/tracker',
     '/case-tracker',
     '/about',
