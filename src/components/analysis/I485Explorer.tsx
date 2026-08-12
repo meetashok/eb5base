@@ -833,19 +833,43 @@ export default function I485Explorer({
     return Array.from(seen.keys());
   }, [cohortFacets]);
 
-  const cohortFacetSeriesColors = useMemo(() => {
+  /** Active PD-series keys for the current cohort chart mode (shared legend). */
+  const cohortActiveSeriesKeys = useMemo(() => {
+    if (cohortFacetSplit !== 'none') return cohortFacetSeriesKeys;
+    return cohortSplitLines.map((s) => s.key);
+  }, [cohortFacetSplit, cohortFacetSeriesKeys, cohortSplitLines]);
+
+  const cohortSeriesColors = useMemo(() => {
     const map: Record<string, string> = {};
-    cohortFacetSeriesKeys.forEach((key, i) => {
+    cohortActiveSeriesKeys.forEach((key, i) => {
       map[key] = seriesColor(i);
     });
     return map;
-  }, [cohortFacetSeriesKeys]);
+  }, [cohortActiveSeriesKeys]);
 
-  const cohortFacetSeriesKeySig = cohortFacetSeriesKeys.join('|');
+  const cohortActiveSeriesKeySig = cohortActiveSeriesKeys.join('|');
+  // Keep legend hide/show across Split changes; only drop keys that no longer exist
+  // (e.g. Priority date grain changed from quarters to months).
   useEffect(() => {
-    setCohortSharedHiddenKeys(new Set());
-    setCohortSharedLegendFocus(null);
-  }, [cohortFacetSeriesKeySig, cohortFacetSplit, cohortPdSplit]);
+    const valid = new Set(cohortActiveSeriesKeys);
+    setCohortSharedHiddenKeys((prev) => {
+      const next = new Set<string>();
+      for (const key of prev) {
+        if (valid.has(key)) next.add(key);
+      }
+      if (next.size === prev.size) {
+        for (const key of prev) {
+          if (!next.has(key)) return next;
+        }
+        return prev;
+      }
+      return next;
+    });
+    setCohortSharedLegendFocus((prev) =>
+      prev != null && valid.has(prev) ? prev : null,
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- prune when series identity changes
+  }, [cohortActiveSeriesKeySig]);
 
   function toggleCohortSharedSeries(key: string) {
     setCohortSharedHiddenKeys((prev) => {
@@ -854,7 +878,7 @@ export default function I485Explorer({
         next.delete(key);
         return next;
       }
-      const visibleCount = cohortFacetSeriesKeys.filter((k) => !next.has(k)).length;
+      const visibleCount = cohortActiveSeriesKeys.filter((k) => !next.has(k)).length;
       if (visibleCount <= 1) return prev;
       next.add(key);
       return next;
@@ -1503,7 +1527,7 @@ export default function I485Explorer({
                           onToggleSeries={toggleCohortSharedSeries}
                           legendFocusKey={cohortSharedLegendFocus}
                           onLegendFocusChange={setCohortSharedLegendFocus}
-                          seriesColors={cohortFacetSeriesColors}
+                          seriesColors={cohortSeriesColors}
                           showTick={(d, i) =>
                             showPriorityDateTick(
                               'month',
@@ -1540,6 +1564,11 @@ export default function I485Explorer({
                   height={240}
                   xAxisLabel="USCIS snapshot"
                   hoverLabelPrefix="Snapshot date"
+                  hiddenKeys={cohortSharedHiddenKeys}
+                  onToggleSeries={toggleCohortSharedSeries}
+                  legendFocusKey={cohortSharedLegendFocus}
+                  onLegendFocusChange={setCohortSharedLegendFocus}
+                  seriesColors={cohortSeriesColors}
                   showTick={(d, i) =>
                     showPriorityDateTick(
                       'month',
