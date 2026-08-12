@@ -829,6 +829,7 @@ export default function I485Explorer({
                   height={220}
                   minBarWidth={grain === 'month' ? 8 : grain === 'quarter' ? 22 : 36}
                   showTick={(d, i) => showPriorityDateTick(grain, snapshotSeries, d, i)}
+                  xAxisLabel="Priority date"
                   ariaLabel="Pending I-485 applications by priority date"
                 />
               ) : (
@@ -844,6 +845,7 @@ export default function I485Explorer({
                 showTick={(d, i) =>
                   showPriorityDateTick(grain, snapshotSplit.xAxis.map((meta) => ({ meta })), d, i)
                 }
+                xAxisLabel="Priority date"
                 ariaLabel={
                   split === 'country'
                     ? 'Pending I-485 by priority date, split by country'
@@ -924,6 +926,7 @@ export default function I485Explorer({
                     i,
                   )
                 }
+                xAxisLabel="Priority date"
                 ariaLabel="Change in pending I-485 by priority date between two snapshots"
               />
             ) : (
@@ -1028,6 +1031,7 @@ export default function I485Explorer({
                   xAxis={cohortSplitData.xAxis}
                   series={cohortSplitLines}
                   height={240}
+                  xAxisLabel="USCIS snapshot"
                   ariaLabel="Pending I-485 cohort split by priority date across snapshots"
                 />
               ) : (
@@ -1039,6 +1043,7 @@ export default function I485Explorer({
               <LineChart
                 data={cohortLine}
                 height={220}
+                xAxisLabel="USCIS snapshot"
                 ariaLabel="Pending applications for the selected cohort across USCIS snapshots"
               />
             ) : (

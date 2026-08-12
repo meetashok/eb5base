@@ -37,6 +37,8 @@ export interface MultiSeriesLineChartProps {
   series: MultiSeriesLine[];
   height?: number;
   ariaLabel?: string;
+  /** Caption under the plot clarifying what the X axis measures. */
+  xAxisLabel?: string;
   showTick?: (d: MultiSeriesXMeta, index: number) => boolean;
 }
 
@@ -68,6 +70,7 @@ export default function MultiSeriesLineChart({
   series,
   height = 240,
   ariaLabel = 'Multi-series line chart',
+  xAxisLabel,
   showTick,
 }: MultiSeriesLineChartProps) {
   const { ref, width } = useElementWidth<HTMLDivElement>();
@@ -333,6 +336,14 @@ export default function MultiSeriesLineChart({
           )}
         </div>
       </div>
+      {xAxisLabel ? (
+        <p
+          className="text-center text-[11px] font-medium text-neutral/50"
+          style={{ paddingLeft: margin.left }}
+        >
+          {xAxisLabel}
+        </p>
+      ) : null}
     </div>
   );
 }

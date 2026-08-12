@@ -28,6 +28,8 @@ export interface DiffBarChartProps {
   minBarWidth?: number;
   showTick?: (d: DiffBarDatum, index: number) => boolean;
   ariaLabel?: string;
+  /** Caption under the plot clarifying what the X axis measures. */
+  xAxisLabel?: string;
   upColor?: string;
   downColor?: string;
   hoverColor?: string;
@@ -61,6 +63,7 @@ export default function DiffBarChart({
   minBarWidth = 10,
   showTick,
   ariaLabel = 'Change bar chart',
+  xAxisLabel,
   upColor = chartColors.barUp,
   downColor = chartColors.barDown,
   hoverColor = chartColors.barHover,
@@ -222,6 +225,14 @@ export default function DiffBarChart({
           </div>
         )}
       </div>
+      {xAxisLabel ? (
+        <p
+          className="text-center text-[11px] font-medium text-neutral/50"
+          style={{ paddingLeft: margin.left }}
+        >
+          {xAxisLabel}
+        </p>
+      ) : null}
     </div>
   );
 }

@@ -22,6 +22,8 @@ export interface LineChartProps {
   data: LineChartDatum[];
   height?: number;
   ariaLabel?: string;
+  /** Caption under the plot clarifying what the X axis measures. */
+  xAxisLabel?: string;
   lineColor?: string;
   pointColor?: string;
   pointHoverColor?: string;
@@ -184,25 +186,36 @@ export default function LineChart({
   data,
   height = 220,
   ariaLabel = 'Line chart',
+  xAxisLabel,
   lineColor = chartColors.line,
   pointColor = chartColors.point,
   pointHoverColor = chartColors.pointHover,
 }: LineChartProps) {
   return (
-    <div style={{ width: '100%', height }}>
-      <ParentSize debounceTime={10}>
-        {({ width }) => (
-          <LineChartInner
-            data={data}
-            width={width}
-            height={height}
-            ariaLabel={ariaLabel}
-            lineColor={lineColor}
-            pointColor={pointColor}
-            pointHoverColor={pointHoverColor}
-          />
-        )}
-      </ParentSize>
+    <div className="w-full space-y-1">
+      <div style={{ width: '100%', height }}>
+        <ParentSize debounceTime={10}>
+          {({ width }) => (
+            <LineChartInner
+              data={data}
+              width={width}
+              height={height}
+              ariaLabel={ariaLabel}
+              lineColor={lineColor}
+              pointColor={pointColor}
+              pointHoverColor={pointHoverColor}
+            />
+          )}
+        </ParentSize>
+      </div>
+      {xAxisLabel ? (
+        <p
+          className="text-center text-[11px] font-medium text-neutral/50"
+          style={{ paddingLeft: margin.left }}
+        >
+          {xAxisLabel}
+        </p>
+      ) : null}
     </div>
   );
 }

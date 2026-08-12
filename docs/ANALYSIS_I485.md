@@ -43,16 +43,18 @@ priority date).
 
 ## Explorer
 
-`/analysis/i485` supports snapshot, compare, and cohort views. Snapshot keeps
-a priority-date grain toggle (months / calendar quarters / fiscal years) and a
-**Split** control: None (bars), By country, or By category (multi-series
-lines). Split lines are still pending stock by priority date in one snapshot —
-not a time series across releases.
+`/analysis/i485` supports snapshot, compare, and cohort views. Each chart shows
+an X-axis caption: **Priority date** on snapshot/compare, **USCIS snapshot** on
+cohort. Snapshot keeps a priority-date grain toggle (months / calendar quarters /
+fiscal years) and a **Split** control: None (bars), By country, or By category
+(multi-series lines). Split lines are still pending stock by priority date in one
+snapshot — not a time series across releases.
 
 Cohort tracks selected **priority-date years** across USCIS releases (multi-select
 chips from 2023 onward, plus an optional Previous years range). Granularity
-groups snapshots (latest value in each quarter / fiscal year). Split can break
-the line out by priority-date month, quarter, or fiscal year.
+defaults to months (one point per USCIS release) and can group to the latest
+value in each quarter / fiscal year. Split can break the line out by
+priority-date month, quarter, or fiscal year.
 
 ## Data caveats (reflected in page copy)
 

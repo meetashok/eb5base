@@ -29,6 +29,8 @@ export interface BarChartProps {
   minBarWidth?: number;
   showTick?: (d: BarChartDatum, index: number) => boolean;
   ariaLabel?: string;
+  /** Caption under the plot clarifying what the X axis measures. */
+  xAxisLabel?: string;
   barColor?: string;
   barHoverColor?: string;
 }
@@ -63,6 +65,7 @@ export default function BarChart({
   minBarWidth = 10,
   showTick,
   ariaLabel = 'Bar chart',
+  xAxisLabel,
   barColor = chartColors.bar,
   barHoverColor = chartColors.barHover,
 }: BarChartProps) {
@@ -213,6 +216,14 @@ export default function BarChart({
           </div>
         )}
       </div>
+      {xAxisLabel ? (
+        <p
+          className="text-center text-[11px] font-medium text-neutral/50"
+          style={{ paddingLeft: margin.left }}
+        >
+          {xAxisLabel}
+        </p>
+      ) : null}
     </div>
   );
 }
