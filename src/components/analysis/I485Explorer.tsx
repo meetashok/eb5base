@@ -1,0 +1,1739 @@
+'use client';
+
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { BarChart, DiffBarChart, LineChart, MultiSeriesLineChart, formatSignedCount, seriesColor } from '@/components/charts';
+import I485ViewBar, { type I485ViewId } from '@/components/analysis/I485ViewBar';
+import I485CategoryPicker from '@/components/analysis/I485CategoryPicker';
+import I485CountryPicker from '@/components/analysis/I485CountryPicker';
+import I485PriorityDateRangePicker from '@/components/analysis/I485PriorityDateRangePicker';
+import I485ShareButton from '@/components/analysis/I485ShareButton';
+import {
+  COHORT_FACET_SPLIT_OPTIONS,
+  COHORT_PD_SPLIT_OPTIONS,
+  DEFAULT_COMPARE_PRIORITY_DATE_YEARS,
+  DEFAULT_I485_CATEGORIES,
+  DEFAULT_PRIORITY_DATE_YEARS,
+  EB5_CATEGORY_BUTTONS,
+  OTHER_CATEGORY_BUTTONS,
+  SNAPSHOT_SPLIT_OPTIONS,
+  USCIS_DATA_PAGE_URL,
+  aggregateByPriorityDateGrain,
+  aggregateCohortBySnapshotGrain,
+  aggregateCohortFacets,
+  aggregateCohortSplitByPriorityDate,
+  aggregateSplitByPriorityDateGrain,
+  categoryMembersForMany,
+  compareByPriorityDateGrain,
+  compareFacetsByPriorityDateGrain,
+  countryLabel,
+  fetchI485Cells,
+  fetchI485Releases,
+  formatAsOf,
+  formatAsOfShort,
+  formatPriorityDateYears,
+  isI485DataAvailable,
+  resolveCategorySplitSeries,
+  splitCountriesForFilter,
+  yearsInPriorityDateSelection,
+  type AggregatedBucket,
+  type CohortFacetSplit,
+  type CohortPdSplit,
+  type I485Cell,
+  type I485Country,
+  type I485Release,
+  type PriorityDateGrain,
+  type PriorityDateYearSelection,
+  type SnapshotSplit,
+  type TimeBucketMeta,
+} from '@/lib/analysis/i485';
+import {
+  loadI485ExplorerPrefs,
+  resolveStoredReleaseIds,
+  saveI485ExplorerPrefs,
+  type I485ExplorerPrefs,
+} from '@/lib/analysis/i485Preferences';
+import {
+  prefsToSharePayload,
+  searchParamsToSharePayload,
+  sharePayloadToSearchParams,
+  type I485SharePayload,
+} from '@/lib/analysis/i485ShareParams';
+
+type ViewId = I485ViewId;
+
+const nf = new Intl.NumberFormat('en-US');
+const DEFAULT_CATEGORIES = DEFAULT_I485_CATEGORIES;
+/** Snapshot / compare X-axis grain (no halves). */
+const GRAIN_OPTIONS: { value: PriorityDateGrain; label: string }[] = [
+  { value: 'month', label: 'Months' },
+  { value: 'quarter', label: 'Quarters' },
+  { value: 'year', label: 'Fiscal years' },
+];
+
+function bucketLabel(b: AggregatedBucket): string {
+  if (b.suppressedCells === 0) return nf.format(b.count);
+  return `${nf.format(b.count)}+`;
+}
+
+/** Sum buckets where suppressed cells add an uncertainty band of 1-9 each. */
+function totalWithNote(buckets: AggregatedBucket[]): { count: number; suppressedCells: number } {
+  return buckets.reduce(
+    (acc, b) => ({
+      count: acc.count + b.count,
+      suppressedCells: acc.suppressedCells + b.suppressedCells,
+    }),
+    { count: 0, suppressedCells: 0 },
+  );
+}
+
+function ChartFooter({ cells }: { cells: number }) {
+  return (
+    <p className="text-xs text-neutral/70 leading-relaxed pt-1">
+      {cells > 0 && (
+        <>
+          {nf.format(cells)} value{cells === 1 ? '' : 's'} in this selection are suppressed by USCIS
+          (&quot;D&quot;, under 10 each) and are excluded from the totals shown. Actual totals can be
+          up to {nf.format(cells * 9)} higher.
+          {' · '}
+        </>
+      )}
+      <Link
+        href="/analysis/i485/data"
+        className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+      >
+        Source data
+      </Link>
+    </p>
+  );
+}
+
+function ChartHeader({ children }: { children: ReactNode }) {
+  return (
+    <header className="-mx-4 border-b-2 border-base-300 bg-base-200/50 px-4 py-3 first:-mt-4 first:rounded-t-[0.65rem] sm:-mx-5 sm:px-5 sm:py-3.5 sm:first:-mt-5">
+      {children}
+    </header>
+  );
+}
+
+/** Right-side header controls: compact so 2–3 rows fit beside title + subtitle + Share. */
+function ChartHeaderControls({ children }: { children: ReactNode }) {
+  return (
+    <div className="flex flex-col items-stretch sm:items-end gap-1">{children}</div>
+  );
+}
+
+const headerToggleRowClass = 'flex flex-wrap items-center gap-1.5';
+const headerToggleLabelClass =
+  'text-[10px] font-semibold uppercase tracking-wide text-neutral/55';
+const headerToggleGroupClass =
+  'inline-flex max-w-full flex-wrap rounded-full border border-base-300 p-px bg-base-200/60';
+
+function headerToggleBtnClass(active: boolean, extra = ''): string {
+  return [
+    'rounded-full border-0 h-5 min-h-0 px-1.5 text-[10px] font-semibold leading-none transition-colors',
+    active ? 'bg-primary text-primary-content' : 'bg-transparent text-neutral hover:bg-base-300/70',
+    extra,
+  ]
+    .filter(Boolean)
+    .join(' ');
+}
+
+/** Chart card title + quieter metric line (number is support, not the headline). */
+function ChartTitleBlock({
+  title,
+  metric,
+  metricClassName = 'text-primary',
+  metricNote,
+  loading,
+  action,
+}: {
+  title: ReactNode;
+  metric?: ReactNode;
+  metricClassName?: string;
+  metricNote?: ReactNode;
+  loading?: boolean;
+  /** Compact action (e.g. Share) under the subtitle so it feels anchored. */
+  action?: ReactNode;
+}) {
+  return (
+    <div className="min-w-0 flex-1 space-y-1">
+      <h2 className="text-sm font-semibold leading-snug text-primary sm:text-base">
+        {title}
+        {loading ? (
+          <span className="ml-2 text-xs font-normal text-neutral/40">Updating…</span>
+        ) : null}
+      </h2>
+      {metric != null || metricNote != null ? (
+        <p className="text-sm leading-snug text-neutral/70">
+          {metric != null ? (
+            <span className={`font-semibold tabular-nums ${metricClassName}`}>{metric}</span>
+          ) : null}
+          {metric != null && metricNote != null ? (
+            <span className="text-neutral/45"> · </span>
+          ) : null}
+          {metricNote != null ? <span>{metricNote}</span> : null}
+        </p>
+      ) : null}
+      {action ? <div className="pt-0.5">{action}</div> : null}
+    </div>
+  );
+}
+
+function GrainToggle({
+  grain,
+  onChange,
+  label = 'Priority date',
+}: {
+  grain: PriorityDateGrain;
+  onChange: (g: PriorityDateGrain) => void;
+  label?: string;
+}) {
+  return (
+    <div className={headerToggleRowClass}>
+      <span className={headerToggleLabelClass}>{label}</span>
+      <div className={headerToggleGroupClass} role="group" aria-label="Priority-date grouping">
+        {GRAIN_OPTIONS.map((o) => (
+          <button
+            key={o.value}
+            type="button"
+            className={headerToggleBtnClass(grain === o.value)}
+            aria-pressed={grain === o.value}
+            onClick={() => onChange(o.value)}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SplitToggle({
+  split,
+  onChange,
+}: {
+  split: SnapshotSplit;
+  onChange: (s: SnapshotSplit) => void;
+}) {
+  return (
+    <div className={headerToggleRowClass}>
+      <span className={headerToggleLabelClass}>Split</span>
+      <div className={headerToggleGroupClass} role="group" aria-label="Split series">
+        {SNAPSHOT_SPLIT_OPTIONS.map((o) => (
+          <button
+            key={o.value}
+            type="button"
+            className={headerToggleBtnClass(split === o.value)}
+            aria-pressed={split === o.value}
+            onClick={() => onChange(o.value)}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CohortPdSplitToggle({
+  value,
+  onChange,
+}: {
+  value: CohortPdSplit;
+  onChange: (v: CohortPdSplit) => void;
+}) {
+  return (
+    <div className={headerToggleRowClass}>
+      <span className={headerToggleLabelClass}>Priority date</span>
+      <div
+        className={headerToggleGroupClass}
+        role="group"
+        aria-label="Priority-date series split"
+      >
+        {COHORT_PD_SPLIT_OPTIONS.map((o) => (
+          <button
+            key={o.value}
+            type="button"
+            className={headerToggleBtnClass(value === o.value)}
+            aria-pressed={value === o.value}
+            onClick={() => onChange(o.value)}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CohortFacetSplitToggle({
+  value,
+  onChange,
+}: {
+  value: CohortFacetSplit;
+  onChange: (v: CohortFacetSplit) => void;
+}) {
+  return (
+    <div className={headerToggleRowClass}>
+      <span className={headerToggleLabelClass}>Split</span>
+      <div className={headerToggleGroupClass} role="group" aria-label="Cohort facet split">
+        {COHORT_FACET_SPLIT_OPTIONS.map((o) => (
+          <button
+            key={o.value}
+            type="button"
+            className={headerToggleBtnClass(value === o.value)}
+            aria-pressed={value === o.value}
+            onClick={() => onChange(o.value)}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SharedYAxisToggle({
+  value,
+  onChange,
+}: {
+  value: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <div className={headerToggleRowClass}>
+      <span className={headerToggleLabelClass}>Y-axis</span>
+      <div
+        className={headerToggleGroupClass}
+        role="group"
+        aria-label="Y-axis scale across facet charts"
+      >
+        <button
+          type="button"
+          className={headerToggleBtnClass(value, 'min-w-[3.25rem]')}
+          aria-pressed={value}
+          onClick={() => onChange(true)}
+        >
+          Shared
+        </button>
+        <button
+          type="button"
+          className={headerToggleBtnClass(!value, 'min-w-[4.25rem]')}
+          aria-pressed={!value}
+          onClick={() => onChange(false)}
+        >
+          Independent
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function showPriorityDateTick(
+  grain: PriorityDateGrain,
+  data: { meta: TimeBucketMeta }[],
+  d: { key: string; shortLabel: string },
+  i: number,
+) {
+  if (grain === 'year' || grain === 'quarter' || grain === 'half') return true;
+  if (d.key === '_earlier') return true;
+  const hasPrior = data[0]?.meta.key === '_earlier';
+  const offset = hasPrior ? 1 : 0;
+  const idx = i - offset;
+  // Leave room after the Prior label so it does not collide with the next year tick.
+  if (hasPrior && idx < 5) return false;
+  // January ticks include the year (e.g. "Jan 26").
+  if (d.key.endsWith('-01')) return true;
+  return idx === 0 || i === data.length - 1 || idx % 3 === 0;
+}
+
+function defaultCompareIds(releases: I485Release[]): {
+  fromId: number | null;
+  toId: number | null;
+} {
+  if (releases.length === 0) return { fromId: null, toId: null };
+  const toId = releases[releases.length - 1]!.id;
+  const fromId =
+    releases.length >= 2 ? releases[releases.length - 2]!.id : releases[0]!.id;
+  return { fromId, toId };
+}
+
+export interface I485ExplorerProps {
+  /** Active chart view from the URL (/inventory, /priority-date, /compare). */
+  initialView?: ViewId;
+  /** Shared link payload (from /analysis/i485/s/[id]); wins over localStorage. */
+  initialSharePayload?: I485SharePayload | null;
+  initialReleases?: I485Release[];
+  initialReleaseId?: number | null;
+  initialSnapshotCells?: I485Cell[] | null;
+  initialError?: string | null;
+}
+
+export default function I485Explorer({
+  initialView = 'snapshot',
+  initialSharePayload = null,
+  initialReleases = [],
+  initialReleaseId = null,
+  initialSnapshotCells = null,
+  initialError = null,
+}: I485ExplorerProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const available = isI485DataAvailable();
+  const [releases, setReleases] = useState<I485Release[]>(initialReleases);
+  const [loadError, setLoadError] = useState<string | null>(initialError);
+
+  const view = initialView;
+  const [countries, setCountries] = useState<I485Country[]>([]);
+  const [categories, setCategories] = useState<string[]>([...DEFAULT_CATEGORIES]);
+  const [grain, setGrain] = useState<PriorityDateGrain>('quarter');
+  const [split, setSplit] = useState<SnapshotSplit>('none');
+
+  // Snapshot view state
+  const [releaseId, setReleaseId] = useState<number | null>(initialReleaseId);
+  const [snapshotCells, setSnapshotCells] = useState<I485Cell[] | null>(initialSnapshotCells);
+
+  // Cohort view state
+  const [pdYears, setPdYears] = useState<PriorityDateYearSelection>({
+    ...DEFAULT_PRIORITY_DATE_YEARS,
+  });
+  const [comparePdYears, setComparePdYears] = useState<PriorityDateYearSelection>({
+    ...DEFAULT_COMPARE_PRIORITY_DATE_YEARS,
+  });
+  const [cohortPdSplit, setCohortPdSplit] = useState<CohortPdSplit>('quarter');
+  const [cohortFacetSplit, setCohortFacetSplit] = useState<CohortFacetSplit>('none');
+  const [compareFacetSplit, setCompareFacetSplit] = useState<CohortFacetSplit>('none');
+  const [compareShowData, setCompareShowData] = useState(false);
+  /** When faceted, use one Y scale across small multiples (default on). */
+  const [facetSharedYAxis, setFacetSharedYAxis] = useState(true);
+  const [cohortCells, setCohortCells] = useState<I485Cell[] | null>(null);
+  /** Shared across country/category facet charts so legend toggles stay in sync. */
+  const [cohortSharedHiddenKeys, setCohortSharedHiddenKeys] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const [cohortSharedLegendFocus, setCohortSharedLegendFocus] = useState<string | null>(null);
+
+  // Compare view state
+  const initialCompare = defaultCompareIds(initialReleases);
+  const [compareFromId, setCompareFromId] = useState<number | null>(initialCompare.fromId);
+  const [compareToId, setCompareToId] = useState<number | null>(
+    initialCompare.toId ?? initialReleaseId,
+  );
+  const [compareFromCells, setCompareFromCells] = useState<I485Cell[] | null>(null);
+  const [compareToCells, setCompareToCells] = useState<I485Cell[] | null>(null);
+
+  const [loading, setLoading] = useState(false);
+  const [prefsHydrated, setPrefsHydrated] = useState(false);
+  const skipInitialSnapshotFetch = useRef(
+    initialSnapshotCells != null && initialReleaseId != null && initialReleases.length > 0,
+  );
+
+  function applyExplorerPrefs(stored: I485ExplorerPrefs, hide: string[] = []) {
+    const releaseIds = initialReleases.map((r) => r.id);
+    const ids = resolveStoredReleaseIds(stored, releaseIds);
+    setCountries(stored.countries);
+    setCategories(stored.categories);
+    setGrain(stored.grain);
+    setSplit(stored.split);
+    setPdYears(stored.pdYears);
+    setComparePdYears(stored.comparePdYears);
+    setCohortPdSplit(stored.cohortPdSplit);
+    setCohortFacetSplit(stored.cohortFacetSplit);
+    setCompareFacetSplit(stored.compareFacetSplit);
+    setCompareShowData(stored.compareShowData);
+    setFacetSharedYAxis(stored.facetSharedYAxis);
+    if (ids.releaseId != null) setReleaseId(ids.releaseId);
+    if (ids.compareFromId != null) setCompareFromId(ids.compareFromId);
+    if (ids.compareToId != null) setCompareToId(ids.compareToId);
+    if (hide.length > 0) setCohortSharedHiddenKeys(new Set(hide));
+
+    const filtersChangedFromSsr =
+      stored.countries.length > 0 ||
+      stored.categories.length !== DEFAULT_CATEGORIES.length ||
+      stored.categories.some((c, i) => c !== DEFAULT_CATEGORIES[i]) ||
+      (ids.releaseId != null && ids.releaseId !== initialReleaseId) ||
+      hide.length > 0;
+    if (filtersChangedFromSsr) skipInitialSnapshotFetch.current = false;
+  }
+
+  // Restore: share payload → query params → localStorage.
+  useEffect(() => {
+    const latestYear =
+      initialReleases.length > 0
+        ? new Date(
+            `${initialReleases[initialReleases.length - 1]!.as_of_date}T00:00:00Z`,
+          ).getUTCFullYear()
+        : new Date().getUTCFullYear();
+
+    if (initialSharePayload) {
+      applyExplorerPrefs(
+        {
+          view: initialSharePayload.view,
+          countries: initialSharePayload.countries,
+          categories: initialSharePayload.categories,
+          grain: initialSharePayload.grain,
+          split: initialSharePayload.split,
+          pdYears: initialSharePayload.pdYears,
+          comparePdYears: initialSharePayload.comparePdYears,
+          cohortPdSplit: initialSharePayload.cohortPdSplit,
+          cohortFacetSplit: initialSharePayload.cohortFacetSplit,
+          compareFacetSplit: initialSharePayload.compareFacetSplit,
+          compareShowData: false,
+          facetSharedYAxis: initialSharePayload.facetSharedYAxis,
+          releaseId: initialSharePayload.releaseId,
+          compareFromId: initialSharePayload.compareFromId,
+          compareToId: initialSharePayload.compareToId,
+        },
+        initialSharePayload.hide ?? [],
+      );
+      setPrefsHydrated(true);
+      return;
+    }
+
+    const fromQuery = searchParamsToSharePayload(
+      new URLSearchParams(window.location.search),
+      initialView,
+      latestYear,
+    );
+    if (fromQuery) {
+      applyExplorerPrefs(
+        {
+          view: fromQuery.view,
+          countries: fromQuery.countries,
+          categories: fromQuery.categories,
+          grain: fromQuery.grain,
+          split: fromQuery.split,
+          pdYears: fromQuery.pdYears,
+          comparePdYears: fromQuery.comparePdYears,
+          cohortPdSplit: fromQuery.cohortPdSplit,
+          cohortFacetSplit: fromQuery.cohortFacetSplit,
+          compareFacetSplit: fromQuery.compareFacetSplit,
+          compareShowData: false,
+          facetSharedYAxis: fromQuery.facetSharedYAxis,
+          releaseId: fromQuery.releaseId,
+          compareFromId: fromQuery.compareFromId,
+          compareToId: fromQuery.compareToId,
+        },
+        fromQuery.hide ?? [],
+      );
+      setPrefsHydrated(true);
+      return;
+    }
+
+    const stored = loadI485ExplorerPrefs(latestYear);
+    if (stored) applyExplorerPrefs(stored);
+    setPrefsHydrated(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- hydrate once
+  }, []);
+
+  function currentSharePayload(): I485SharePayload {
+    return prefsToSharePayload(
+      {
+        view,
+        countries,
+        categories,
+        grain,
+        split,
+        pdYears,
+        comparePdYears,
+        cohortPdSplit,
+        cohortFacetSplit,
+        compareFacetSplit,
+        compareShowData,
+        facetSharedYAxis,
+        releaseId,
+        compareFromId,
+        compareToId,
+      },
+      Array.from(cohortSharedHiddenKeys),
+    );
+  }
+
+  // Persist choices after hydration (and when releases change, so ids stay valid).
+  useEffect(() => {
+    if (!prefsHydrated) return;
+    saveI485ExplorerPrefs({
+      view,
+      countries,
+      categories,
+      grain,
+      split,
+      pdYears,
+      comparePdYears,
+      cohortPdSplit,
+      cohortFacetSplit,
+      compareFacetSplit,
+      compareShowData,
+      facetSharedYAxis,
+      releaseId,
+      compareFromId,
+      compareToId,
+    });
+  }, [
+    prefsHydrated,
+    view,
+    countries,
+    categories,
+    grain,
+    split,
+    pdYears,
+    comparePdYears,
+    cohortPdSplit,
+    cohortFacetSplit,
+    compareFacetSplit,
+    compareShowData,
+    facetSharedYAxis,
+    releaseId,
+    compareFromId,
+    compareToId,
+  ]);
+
+  // Mirror compact filters into the address bar (skip short-share routes).
+  useEffect(() => {
+    if (!prefsHydrated) return;
+    if (!pathname || pathname.includes('/analysis/i485/s/')) return;
+    const payload = currentSharePayload();
+    const qs = sharePayloadToSearchParams(payload).toString();
+    const next = qs ? `${pathname}?${qs}` : pathname;
+    const current = `${window.location.pathname}${window.location.search}`;
+    if (next === current) return;
+    router.replace(next, { scroll: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional filter sync
+  }, [
+    prefsHydrated,
+    pathname,
+    countries,
+    categories,
+    grain,
+    split,
+    pdYears,
+    comparePdYears,
+    cohortPdSplit,
+    cohortFacetSplit,
+    compareFacetSplit,
+    facetSharedYAxis,
+    releaseId,
+    compareFromId,
+    compareToId,
+    cohortSharedHiddenKeys,
+  ]);
+
+  useEffect(() => {
+    if (!available) return;
+    if (initialReleases.length > 0) return;
+    fetchI485Releases()
+      .then((rs) => {
+        setReleases(rs);
+        if (rs.length > 0) {
+          const stored = loadI485ExplorerPrefs(
+            new Date(`${rs[rs.length - 1]!.as_of_date}T00:00:00Z`).getUTCFullYear(),
+          );
+          const ids = stored
+            ? resolveStoredReleaseIds(stored, rs.map((r) => r.id))
+            : { releaseId: null, compareFromId: null, compareToId: null };
+          setReleaseId(ids.releaseId ?? rs[rs.length - 1]!.id);
+          const fallback = defaultCompareIds(rs);
+          setCompareFromId(ids.compareFromId ?? fallback.fromId);
+          setCompareToId(ids.compareToId ?? fallback.toId ?? rs[rs.length - 1]!.id);
+        }
+      })
+      .catch((e: Error) => setLoadError(e.message));
+  }, [available, initialReleases.length]);
+
+  // When SSR releases arrive without compare defaults (shouldn't happen), sync once.
+  useEffect(() => {
+    if (compareFromId != null || releases.length === 0) return;
+    const ids = defaultCompareIds(releases);
+    setCompareFromId(ids.fromId);
+    setCompareToId(ids.toId);
+  }, [releases, compareFromId]);
+
+  const selectedRelease = releases.find((r) => r.id === releaseId) ?? null;
+  const compareFromRelease = releases.find((r) => r.id === compareFromId) ?? null;
+  const compareToRelease = releases.find((r) => r.id === compareToId) ?? null;
+  const members = useMemo(() => categoryMembersForMany(categories), [categories]);
+  const countryFilter = useMemo(
+    () => (countries.length > 0 ? countries : undefined),
+    [countries],
+  );
+  const isDefaultCategories =
+    categories.length === DEFAULT_CATEGORIES.length &&
+    categories.every((c, i) => c === DEFAULT_CATEGORIES[i]);
+
+  // Snapshot data
+  useEffect(() => {
+    if (!available || releaseId == null) return;
+    if (
+      skipInitialSnapshotFetch.current &&
+      releaseId === initialReleaseId &&
+      countries.length === 0 &&
+      isDefaultCategories
+    ) {
+      skipInitialSnapshotFetch.current = false;
+      return;
+    }
+    let cancel = false;
+    setLoading(true);
+    fetchI485Cells({
+      releaseId,
+      countries: countryFilter,
+      categories: members,
+    })
+      .then((cells) => {
+        if (!cancel) setSnapshotCells(cells);
+      })
+      .catch((e: Error) => !cancel && setLoadError(e.message))
+      .finally(() => !cancel && setLoading(false));
+    return () => {
+      cancel = true;
+    };
+  }, [
+    available,
+    releaseId,
+    countries,
+    countryFilter,
+    members,
+    categories,
+    isDefaultCategories,
+    initialReleaseId,
+  ]);
+
+  const latestAsOfYear = useMemo(() => {
+    if (releases.length === 0) return new Date().getUTCFullYear();
+    const last = releases[releases.length - 1]!;
+    return new Date(`${last.as_of_date}T00:00:00Z`).getUTCFullYear();
+  }, [releases]);
+
+  const selectedPdYears = useMemo(
+    () => yearsInPriorityDateSelection(pdYears, latestAsOfYear),
+    [pdYears, latestAsOfYear],
+  );
+
+  const selectedComparePdYears = useMemo(
+    () => yearsInPriorityDateSelection(comparePdYears, latestAsOfYear),
+    [comparePdYears, latestAsOfYear],
+  );
+
+  // Cohort data
+  useEffect(() => {
+    if (!available || view !== 'cohort') return;
+    if (selectedPdYears.length === 0) return;
+    let cancel = false;
+    setLoading(true);
+    fetchI485Cells({
+      countries: countryFilter,
+      categories: members,
+      pdYears: selectedPdYears,
+    })
+      .then((cells) => {
+        if (!cancel) setCohortCells(cells);
+      })
+      .catch((e: Error) => !cancel && setLoadError(e.message))
+      .finally(() => !cancel && setLoading(false));
+    return () => {
+      cancel = true;
+    };
+  }, [available, view, countries, countryFilter, members, selectedPdYears]);
+
+  // Compare data (both snapshots)
+  useEffect(() => {
+    if (!available || view !== 'compare') return;
+    if (compareFromId == null || compareToId == null) return;
+    if (selectedComparePdYears.length === 0) return;
+    let cancel = false;
+    setLoading(true);
+    const filters = {
+      countries: countryFilter,
+      categories: members,
+      pdYears: selectedComparePdYears,
+    };
+    Promise.all([
+      fetchI485Cells({ ...filters, releaseId: compareFromId }),
+      fetchI485Cells({ ...filters, releaseId: compareToId }),
+    ])
+      .then(([fromCells, toCells]) => {
+        if (cancel) return;
+        setCompareFromCells(fromCells);
+        setCompareToCells(toCells);
+      })
+      .catch((e: Error) => !cancel && setLoadError(e.message))
+      .finally(() => !cancel && setLoading(false));
+    return () => {
+      cancel = true;
+    };
+  }, [
+    available,
+    view,
+    compareFromId,
+    compareToId,
+    countries,
+    countryFilter,
+    members,
+    selectedComparePdYears,
+  ]);
+
+  const snapshotSeries = useMemo(() => {
+    if (!snapshotCells) return [];
+    return aggregateByPriorityDateGrain(snapshotCells, grain);
+  }, [snapshotCells, grain]);
+
+  const snapshotBars = useMemo(
+    () =>
+      snapshotSeries.map(({ meta, bucket }) => ({
+        key: meta.key,
+        label: meta.label,
+        shortLabel: meta.shortLabel,
+        value: bucket.count,
+        valueLabel: `${bucketLabel(bucket)} pending`,
+      })),
+    [snapshotSeries],
+  );
+
+  const snapshotSplit = useMemo(() => {
+    if (!snapshotCells || split === 'none') return null;
+
+    if (split === 'country') {
+      const keys = splitCountriesForFilter(countries);
+      return aggregateSplitByPriorityDateGrain(
+        snapshotCells,
+        grain,
+        keys,
+        (c) => c.country,
+        (key) => countryLabel(key as I485Country),
+      );
+    }
+
+    const plan = resolveCategorySplitSeries(categories);
+    return aggregateSplitByPriorityDateGrain(
+      snapshotCells,
+      grain,
+      plan.seriesKeys,
+      plan.seriesKeyForCell,
+      plan.seriesLabel,
+    );
+  }, [snapshotCells, split, countries, grain, categories]);
+
+  const snapshotSplitLines = useMemo(() => {
+    if (!snapshotSplit) return [];
+    return snapshotSplit.series.map((s) => ({
+      key: s.key,
+      label: s.label,
+      data: s.points.map((p) => ({ key: p.key, value: p.value })),
+    }));
+  }, [snapshotSplit]);
+
+  const snapshotTotal = useMemo(
+    () => totalWithNote(snapshotSeries.map((d) => d.bucket)),
+    [snapshotSeries],
+  );
+
+  const cohortSeries = useMemo(() => {
+    if (!cohortCells) return [];
+    return aggregateCohortBySnapshotGrain(
+      cohortCells,
+      releases,
+      'month',
+      selectedPdYears,
+    );
+  }, [cohortCells, releases, selectedPdYears]);
+
+  const cohortLine = useMemo(
+    () =>
+      cohortSeries.map((p) => ({
+        key: p.meta.key,
+        label: p.meta.label,
+        value: p.bucket.count,
+        valueLabel: bucketLabel(p.bucket),
+      })),
+    [cohortSeries],
+  );
+
+  const cohortPdGrain = cohortPdSplit === 'none' ? null : cohortPdSplit;
+
+  const cohortSplitData = useMemo(() => {
+    if (!cohortCells || cohortPdGrain == null || cohortFacetSplit !== 'none') return null;
+    return aggregateCohortSplitByPriorityDate(
+      cohortCells,
+      releases,
+      'month',
+      cohortPdGrain,
+      selectedPdYears,
+    );
+  }, [cohortCells, releases, cohortPdGrain, selectedPdYears, cohortFacetSplit]);
+
+  const cohortSplitLines = useMemo(() => {
+    if (!cohortSplitData) return [];
+    return cohortSplitData.series.map((s) => ({
+      key: s.key,
+      label: s.label,
+      data: s.points.map((p) => ({ key: p.key, value: p.value })),
+    }));
+  }, [cohortSplitData]);
+
+  const cohortFacets = useMemo(() => {
+    if (!cohortCells || cohortFacetSplit === 'none') return null;
+
+    const facets =
+      cohortFacetSplit === 'country'
+        ? aggregateCohortFacets(
+            cohortCells,
+            releases,
+            selectedPdYears,
+            splitCountriesForFilter(countries),
+            (c) => c.country,
+            (key) => countryLabel(key as I485Country),
+            cohortPdGrain,
+          )
+        : (() => {
+            const plan = resolveCategorySplitSeries(categories);
+            return aggregateCohortFacets(
+              cohortCells,
+              releases,
+              selectedPdYears,
+              plan.seriesKeys,
+              plan.seriesKeyForCell,
+              plan.seriesLabel,
+              cohortPdGrain,
+            );
+          })();
+
+    return facets.map((facet) => ({
+      key: facet.key,
+      label: facet.label,
+      series: facet.series,
+      line: facet.series.map((p) => ({
+        key: p.meta.key,
+        label: p.meta.label,
+        value: p.bucket.count,
+        valueLabel: bucketLabel(p.bucket),
+      })),
+      split: facet.split,
+      splitLines:
+        facet.split?.series.map((s) => ({
+          key: s.key,
+          label: s.label,
+          data: s.points.map((p) => ({ key: p.key, value: p.value })),
+        })) ?? [],
+    }));
+  }, [
+    cohortCells,
+    cohortFacetSplit,
+    cohortPdGrain,
+    countries,
+    categories,
+    releases,
+    selectedPdYears,
+  ]);
+
+  const cohortSharedYMax = useMemo(() => {
+    if (!facetSharedYAxis || !cohortFacets || cohortFacets.length === 0) return undefined;
+    let max = 1;
+    for (const facet of cohortFacets) {
+      if (facet.splitLines.length > 0) {
+        for (const s of facet.splitLines) {
+          for (const p of s.data) max = Math.max(max, p.value);
+        }
+      } else {
+        for (const p of facet.line) max = Math.max(max, p.value);
+      }
+    }
+    return max;
+  }, [facetSharedYAxis, cohortFacets]);
+
+  const cohortFacetSeriesKeys = useMemo(() => {
+    if (!cohortFacets) return [] as string[];
+    const seen = new Map<string, string>();
+    for (const facet of cohortFacets) {
+      for (const s of facet.splitLines) {
+        if (!seen.has(s.key)) seen.set(s.key, s.label);
+      }
+    }
+    return Array.from(seen.keys());
+  }, [cohortFacets]);
+
+  /** Active PD-series keys for the current cohort chart mode (shared legend). */
+  const cohortActiveSeriesKeys = useMemo(() => {
+    if (cohortFacetSplit !== 'none') return cohortFacetSeriesKeys;
+    return cohortSplitLines.map((s) => s.key);
+  }, [cohortFacetSplit, cohortFacetSeriesKeys, cohortSplitLines]);
+
+  const cohortSeriesColors = useMemo(() => {
+    const map: Record<string, string> = {};
+    cohortActiveSeriesKeys.forEach((key, i) => {
+      map[key] = seriesColor(i);
+    });
+    return map;
+  }, [cohortActiveSeriesKeys]);
+
+  const cohortActiveSeriesKeySig = cohortActiveSeriesKeys.join('|');
+  // Keep legend hide/show across Split changes; only drop keys that no longer exist
+  // (e.g. Priority date grain changed from quarters to months).
+  useEffect(() => {
+    const valid = new Set(cohortActiveSeriesKeys);
+    setCohortSharedHiddenKeys((prev) => {
+      const next = new Set<string>();
+      for (const key of Array.from(prev)) {
+        if (valid.has(key)) next.add(key);
+      }
+      if (next.size === prev.size) {
+        for (const key of Array.from(prev)) {
+          if (!next.has(key)) return next;
+        }
+        return prev;
+      }
+      return next;
+    });
+    setCohortSharedLegendFocus((prev) =>
+      prev != null && valid.has(prev) ? prev : null,
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- prune when series identity changes
+  }, [cohortActiveSeriesKeySig]);
+
+  function toggleCohortSharedSeries(key: string) {
+    setCohortSharedHiddenKeys((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+        return next;
+      }
+      const visibleCount = cohortActiveSeriesKeys.filter((k) => !next.has(k)).length;
+      if (visibleCount <= 1) return prev;
+      next.add(key);
+      return next;
+    });
+  }
+
+  const cohortSuppressed = useMemo(() => {
+    if (cohortFacetSplit === 'none' && cohortSplitData) {
+      return cohortSplitData.series.reduce(
+        (sum, s) => sum + s.points.reduce((a, p) => a + p.suppressedCells, 0),
+        0,
+      );
+    }
+    if (cohortFacets) {
+      return cohortFacets.reduce(
+        (sum, f) =>
+          sum + totalWithNote(f.series.map((p) => p.bucket)).suppressedCells,
+        0,
+      );
+    }
+    return totalWithNote(cohortSeries.map((p) => p.bucket)).suppressedCells;
+  }, [cohortFacetSplit, cohortSplitData, cohortFacets, cohortSeries]);
+
+  const cohortLatestTotal = useMemo(() => {
+    if (cohortSeries.length === 0) return { count: 0, suppressedCells: 0 };
+    return cohortSeries[cohortSeries.length - 1]!.bucket;
+  }, [cohortSeries]);
+
+  const cohortContextCaption = useMemo(() => {
+    const categoryLabels = categories.map(
+      (value) =>
+        EB5_CATEGORY_BUTTONS.find((o) => o.value === value)?.label ??
+        OTHER_CATEGORY_BUTTONS.find((o) => o.value === value)?.label ??
+        value,
+    );
+    const countryLabels =
+      countries.length === 0
+        ? 'all countries'
+        : countries.map((c) => countryLabel(c)).join(', ');
+    const pdGrainLabels: Record<PriorityDateGrain, string> = {
+      month: 'months',
+      quarter: 'quarters',
+      half: 'halves',
+      year: 'fiscal years',
+    };
+    const parts = [
+      categoryLabels.join(', '),
+      countryLabels,
+      `priority dates ${formatPriorityDateYears(selectedPdYears)}`,
+      'monthly USCIS snapshots',
+    ];
+    if (cohortPdGrain) {
+      parts.push(`priority-date series by ${pdGrainLabels[cohortPdGrain]}`);
+    }
+    if (cohortFacetSplit === 'country') {
+      parts.push('separate chart per country');
+    } else if (cohortFacetSplit === 'category') {
+      parts.push('separate chart per category');
+    }
+    return parts.join(' · ');
+  }, [categories, countries, selectedPdYears, cohortPdGrain, cohortFacetSplit]);
+
+  const compareContextCaption = useMemo(() => {
+    const categoryLabels = categories.map(
+      (value) =>
+        EB5_CATEGORY_BUTTONS.find((o) => o.value === value)?.label ??
+        OTHER_CATEGORY_BUTTONS.find((o) => o.value === value)?.label ??
+        value,
+    );
+    const countryLabels =
+      countries.length === 0
+        ? 'all countries'
+        : countries.map((c) => countryLabel(c)).join(', ');
+    const grainLabels: Record<PriorityDateGrain, string> = {
+      month: 'by month',
+      quarter: 'by quarter',
+      half: 'by half',
+      year: 'by fiscal year',
+    };
+    const parts = [
+      categoryLabels.join(', '),
+      countryLabels,
+      `priority dates ${formatPriorityDateYears(selectedComparePdYears)}`,
+      grainLabels[grain],
+    ];
+    if (compareFacetSplit === 'country') {
+      parts.push('separate chart per country');
+    } else if (compareFacetSplit === 'category') {
+      parts.push('separate chart per category');
+    }
+    return parts.join(' · ');
+  }, [categories, countries, selectedComparePdYears, grain, compareFacetSplit]);
+
+  const compareRows = useMemo(() => {
+    if (!compareFromCells || !compareToCells) return [];
+    return compareByPriorityDateGrain(compareFromCells, compareToCells, grain);
+  }, [compareFromCells, compareToCells, grain]);
+
+  const compareDiffBars = useMemo(
+    () =>
+      compareRows.map((row) => ({
+        key: row.meta.key,
+        label: row.meta.label,
+        shortLabel: row.meta.shortLabel,
+        value: row.delta,
+        valueLabel: formatSignedCount(row.delta),
+        earlierValue: row.earlier.count,
+        earlierValueLabel: bucketLabel(row.earlier),
+        laterValue: row.later.count,
+        laterValueLabel: bucketLabel(row.later),
+      })),
+    [compareRows],
+  );
+
+  const compareFacets = useMemo(() => {
+    if (!compareFromCells || !compareToCells || compareFacetSplit === 'none') return null;
+
+    const facets =
+      compareFacetSplit === 'country'
+        ? compareFacetsByPriorityDateGrain(
+            compareFromCells,
+            compareToCells,
+            grain,
+            splitCountriesForFilter(countries),
+            (c) => c.country,
+            (key) => countryLabel(key as I485Country),
+          )
+        : (() => {
+            const plan = resolveCategorySplitSeries(categories);
+            return compareFacetsByPriorityDateGrain(
+              compareFromCells,
+              compareToCells,
+              grain,
+              plan.seriesKeys,
+              plan.seriesKeyForCell,
+              plan.seriesLabel,
+            );
+          })();
+
+    return facets.map((facet) => ({
+      ...facet,
+      bars: facet.rows.map((row) => ({
+        key: row.meta.key,
+        label: row.meta.label,
+        shortLabel: row.meta.shortLabel,
+        value: row.delta,
+        valueLabel: formatSignedCount(row.delta),
+        earlierValue: row.earlier.count,
+        earlierValueLabel: bucketLabel(row.earlier),
+        laterValue: row.later.count,
+        laterValueLabel: bucketLabel(row.later),
+      })),
+    }));
+  }, [
+    compareFromCells,
+    compareToCells,
+    compareFacetSplit,
+    grain,
+    countries,
+    categories,
+  ]);
+
+  const compareSharedYDomain = useMemo((): [number, number] | undefined => {
+    if (!facetSharedYAxis || !compareFacets || compareFacets.length === 0) return undefined;
+    let min = 0;
+    let max = 0;
+    for (const facet of compareFacets) {
+      for (const bar of facet.bars) {
+        min = Math.min(min, bar.value);
+        max = Math.max(max, bar.value);
+      }
+    }
+    return [min, max];
+  }, [facetSharedYAxis, compareFacets]);
+
+  const compareNet = useMemo(() => {
+    const earlierTotal = totalWithNote(compareRows.map((r) => r.earlier));
+    const laterTotal = totalWithNote(compareRows.map((r) => r.later));
+    return {
+      earlier: earlierTotal,
+      later: laterTotal,
+      delta: laterTotal.count - earlierTotal.count,
+      suppressedCells: earlierTotal.suppressedCells + laterTotal.suppressedCells,
+    };
+  }, [compareRows]);
+
+  const compareTableRows = useMemo(() => {
+    type Row = {
+      key: string;
+      facetLabel: string | null;
+      pdLabel: string;
+      earlier: AggregatedBucket;
+      later: AggregatedBucket;
+      delta: number;
+    };
+    const keep = (r: { delta: number; earlier: AggregatedBucket; later: AggregatedBucket }) =>
+      r.delta !== 0 || r.earlier.count > 0 || r.later.count > 0;
+
+    if (compareFacetSplit !== 'none' && compareFacets) {
+      return compareFacets
+        .flatMap((facet) =>
+          facet.rows.filter(keep).map((row) => ({
+            key: `${facet.key}:${row.meta.key}`,
+            facetLabel: facet.label,
+            pdLabel: row.meta.label,
+            earlier: row.earlier,
+            later: row.later,
+            delta: row.delta,
+          })),
+        )
+        .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta)) as Row[];
+    }
+
+    return compareRows
+      .filter(keep)
+      .map((row) => ({
+        key: row.meta.key,
+        facetLabel: null,
+        pdLabel: row.meta.label,
+        earlier: row.earlier,
+        later: row.later,
+        delta: row.delta,
+      }))
+      .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta)) as Row[];
+  }, [compareRows, compareFacets, compareFacetSplit]);
+
+  const releaseOptionsDesc = useMemo(() => [...releases].reverse(), [releases]);
+
+  if (!available) {
+    return (
+      <div className="rounded-xl border-2 border-base-300 bg-base-100 p-5 text-sm text-neutral leading-relaxed">
+        The inventory database is not connected in this environment. The raw USCIS reports are
+        always available on the{' '}
+        <a
+          href={USCIS_DATA_PAGE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+        >
+          USCIS Immigration and Citizenship Data page
+        </a>
+        .
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <I485ViewBar active={view} />
+
+      <div className="max-w-4xl mx-auto px-4 pt-6 sm:pt-8 space-y-5">
+      {/* Filters — contained so controls are anchored, not floating on the page surface */}
+      <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4">
+      {(view === 'snapshot' || view === 'compare') && (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {view === 'snapshot' && (
+          <label className="form-control">
+            <span className="label-text text-xs font-semibold text-neutral/80 pb-1">
+              USCIS snapshot
+            </span>
+            <select
+              className="select select-bordered select-sm"
+              value={releaseId ?? ''}
+              onChange={(e) => setReleaseId(Number(e.target.value))}
+            >
+              {releases.length === 0 && <option value="">Loading snapshots…</option>}
+              {releaseOptionsDesc.map((r, i) => (
+                <option key={r.id} value={r.id}>
+                  As of {formatAsOf(r.as_of_date)}
+                  {i === 0 ? ' (latest)' : ''}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+
+        {view === 'compare' && (
+          <>
+            <label className="form-control">
+              <span className="label-text text-xs font-semibold text-neutral/80 pb-1">From</span>
+              <select
+                className="select select-bordered select-sm"
+                value={compareFromId ?? ''}
+                onChange={(e) => setCompareFromId(Number(e.target.value))}
+              >
+                {releaseOptionsDesc.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    As of {formatAsOf(r.as_of_date)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="form-control">
+              <span className="label-text text-xs font-semibold text-neutral/80 pb-1">To</span>
+              <select
+                className="select select-bordered select-sm"
+                value={compareToId ?? ''}
+                onChange={(e) => setCompareToId(Number(e.target.value))}
+              >
+                {releaseOptionsDesc.map((r, i) => (
+                  <option key={r.id} value={r.id}>
+                    As of {formatAsOf(r.as_of_date)}
+                    {i === 0 ? ' (latest)' : ''}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </>
+        )}
+      </div>
+      )}
+
+      {view === 'cohort' && (
+        <I485PriorityDateRangePicker
+          value={pdYears}
+          onChange={setPdYears}
+          latestYear={latestAsOfYear}
+        />
+      )}
+
+      {view === 'compare' && (
+        <I485PriorityDateRangePicker
+          value={comparePdYears}
+          onChange={setComparePdYears}
+          latestYear={latestAsOfYear}
+        />
+      )}
+
+      <I485CategoryPicker value={categories} onChange={setCategories} />
+      <I485CountryPicker value={countries} onChange={setCountries} />
+      </div>
+
+      {loadError && (
+        <div className="rounded-xl border-2 border-error/40 bg-error/10 p-4 text-sm text-neutral">
+          Could not load inventory data: {loadError}
+        </div>
+      )}
+
+      {/* Results */}
+      <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4">
+        {loading && !snapshotCells && view === 'snapshot' && (
+          <p className="text-sm text-neutral/70">Loading inventory…</p>
+        )}
+        {loading && view === 'cohort' && !cohortCells && (
+          <p className="text-sm text-neutral/70">Loading cohort…</p>
+        )}
+        {loading &&
+          view === 'compare' &&
+          (!compareFromCells || !compareToCells) && (
+            <p className="text-sm text-neutral/70">Loading comparison…</p>
+          )}
+
+        {view === 'snapshot' && snapshotCells && (
+          <>
+            <ChartHeader>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <ChartTitleBlock
+                  title="Pending I-485 by priority date"
+                  metric={
+                    <>
+                      {nf.format(snapshotTotal.count)}
+                      {snapshotTotal.suppressedCells > 0 ? '+' : ''}
+                    </>
+                  }
+                  metricNote={
+                    selectedRelease
+                      ? `total pending as of ${formatAsOf(selectedRelease.as_of_date)}`
+                      : 'total pending'
+                  }
+                  loading={loading}
+                  action={<I485ShareButton buildPayload={currentSharePayload} />}
+                />
+                <ChartHeaderControls>
+                  <GrainToggle grain={grain} onChange={setGrain} />
+                  <SplitToggle split={split} onChange={setSplit} />
+                </ChartHeaderControls>
+              </div>
+            </ChartHeader>
+            {split !== 'none' && (
+              <p className="text-xs text-neutral/70">
+                Pending stock by priority date in this snapshot, not change across releases.
+              </p>
+            )}
+            {split === 'none' ? (
+              snapshotBars.length > 0 ? (
+                <BarChart
+                  data={snapshotBars}
+                  height={220}
+                  minBarWidth={grain === 'month' ? 8 : grain === 'quarter' ? 22 : 36}
+                  showTick={(d, i) => showPriorityDateTick(grain, snapshotSeries, d, i)}
+                  xAxisLabel="Priority date"
+                  ariaLabel="Pending I-485 applications by priority date"
+                />
+              ) : (
+                <p className="text-sm text-neutral">
+                  No pending applications reported for this selection.
+                </p>
+              )
+            ) : snapshotSplit && snapshotSplit.xAxis.length > 0 ? (
+              <MultiSeriesLineChart
+                xAxis={snapshotSplit.xAxis}
+                series={snapshotSplitLines}
+                height={240}
+                showTick={(d, i) =>
+                  showPriorityDateTick(grain, snapshotSplit.xAxis.map((meta) => ({ meta })), d, i)
+                }
+                xAxisLabel="Priority date"
+                hoverLabelPrefix="Priority date"
+                ariaLabel={
+                  split === 'country'
+                    ? 'Pending I-485 by priority date, split by country'
+                    : 'Pending I-485 by priority date, split by category'
+                }
+              />
+            ) : (
+              <p className="text-sm text-neutral">
+                No pending applications reported for this selection.
+              </p>
+            )}
+          </>
+        )}
+
+        {view === 'snapshot' && !loading && !snapshotCells && !loadError && (
+          <p className="text-sm text-neutral/70">Loading inventory…</p>
+        )}
+
+        {view === 'compare' && compareFromCells && compareToCells && (
+          <>
+            <ChartHeader>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <ChartTitleBlock
+                  title="Change in pending I-485 between two snapshots"
+                  metric={formatSignedCount(compareNet.delta)}
+                  metricClassName={
+                    compareNet.delta > 0
+                      ? 'text-secondary'
+                      : compareNet.delta < 0
+                        ? 'text-error'
+                        : 'text-primary'
+                  }
+                  metricNote={
+                    compareFromRelease && compareToRelease
+                      ? `net change from ${formatAsOfShort(compareFromRelease.as_of_date)} to ${formatAsOfShort(compareToRelease.as_of_date)}`
+                      : 'net change'
+                  }
+                  loading={loading}
+                  action={<I485ShareButton buildPayload={currentSharePayload} />}
+                />
+                <ChartHeaderControls>
+                  <GrainToggle grain={grain} onChange={setGrain} />
+                  <CohortFacetSplitToggle
+                    value={compareFacetSplit}
+                    onChange={setCompareFacetSplit}
+                  />
+                  {compareFacetSplit !== 'none' ? (
+                    <SharedYAxisToggle
+                      value={facetSharedYAxis}
+                      onChange={setFacetSharedYAxis}
+                    />
+                  ) : null}
+                </ChartHeaderControls>
+              </div>
+            </ChartHeader>
+            <p className="text-xs text-neutral/70">{compareContextCaption}</p>
+            {compareFacetSplit !== 'none' ? (
+              compareFacets && compareFacets.length > 0 ? (
+                <div className="-mx-4 divide-y divide-base-300 sm:-mx-5">
+                  {compareFacets.map((facet) => (
+                    <div
+                      key={facet.key}
+                      className="space-y-1.5 px-4 py-5 first:pt-0 last:pb-0 sm:px-5"
+                    >
+                      <h3 className="text-sm font-semibold text-primary">{facet.label}</h3>
+                      {facet.bars.some((d) => d.value !== 0) ? (
+                        <DiffBarChart
+                          data={facet.bars}
+                          height={200}
+                          minBarWidth={grain === 'month' ? 8 : grain === 'quarter' ? 22 : 36}
+                          yDomain={compareSharedYDomain}
+                          showTick={(d, i) =>
+                            showPriorityDateTick(
+                              grain,
+                              facet.rows.map((r) => ({ meta: r.meta })),
+                              d,
+                              i,
+                            )
+                          }
+                          xAxisLabel="Priority date"
+                          ariaLabel={`${facet.label} change in pending I-485 by priority date`}
+                        />
+                      ) : (
+                        <p className="text-sm text-neutral">
+                          No change in disclosed pending counts for this selection.
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-neutral">
+                  No change in disclosed pending counts for this selection.
+                </p>
+              )
+            ) : compareDiffBars.some((d) => d.value !== 0) ? (
+              <DiffBarChart
+                data={compareDiffBars}
+                height={240}
+                minBarWidth={grain === 'month' ? 8 : grain === 'quarter' ? 22 : 36}
+                showTick={(d, i) =>
+                  showPriorityDateTick(
+                    grain,
+                    compareRows.map((r) => ({ meta: r.meta })),
+                    d,
+                    i,
+                  )
+                }
+                xAxisLabel="Priority date"
+                ariaLabel="Change in pending I-485 by priority date between two snapshots"
+              />
+            ) : (
+              <p className="text-sm text-neutral">
+                No change in disclosed pending counts for this selection.
+              </p>
+            )}
+
+            {compareTableRows.length > 0 && (
+              <div className="space-y-2">
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-xs text-neutral/70 hover:text-primary"
+                  aria-expanded={compareShowData}
+                  onClick={() => setCompareShowData((v) => !v)}
+                >
+                  {compareShowData ? 'Hide data' : 'Show data'}
+                </button>
+                {compareShowData ? (
+                  <div className="overflow-x-auto border border-base-300 rounded-lg">
+                    <table className="table table-sm">
+                      <thead>
+                        <tr className="text-xs text-neutral/70">
+                          {compareFacetSplit !== 'none' ? (
+                            <th>
+                              {compareFacetSplit === 'country' ? 'Country' : 'Category'}
+                            </th>
+                          ) : null}
+                          <th>Priority date</th>
+                          <th className="text-right">
+                            {compareFromRelease
+                              ? formatAsOfShort(compareFromRelease.as_of_date)
+                              : 'From'}
+                          </th>
+                          <th className="text-right">
+                            {compareToRelease
+                              ? formatAsOfShort(compareToRelease.as_of_date)
+                              : 'To'}
+                          </th>
+                          <th className="text-right">Change</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {compareTableRows.slice(0, 40).map((row) => (
+                          <tr key={row.key} className="text-sm">
+                            {compareFacetSplit !== 'none' ? (
+                              <td className="text-neutral/80">{row.facetLabel}</td>
+                            ) : null}
+                            <td className="font-medium text-primary">{row.pdLabel}</td>
+                            <td className="text-right tabular-nums">
+                              {bucketLabel(row.earlier)}
+                            </td>
+                            <td className="text-right tabular-nums">{bucketLabel(row.later)}</td>
+                            <td
+                              className={`text-right tabular-nums font-semibold ${
+                                row.delta > 0
+                                  ? 'text-secondary'
+                                  : row.delta < 0
+                                    ? 'text-error'
+                                    : 'text-neutral'
+                              }`}
+                            >
+                              {formatSignedCount(row.delta)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {compareTableRows.length > 40 && (
+                      <p className="text-xs text-neutral/60 px-3 py-2 border-t border-base-300">
+                        Showing the 40 largest absolute changes of {compareTableRows.length}{' '}
+                        rows.
+                      </p>
+                    )}
+                  </div>
+                ) : null}
+              </div>
+            )}
+          </>
+        )}
+
+        {view === 'cohort' && cohortCells && (
+          <>
+            <ChartHeader>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <ChartTitleBlock
+                  title="Pending I-485 across USCIS snapshots"
+                  metric={
+                    <>
+                      {nf.format(cohortLatestTotal.count)}
+                      {cohortLatestTotal.suppressedCells > 0 ? '+' : ''}
+                    </>
+                  }
+                  metricNote="pending in the latest snapshot"
+                  loading={loading}
+                  action={<I485ShareButton buildPayload={currentSharePayload} />}
+                />
+                <ChartHeaderControls>
+                  <CohortPdSplitToggle value={cohortPdSplit} onChange={setCohortPdSplit} />
+                  <CohortFacetSplitToggle
+                    value={cohortFacetSplit}
+                    onChange={setCohortFacetSplit}
+                  />
+                  {cohortFacetSplit !== 'none' ? (
+                    <SharedYAxisToggle
+                      value={facetSharedYAxis}
+                      onChange={setFacetSharedYAxis}
+                    />
+                  ) : null}
+                </ChartHeaderControls>
+              </div>
+            </ChartHeader>
+            <p className="text-xs text-neutral/70">{cohortContextCaption}</p>
+            {cohortFacetSplit !== 'none' ? (
+              cohortFacets && cohortFacets.length > 0 ? (
+                <div className="-mx-4 divide-y divide-base-300 sm:-mx-5">
+                  {cohortFacets.map((facet) => (
+                    <div
+                      key={facet.key}
+                      className="space-y-1.5 px-4 py-5 first:pt-0 last:pb-0 sm:px-5"
+                    >
+                      <h3 className="text-sm font-semibold text-primary">{facet.label}</h3>
+                      {facet.split && facet.split.series.length > 0 ? (
+                        <MultiSeriesLineChart
+                          xAxis={facet.split.xAxis}
+                          series={facet.splitLines}
+                          height={180}
+                          xAxisLabel="USCIS snapshot"
+                          hoverLabelPrefix="Snapshot date"
+                          yMax={cohortSharedYMax}
+                          hiddenKeys={cohortSharedHiddenKeys}
+                          onToggleSeries={toggleCohortSharedSeries}
+                          legendFocusKey={cohortSharedLegendFocus}
+                          onLegendFocusChange={setCohortSharedLegendFocus}
+                          seriesColors={cohortSeriesColors}
+                          showTick={(d, i) =>
+                            showPriorityDateTick(
+                              'month',
+                              facet.split!.xAxis.map((meta) => ({ meta })),
+                              d,
+                              i,
+                            )
+                          }
+                          ariaLabel={`${facet.label} cohort split by priority date across snapshots`}
+                        />
+                      ) : (
+                        <LineChart
+                          data={facet.line}
+                          height={180}
+                          xAxisLabel="USCIS snapshot"
+                          hoverLabelPrefix="Snapshot date"
+                          yMax={cohortSharedYMax}
+                          ariaLabel={`${facet.label} pending applications across USCIS snapshots`}
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-neutral">
+                  No pending applications reported for this cohort in any snapshot.
+                </p>
+              )
+            ) : cohortPdGrain != null ? (
+              cohortSplitData && cohortSplitData.series.length > 0 ? (
+                <MultiSeriesLineChart
+                  xAxis={cohortSplitData.xAxis}
+                  series={cohortSplitLines}
+                  height={240}
+                  xAxisLabel="USCIS snapshot"
+                  hoverLabelPrefix="Snapshot date"
+                  hiddenKeys={cohortSharedHiddenKeys}
+                  onToggleSeries={toggleCohortSharedSeries}
+                  legendFocusKey={cohortSharedLegendFocus}
+                  onLegendFocusChange={setCohortSharedLegendFocus}
+                  seriesColors={cohortSeriesColors}
+                  showTick={(d, i) =>
+                    showPriorityDateTick(
+                      'month',
+                      cohortSplitData.xAxis.map((meta) => ({ meta })),
+                      d,
+                      i,
+                    )
+                  }
+                  ariaLabel="Pending I-485 cohort split by priority date across snapshots"
+                />
+              ) : (
+                <p className="text-sm text-neutral">
+                  No pending applications reported for this cohort in any snapshot.
+                </p>
+              )
+            ) : cohortLine.some((p) => p.value > 0) ? (
+              <LineChart
+                data={cohortLine}
+                height={220}
+                xAxisLabel="USCIS snapshot"
+                hoverLabelPrefix="Snapshot date"
+                ariaLabel="Pending applications for the selected cohort across USCIS snapshots"
+              />
+            ) : (
+              <p className="text-sm text-neutral">
+                No pending applications reported for this cohort in any snapshot.
+              </p>
+            )}
+          </>
+        )}
+
+        <ChartFooter
+          cells={
+            view === 'compare'
+              ? compareNet.suppressedCells
+              : view === 'cohort'
+                ? cohortSuppressed
+                : snapshotTotal.suppressedCells
+          }
+        />
+      </div>
+      </div>
+    </div>
+  );
+}

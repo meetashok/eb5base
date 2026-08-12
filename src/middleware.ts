@@ -25,12 +25,15 @@ function isMaintenancePassthrough(pathname: string): boolean {
     pathname === '/debug' ||
     pathname.startsWith('/debug/') ||
     pathname === '/api/crawl-test' ||
+    pathname.startsWith('/api/analysis/') ||
     pathname === '/icon' ||
     pathname.startsWith('/icon/') ||
     pathname === '/opengraph-image' ||
     pathname.startsWith('/opengraph-image/') ||
+    pathname.endsWith('/opengraph-image') ||
     pathname === '/twitter-image' ||
     pathname.startsWith('/twitter-image/') ||
+    pathname.endsWith('/twitter-image') ||
     // Public tools that should stay reachable during the directory pause.
     pathname === '/nprm' ||
     pathname.startsWith('/nprm/') ||
@@ -44,6 +47,8 @@ function isMaintenancePassthrough(pathname: string): boolean {
     pathname === '/status-update' ||
     pathname === '/eb5status' ||
     pathname.startsWith('/eb5status/') ||
+    pathname === '/analysis' ||
+    pathname.startsWith('/analysis/') ||
     pathname === '/about' ||
     pathname === '/resources' ||
     pathname.startsWith('/resources/') ||
@@ -114,8 +119,12 @@ function isCrawlFriendlyPublicPath(pathname: string): boolean {
     pathname.startsWith('/icon/') ||
     pathname === '/opengraph-image' ||
     pathname.startsWith('/opengraph-image/') ||
+    pathname.endsWith('/opengraph-image') ||
     pathname === '/twitter-image' ||
-    pathname.startsWith('/twitter-image/')
+    pathname.startsWith('/twitter-image/') ||
+    pathname.endsWith('/twitter-image') ||
+    pathname === '/analysis' ||
+    pathname.startsWith('/analysis/')
   );
 }
 

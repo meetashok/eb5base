@@ -33,10 +33,12 @@ export default function PrivacyPage() {
             .
           </p>
           <p>
-            NPRM comment drafts and Status Update fields stay in your browser (localStorage) unless
-            you copy them elsewhere. We do not collect A-numbers. If you join the Case Tracker
-            waitlist, we store your email only to send one launch notification; we do not use it for
-            ads or a marketing list. You can ask us to remove it at hello@eb5base.com.
+            NPRM comment drafts, Status Update fields, and Analysis I-485 explorer filter choices
+            (view, category, country, priority-date years, and chart controls) stay in your browser
+            (localStorage) unless you copy them elsewhere. We do not collect A-numbers. If you join
+            the Case Tracker waitlist, we store your email only to send one launch notification; we
+            do not use it for ads or a marketing list. You can ask us to remove it at
+            hello@eb5base.com.
           </p>
           <p>
             When you copy an NPRM comment prompt from the Write tab, we may increment a public
@@ -138,9 +140,9 @@ export default function PrivacyPage() {
             and security. Supabase authentication may set cookies so you can stay signed in.
           </p>
           <p>
-            We also use browser localStorage for NPRM draft text and a non-identifying flag that
-            prevents double-counting prompt copies. These values stay on your device and are not
-            advertising cookies.
+            We also use browser localStorage for NPRM draft text, Analysis I-485 explorer filter
+            choices, and a non-identifying flag that prevents double-counting prompt copies. These
+            values stay on your device and are not advertising cookies.
           </p>
           <p>
             GoatCounter analytics is designed to avoid tracking cookies for advertising and does not
