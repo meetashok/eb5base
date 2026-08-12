@@ -7,12 +7,12 @@ import I485ViewBar, { type I485ViewId } from '@/components/analysis/I485ViewBar'
 import I485CategoryPicker from '@/components/analysis/I485CategoryPicker';
 import I485CountryPicker from '@/components/analysis/I485CountryPicker';
 import {
-  DEFAULT_I485_CATEGORY,
+  DEFAULT_I485_CATEGORIES,
   MONTH_LABELS,
   USCIS_DATA_PAGE_URL,
   aggregateBy,
   aggregateByPriorityDateGrain,
-  categoryMembersFor,
+  categoryMembersForMany,
   fetchI485Cells,
   fetchI485Releases,
   formatAsOf,
@@ -29,7 +29,7 @@ import {
 type ViewId = I485ViewId;
 
 const nf = new Intl.NumberFormat('en-US');
-const DEFAULT_CATEGORY = DEFAULT_I485_CATEGORY;
+const DEFAULT_CATEGORIES = DEFAULT_I485_CATEGORIES;
 const GRAIN_OPTIONS: { value: PriorityDateGrain; label: string }[] = [
   { value: 'month', label: 'Months' },
   { value: 'quarter', label: 'Quarters' },
@@ -150,7 +150,7 @@ export default function I485Explorer({
 
   const [view, setView] = useState<ViewId>('snapshot');
   const [countries, setCountries] = useState<I485Country[]>([]);
-  const [category, setCategory] = useState<string>(DEFAULT_CATEGORY);
+  const [categories, setCategories] = useState<string[]>([...DEFAULT_CATEGORIES]);
   const [grain, setGrain] = useState<PriorityDateGrain>('month');
 
   // Snapshot view state
@@ -203,11 +203,14 @@ export default function I485Explorer({
   const selectedRelease = releases.find((r) => r.id === releaseId) ?? null;
   const compareFromRelease = releases.find((r) => r.id === compareFromId) ?? null;
   const compareToRelease = releases.find((r) => r.id === compareToId) ?? null;
-  const members = useMemo(() => categoryMembersFor(category), [category]);
+  const members = useMemo(() => categoryMembersForMany(categories), [categories]);
   const countryFilter = useMemo(
     () => (countries.length > 0 ? countries : undefined),
     [countries],
   );
+  const isDefaultCategories =
+    categories.length === DEFAULT_CATEGORIES.length &&
+    categories.every((c, i) => c === DEFAULT_CATEGORIES[i]);
 
   // Snapshot data
   useEffect(() => {
@@ -216,7 +219,7 @@ export default function I485Explorer({
       skipInitialSnapshotFetch.current &&
       releaseId === initialReleaseId &&
       countries.length === 0 &&
-      category === DEFAULT_CATEGORY
+      isDefaultCategories
     ) {
       skipInitialSnapshotFetch.current = false;
       return;
@@ -236,7 +239,16 @@ export default function I485Explorer({
     return () => {
       cancel = true;
     };
-  }, [available, releaseId, countries, countryFilter, members, category, initialReleaseId]);
+  }, [
+    available,
+    releaseId,
+    countries,
+    countryFilter,
+    members,
+    categories,
+    isDefaultCategories,
+    initialReleaseId,
+  ]);
 
   // Cohort data
   useEffect(() => {
@@ -532,7 +544,7 @@ export default function I485Explorer({
         )}
       </div>
 
-      <I485CategoryPicker value={category} onChange={setCategory} />
+      <I485CategoryPicker value={categories} onChange={setCategories} />
       <I485CountryPicker value={countries} onChange={setCountries} />
       </div>
 

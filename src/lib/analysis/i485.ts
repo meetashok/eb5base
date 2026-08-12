@@ -81,9 +81,26 @@ export const CATEGORY_OPTIONS: { value: string; label: string; members: I485Cate
 
 /** Default explorer category filter (Set-asides). */
 export const DEFAULT_I485_CATEGORY = 'EB5_SET_ASIDES';
+export const DEFAULT_I485_CATEGORIES: string[] = [DEFAULT_I485_CATEGORY];
+
+/** Individual set-aside chips that are covered by the Set-asides group filter. */
+export const SET_ASIDE_DETAIL_FILTERS = [
+  'EB5_RURAL',
+  'EB5_HIGH_UNEMPLOYMENT',
+  'EB5_INFRASTRUCTURE',
+] as const;
 
 export function categoryMembersFor(value: string): I485Category[] {
   return CATEGORY_OPTIONS.find((o) => o.value === value)?.members ?? [];
+}
+
+/** Union member categories for a multi-select filter list. */
+export function categoryMembersForMany(values: string[]): I485Category[] {
+  const set = new Set<I485Category>();
+  for (const value of values) {
+    for (const member of categoryMembersFor(value)) set.add(member);
+  }
+  return [...set];
 }
 
 /** Compact button labels for the explorer category picker. */
@@ -107,6 +124,52 @@ export const OTHER_CATEGORY_BUTTONS: { value: string; label: string }[] = [
 
 export function isEb5CategoryFilter(value: string): boolean {
   return value.startsWith('EB5_');
+}
+
+function isSetAsideDetail(value: string): boolean {
+  return (SET_ASIDE_DETAIL_FILTERS as readonly string[]).includes(value);
+}
+
+/**
+ * Toggle a category chip with exclusivity rules:
+ * - EB-5 (all) is exclusive (only that filter).
+ * - Set-asides cannot combine with Rural / High unemp. / Infrastructure.
+ * - Selection never collapses to empty (falls back to default).
+ */
+export function toggleCategoryFilter(current: string[], next: string): string[] {
+  if (next === 'EB5_ALL') {
+    return current.length === 1 && current[0] === 'EB5_ALL'
+      ? [...DEFAULT_I485_CATEGORIES]
+      : ['EB5_ALL'];
+  }
+
+  let base = current.filter((v) => v !== 'EB5_ALL');
+
+  if (next === 'EB5_SET_ASIDES') {
+    if (base.includes(next)) {
+      const without = base.filter((v) => v !== next);
+      return without.length > 0 ? without : [...DEFAULT_I485_CATEGORIES];
+    }
+    return [
+      ...base.filter((v) => !isSetAsideDetail(v)),
+      'EB5_SET_ASIDES',
+    ];
+  }
+
+  if (isSetAsideDetail(next)) {
+    if (base.includes(next)) {
+      const without = base.filter((v) => v !== next);
+      return without.length > 0 ? without : [...DEFAULT_I485_CATEGORIES];
+    }
+    return [...base.filter((v) => v !== 'EB5_SET_ASIDES'), next];
+  }
+
+  if (base.includes(next)) {
+    const without = base.filter((v) => v !== next);
+    return without.length > 0 ? without : [...DEFAULT_I485_CATEGORIES];
+  }
+
+  return [...base, next];
 }
 
 export const MONTH_LABELS = [

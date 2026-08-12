@@ -3,8 +3,8 @@ import Link from 'next/link';
 import PageHero from '@/components/PageHero';
 import I485Explorer from '@/components/analysis/I485Explorer';
 import {
-  DEFAULT_I485_CATEGORY,
-  categoryMembersFor,
+  DEFAULT_I485_CATEGORIES,
+  categoryMembersForMany,
   fetchI485Cells,
   fetchI485Releases,
   isI485DataAvailable,
@@ -48,7 +48,7 @@ async function loadInitialInventory(): Promise<{
     const cells = await fetchI485Cells(
       {
         releaseId,
-        categories: categoryMembersFor(DEFAULT_I485_CATEGORY),
+        categories: categoryMembersForMany(DEFAULT_I485_CATEGORIES),
       },
       supabase,
     );
