@@ -3,7 +3,9 @@ import Link from 'next/link';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import PageHero from '@/components/PageHero';
+import I485ViewBar from '@/components/analysis/I485ViewBar';
 import { USCIS_DATA_PAGE_URL } from '@/lib/analysis/i485';
+import { I485_DEFAULT_PATH } from '@/lib/analysis/i485Routes';
 
 export const metadata: Metadata = {
   title: 'I-485 inventory source files | EB5 Base',
@@ -55,7 +57,7 @@ export default function I485SourceDataPage() {
               Analysis
             </Link>{' '}
             /{' '}
-            <Link href="/analysis/i485" className="hover:underline">
+            <Link href={I485_DEFAULT_PATH} className="hover:underline">
               I-485 Pending Inventory
             </Link>{' '}
             / Source data
@@ -64,6 +66,8 @@ export default function I485SourceDataPage() {
         title="I-485 inventory source files"
         subtitle="Official USCIS workbooks power every chart on the inventory explorer. Download a consolidated CSV for your own analysis, or open individual monthly XLSX files on uscis.gov."
       />
+
+      <I485ViewBar active="data" />
 
       <section className="max-w-3xl mx-auto px-4 py-8 space-y-6">
         <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 text-sm text-neutral leading-relaxed space-y-2">
@@ -155,7 +159,10 @@ export default function I485SourceDataPage() {
         </div>
 
         <p className="text-xs text-neutral/70">
-          <Link href="/analysis/i485" className="font-semibold text-secondary underline underline-offset-2 hover:text-primary">
+          <Link
+            href={I485_DEFAULT_PATH}
+            className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+          >
             Back to the inventory explorer
           </Link>
         </p>

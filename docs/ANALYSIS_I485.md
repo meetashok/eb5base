@@ -1,9 +1,16 @@
 # Analysis: I-485 Pending Inventory
 
-The `/analysis/i485` page visualizes the monthly USCIS report "Pending
-Applications for Employment-Based Preference Categories" (pending
-employment-based I-485s by preference category, country of chargeability, and
-priority date).
+The I-485 explorer visualizes the monthly USCIS report "Pending Applications for
+Employment-Based Preference Categories" (pending employment-based I-485s by
+preference category, country of chargeability, and priority date).
+
+Routes:
+
+- `/analysis/i485` → redirects to `/analysis/i485/inventory`
+- `/analysis/i485/inventory` — point-in-time snapshot
+- `/analysis/i485/priority-date` — priority-date cohort across releases
+- `/analysis/i485/compare` — diff two snapshots
+- `/analysis/i485/data` — source workbooks / CSV (also a top tab)
 
 ## Data flow
 
@@ -43,12 +50,15 @@ priority date).
 
 ## Explorer
 
-`/analysis/i485` supports snapshot, compare, and cohort views. Each chart shows
-an X-axis caption: **Priority date** on snapshot/compare, **USCIS snapshot** on
-cohort. Snapshot keeps a priority-date grain toggle (months / calendar quarters /
-fiscal years) and a **Split** control: None (bars), By country, or By category
-(multi-series lines). Split lines are still pending stock by priority date in one
-snapshot — not a time series across releases.
+Each chart tab has its own URL. The sticky tab bar links Inventory, Priority
+date, Compare, and Data. Chart filters (country, category, grains, etc.) persist
+in localStorage across tabs; the active view comes from the URL.
+
+Each chart shows an X-axis caption: **Priority date** on snapshot/compare,
+**USCIS snapshot** on cohort. Snapshot keeps a priority-date grain toggle
+(months / calendar quarters / fiscal years) and a **Split** control: None (bars),
+By country, or By category (multi-series lines). Split lines are still pending
+stock by priority date in one snapshot — not a time series across releases.
 
 Cohort tracks selected **priority-date years** across USCIS releases (multi-select
 chips from 2023 onward, plus an optional Previous years range). The X axis is

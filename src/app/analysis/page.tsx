@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 const DATASETS = [
   {
-    href: '/analysis/i485',
+    href: '/analysis/i485/inventory',
     title: 'I-485 Pending Inventory',
     status: 'Live',
     live: true,

@@ -322,6 +322,8 @@ function defaultCompareIds(releases: I485Release[]): {
 }
 
 export interface I485ExplorerProps {
+  /** Active chart view from the URL (/inventory, /priority-date, /compare). */
+  initialView?: ViewId;
   initialReleases?: I485Release[];
   initialReleaseId?: number | null;
   initialSnapshotCells?: I485Cell[] | null;
@@ -329,6 +331,7 @@ export interface I485ExplorerProps {
 }
 
 export default function I485Explorer({
+  initialView = 'snapshot',
   initialReleases = [],
   initialReleaseId = null,
   initialSnapshotCells = null,
@@ -338,7 +341,7 @@ export default function I485Explorer({
   const [releases, setReleases] = useState<I485Release[]>(initialReleases);
   const [loadError, setLoadError] = useState<string | null>(initialError);
 
-  const [view, setView] = useState<ViewId>('snapshot');
+  const view = initialView;
   const [countries, setCountries] = useState<I485Country[]>([]);
   const [categories, setCategories] = useState<string[]>([...DEFAULT_CATEGORIES]);
   const [grain, setGrain] = useState<PriorityDateGrain>('quarter');
@@ -395,7 +398,6 @@ export default function I485Explorer({
     if (stored) {
       const releaseIds = initialReleases.map((r) => r.id);
       const ids = resolveStoredReleaseIds(stored, releaseIds);
-      setView(stored.view);
       setCountries(stored.countries);
       setCategories(stored.categories);
       setGrain(stored.grain);
@@ -1033,7 +1035,7 @@ export default function I485Explorer({
 
   return (
     <div>
-      <I485ViewBar active={view} onSelect={setView} />
+      <I485ViewBar active={view} />
 
       <div className="max-w-4xl mx-auto px-4 pt-6 sm:pt-8 space-y-5">
       {/* Filters */}
