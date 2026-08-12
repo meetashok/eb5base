@@ -22,7 +22,7 @@ function isMaintenancePassthrough(pathname: string): boolean {
     pathname === '/robots.txt' ||
     pathname === '/sitemap.xml' ||
     pathname === '/llms.txt' ||
-    pathname.startsWith('/google') && pathname.endsWith('.html') ||
+    (pathname.startsWith('/google') && pathname.endsWith('.html')) ||
     pathname === '/debug' ||
     pathname.startsWith('/debug/') ||
     pathname === '/api/crawl-test' ||
@@ -109,7 +109,7 @@ function isCrawlFriendlyPublicPath(pathname: string): boolean {
     pathname === '/robots.txt' ||
     pathname === '/sitemap.xml' ||
     pathname === '/llms.txt' ||
-    pathname.startsWith('/google') && pathname.endsWith('.html') ||
+    (pathname.startsWith('/google') && pathname.endsWith('.html')) ||
     pathname === '/debug' ||
     pathname.startsWith('/debug/') ||
     pathname === '/api/crawl-test' ||
