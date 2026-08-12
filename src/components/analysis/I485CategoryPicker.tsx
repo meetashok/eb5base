@@ -1,17 +1,11 @@
 'use client';
 
+import { filterChipClass } from '@/components/analysis/filterChipClass';
 import {
   EB5_CATEGORY_BUTTONS,
   OTHER_CATEGORY_BUTTONS,
   isEb5CategoryFilter,
 } from '@/lib/analysis/i485';
-
-function chipClass(selected: boolean): string {
-  if (selected) {
-    return 'shrink-0 px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary bg-primary text-primary-content shadow-soft';
-  }
-  return 'shrink-0 px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary text-neutral bg-base-200/80 hover:bg-base-300 hover:text-primary';
-}
 
 const DEFAULT_OTHER = OTHER_CATEGORY_BUTTONS[0]!.value;
 
@@ -32,7 +26,7 @@ export default function I485CategoryPicker({
           <button
             key={o.value}
             type="button"
-            className={chipClass(value === o.value)}
+            className={filterChipClass(value === o.value)}
             aria-pressed={value === o.value}
             onClick={() => onChange(o.value)}
           >
@@ -41,7 +35,7 @@ export default function I485CategoryPicker({
         ))}
         <button
           type="button"
-          className={chipClass(otherOpen)}
+          className={filterChipClass(otherOpen)}
           aria-pressed={otherOpen}
           aria-expanded={otherOpen}
           onClick={() => {
@@ -61,7 +55,7 @@ export default function I485CategoryPicker({
             <button
               key={o.value}
               type="button"
-              className={chipClass(value === o.value)}
+              className={filterChipClass(value === o.value)}
               aria-pressed={value === o.value}
               onClick={() => onChange(o.value)}
             >

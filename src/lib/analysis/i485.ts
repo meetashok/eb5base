@@ -128,6 +128,8 @@ export async function fetchI485Releases(client?: SupabaseClient): Promise<I485Re
 export interface CellFilters {
   releaseId?: number;
   country?: I485Country;
+  /** Multi-country filter; preferred over `country` when both are set. */
+  countries?: I485Country[];
   categories?: I485Category[];
   pdYear?: number;
   pdMonth?: number;
@@ -149,7 +151,11 @@ export async function fetchI485Cells(
       .order('id', { ascending: true })
       .range(from, from + PAGE - 1);
     if (filters.releaseId != null) q = q.eq('release_id', filters.releaseId);
-    if (filters.country) q = q.eq('country', filters.country);
+    if (filters.countries && filters.countries.length > 0) {
+      q = q.in('country', filters.countries);
+    } else if (filters.country) {
+      q = q.eq('country', filters.country);
+    }
     if (filters.categories && filters.categories.length > 0) q = q.in('category', filters.categories);
     if (filters.pdYear != null) q = q.eq('pd_year', filters.pdYear);
     if (filters.pdMonth != null) q = q.eq('pd_month', filters.pdMonth);

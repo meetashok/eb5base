@@ -5,9 +5,9 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { BarChart, DiffBarChart, LineChart, formatSignedCount } from '@/components/charts';
 import I485ViewBar, { type I485ViewId } from '@/components/analysis/I485ViewBar';
 import I485CategoryPicker from '@/components/analysis/I485CategoryPicker';
+import I485CountryPicker from '@/components/analysis/I485CountryPicker';
 import {
   CATEGORY_OPTIONS,
-  COUNTRY_OPTIONS,
   MONTH_LABELS,
   USCIS_DATA_PAGE_URL,
   aggregateBy,
@@ -139,7 +139,7 @@ export default function I485Explorer({
   const [loadError, setLoadError] = useState<string | null>(initialError);
 
   const [view, setView] = useState<ViewId>('snapshot');
-  const [country, setCountry] = useState<string>('all');
+  const [countries, setCountries] = useState<I485Country[]>([]);
   const [category, setCategory] = useState<string>(DEFAULT_CATEGORY);
   const [grain, setGrain] = useState<PriorityDateGrain>('month');
 
@@ -194,6 +194,10 @@ export default function I485Explorer({
   const compareFromRelease = releases.find((r) => r.id === compareFromId) ?? null;
   const compareToRelease = releases.find((r) => r.id === compareToId) ?? null;
   const members = useMemo(() => categoryMembers(category), [category]);
+  const countryFilter = useMemo(
+    () => (countries.length > 0 ? countries : undefined),
+    [countries],
+  );
 
   // Snapshot data
   useEffect(() => {
@@ -201,7 +205,7 @@ export default function I485Explorer({
     if (
       skipInitialSnapshotFetch.current &&
       releaseId === initialReleaseId &&
-      country === 'all' &&
+      countries.length === 0 &&
       category === DEFAULT_CATEGORY
     ) {
       skipInitialSnapshotFetch.current = false;
@@ -211,7 +215,7 @@ export default function I485Explorer({
     setLoading(true);
     fetchI485Cells({
       releaseId,
-      country: country === 'all' ? undefined : (country as I485Country),
+      countries: countryFilter,
       categories: members,
     })
       .then((cells) => {
@@ -222,7 +226,7 @@ export default function I485Explorer({
     return () => {
       cancel = true;
     };
-  }, [available, releaseId, country, members, category, initialReleaseId]);
+  }, [available, releaseId, countries, countryFilter, members, category, initialReleaseId]);
 
   // Cohort data
   useEffect(() => {
@@ -230,7 +234,7 @@ export default function I485Explorer({
     let cancel = false;
     setLoading(true);
     fetchI485Cells({
-      country: country === 'all' ? undefined : (country as I485Country),
+      countries: countryFilter,
       categories: members,
       pdYear,
       pdMonth: pdMonth === 'all' ? undefined : pdMonth,
@@ -243,7 +247,7 @@ export default function I485Explorer({
     return () => {
       cancel = true;
     };
-  }, [available, view, country, members, pdYear, pdMonth]);
+  }, [available, view, countries, countryFilter, members, pdYear, pdMonth]);
 
   // Compare data (both snapshots)
   useEffect(() => {
@@ -252,7 +256,7 @@ export default function I485Explorer({
     let cancel = false;
     setLoading(true);
     const filters = {
-      country: country === 'all' ? undefined : (country as I485Country),
+      countries: countryFilter,
       categories: members,
     };
     Promise.all([
@@ -269,7 +273,7 @@ export default function I485Explorer({
     return () => {
       cancel = true;
     };
-  }, [available, view, compareFromId, compareToId, country, members]);
+  }, [available, view, compareFromId, compareToId, countries, countryFilter, members]);
 
   const snapshotSeries = useMemo(() => {
     if (!snapshotCells) return [];
@@ -516,26 +520,10 @@ export default function I485Explorer({
             </label>
           </>
         )}
-
-        <label className="form-control">
-          <span className="label-text text-xs font-semibold text-neutral/80 pb-1">
-            Country of chargeability
-          </span>
-          <select
-            className="select select-bordered select-sm"
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-          >
-            {COUNTRY_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
-        </label>
       </div>
 
       <I485CategoryPicker value={category} onChange={setCategory} />
+      <I485CountryPicker value={countries} onChange={setCountries} />
       </div>
 
       {loadError && (
