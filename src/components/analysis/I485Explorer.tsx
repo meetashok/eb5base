@@ -11,6 +11,8 @@ import {
   COHORT_SPLIT_OPTIONS,
   DEFAULT_I485_CATEGORIES,
   DEFAULT_PRIORITY_DATE_YEARS,
+  EB5_CATEGORY_BUTTONS,
+  OTHER_CATEGORY_BUTTONS,
   SNAPSHOT_SPLIT_OPTIONS,
   USCIS_DATA_PAGE_URL,
   aggregateByPriorityDateGrain,
@@ -563,6 +565,43 @@ export default function I485Explorer({
     return cohortSeries[cohortSeries.length - 1]!.bucket;
   }, [cohortSeries]);
 
+  const cohortContextCaption = useMemo(() => {
+    const categoryLabels = categories.map(
+      (value) =>
+        EB5_CATEGORY_BUTTONS.find((o) => o.value === value)?.label ??
+        OTHER_CATEGORY_BUTTONS.find((o) => o.value === value)?.label ??
+        value,
+    );
+    const countryLabels =
+      countries.length === 0
+        ? 'all countries'
+        : countries.map((c) => countryLabel(c)).join(', ');
+    const grainLabels: Record<PriorityDateGrain, string> = {
+      month: 'months',
+      quarter: 'quarters',
+      year: 'fiscal years',
+    };
+    const parts = [
+      categoryLabels.join(', '),
+      countryLabels,
+      `priority dates ${formatPriorityDateYears(selectedPdYears)}`,
+      `snapshots by ${grainLabels[cohortSnapshotGrain]}${
+        cohortSnapshotGrain !== 'month' ? ' (latest in period)' : ''
+      }`,
+    ];
+    if (cohortSplit === 'priority_date') {
+      parts.push(`split by priority-date ${grainLabels[cohortPdGrain]}`);
+    }
+    return parts.join(' · ');
+  }, [
+    categories,
+    countries,
+    selectedPdYears,
+    cohortSnapshotGrain,
+    cohortSplit,
+    cohortPdGrain,
+  ]);
+
   const compareRows = useMemo(() => {
     if (!compareFromCells || !compareToCells) return [];
     const fromSeries = aggregateByPriorityDateGrain(compareFromCells, grain);
@@ -982,14 +1021,7 @@ export default function I485Explorer({
                 </div>
               </div>
             </ChartHeader>
-            <p className="text-xs text-neutral/70">
-              {cohortSplit === 'priority_date'
-                ? 'Each line is a priority-date group across USCIS snapshots.'
-                : 'Change mixes new filings into the cohort with completions leaving it.'}
-              {cohortSnapshotGrain !== 'month'
-                ? ' Granularity uses the latest snapshot in each period.'
-                : ''}
-            </p>
+            <p className="text-xs text-neutral/70">{cohortContextCaption}</p>
             {cohortSplit === 'priority_date' ? (
               cohortSplitData && cohortSplitData.series.length > 0 ? (
                 <MultiSeriesLineChart
