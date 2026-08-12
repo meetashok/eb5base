@@ -100,7 +100,7 @@ export function categoryMembersForMany(values: string[]): I485Category[] {
   for (const value of values) {
     for (const member of categoryMembersFor(value)) set.add(member);
   }
-  return [...set];
+  return Array.from(set);
 }
 
 /** Compact button labels for the explorer category picker. */
@@ -343,6 +343,113 @@ export function aggregateByPriorityDateGrain(
     map.set(meta.key, entry);
   }
   return Array.from(map.values()).sort((a, b) => a.meta.key.localeCompare(b.meta.key));
+}
+
+export type SnapshotSplit = 'none' | 'country' | 'category';
+
+export const SNAPSHOT_SPLIT_OPTIONS: { value: SnapshotSplit; label: string }[] = [
+  { value: 'none', label: 'None' },
+  { value: 'country', label: 'By country' },
+  { value: 'category', label: 'By category' },
+];
+
+/** Short labels for EB / EB-5 member categories on split charts. */
+export const CATEGORY_MEMBER_LABELS: Record<I485Category, string> = {
+  EB1: 'EB-1',
+  EB2: 'EB-2',
+  EB3: 'EB-3',
+  EW3: 'Other Workers',
+  EB4: 'EB-4',
+  CRW: 'Religious Workers',
+  EB5_UNRESERVED: 'Unreserved',
+  EB5_SET_ASIDE: 'Set-aside (lump)',
+  EB5_RURAL: 'Rural',
+  EB5_HIGH_UNEMPLOYMENT: 'High unemp.',
+  EB5_INFRASTRUCTURE: 'Infrastructure',
+};
+
+/** Stable country order for split series (excludes the All sentinel). */
+export const SPLIT_COUNTRY_ORDER: I485Country[] = [
+  'india',
+  'china',
+  'mexico',
+  'philippines',
+  'rest_of_world',
+];
+
+export interface SplitSeriesPoint {
+  key: string;
+  value: number;
+  suppressedCells: number;
+}
+
+export interface SplitSeries {
+  key: string;
+  label: string;
+  points: SplitSeriesPoint[];
+}
+
+export interface SplitPriorityDateResult {
+  xAxis: TimeBucketMeta[];
+  series: SplitSeries[];
+}
+
+/**
+ * Multi-series aggregation for snapshot split charts.
+ * X-axis is priority-date grain; each series is a country or category member.
+ * Missing buckets are filled with 0 so lines share a common domain.
+ */
+export function aggregateSplitByPriorityDateGrain(
+  cells: I485Cell[],
+  grain: PriorityDateGrain,
+  seriesKeys: string[],
+  seriesKeyFn: (cell: I485Cell) => string,
+  seriesLabelFn: (key: string) => string,
+): SplitPriorityDateResult {
+  const xMap = new Map<string, TimeBucketMeta>();
+  const counts = new Map<string, Map<string, AggregatedBucket>>();
+
+  for (const key of seriesKeys) {
+    counts.set(key, new Map());
+  }
+
+  for (const cell of cells) {
+    const seriesKey = seriesKeyFn(cell);
+    if (!counts.has(seriesKey)) continue;
+    const meta = priorityDateBucket(cell, grain);
+    xMap.set(meta.key, meta);
+    const byX = counts.get(seriesKey)!;
+    const bucket = byX.get(meta.key) ?? { count: 0, suppressedCells: 0 };
+    if (cell.suppressed) bucket.suppressedCells += 1;
+    else bucket.count += cell.count ?? 0;
+    byX.set(meta.key, bucket);
+  }
+
+  const xAxis = Array.from(xMap.values()).sort((a, b) => a.key.localeCompare(b.key));
+
+  const series: SplitSeries[] = seriesKeys.map((key) => {
+    const byX = counts.get(key)!;
+    return {
+      key,
+      label: seriesLabelFn(key),
+      points: xAxis.map((meta) => {
+        const bucket = byX.get(meta.key) ?? { count: 0, suppressedCells: 0 };
+        return {
+          key: meta.key,
+          value: bucket.count,
+          suppressedCells: bucket.suppressedCells,
+        };
+      }),
+    };
+  });
+
+  return { xAxis, series };
+}
+
+/** Countries to plot when splitting: selection, or all five when All. */
+export function splitCountriesForFilter(selected: I485Country[]): I485Country[] {
+  if (selected.length === 0) return [...SPLIT_COUNTRY_ORDER];
+  return SPLIT_COUNTRY_ORDER.filter((c) => selected.includes(c));
 }
 
 export function formatAsOf(iso: string): string {

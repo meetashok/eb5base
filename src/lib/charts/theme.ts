@@ -11,7 +11,14 @@ export const chartColors = {
   grid: '#e6dfd4', // base-300
   axis: '#6b7280',
   zero: '#c4bdb2',
+  /** Distinct strokes for multi-series split charts (brand-aligned, no purple). */
+  series: ['#0a1628', '#2d5a47', '#9e3a3a', '#b8860b', '#3d6b8c', '#6b5b4f'] as const,
 } as const;
+
+export function seriesColor(index: number): string {
+  const palette = chartColors.series;
+  return palette[index % palette.length]!;
+}
 
 const nf = new Intl.NumberFormat('en-US');
 

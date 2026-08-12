@@ -2,27 +2,34 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { BarChart, DiffBarChart, LineChart, formatSignedCount } from '@/components/charts';
+import { BarChart, DiffBarChart, LineChart, MultiSeriesLineChart, formatSignedCount } from '@/components/charts';
 import I485ViewBar, { type I485ViewId } from '@/components/analysis/I485ViewBar';
 import I485CategoryPicker from '@/components/analysis/I485CategoryPicker';
 import I485CountryPicker from '@/components/analysis/I485CountryPicker';
 import {
+  CATEGORY_MEMBER_LABELS,
   DEFAULT_I485_CATEGORIES,
   MONTH_LABELS,
+  SNAPSHOT_SPLIT_OPTIONS,
   USCIS_DATA_PAGE_URL,
   aggregateBy,
   aggregateByPriorityDateGrain,
+  aggregateSplitByPriorityDateGrain,
   categoryMembersForMany,
+  countryLabel,
   fetchI485Cells,
   fetchI485Releases,
   formatAsOf,
   formatAsOfShort,
   isI485DataAvailable,
+  splitCountriesForFilter,
   type AggregatedBucket,
+  type I485Category,
   type I485Cell,
   type I485Country,
   type I485Release,
   type PriorityDateGrain,
+  type SnapshotSplit,
   type TimeBucketMeta,
 } from '@/lib/analysis/i485';
 
@@ -34,6 +41,21 @@ const GRAIN_OPTIONS: { value: PriorityDateGrain; label: string }[] = [
   { value: 'month', label: 'Months' },
   { value: 'quarter', label: 'Quarters' },
   { value: 'year', label: 'Fiscal years' },
+];
+
+/** Stable member order for category-split lines. */
+const CATEGORY_SPLIT_ORDER: I485Category[] = [
+  'EB5_UNRESERVED',
+  'EB5_SET_ASIDE',
+  'EB5_RURAL',
+  'EB5_HIGH_UNEMPLOYMENT',
+  'EB5_INFRASTRUCTURE',
+  'EB1',
+  'EB2',
+  'EB3',
+  'EW3',
+  'EB4',
+  'CRW',
 ];
 
 function bucketLabel(b: AggregatedBucket): string {
@@ -103,6 +125,41 @@ function GrainToggle({
   );
 }
 
+function SplitToggle({
+  split,
+  onChange,
+}: {
+  split: SnapshotSplit;
+  onChange: (s: SnapshotSplit) => void;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral/55">
+        Split
+      </span>
+      <div
+        className="inline-flex rounded-full border border-base-300 p-0.5 bg-base-200/60"
+        role="group"
+        aria-label="Split series"
+      >
+        {SNAPSHOT_SPLIT_OPTIONS.map((o) => (
+          <button
+            key={o.value}
+            type="button"
+            className={`btn btn-xs rounded-full border-0 ${
+              split === o.value ? 'btn-primary text-primary-content' : 'btn-ghost text-neutral'
+            }`}
+            aria-pressed={split === o.value}
+            onClick={() => onChange(o.value)}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function showPriorityDateTick(
   grain: PriorityDateGrain,
   data: { meta: TimeBucketMeta }[],
@@ -152,6 +209,7 @@ export default function I485Explorer({
   const [countries, setCountries] = useState<I485Country[]>([]);
   const [categories, setCategories] = useState<string[]>([...DEFAULT_CATEGORIES]);
   const [grain, setGrain] = useState<PriorityDateGrain>('month');
+  const [split, setSplit] = useState<SnapshotSplit>('none');
 
   // Snapshot view state
   const [releaseId, setReleaseId] = useState<number | null>(initialReleaseId);
@@ -313,6 +371,40 @@ export default function I485Explorer({
       })),
     [snapshotSeries],
   );
+
+  const snapshotSplit = useMemo(() => {
+    if (!snapshotCells || split === 'none') return null;
+
+    if (split === 'country') {
+      const keys = splitCountriesForFilter(countries);
+      return aggregateSplitByPriorityDateGrain(
+        snapshotCells,
+        grain,
+        keys,
+        (c) => c.country,
+        (key) => countryLabel(key as I485Country),
+      );
+    }
+
+    const memberSet = new Set(members);
+    const keys = CATEGORY_SPLIT_ORDER.filter((m) => memberSet.has(m));
+    return aggregateSplitByPriorityDateGrain(
+      snapshotCells,
+      grain,
+      keys,
+      (c) => c.category,
+      (key) => CATEGORY_MEMBER_LABELS[key as I485Category] ?? key,
+    );
+  }, [snapshotCells, split, countries, grain, members]);
+
+  const snapshotSplitLines = useMemo(() => {
+    if (!snapshotSplit) return [];
+    return snapshotSplit.series.map((s) => ({
+      key: s.key,
+      label: s.label,
+      data: s.points.map((p) => ({ key: p.key, value: p.value })),
+    }));
+  }, [snapshotSplit]);
 
   const snapshotTotal = useMemo(
     () => totalWithNote(snapshotSeries.map((d) => d.bucket)),
@@ -589,15 +681,44 @@ export default function I485Explorer({
                   </span>
                 </div>
               </div>
-              <GrainToggle grain={grain} onChange={setGrain} />
+              <div className="flex flex-col items-stretch sm:items-end gap-2">
+                <GrainToggle grain={grain} onChange={setGrain} />
+                <SplitToggle split={split} onChange={setSplit} />
+              </div>
             </div>
-            {snapshotBars.length > 0 ? (
-              <BarChart
-                data={snapshotBars}
-                height={220}
-                minBarWidth={grain === 'month' ? 8 : grain === 'quarter' ? 22 : 36}
-                showTick={(d, i) => showPriorityDateTick(grain, snapshotSeries, d, i)}
-                ariaLabel="Pending I-485 applications by priority date"
+            {split !== 'none' && (
+              <p className="text-xs text-neutral/70 leading-relaxed">
+                Lines show pending stock by priority date in this snapshot — not how inventory
+                changed across releases. Use Cohort to follow a priority-date group over time.
+              </p>
+            )}
+            {split === 'none' ? (
+              snapshotBars.length > 0 ? (
+                <BarChart
+                  data={snapshotBars}
+                  height={220}
+                  minBarWidth={grain === 'month' ? 8 : grain === 'quarter' ? 22 : 36}
+                  showTick={(d, i) => showPriorityDateTick(grain, snapshotSeries, d, i)}
+                  ariaLabel="Pending I-485 applications by priority date"
+                />
+              ) : (
+                <p className="text-sm text-neutral">
+                  No pending applications reported for this selection.
+                </p>
+              )
+            ) : snapshotSplit && snapshotSplit.xAxis.length > 0 ? (
+              <MultiSeriesLineChart
+                xAxis={snapshotSplit.xAxis}
+                series={snapshotSplitLines}
+                height={240}
+                showTick={(d, i) =>
+                  showPriorityDateTick(grain, snapshotSplit.xAxis.map((meta) => ({ meta })), d, i)
+                }
+                ariaLabel={
+                  split === 'country'
+                    ? 'Pending I-485 by priority date, split by country'
+                    : 'Pending I-485 by priority date, split by category'
+                }
               />
             ) : (
               <p className="text-sm text-neutral">
