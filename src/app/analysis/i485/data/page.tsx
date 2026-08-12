@@ -67,46 +67,20 @@ export default function I485SourceDataPage() {
           </span>
         }
         title="I-485 inventory source files"
-        subtitle="USCIS posts a separate workbook for each monthly snapshot. We parse and consolidate those releases into one CSV so you can analyze the inventory across time — and still link you to every official file on uscis.gov."
+        subtitle="Official monthly USCIS workbooks, plus one CSV we consolidate from them for trend analysis."
       />
 
       <I485ViewBar active="data" />
 
       <section className="max-w-3xl mx-auto px-4 py-8 space-y-6">
-        <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 text-sm text-neutral leading-relaxed space-y-2">
-          <p>
-            Library page:{' '}
-            <a
-              href={USCIS_DATA_PAGE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
-            >
-              USCIS Immigration and Citizenship Data
-            </a>
-          </p>
-          <p className="text-xs text-neutral/75">{manifest.notes}</p>
-        </div>
-
         <div className="space-y-3">
           <h2 className="text-sm font-bold text-primary">Consolidated CSV</h2>
           <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 space-y-2">
             <p className="text-sm text-neutral leading-relaxed">
-              USCIS publishes one Excel workbook per release. That is fine for a single snapshot,
-              but awkward for trend work: you would otherwise download, open, and stitch{' '}
-              {files.length} files by hand. EB5 Base does that consolidation for you — one CSV
-              with every non-zero cell across all monthly snapshots (country, category, visa
-              status, priority-date year/month, count).
-            </p>
-            <p className="text-sm text-neutral leading-relaxed">
-              Suppressed USCIS values (&quot;D&quot;) appear with an empty count and{' '}
-              <span className="font-mono text-xs">suppressed=true</span>. Priority-date year{' '}
-              <span className="font-mono text-xs">0</span> is the USCIS &quot;Prior Years&quot;
-              rollup.
-            </p>
-            <p className="text-xs text-neutral/70 leading-relaxed">
-              The CSV is built and maintained by EB5 Base from the official workbooks below. For
-              definitive figures, download and verify against the monthly XLSX files on uscis.gov.
+              One file with every non-zero cell across all {files.length} monthly snapshots
+              (country, category, visa status, priority-date year/month, count). Built by EB5
+              Base from the USCIS workbooks below — verify against the official XLSX for
+              definitive figures.
             </p>
             <a
               href="/data/i485-pending-inventory.csv"
@@ -124,10 +98,9 @@ export default function I485SourceDataPage() {
           </h2>
           <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 space-y-4">
             <p className="text-xs text-neutral/70 leading-relaxed">
-              Dates are the inventory as-of day; muted text is when USCIS posted the workbook.
-              Each link downloads the XLSX from uscis.gov. Months labeled{' '}
-              <span className="font-medium text-neutral/80">not posted</span> are gaps where USCIS
-              never published a snapshot (for example June and July 2025).
+              Link date is the inventory as-of day; muted text is when USCIS posted. Each link
+              downloads the XLSX from uscis.gov. Months labeled{' '}
+              <span className="font-medium text-neutral/80">not posted</span> were never published.
             </p>
             {yearsDesc.map((year) => {
               // Calendar order within the year (Jan → Dec) so a 6-col grid reads as two halves.
@@ -179,6 +152,27 @@ export default function I485SourceDataPage() {
               );
             })}
           </div>
+        </div>
+
+        <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 text-sm text-neutral leading-relaxed space-y-2">
+          <p>
+            Library:{' '}
+            <a
+              href={USCIS_DATA_PAGE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+            >
+              USCIS Immigration and Citizenship Data
+            </a>
+          </p>
+          <p className="text-xs text-neutral/75">
+            In the workbooks, <span className="font-medium">D</span> means suppressed (count under
+            10); <span className="font-medium">&quot;-&quot;</span> means zero. Priority-date years
+            outside the 10-year window are rolled into &quot;Prior Years&quot; (year{' '}
+            <span className="font-mono">0</span> in the CSV). In the CSV, suppressed cells have an
+            empty count and <span className="font-mono">suppressed=true</span>.
+          </p>
         </div>
 
         <p className="text-xs text-neutral/70">
