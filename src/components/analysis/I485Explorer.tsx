@@ -763,11 +763,8 @@ export default function I485Explorer({
               </div>
               <GrainToggle grain={grain} onChange={setGrain} />
             </div>
-            <p className="text-xs text-neutral/70 leading-relaxed">
-              Green bars rose between the two snapshots; red bars fell. The change mixes new
-              filings into a priority-date bucket with cases that left it (approvals, denials,
-              withdrawals, or other completions). USCIS does not publish adjudications in this
-              report.
+            <p className="text-xs text-neutral/70">
+              Green rose and red fell between snapshots; change mixes new filings with completions.
             </p>
             {compareDiffBars.some((d) => d.value !== 0) ? (
               <DiffBarChart
@@ -860,9 +857,8 @@ export default function I485Explorer({
                   <span className="ml-2 font-normal text-neutral/55">Updating…</span>
                 ) : null}
               </h3>
-              <p className="text-xs text-neutral/70 leading-relaxed">
-                The month-over-month change mixes new filings into the cohort with completed cases
-                leaving it. USCIS does not publish adjudications separately in this report.
+              <p className="text-xs text-neutral/70">
+                Change mixes new filings into the cohort with completions leaving it.
               </p>
             </div>
             {cohortLine.some((p) => p.value > 0) ? (
