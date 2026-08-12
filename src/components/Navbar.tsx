@@ -72,17 +72,11 @@ export default function Navbar() {
       <Link
         href={href}
         aria-current={active ? 'page' : undefined}
-        className={`relative px-2 lg:px-3 py-2 text-sm font-medium whitespace-nowrap transition-all duration-150 hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent rounded-sm ${
-          active ? 'text-accent' : 'text-primary-content/90'
+        className={`px-2 lg:px-3 py-2 text-sm whitespace-nowrap transition-all duration-150 hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent rounded-sm ${
+          active ? 'font-bold text-accent' : 'font-medium text-primary-content/90'
         }`}
       >
         {label}
-        {active ? (
-          <span
-            className="absolute left-2 right-2 lg:left-3 lg:right-3 -bottom-0.5 h-0.5 rounded-full bg-accent"
-            aria-hidden
-          />
-        ) : null}
       </Link>
     );
   };
@@ -96,18 +90,12 @@ export default function Navbar() {
       <Link
         href={href}
         aria-current={active ? 'page' : undefined}
-        className={`relative px-2 lg:px-3 py-2 text-sm font-medium whitespace-nowrap transition-all duration-150 hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent rounded-sm inline-flex items-center gap-1.5 ${
-          active ? 'text-accent' : 'text-primary-content/90'
+        className={`px-2 lg:px-3 py-2 text-sm whitespace-nowrap transition-all duration-150 hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent rounded-sm inline-flex items-center gap-1.5 ${
+          active ? 'font-bold text-accent' : 'font-medium text-primary-content/90'
         }`}
       >
         <span>{label}</span>
         <span className="status-badge-on-dark">{badge}</span>
-        {active ? (
-          <span
-            className="absolute left-2 right-2 lg:left-3 lg:right-3 -bottom-0.5 h-0.5 rounded-full bg-accent"
-            aria-hidden
-          />
-        ) : null}
       </Link>
     );
   };
