@@ -1376,11 +1376,11 @@ export default function I485Explorer({
                       : 'total pending'
                   }
                   loading={loading}
+                  action={<I485ShareButton buildPayload={currentSharePayload} />}
                 />
                 <div className="flex flex-col items-stretch sm:items-end gap-2">
                   <GrainToggle grain={grain} onChange={setGrain} />
                   <SplitToggle split={split} onChange={setSplit} />
-                  <I485ShareButton buildPayload={currentSharePayload} />
                 </div>
               </div>
             </ChartHeader>

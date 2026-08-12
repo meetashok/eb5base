@@ -4,6 +4,29 @@ import { useState } from 'react';
 import type { I485SharePayload } from '@/lib/analysis/i485ShareParams';
 import { shareViewTitle } from '@/lib/analysis/i485ShareParams';
 
+function ShareIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <circle cx="18" cy="5" r="3" />
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="19" r="3" />
+      <path d="M8.59 13.51 15.42 17.49" />
+      <path d="m15.41 6.51-6.82 3.98" />
+    </svg>
+  );
+}
+
 export default function I485ShareButton({
   buildPayload,
 }: {
@@ -62,26 +85,29 @@ export default function I485ShareButton({
     status === 'working'
       ? 'Sharing…'
       : status === 'copied'
-        ? 'Link copied'
+        ? 'Copied'
         : status === 'error'
-          ? 'Share failed'
+          ? 'Failed'
           : 'Share';
 
   return (
     <button
       type="button"
-      className={`btn btn-ghost btn-xs ${
+      className={`inline-flex shrink-0 items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary ${
         status === 'error'
           ? 'text-error'
           : status === 'copied'
             ? 'text-secondary'
-            : 'text-neutral/70 hover:text-primary'
+            : 'text-neutral/60 hover:bg-base-300/60 hover:text-primary'
       }`}
       onClick={() => void onShare()}
       disabled={status === 'working'}
       aria-live="polite"
+      aria-label={label === 'Share' ? 'Share this chart' : label}
+      title={label === 'Share' ? 'Share this chart' : label}
     >
-      {label}
+      <ShareIcon className="opacity-80" />
+      <span>{label}</span>
     </button>
   );
 }
