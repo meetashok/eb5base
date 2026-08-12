@@ -151,11 +151,19 @@ export default function HomePage() {
                 {tool.body}
               </p>
               {tool.comingSoon ? (
-                <CaseTrackerWaitlistForm
-                  source="home"
-                  variant="compact"
-                  inputId="home-tracker-email"
-                />
+                <div className="mt-2">
+                  <CaseTrackerWaitlistForm
+                    source="home"
+                    variant="compact"
+                    inputId="home-tracker-email"
+                  />
+                  <Link
+                    href={tool.href}
+                    className="btn btn-sm btn-outline bg-white/60 rounded-full mt-3 self-start"
+                  >
+                    {tool.cta}
+                  </Link>
+                </div>
               ) : (
                 <Link
                   href={tool.href}
