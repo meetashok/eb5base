@@ -288,9 +288,10 @@ export default function I485Explorer({
               onChange={(e) => setReleaseId(Number(e.target.value))}
             >
               {releases.length === 0 && <option value="">Loading snapshots…</option>}
-              {[...releases].reverse().map((r) => (
+              {[...releases].reverse().map((r, i) => (
                 <option key={r.id} value={r.id}>
                   As of {formatAsOf(r.as_of_date)}
+                  {i === 0 ? ' (latest)' : ''}
                 </option>
               ))}
             </select>
