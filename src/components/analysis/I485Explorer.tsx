@@ -81,7 +81,7 @@ function ChartFooter({ cells }: { cells: number }) {
 
 function ChartHeader({ children }: { children: ReactNode }) {
   return (
-    <header className="rounded-lg border border-base-300 border-b-2 bg-base-200/50 px-3 py-3 sm:px-3.5 sm:py-3.5">
+    <header className="-mx-4 border-b-2 border-base-300 bg-base-200/50 px-4 py-3 first:-mt-4 first:rounded-t-[0.65rem] sm:-mx-5 sm:px-5 sm:py-3.5 sm:first:-mt-5">
       {children}
     </header>
   );
