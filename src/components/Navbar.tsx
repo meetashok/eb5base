@@ -115,7 +115,6 @@ export default function Navbar() {
   const mainLinks = (
     <>
       {navLink('/nprm', 'NPRM')}
-      {navLink('/analysis', 'Analysis')}
       {navLink('/status', 'Status Update')}
       {caseTrackerLink}
       {navLink('/resources', 'Resources')}

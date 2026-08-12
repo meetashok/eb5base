@@ -251,21 +251,6 @@ body {
     animation-delay: -2s;
   }
 
-  .home-tool-card--analysis {
-    border-color: rgba(212, 175, 55, 0.4);
-    background:
-      linear-gradient(165deg, #fdfbf3 0%, #f8f4e6 45%, #f2f6f1 100%);
-  }
-
-  .home-tool-card--analysis::before {
-    background:
-      radial-gradient(ellipse 42% 36% at 78% 20%, rgba(212, 175, 55, 0.24), transparent 60%),
-      radial-gradient(ellipse 36% 32% at 18% 82%, rgba(45, 90, 71, 0.12), transparent 58%);
-    animation-name: home-tool-glow-b;
-    animation-duration: 17s;
-    animation-delay: -4s;
-  }
-
   .home-tool-card--status {
     border-color: rgba(184, 115, 51, 0.35);
     background:

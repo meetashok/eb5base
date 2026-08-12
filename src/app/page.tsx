@@ -37,16 +37,6 @@ const TOOLS = [
     variant: 'nprm' as const,
   },
   {
-    href: '/analysis',
-    title: 'Analysis',
-    body: 'Explore public USCIS datasets, starting with the employment-based I-485 pending inventory by category, country, and priority date.',
-    cta: 'Open Analysis',
-    badge: 'New - I-485 inventory',
-    comingSoon: false,
-    primary: false,
-    variant: 'analysis' as const,
-  },
-  {
     href: '/status',
     title: 'Status Update',
     body: 'Draft a structured EB-5 status update from your milestones, preview it live, and share it with your community.',
@@ -129,7 +119,7 @@ export default function HomePage() {
           <h2 className="text-2xl md:text-3xl font-bold text-primary">Current tools</h2>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-5 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-5 max-w-5xl mx-auto">
           {TOOLS.map((tool) => (
             <article
               key={tool.href}
