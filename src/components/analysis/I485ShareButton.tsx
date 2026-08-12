@@ -8,7 +8,7 @@ import {
 } from '@/lib/analysis/i485ShareParams';
 import { SITE_URL } from '@/lib/constants';
 
-/** Modern “share” glyph (arrow up from tray), familiar on iOS/Android. */
+/** Paper-plane / send glyph — reads as “share this” without the tray-arrow chrome. */
 function ShareIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -23,9 +23,8 @@ function ShareIcon({ className }: { className?: string }) {
       strokeLinejoin="round"
       aria-hidden
     >
-      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-      <polyline points="16 6 12 2 8 6" />
-      <line x1="12" y1="2" x2="12" y2="15" />
+      <path d="M22 2L11 13" />
+      <path d="M22 2L15 22l-4-9-9-4 20-7z" />
     </svg>
   );
 }
@@ -118,7 +117,7 @@ export default function I485ShareButton({
   return (
     <button
       type="button"
-      className={`inline-flex items-center gap-1.5 rounded-md px-1.5 py-0.5 text-xs font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary ${
+      className={`inline-flex items-center gap-1 rounded-md -ml-1 pl-1 pr-1.5 py-0.5 text-xs font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary ${
         status === 'error'
           ? 'text-error'
           : status === 'copied'
@@ -131,8 +130,8 @@ export default function I485ShareButton({
       aria-label={label === 'Share' ? 'Share this chart' : label}
       title={label === 'Share' ? 'Share this chart' : label}
     >
-      <ShareIcon className="opacity-90" />
       <span>{label}</span>
+      <ShareIcon className="opacity-90" />
     </button>
   );
 }
