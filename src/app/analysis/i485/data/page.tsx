@@ -61,7 +61,7 @@ export default function I485SourceDataPage() {
             / Source data
           </span>
         }
-        title="Source data"
+        title="I-485 inventory source files"
         subtitle="Official USCIS workbooks power every chart on the inventory explorer. Download a consolidated CSV for your own analysis, or open individual monthly XLSX files on uscis.gov."
       />
 
@@ -166,6 +166,16 @@ function formatAsOfShortDay(iso: string): string {
   return d.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
+    timeZone: 'UTC',
+  });
+}
+
+function formatAsOfLong(iso: string): string {
+  const d = new Date(`${iso}T00:00:00Z`);
+  return d.toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
     timeZone: 'UTC',
   });
 }
