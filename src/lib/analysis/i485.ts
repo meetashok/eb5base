@@ -79,6 +79,29 @@ export const CATEGORY_OPTIONS: { value: string; label: string; members: I485Cate
   { value: 'CRW', label: 'EB-4 Religious Workers', members: ['CRW'] },
 ];
 
+/** Compact button labels for the explorer category picker. */
+export const EB5_CATEGORY_BUTTONS: { value: string; label: string }[] = [
+  { value: 'EB5_ALL', label: 'EB-5 (all)' },
+  { value: 'EB5_UNRESERVED', label: 'Unreserved' },
+  { value: 'EB5_SET_ASIDES', label: 'Set-asides' },
+  { value: 'EB5_RURAL', label: 'Rural' },
+  { value: 'EB5_HIGH_UNEMPLOYMENT', label: 'High unemp.' },
+  { value: 'EB5_INFRASTRUCTURE', label: 'Infrastructure' },
+];
+
+export const OTHER_CATEGORY_BUTTONS: { value: string; label: string }[] = [
+  { value: 'EB1', label: 'EB-1' },
+  { value: 'EB2', label: 'EB-2' },
+  { value: 'EB3', label: 'EB-3' },
+  { value: 'EW3', label: 'Other Workers' },
+  { value: 'EB4', label: 'EB-4' },
+  { value: 'CRW', label: 'Religious Workers' },
+];
+
+export function isEb5CategoryFilter(value: string): boolean {
+  return value.startsWith('EB5_');
+}
+
 export const MONTH_LABELS = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December',

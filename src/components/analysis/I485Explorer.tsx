@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { BarChart, DiffBarChart, LineChart, formatSignedCount } from '@/components/charts';
 import I485ViewBar, { type I485ViewId } from '@/components/analysis/I485ViewBar';
+import I485CategoryPicker from '@/components/analysis/I485CategoryPicker';
 import {
   CATEGORY_OPTIONS,
   COUNTRY_OPTIONS,
@@ -419,7 +420,8 @@ export default function I485Explorer({
 
       <div className="max-w-4xl mx-auto px-4 pt-6 sm:pt-8 space-y-5">
       {/* Filters */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {view === 'snapshot' && (
           <label className="form-control">
             <span className="label-text text-xs font-semibold text-neutral/80 pb-1">
@@ -516,20 +518,6 @@ export default function I485Explorer({
         )}
 
         <label className="form-control">
-          <span className="label-text text-xs font-semibold text-neutral/80 pb-1">Category</span>
-          <select
-            className="select select-bordered select-sm"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            {CATEGORY_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="form-control">
           <span className="label-text text-xs font-semibold text-neutral/80 pb-1">
             Country of chargeability
           </span>
@@ -545,6 +533,9 @@ export default function I485Explorer({
             ))}
           </select>
         </label>
+      </div>
+
+      <I485CategoryPicker value={category} onChange={setCategory} />
       </div>
 
       {loadError && (
