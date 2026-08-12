@@ -875,15 +875,6 @@ export default function I485Explorer({
         laterValue: row.later.count,
         laterValueLabel: bucketLabel(row.later),
       })),
-      net: (() => {
-        const earlier = totalWithNote(facet.rows.map((r) => r.earlier));
-        const later = totalWithNote(facet.rows.map((r) => r.later));
-        return {
-          earlier,
-          later,
-          delta: later.count - earlier.count,
-        };
-      })(),
     }));
   }, [
     compareFromCells,
