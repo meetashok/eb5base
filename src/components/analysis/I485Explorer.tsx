@@ -1285,14 +1285,7 @@ export default function I485Explorer({
             <ChartHeader>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <ChartTitleBlock
-                  title={
-                    <>
-                      Change in pending I-485 by priority date
-                      {selectedComparePdYears.length > 0
-                        ? ` · ${formatPriorityDateYears(selectedComparePdYears)}`
-                        : ''}
-                    </>
-                  }
+                  title="Change in pending I-485 between two snapshots"
                   metric={formatSignedCount(compareNet.delta)}
                   metricClassName={
                     compareNet.delta > 0
@@ -1323,9 +1316,7 @@ export default function I485Explorer({
                 </div>
               </div>
             </ChartHeader>
-            <p className="text-xs text-neutral/70">
-              Green rose and red fell between snapshots; change mixes new filings with completions.
-            </p>
+            <p className="text-xs text-neutral/70">{compareContextCaption}</p>
             {compareFacetSplit !== 'none' ? (
               compareFacets && compareFacets.length > 0 ? (
                 <div className="-mx-4 divide-y divide-base-300 sm:-mx-5">
@@ -1465,14 +1456,14 @@ export default function I485Explorer({
             <ChartHeader>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <ChartTitleBlock
-                  title={`Priority dates ${formatPriorityDateYears(selectedPdYears)}`}
+                  title="Pending I-485 across USCIS snapshots"
                   metric={
                     <>
                       {nf.format(cohortLatestTotal.count)}
                       {cohortLatestTotal.suppressedCells > 0 ? '+' : ''}
                     </>
                   }
-                  metricNote="pending in the latest USCIS snapshot"
+                  metricNote="pending in the latest snapshot"
                   loading={loading}
                 />
                 <div className="flex flex-col items-stretch sm:items-end gap-2">
