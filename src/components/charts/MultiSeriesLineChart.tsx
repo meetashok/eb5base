@@ -72,6 +72,12 @@ export default function MultiSeriesLineChart({
 }: MultiSeriesLineChartProps) {
   const { ref, width } = useElementWidth<HTMLDivElement>();
   const [hoverKey, setHoverKey] = useState<string | null>(null);
+  const [hiddenKeys, setHiddenKeys] = useState<Set<string>>(() => new Set());
+
+  const seriesKeySig = series.map((s) => s.key).join('|');
+  useEffect(() => {
+    setHiddenKeys(new Set());
+  }, [seriesKeySig]);
 
   const colored = useMemo(
     () =>
@@ -82,7 +88,26 @@ export default function MultiSeriesLineChart({
     [series],
   );
 
-  const dataMax = Math.max(1, ...colored.flatMap((s) => s.data.map((d) => d.value)));
+  const visible = useMemo(
+    () => colored.filter((s) => !hiddenKeys.has(s.key)),
+    [colored, hiddenKeys],
+  );
+
+  function toggleSeries(key: string) {
+    setHiddenKeys((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+        return next;
+      }
+      // Keep at least one series visible.
+      if (colored.length - next.size <= 1) return prev;
+      next.add(key);
+      return next;
+    });
+  }
+
+  const dataMax = Math.max(1, ...visible.flatMap((s) => s.data.map((d) => d.value)));
   const ticks = useMemo(() => niceTicks(dataMax), [dataMax]);
   const axisMax = ticks[ticks.length - 1] || dataMax;
 
@@ -122,7 +147,7 @@ export default function MultiSeriesLineChart({
 
   const hoverMeta = hoverKey ? xAxis.find((d) => d.key === hoverKey) : null;
   const hoverValues = hoverKey
-    ? colored.map((s) => ({
+    ? visible.map((s) => ({
         key: s.key,
         label: s.label,
         color: s.color,
@@ -134,17 +159,33 @@ export default function MultiSeriesLineChart({
 
   return (
     <div className="w-full space-y-2" onMouseLeave={() => setHoverKey(null)}>
-      <div className="flex min-h-4 flex-wrap items-center gap-x-3 gap-y-1 text-xs">
-        {colored.map((s) => (
-          <span key={s.key} className="inline-flex items-center gap-1.5 text-neutral/80">
-            <span
-              className="inline-block h-0.5 w-3 rounded-full"
-              style={{ backgroundColor: s.color }}
-              aria-hidden
-            />
-            {s.label}
-          </span>
-        ))}
+      <div
+        className="flex min-h-4 flex-wrap items-center gap-x-1.5 gap-y-1 text-xs"
+        role="group"
+        aria-label="Toggle series"
+      >
+        {colored.map((s) => {
+          const on = !hiddenKeys.has(s.key);
+          return (
+            <button
+              key={s.key}
+              type="button"
+              className={`inline-flex items-center gap-1.5 rounded-md px-1.5 py-0.5 transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary ${
+                on ? 'text-neutral/80' : 'text-neutral/35'
+              }`}
+              aria-pressed={on}
+              title={on ? `Hide ${s.label}` : `Show ${s.label}`}
+              onClick={() => toggleSeries(s.key)}
+            >
+              <span
+                className="inline-block h-0.5 w-3 rounded-full"
+                style={{ backgroundColor: on ? s.color : '#c4bdb2' }}
+                aria-hidden
+              />
+              <span className={on ? undefined : 'line-through'}>{s.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/*
@@ -225,7 +266,7 @@ export default function MultiSeriesLineChart({
                   hideTicks
                 />
 
-                {colored.map((s) => (
+                {visible.map((s) => (
                   <LinePath
                     key={s.key}
                     data={s.data}
@@ -266,7 +307,7 @@ export default function MultiSeriesLineChart({
                           pointerEvents="none"
                         />
                       )}
-                      {colored.map((s) => {
+                      {visible.map((s) => {
                         const pt = s.data.find((d) => d.key === meta.key);
                         if (!pt) return null;
                         const cy = yScale(pt.value) ?? 0;
