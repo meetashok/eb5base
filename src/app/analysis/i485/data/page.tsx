@@ -124,7 +124,7 @@ export default function I485SourceDataPage() {
                   {(byYear.get(year) ?? []).map((f) => {
                     const asOf = formatAsOfShortDay(f.as_of_date);
                     const posted = f.published_date
-                      ? formatAsOfShortDay(f.published_date)
+                      ? formatMdY(f.published_date)
                       : null;
                     const tip = posted
                       ? `Inventory as of ${formatAsOfLong(f.as_of_date)} · Posted ${formatAsOfLong(f.published_date!)}`
