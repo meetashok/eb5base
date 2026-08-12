@@ -78,10 +78,14 @@ export default function BarChart({
   const axisMax = ticks[ticks.length - 1] || dataMax;
 
   const innerHeight = height - margin.top - margin.bottom;
-  // Stretch to the measured card width; only grow past it when bars would be too cramped.
+  // Stretch to the measured card width. On narrow screens always fit (no
+  // horizontal scroll); on wider screens grow when bars would be too cramped.
   const availablePlotWidth = Math.max(width - margin.left, 0);
   const neededPlotWidth = data.length * minBarWidth;
-  const plotWidth = Math.max(availablePlotWidth, neededPlotWidth, 1);
+  const fitToWidth = width > 0 && width < 640;
+  const plotWidth = fitToWidth
+    ? Math.max(availablePlotWidth, 1)
+    : Math.max(availablePlotWidth, neededPlotWidth, 1);
   const innerWidth = Math.max(plotWidth - margin.right, 0);
 
   const xScale = useMemo(

@@ -98,7 +98,10 @@ export default function DiffBarChart({
   const innerHeight = height - margin.top - margin.bottom;
   const availablePlotWidth = Math.max(width - margin.left, 0);
   const neededPlotWidth = data.length * minBarWidth;
-  const plotWidth = Math.max(availablePlotWidth, neededPlotWidth, 1);
+  const fitToWidth = width > 0 && width < 640;
+  const plotWidth = fitToWidth
+    ? Math.max(availablePlotWidth, 1)
+    : Math.max(availablePlotWidth, neededPlotWidth, 1);
   const innerWidth = Math.max(plotWidth - margin.right, 0);
 
   const xScale = useMemo(
