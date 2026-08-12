@@ -117,14 +117,14 @@ export default function I485ShareButton({
   return (
     <button
       type="button"
-      className={`inline-flex items-center gap-1 rounded-md -ml-1 pl-1 pr-1.5 py-0.5 text-xs font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary ${
+      className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose ${
         status === 'error'
-          ? 'text-error'
+          ? 'border-error/40 bg-error/10 text-error'
           : status === 'copied'
-            ? 'text-secondary'
+            ? 'border-secondary/40 bg-secondary/15 text-secondary'
             : status === 'working'
-              ? 'text-secondary/70'
-              : 'text-secondary hover:bg-secondary/10 hover:text-primary'
+              ? 'border-rose/25 bg-rose/10 text-rose/70'
+              : 'border-rose/35 bg-rose/15 text-rose hover:border-rose/50 hover:bg-rose/25 hover:text-rose-dark'
       }`}
       onClick={() => void onShare()}
       disabled={status === 'working'}
