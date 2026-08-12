@@ -55,13 +55,23 @@ function totalWithNote(buckets: AggregatedBucket[]): { count: number; suppressed
   );
 }
 
-function SuppressionNote({ cells }: { cells: number }) {
-  if (cells === 0) return null;
+function ChartFooter({ cells }: { cells: number }) {
   return (
-    <p className="text-xs text-neutral/70 leading-relaxed">
-      {nf.format(cells)} value{cells === 1 ? '' : 's'} in this selection are suppressed by USCIS
-      (&quot;D&quot;, under 10 each) and are excluded from the totals shown. Actual totals can be up
-      to {nf.format(cells * 9)} higher.
+    <p className="text-xs text-neutral/70 leading-relaxed pt-1">
+      {cells > 0 && (
+        <>
+          {nf.format(cells)} value{cells === 1 ? '' : 's'} in this selection are suppressed by USCIS
+          (&quot;D&quot;, under 10 each) and are excluded from the totals shown. Actual totals can be
+          up to {nf.format(cells * 9)} higher.
+          {' · '}
+        </>
+      )}
+      <Link
+        href="/analysis/i485/data"
+        className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+      >
+        Source data
+      </Link>
     </p>
   );
 }
@@ -595,7 +605,6 @@ export default function I485Explorer({
                 Quarters follow the federal fiscal year (Q1 = Oct–Dec).
               </p>
             )}
-            <SuppressionNote cells={snapshotTotal.suppressedCells} />
           </>
         )}
 
@@ -673,7 +682,6 @@ export default function I485Explorer({
                 Quarters follow the federal fiscal year (Q1 = Oct–Dec).
               </p>
             )}
-            <SuppressionNote cells={compareNet.suppressedCells} />
 
             {compareTableRows.length > 0 && (
               <div className="overflow-x-auto border border-base-300 rounded-lg">
@@ -751,21 +759,18 @@ export default function I485Explorer({
                 No pending applications reported for this cohort in any snapshot.
               </p>
             )}
-            <SuppressionNote cells={cohortSuppressed} />
           </>
         )}
 
-        <p className="text-xs text-neutral/70 pt-1">
-          <Link
-            href="/analysis/i485/data"
-            className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
-          >
-            Source data
-          </Link>
-          {' · '}
-          official USCIS XLSX downloads
-          {releases.length > 0 ? ` · ${releases.length} monthly reports` : ''}
-        </p>
+        <ChartFooter
+          cells={
+            view === 'compare'
+              ? compareNet.suppressedCells
+              : view === 'cohort'
+                ? cohortSuppressed
+                : snapshotTotal.suppressedCells
+          }
+        />
       </div>
       </div>
     </div>
