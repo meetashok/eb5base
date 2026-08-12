@@ -203,9 +203,22 @@ body {
     @apply bg-panel-copper border border-copper/20 rounded-2xl;
   }
 
+  .panel-blue {
+    @apply bg-panel-blue border border-blue/20 rounded-2xl;
+  }
+
   .panel-investor {
     @apply rounded-2xl border border-secondary/15;
     background-color: rgba(45, 90, 71, 0.04);
+  }
+
+  /** Sparse product-status chip (New / Soon / Beta / Planned). */
+  .status-badge {
+    @apply inline-flex items-center rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider leading-none border border-rose/30 bg-rose/15 text-rose;
+  }
+
+  .status-badge-on-dark {
+    @apply inline-flex items-center rounded px-1 py-0.5 text-[9px] font-bold uppercase tracking-wider leading-none bg-rose/25 text-rose-light;
   }
 
   .home-tool-card {
@@ -252,15 +265,15 @@ body {
   }
 
   .home-tool-card--analysis {
-    border-color: rgba(212, 175, 55, 0.4);
+    border-color: rgba(47, 111, 143, 0.4);
     background:
-      linear-gradient(165deg, #fdfbf3 0%, #f8f4e6 45%, #f2f6f1 100%);
+      linear-gradient(165deg, #f3f7fa 0%, #eef4f8 45%, #f5f0e8 100%);
   }
 
   .home-tool-card--analysis::before {
     background:
-      radial-gradient(ellipse 42% 36% at 78% 20%, rgba(212, 175, 55, 0.24), transparent 60%),
-      radial-gradient(ellipse 36% 32% at 18% 82%, rgba(45, 90, 71, 0.12), transparent 58%);
+      radial-gradient(ellipse 42% 36% at 78% 20%, rgba(47, 111, 143, 0.22), transparent 60%),
+      radial-gradient(ellipse 36% 32% at 18% 82%, rgba(45, 90, 71, 0.1), transparent 58%);
     animation-name: home-tool-glow-b;
     animation-duration: 17s;
     animation-delay: -4s;
@@ -282,15 +295,15 @@ body {
   }
 
   .home-tool-card--tracker {
-    border-color: rgba(74, 98, 116, 0.28);
+    border-color: rgba(154, 91, 110, 0.32);
     background:
-      linear-gradient(165deg, #f5f7f9 0%, #eef2f5 45%, #f3efe8 100%);
+      linear-gradient(165deg, #faf5f7 0%, #f5eef1 45%, #f3efe8 100%);
   }
 
   .home-tool-card--tracker::before {
     background:
-      radial-gradient(ellipse 40% 34% at 76% 20%, rgba(74, 98, 116, 0.2), transparent 60%),
-      radial-gradient(ellipse 34% 32% at 20% 80%, rgba(45, 90, 71, 0.1), transparent 58%);
+      radial-gradient(ellipse 40% 34% at 76% 20%, rgba(154, 91, 110, 0.18), transparent 60%),
+      radial-gradient(ellipse 34% 32% at 20% 80%, rgba(47, 111, 143, 0.1), transparent 58%);
     animation-name: home-tool-glow-c;
     animation-duration: 22s;
     animation-delay: -11s;
@@ -525,7 +538,7 @@ body {
   }
 
   .alert-heritage-info {
-    @apply rounded-xl border border-secondary/25 bg-secondary/10 text-neutral;
+    @apply rounded-xl border border-blue/25 bg-blue/10 text-neutral;
   }
 
   .alert-heritage-warning {

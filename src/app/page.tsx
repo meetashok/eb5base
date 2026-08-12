@@ -138,10 +138,12 @@ export default function HomePage() {
               <p
                 className={`text-[11px] uppercase tracking-wider font-bold mb-2 ${
                   tool.comingSoon
-                    ? 'inline-flex self-start rounded-md border border-neutral-700/20 bg-white/70 px-2 py-0.5 text-neutral-700'
-                    : tool.primary
-                      ? 'text-secondary'
-                      : 'text-neutral/70'
+                    ? 'status-badge self-start normal-case tracking-wider text-[11px] px-2 py-0.5'
+                    : tool.variant === 'analysis'
+                      ? 'text-rose'
+                      : tool.primary
+                        ? 'text-secondary'
+                        : 'text-neutral/70'
                 }`}
               >
                 {tool.badge}

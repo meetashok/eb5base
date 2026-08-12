@@ -53,7 +53,9 @@ export default function AnalysisPage() {
               <h2 className="text-lg font-bold text-primary">{d.title}</h2>
               <span
                 className={`badge badge-sm rounded-full font-semibold ${
-                  d.live ? 'badge-secondary text-secondary-content' : 'badge-ghost text-neutral/70'
+                  d.live
+                    ? 'badge-secondary text-secondary-content'
+                    : 'border-rose/30 bg-rose/15 text-rose'
                 }`}
               >
                 {d.status}

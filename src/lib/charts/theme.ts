@@ -1,17 +1,22 @@
 /** Shared Visx chart tokens and scale helpers (brand-aligned). */
 
 export const chartColors = {
-  bar: '#2d5a47', // secondary
-  barHover: '#d4af37', // accent
+  bar: '#2d5a47', // secondary green
+  barHover: '#d4af37', // gold highlight
   barUp: '#2d5a47', // inventory increase
   barDown: '#9e3a3a', // inventory decrease (error)
   line: '#0a1628', // primary
   point: '#0a1628',
   pointHover: '#d4af37',
+  /** Cool informational support (axis emphasis / data chrome). */
+  info: '#2f6f8f',
   grid: '#e6dfd4', // base-300
   axis: '#6b7280',
   zero: '#c4bdb2',
-  /** Distinct strokes for multi-series split charts (brand-aligned, no purple). */
+  /**
+   * Multi-series strokes: navy, gold, error, green, blue, muted gold.
+   * Rose is reserved for sparse UI status badges, not chart series.
+   */
   series: ['#0a1628', '#c9892e', '#9e3a3a', '#2d5a47', '#2f6f8f', '#8b6914'] as const,
 } as const;
 

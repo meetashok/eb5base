@@ -101,9 +101,7 @@ export default function Navbar() {
         }`}
       >
         <span>{label}</span>
-        <span className="rounded px-1 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-accent/20 text-accent leading-none">
-          {badge}
-        </span>
+        <span className="status-badge-on-dark">{badge}</span>
         {active ? (
           <span
             className="absolute left-2 right-2 lg:left-3 lg:right-3 -bottom-0.5 h-0.5 rounded-full bg-accent"
@@ -135,9 +133,7 @@ export default function Navbar() {
               wordmarkVariant="on-dark"
               wordmarkClassName="text-xl sm:text-[1.35rem]"
             />
-            <span className="badge badge-xs rounded-full border border-copper/50 bg-copper/20 text-copper-light font-semibold uppercase tracking-wider px-1.5 min-h-0 h-4 text-[9px]">
-              Beta
-            </span>
+            <span className="status-badge-on-dark border border-rose/40">Beta</span>
           </Link>
         </div>
 
