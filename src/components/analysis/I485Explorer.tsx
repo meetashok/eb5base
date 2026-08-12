@@ -258,18 +258,37 @@ function SharedYAxisToggle({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <label className="flex cursor-pointer select-none items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral/55">
-        Shared Y-axis
+        Y-axis
       </span>
-      <input
-        type="checkbox"
-        className="toggle toggle-xs toggle-primary"
-        checked={value}
-        onChange={(e) => onChange(e.target.checked)}
-        aria-label="Share Y-axis scale across facet charts"
-      />
-    </label>
+      <div
+        className="inline-flex rounded-full border border-base-300 p-0.5 bg-base-200/60"
+        role="group"
+        aria-label="Y-axis scale across facet charts"
+      >
+        <button
+          type="button"
+          className={`btn btn-xs rounded-full border-0 min-w-[4.5rem] ${
+            value ? 'btn-primary text-primary-content' : 'btn-ghost text-neutral'
+          }`}
+          aria-pressed={value}
+          onClick={() => onChange(true)}
+        >
+          Shared
+        </button>
+        <button
+          type="button"
+          className={`btn btn-xs rounded-full border-0 min-w-[5.25rem] ${
+            !value ? 'btn-primary text-primary-content' : 'btn-ghost text-neutral'
+          }`}
+          aria-pressed={!value}
+          onClick={() => onChange(false)}
+        >
+          Independent
+        </button>
+      </div>
+    </div>
   );
 }
 
