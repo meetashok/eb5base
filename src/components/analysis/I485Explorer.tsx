@@ -1210,22 +1210,7 @@ export default function I485Explorer({
                 <div className="divide-y divide-base-300">
                   {compareFacets.map((facet) => (
                     <div key={facet.key} className="space-y-1.5 py-5 first:pt-0 last:pb-0">
-                      <div className="flex flex-wrap items-baseline justify-between gap-2">
-                        <h3 className="text-sm font-semibold text-primary">{facet.label}</h3>
-                        <span
-                          className={`text-xs font-semibold tabular-nums ${
-                            facet.net.delta > 0
-                              ? 'text-secondary'
-                              : facet.net.delta < 0
-                                ? 'text-error'
-                                : 'text-neutral/70'
-                          }`}
-                        >
-                          {formatSignedCount(facet.net.delta)}
-                          {' · '}
-                          {nf.format(facet.net.earlier.count)} → {nf.format(facet.net.later.count)}
-                        </span>
-                      </div>
+                      <h3 className="text-sm font-semibold text-primary">{facet.label}</h3>
                       {facet.bars.some((d) => d.value !== 0) ? (
                         <DiffBarChart
                           data={facet.bars}
