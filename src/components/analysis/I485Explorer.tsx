@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import {
   CATEGORY_OPTIONS,
@@ -450,41 +451,16 @@ export default function I485Explorer() {
             <SuppressionNote cells={cohortSuppressed} />
           </>
         )}
-      </div>
 
-      {/* Source links */}
-      <div className="rounded-xl border-2 border-base-300 bg-base-200/60 p-4 text-xs text-neutral/80 leading-relaxed space-y-1.5">
-        <p className="font-semibold text-primary text-sm">Download the raw data</p>
-        {view === 'snapshot' && selectedRelease ? (
-          <p>
-            This view uses{' '}
-            <a
-              href={selectedRelease.source_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
-            >
-              {selectedRelease.source_title}
-            </a>{' '}
-            (XLSX, uscis.gov).
-          </p>
-        ) : (
-          <p>
-            This view combines all {releases.length} monthly USCIS reports; each is downloadable
-            from the official source below.
-          </p>
-        )}
-        <p>
-          All reports:{' '}
-          <a
-            href={USCIS_DATA_PAGE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+        <p className="text-xs text-neutral/70 pt-1">
+          <Link
+            href="/analysis/i485/data"
             className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
           >
-            USCIS Immigration and Citizenship Data
-          </a>
-          . Suppressed values (&quot;D&quot;) are counts under 10 that USCIS does not disclose.
+            Source data
+          </Link>
+          {' · '}
+          official USCIS XLSX downloads
         </p>
       </div>
     </div>

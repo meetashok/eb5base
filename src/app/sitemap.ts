@@ -18,6 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/status-update',
     '/analysis',
     '/analysis/i485',
+    '/analysis/i485/data',
     '/tracker',
     '/case-tracker',
     '/about',
