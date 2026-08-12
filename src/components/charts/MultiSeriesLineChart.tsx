@@ -78,11 +78,13 @@ export default function MultiSeriesLineChart({
 }: MultiSeriesLineChartProps) {
   const { ref, width } = useElementWidth<HTMLDivElement>();
   const [hoverKey, setHoverKey] = useState<string | null>(null);
+  const [legendFocusKey, setLegendFocusKey] = useState<string | null>(null);
   const [hiddenKeys, setHiddenKeys] = useState<Set<string>>(() => new Set());
 
   const seriesKeySig = series.map((s) => s.key).join('|');
   useEffect(() => {
     setHiddenKeys(new Set());
+    setLegendFocusKey(null);
   }, [seriesKeySig]);
 
   const colored = useMemo(
@@ -99,6 +101,16 @@ export default function MultiSeriesLineChart({
     [colored, hiddenKeys],
   );
 
+  /** Draw focused series last so it sits on top of dimmed lines. */
+  const visibleDrawOrder = useMemo(() => {
+    if (!legendFocusKey) return visible;
+    return [...visible].sort((a, b) => {
+      if (a.key === legendFocusKey) return 1;
+      if (b.key === legendFocusKey) return -1;
+      return 0;
+    });
+  }, [visible, legendFocusKey]);
+
   function toggleSeries(key: string) {
     setHiddenKeys((prev) => {
       const next = new Set(prev);
@@ -111,6 +123,12 @@ export default function MultiSeriesLineChart({
       next.add(key);
       return next;
     });
+  }
+
+  function seriesEmphasis(key: string): { strokeWidth: number; opacity: number } {
+    if (!legendFocusKey) return { strokeWidth: 2, opacity: 1 };
+    if (legendFocusKey === key) return { strokeWidth: 3.25, opacity: 1 };
+    return { strokeWidth: 1.5, opacity: 0.22 };
   }
 
   const dataMax = Math.max(1, ...visible.flatMap((s) => s.data.map((d) => d.value)));
@@ -175,23 +193,42 @@ export default function MultiSeriesLineChart({
         className="flex min-h-4 flex-wrap items-center gap-x-1.5 gap-y-1 text-xs"
         role="group"
         aria-label="Toggle series"
+        onMouseLeave={() => setLegendFocusKey(null)}
       >
         {colored.map((s) => {
           const on = !hiddenKeys.has(s.key);
+          const focused = legendFocusKey === s.key;
           return (
             <button
               key={s.key}
               type="button"
               className={`inline-flex items-center gap-1.5 rounded-md px-1.5 py-0.5 transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary ${
-                on ? 'text-neutral/80' : 'text-neutral/35'
+                on
+                  ? focused
+                    ? 'bg-base-200 text-primary'
+                    : 'text-neutral/80'
+                  : 'text-neutral/35'
               }`}
               aria-pressed={on}
               title={on ? `Hide ${s.label}` : `Show ${s.label}`}
-              onClick={() => toggleSeries(s.key)}
+              onClick={() => {
+                toggleSeries(s.key);
+                setLegendFocusKey(null);
+              }}
+              onMouseEnter={() => {
+                if (on) setLegendFocusKey(s.key);
+              }}
+              onFocus={() => {
+                if (on) setLegendFocusKey(s.key);
+              }}
+              onBlur={() => setLegendFocusKey((k) => (k === s.key ? null : k))}
             >
               <span
-                className="inline-block h-0.5 w-3 rounded-full"
-                style={{ backgroundColor: on ? s.color : '#c4bdb2' }}
+                className="inline-block w-3 rounded-full"
+                style={{
+                  backgroundColor: on ? s.color : '#c4bdb2',
+                  height: focused ? 3 : 2,
+                }}
                 aria-hidden
               />
               <span className={on ? undefined : 'line-through'}>{s.label}</span>
@@ -282,19 +319,23 @@ export default function MultiSeriesLineChart({
                   hideTicks
                 />
 
-                {visible.map((s) => (
-                  <LinePath
-                    key={s.key}
-                    data={s.data}
-                    x={(d) => xScale(d.key) ?? 0}
-                    y={(d) => yScale(d.value) ?? 0}
-                    curve={curveMonotoneX}
-                    stroke={s.color}
-                    strokeWidth={2}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                ))}
+                {visibleDrawOrder.map((s) => {
+                  const { strokeWidth, opacity } = seriesEmphasis(s.key);
+                  return (
+                    <LinePath
+                      key={s.key}
+                      data={s.data}
+                      x={(d) => xScale(d.key) ?? 0}
+                      y={(d) => yScale(d.value) ?? 0}
+                      curve={curveMonotoneX}
+                      stroke={s.color}
+                      strokeWidth={strokeWidth}
+                      strokeOpacity={opacity}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  );
+                })}
 
                 {xAxis.map((meta) => {
                   const cx = xScale(meta.key) ?? 0;
@@ -323,20 +364,22 @@ export default function MultiSeriesLineChart({
                           pointerEvents="none"
                         />
                       )}
-                      {visible.map((s) => {
+                      {visibleDrawOrder.map((s) => {
                         const pt = s.data.find((d) => d.key === meta.key);
                         if (!pt) return null;
                         const cy = yScale(pt.value) ?? 0;
+                        const { opacity } = seriesEmphasis(s.key);
+                        const focused = legendFocusKey === s.key;
                         return (
                           <circle
                             key={`${s.key}-${meta.key}`}
                             cx={cx}
                             cy={cy}
-                            r={active ? 4.5 : 2.5}
+                            r={active || focused ? 4.5 : 2.5}
                             fill={s.color}
                             stroke="#faf7f2"
-                            strokeWidth={active ? 2 : 1}
-                            opacity={active ? 1 : 0.85}
+                            strokeWidth={active || focused ? 2 : 1}
+                            opacity={opacity}
                             pointerEvents="none"
                           />
                         );
