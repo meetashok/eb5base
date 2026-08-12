@@ -377,7 +377,7 @@ export const CATEGORY_MEMBER_LABELS: Record<I485Category, string> = {
   EB4: 'EB-4',
   CRW: 'Religious Workers',
   EB5_UNRESERVED: 'Unreserved',
-  EB5_SET_ASIDE: 'Set-aside (lump)',
+  EB5_SET_ASIDE: 'Other',
   EB5_RURAL: 'Rural',
   EB5_HIGH_UNEMPLOYMENT: 'High unemp.',
   EB5_INFRASTRUCTURE: 'Infrastructure',
@@ -385,20 +385,20 @@ export const CATEGORY_MEMBER_LABELS: Record<I485Category, string> = {
 
 /** Member categories that roll up into the Set-asides filter. */
 export const SET_ASIDE_MEMBER_CATEGORIES: I485Category[] = [
-  'EB5_SET_ASIDE',
   'EB5_RURAL',
   'EB5_HIGH_UNEMPLOYMENT',
   'EB5_INFRASTRUCTURE',
+  'EB5_SET_ASIDE',
 ];
 
 /** Stable order for category-split series keys (members + virtual lumps). */
 export const CATEGORY_SPLIT_ORDER: string[] = [
   'EB5_UNRESERVED',
   'EB5_SET_ASIDES',
-  'EB5_SET_ASIDE',
   'EB5_RURAL',
   'EB5_HIGH_UNEMPLOYMENT',
   'EB5_INFRASTRUCTURE',
+  'EB5_SET_ASIDE',
   'EB1',
   'EB2',
   'EB3',
