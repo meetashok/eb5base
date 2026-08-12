@@ -63,7 +63,7 @@ export interface MultiSeriesLineChartProps {
   yMax?: number;
 }
 
-const margin = { top: 12, right: 12, bottom: 28, left: 40 };
+const margin = { top: 12, right: 12, bottom: 40, left: 40 };
 const nf = new Intl.NumberFormat('en-US');
 
 function useElementWidth<T extends HTMLElement>() {
@@ -360,10 +360,10 @@ export default function MultiSeriesLineChart({
                   tickStroke="transparent"
                   tickLabelProps={(value) => ({
                     fill: chartColors.axis,
-                    fontSize: 9,
+                    fontSize: 10,
                     textAnchor: value === '_earlier' ? 'start' : 'middle',
                     dx: value === '_earlier' ? 2 : 0,
-                    dy: '0.25em',
+                    dy: '0.4em',
                     fontFamily: 'inherit',
                   })}
                   hideTicks

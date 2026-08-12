@@ -8,7 +8,7 @@ export default function ChartXAxisLabel({
 }) {
   return (
     <p
-      className="text-left text-[11px] font-medium text-neutral/50"
+      className="pt-1 text-left text-xs font-medium text-neutral/55"
       style={{ paddingLeft }}
     >
       <span aria-hidden className="mr-1.5 text-neutral/40">

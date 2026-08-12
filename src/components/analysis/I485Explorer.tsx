@@ -557,6 +557,28 @@ export default function I485Explorer({
     );
   }
 
+  const shareKey = useMemo(
+    () => sharePayloadToSearchParams(currentSharePayload()).toString(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fingerprint active filters for share pre-mint
+    [
+      view,
+      countries,
+      categories,
+      grain,
+      split,
+      pdYears,
+      comparePdYears,
+      cohortPdSplit,
+      cohortFacetSplit,
+      compareFacetSplit,
+      facetSharedYAxis,
+      releaseId,
+      compareFromId,
+      compareToId,
+      cohortSharedHiddenKeys,
+    ],
+  );
+
   // Persist choices after hydration (and when releases change, so ids stay valid).
   useEffect(() => {
     if (!prefsHydrated) return;
@@ -1375,7 +1397,7 @@ export default function I485Explorer({
                       : 'total pending'
                   }
                   loading={loading}
-                  action={<I485ShareButton buildPayload={currentSharePayload} />}
+                  action={<I485ShareButton buildPayload={currentSharePayload} shareKey={shareKey} />}
                 />
                 <ChartHeaderControls>
                   <GrainToggle grain={grain} onChange={setGrain} />
@@ -1451,7 +1473,7 @@ export default function I485Explorer({
                       : 'net change'
                   }
                   loading={loading}
-                  action={<I485ShareButton buildPayload={currentSharePayload} />}
+                  action={<I485ShareButton buildPayload={currentSharePayload} shareKey={shareKey} />}
                 />
                 <ChartHeaderControls>
                   <GrainToggle grain={grain} onChange={setGrain} />
@@ -1617,7 +1639,7 @@ export default function I485Explorer({
                   }
                   metricNote="pending in the latest snapshot"
                   loading={loading}
-                  action={<I485ShareButton buildPayload={currentSharePayload} />}
+                  action={<I485ShareButton buildPayload={currentSharePayload} shareKey={shareKey} />}
                 />
                 <ChartHeaderControls>
                   <CohortPdSplitToggle value={cohortPdSplit} onChange={setCohortPdSplit} />

@@ -61,8 +61,11 @@ export async function generateMetadata(): Promise<Metadata> {
       ? { index: true, follow: true }
       : { index: false, follow: false },
     icons: {
-      icon: '/logo.png',
-      apple: '/logo.png',
+      icon: [
+        { url: '/favicon-32.png', sizes: '32x32', type: 'image/png' },
+        { url: '/logo.png', type: 'image/png' },
+      ],
+      apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
     },
   };
 }

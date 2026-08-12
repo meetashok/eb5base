@@ -37,7 +37,7 @@ export interface LineChartProps {
   yMax?: number;
 }
 
-const margin = { top: 12, right: 12, bottom: 28, left: 40 };
+const margin = { top: 12, right: 12, bottom: 40, left: 40 };
 
 function LineChartInner({
   data,
@@ -147,7 +147,7 @@ function LineChartInner({
               fill: chartColors.axis,
               fontSize: 10,
               textAnchor: 'middle',
-              dy: '0.25em',
+              dy: '0.4em',
               fontFamily: 'inherit',
             })}
             hideTicks
