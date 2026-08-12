@@ -9,6 +9,7 @@ export const metadata = {
   title: 'Case Tracker',
   description:
     'EB-5 Case Tracker: follow USCIS updates for your petitions. Receipt numbers stay private from other investors and from EB5 Base staff views.',
+  alternates: { canonical: 'https://eb5base.com/tracker' },
 };
 
 const FEATURES = [

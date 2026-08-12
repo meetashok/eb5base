@@ -4,6 +4,7 @@ import PageHero from '@/components/PageHero';
 
 export const metadata = {
   title: 'Contact',
+  alternates: { canonical: 'https://eb5base.com/contact' },
 };
 
 const CONTACT_EMAIL = 'hello@eb5base.com';

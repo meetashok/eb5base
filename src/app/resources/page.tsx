@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: 'Resources',
   description:
     'Community-built EB-5 FAQs and investor communities, including Investor Network Collective.',
+  alternates: { canonical: 'https://eb5base.com/resources' },
 };
 
 type ResourceLink = {

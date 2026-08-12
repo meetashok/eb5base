@@ -1,5 +1,6 @@
 export const metadata = {
   title: 'Privacy Policy',
+  alternates: { canonical: 'https://eb5base.com/privacy' },
 };
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
