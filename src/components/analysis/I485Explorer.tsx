@@ -549,21 +549,23 @@ export default function I485Explorer({
         {view === 'snapshot' && snapshotCells && (
           <>
             <div className="flex flex-wrap items-end justify-between gap-3">
-              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                <h3 className="text-sm font-semibold text-primary">
+              <div className="space-y-1 min-w-0">
+                <p className="text-xs font-medium text-neutral/55">
                   Pending I-485 by priority date
                   {loading ? (
-                    <span className="ml-2 font-normal text-neutral/55">Updating…</span>
+                    <span className="ml-2 font-normal text-neutral/40">Updating…</span>
                   ) : null}
-                </h3>
-                <span className="text-2xl font-bold tabular-nums text-primary">
-                  {nf.format(snapshotTotal.count)}
-                  {snapshotTotal.suppressedCells > 0 ? '+' : ''}
-                </span>
-                <span className="text-xs text-neutral/70">
-                  total pending
-                  {selectedRelease ? ` as of ${formatAsOf(selectedRelease.as_of_date)}` : ''}
-                </span>
+                </p>
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <span className="text-2xl font-bold tabular-nums text-primary">
+                    {nf.format(snapshotTotal.count)}
+                    {snapshotTotal.suppressedCells > 0 ? '+' : ''}
+                  </span>
+                  <span className="text-xs text-neutral/70">
+                    total pending
+                    {selectedRelease ? ` as of ${formatAsOf(selectedRelease.as_of_date)}` : ''}
+                  </span>
+                </div>
               </div>
               <GrainToggle grain={grain} onChange={setGrain} />
             </div>
