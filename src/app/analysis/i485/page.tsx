@@ -112,11 +112,6 @@ export default async function I485InventoryPage() {
               July 2025 snapshots were never published.
             </li>
           </ul>
-          <p className="text-xs text-neutral/70">
-            Source: USCIS, &quot;Pending Applications for Employment-Based Preference
-            Categories&quot; (monthly XLSX). This page is information only, not legal or financial
-            advice.
-          </p>
         </div>
       </section>
     </div>
