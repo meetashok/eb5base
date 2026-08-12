@@ -158,7 +158,7 @@ export function toggleCategoryFilter(current: string[], next: string): string[] 
       : ['EB5_ALL'];
   }
 
-  let base = eb5Only.filter((v) => v !== 'EB5_ALL');
+  const base = eb5Only.filter((v) => v !== 'EB5_ALL');
 
   if (next === 'EB5_SET_ASIDES') {
     if (base.includes(next)) {
