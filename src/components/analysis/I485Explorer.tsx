@@ -205,7 +205,7 @@ export default function I485Explorer({
   const [view, setView] = useState<ViewId>('snapshot');
   const [countries, setCountries] = useState<I485Country[]>([]);
   const [categories, setCategories] = useState<string[]>([...DEFAULT_CATEGORIES]);
-  const [grain, setGrain] = useState<PriorityDateGrain>('month');
+  const [grain, setGrain] = useState<PriorityDateGrain>('quarter');
   const [split, setSplit] = useState<SnapshotSplit>('none');
 
   // Snapshot view state
