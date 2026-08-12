@@ -39,14 +39,17 @@ export default function I485SourceDataPage() {
     a.as_of_date < b.as_of_date ? 1 : -1,
   );
 
-  const byYear = new Map<string, ManifestFile[]>();
-  for (const f of files) {
-    const year = f.as_of_date.slice(0, 4);
-    const list = byYear.get(year) ?? [];
-    list.push(f);
-    byYear.set(year, list);
+  const timeline = buildWorkbookTimeline(files);
+  const byYear = new Map<string, WorkbookEntry[]>();
+  for (const entry of timeline) {
+    const list = byYear.get(entry.year) ?? [];
+    list.push(entry);
+    byYear.set(entry.year, list);
   }
-  const years = Array.from(byYear.keys());
+  for (const list of Array.from(byYear.values())) {
+    list.sort((a, b) => (a.ym < b.ym ? 1 : -1));
+  }
+  const yearsDesc = Array.from(byYear.keys()).sort((a, b) => b.localeCompare(a));
 
   return (
     <div>
@@ -117,24 +120,35 @@ export default function I485SourceDataPage() {
 
         <div className="space-y-3">
           <h2 className="text-sm font-bold text-primary">
-            Monthly workbooks ({files.length})
+            Monthly workbooks ({files.length} published)
           </h2>
           <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 space-y-4">
             <p className="text-xs text-neutral/70 leading-relaxed">
               Dates are the inventory as-of day; muted text is when USCIS posted the workbook.
-              Each link downloads the XLSX from uscis.gov.
+              Each link downloads the XLSX from uscis.gov. Months labeled{' '}
+              <span className="font-medium text-neutral/80">not posted</span> are gaps where USCIS
+              never published a snapshot (for example June and July 2025).
             </p>
-            {years.map((year) => (
+            {yearsDesc.map((year) => (
               <div key={year} className="space-y-1.5">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-neutral/60">
                   {year}
                 </h3>
                 <ul className="flex flex-wrap gap-x-4 gap-y-2">
-                  {(byYear.get(year) ?? []).map((f) => {
+                  {(byYear.get(year) ?? []).map((entry) => {
+                    if (entry.kind === 'missing') {
+                      return (
+                        <li key={entry.ym} className="leading-tight">
+                          <span className="text-sm font-medium tabular-nums text-neutral/45">
+                            {entry.monthLabel}
+                          </span>
+                          <span className="block text-[10px] text-neutral/45">not posted</span>
+                        </li>
+                      );
+                    }
+                    const f = entry.file;
                     const asOf = formatAsOfShortDay(f.as_of_date);
-                    const posted = f.published_date
-                      ? formatMdY(f.published_date)
-                      : null;
+                    const posted = f.published_date ? formatMdY(f.published_date) : null;
                     const tip = posted
                       ? `Inventory as of ${formatAsOfLong(f.as_of_date)} · Posted ${formatAsOfLong(f.published_date!)}`
                       : `Inventory as of ${formatAsOfLong(f.as_of_date)}`;
@@ -174,6 +188,49 @@ export default function I485SourceDataPage() {
       </section>
     </div>
   );
+}
+
+type WorkbookEntry =
+  | { kind: 'published'; year: string; ym: string; file: ManifestFile }
+  | { kind: 'missing'; year: string; ym: string; monthLabel: string };
+
+/** Fill every calendar month from the first through last as-of, marking USCIS gaps. */
+function buildWorkbookTimeline(files: ManifestFile[]): WorkbookEntry[] {
+  if (files.length === 0) return [];
+  const byYm = new Map<string, ManifestFile>();
+  for (const f of files) {
+    const ym = f.as_of_date.slice(0, 7);
+    const existing = byYm.get(ym);
+    if (!existing || f.as_of_date > existing.as_of_date) byYm.set(ym, f);
+  }
+
+  const sorted = [...files].sort((a, b) => a.as_of_date.localeCompare(b.as_of_date));
+  const firstYm = sorted[0]!.as_of_date.slice(0, 7);
+  const lastYm = sorted[sorted.length - 1]!.as_of_date.slice(0, 7);
+  let [y, m] = firstYm.split('-').map(Number) as [number, number];
+  const [endY, endM] = lastYm.split('-').map(Number) as [number, number];
+
+  const entries: WorkbookEntry[] = [];
+  while (y < endY || (y === endY && m <= endM)) {
+    const ym = `${y}-${String(m).padStart(2, '0')}`;
+    const year = String(y);
+    const file = byYm.get(ym);
+    if (file) {
+      entries.push({ kind: 'published', year, ym, file });
+    } else {
+      const monthLabel = new Date(Date.UTC(y, m - 1, 1)).toLocaleDateString('en-US', {
+        month: 'short',
+        timeZone: 'UTC',
+      });
+      entries.push({ kind: 'missing', year, ym, monthLabel });
+    }
+    m += 1;
+    if (m > 12) {
+      m = 1;
+      y += 1;
+    }
+  }
+  return entries;
 }
 
 /** Month + day only (year is the group heading). */
