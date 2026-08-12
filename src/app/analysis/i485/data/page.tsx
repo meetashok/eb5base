@@ -129,51 +129,55 @@ export default function I485SourceDataPage() {
               <span className="font-medium text-neutral/80">not posted</span> are gaps where USCIS
               never published a snapshot (for example June and July 2025).
             </p>
-            {yearsDesc.map((year) => (
-              <div key={year} className="space-y-1.5">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-neutral/60">
-                  {year}
-                </h3>
-                <ul className="flex flex-wrap gap-x-4 gap-y-2">
-                  {(byYear.get(year) ?? []).map((entry) => {
-                    if (entry.kind === 'missing') {
+            {yearsDesc.map((year) => {
+              // Calendar order within the year (Jan → Dec) so a 6-col grid reads as two halves.
+              const monthsAsc = [...(byYear.get(year) ?? [])].reverse();
+              return (
+                <div key={year} className="space-y-1.5">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-neutral/60">
+                    {year}
+                  </h3>
+                  <ul className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-x-4 gap-y-2">
+                    {monthsAsc.map((entry) => {
+                      if (entry.kind === 'missing') {
+                        return (
+                          <li key={entry.ym} className="leading-tight">
+                            <span className="text-sm font-medium tabular-nums text-neutral/45">
+                              {entry.monthLabel}
+                            </span>
+                            <span className="block text-[10px] text-neutral/45">not posted</span>
+                          </li>
+                        );
+                      }
+                      const f = entry.file;
+                      const asOf = formatAsOfShortDay(f.as_of_date);
+                      const posted = f.published_date ? formatMdY(f.published_date) : null;
+                      const tip = posted
+                        ? `Inventory as of ${formatAsOfLong(f.as_of_date)} · Posted ${formatAsOfLong(f.published_date!)}`
+                        : `Inventory as of ${formatAsOfLong(f.as_of_date)}`;
                       return (
-                        <li key={entry.ym} className="leading-tight">
-                          <span className="text-sm font-medium tabular-nums text-neutral/45">
-                            {entry.monthLabel}
-                          </span>
-                          <span className="block text-[10px] text-neutral/45">not posted</span>
+                        <li key={f.as_of_date} className="leading-tight">
+                          <a
+                            href={f.source_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title={tip}
+                            className="text-sm font-medium text-secondary underline underline-offset-2 hover:text-primary tabular-nums"
+                          >
+                            {asOf}
+                          </a>
+                          {posted && (
+                            <span className="block text-[10px] text-neutral/55 tabular-nums">
+                              posted {posted}
+                            </span>
+                          )}
                         </li>
                       );
-                    }
-                    const f = entry.file;
-                    const asOf = formatAsOfShortDay(f.as_of_date);
-                    const posted = f.published_date ? formatMdY(f.published_date) : null;
-                    const tip = posted
-                      ? `Inventory as of ${formatAsOfLong(f.as_of_date)} · Posted ${formatAsOfLong(f.published_date!)}`
-                      : `Inventory as of ${formatAsOfLong(f.as_of_date)}`;
-                    return (
-                      <li key={f.as_of_date} className="leading-tight">
-                        <a
-                          href={f.source_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          title={tip}
-                          className="text-sm font-medium text-secondary underline underline-offset-2 hover:text-primary tabular-nums"
-                        >
-                          {asOf}
-                        </a>
-                        {posted && (
-                          <span className="block text-[10px] text-neutral/55 tabular-nums">
-                            posted {posted}
-                          </span>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            ))}
+                    })}
+                  </ul>
+                </div>
+              );
+            })}
           </div>
         </div>
 
