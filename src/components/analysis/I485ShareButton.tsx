@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   chartPathWithParams,
+  sharePayloadToSearchParams,
   shareViewTitle,
   type I485SharePayload,
 } from '@/lib/analysis/i485ShareParams';
@@ -31,6 +32,10 @@ function ShareIcon({ className }: { className?: string }) {
 
 function isAbortError(err: unknown): boolean {
   return err instanceof DOMException && err.name === 'AbortError';
+}
+
+function payloadKey(payload: I485SharePayload): string {
+  return sharePayloadToSearchParams(payload).toString();
 }
 
 /** Prefer the native share sheet on mobile; fall back to clipboard on desktop. */
@@ -117,10 +122,40 @@ async function mintShortShareUrl(payload: I485SharePayload): Promise<string | nu
 
 export default function I485ShareButton({
   buildPayload,
+  shareKey,
 }: {
   buildPayload: () => I485SharePayload;
+  /** Stable filter fingerprint; when it changes we pre-mint a short URL. */
+  shareKey?: string;
 }) {
   const [status, setStatus] = useState<'idle' | 'working' | 'copied' | 'error'>('idle');
+  /** Pre-minted short URL for the current filter payload (ready before tap). */
+  const [readyShortUrl, setReadyShortUrl] = useState<string | null>(null);
+  const readyKeyRef = useRef<string>('');
+  const buildPayloadRef = useRef(buildPayload);
+  buildPayloadRef.current = buildPayload;
+
+  // Mint a short link whenever filters change so Share can open immediately with it.
+  useEffect(() => {
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      const payload = buildPayloadRef.current();
+      const key = shareKey ?? payloadKey(payload);
+      if (key === readyKeyRef.current) return;
+
+      void (async () => {
+        const minted = await mintShortShareUrl(payload);
+        if (cancelled || !minted) return;
+        readyKeyRef.current = key;
+        setReadyShortUrl(minted);
+      })();
+    }, 350);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [shareKey]);
 
   async function onShare() {
     if (status === 'working') return;
@@ -130,21 +165,30 @@ export default function I485ShareButton({
       const title = shareViewTitle(payload.view);
       const text = `${title} · EB5 Base`;
       const longUrl = `${SITE_URL}${chartPathWithParams(payload)}`;
+      const key = shareKey ?? payloadKey(payload);
+      const shortUrl =
+        readyKeyRef.current === key && readyShortUrl ? readyShortUrl : null;
+      const url = shortUrl ?? longUrl;
       const canNativeShare = typeof navigator.share === 'function';
 
-      // Mobile: open the share sheet immediately with the long URL.
-      // Awaiting fetch/clipboard first burns the click gesture on iOS/Android.
+      // Open the sheet immediately (no await fetch) so iOS keeps the user gesture.
       if (canNativeShare) {
-        const result = await openShareSheet({ title, text, url: longUrl });
+        const result = await openShareSheet({ title, text, url });
         if (result === 'shared' || result === 'aborted') {
           setStatus('idle');
-          void mintShortShareUrl(payload);
+          if (!shortUrl) {
+            void mintShortShareUrl(payload).then((minted) => {
+              if (!minted) return;
+              readyKeyRef.current = key;
+              setReadyShortUrl(minted);
+            });
+          }
           return;
         }
       }
 
       // Desktop / share unavailable: copy while the gesture is still usable.
-      if (!(await copyText(longUrl, true))) {
+      if (!(await copyText(url, true))) {
         setStatus('error');
         window.setTimeout(() => setStatus('idle'), 2500);
         return;
@@ -152,9 +196,13 @@ export default function I485ShareButton({
       setStatus('copied');
       window.setTimeout(() => setStatus('idle'), 2000);
 
-      const minted = await mintShortShareUrl(payload);
-      if (minted) {
-        void copyText(minted, false);
+      if (!shortUrl) {
+        const minted = await mintShortShareUrl(payload);
+        if (minted) {
+          readyKeyRef.current = key;
+          setReadyShortUrl(minted);
+          void copyText(minted, false);
+        }
       }
     } catch {
       setStatus('error');

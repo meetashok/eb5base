@@ -27,6 +27,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${title} | EB5 Base`,
     description,
     alternates: { canonical: url },
+    icons: {
+      icon: [
+        { url: '/favicon-32.png', sizes: '32x32', type: 'image/png' },
+        { url: '/logo.png', type: 'image/png' },
+      ],
+      apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+    },
     openGraph: {
       title,
       description,

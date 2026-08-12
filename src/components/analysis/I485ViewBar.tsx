@@ -45,9 +45,9 @@ export const I485_VIEWS: {
 
 function tabClass(selected: boolean): string {
   if (selected) {
-    return 'shrink-0 px-3 sm:px-3.5 md:px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary bg-primary text-primary-content shadow-soft';
+    return 'shrink-0 whitespace-nowrap px-2.5 sm:px-3.5 md:px-4 py-2 text-[13px] sm:text-sm font-semibold rounded-lg transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary bg-primary text-primary-content shadow-soft';
   }
-  return 'shrink-0 px-3 sm:px-3.5 md:px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary text-neutral bg-base-200/80 hover:bg-base-300 hover:text-primary';
+  return 'shrink-0 whitespace-nowrap px-2.5 sm:px-3.5 md:px-4 py-2 text-[13px] sm:text-sm font-semibold rounded-lg transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary text-neutral bg-base-200/80 hover:bg-base-300 hover:text-primary';
 }
 
 export default function I485ViewBar({
@@ -62,11 +62,11 @@ export default function I485ViewBar({
 
   return (
     <div className="border-b-2 border-base-300 bg-base-100 sticky top-[var(--site-sticky-offset)] z-30 shadow-sm">
-      <div className="max-w-4xl mx-auto px-4">
+      <div className="max-w-4xl mx-auto px-3 sm:px-4">
         <div
           role="tablist"
           aria-label="I-485 inventory sections"
-          className="flex gap-1 py-2.5 -mx-1 px-1 overflow-x-auto"
+          className="flex gap-1 py-2.5 -mx-1 px-1 overflow-x-auto scrollbar-thin"
         >
           {I485_VIEWS.map((t) => {
             const selected = current === t.id;
@@ -77,10 +77,10 @@ export default function I485ViewBar({
                 role="tab"
                 aria-selected={selected}
                 id={`i485-view-${t.id}`}
-                className={`${tabClass(selected)} flex-1 md:flex-none min-w-0 text-center`}
+                className={`${tabClass(selected)} text-center`}
                 scroll={false}
               >
-                <span className="md:hidden truncate">{t.shortLabel}</span>
+                <span className="md:hidden">{t.shortLabel}</span>
                 <span className="hidden md:inline">{t.label}</span>
               </Link>
             );
