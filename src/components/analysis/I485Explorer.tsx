@@ -131,20 +131,17 @@ function ChartTitleBlock({
   metricClassName?: string;
   metricNote?: ReactNode;
   loading?: boolean;
-  /** Compact action (e.g. Share) aligned with the title, not stacked in controls. */
+  /** Compact action (e.g. Share) under the subtitle so it feels anchored. */
   action?: ReactNode;
 }) {
   return (
     <div className="min-w-0 flex-1 space-y-1">
-      <div className="flex items-start justify-between gap-2">
-        <h2 className="min-w-0 text-sm font-semibold leading-snug text-primary sm:text-base">
-          {title}
-          {loading ? (
-            <span className="ml-2 text-xs font-normal text-neutral/40">Updating…</span>
-          ) : null}
-        </h2>
-        {action ? <div className="shrink-0 pt-0.5">{action}</div> : null}
-      </div>
+      <h2 className="text-sm font-semibold leading-snug text-primary sm:text-base">
+        {title}
+        {loading ? (
+          <span className="ml-2 text-xs font-normal text-neutral/40">Updating…</span>
+        ) : null}
+      </h2>
       {metric != null || metricNote != null ? (
         <p className="text-sm leading-snug text-neutral/70">
           {metric != null ? (
@@ -156,6 +153,7 @@ function ChartTitleBlock({
           {metricNote != null ? <span>{metricNote}</span> : null}
         </p>
       ) : null}
+      {action ? <div className="pt-0.5">{action}</div> : null}
     </div>
   );
 }
