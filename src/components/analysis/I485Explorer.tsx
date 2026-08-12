@@ -732,7 +732,7 @@ export default function I485Explorer({
             )}
             {grain === 'quarter' && (
               <p className="text-xs text-neutral/70">
-                Quarters follow the federal fiscal year (Q1 = Oct–Dec).
+                Quarters are calendar year (Q1 = Jan–Mar).
               </p>
             )}
           </>
@@ -809,7 +809,7 @@ export default function I485Explorer({
             )}
             {grain === 'quarter' && (
               <p className="text-xs text-neutral/70">
-                Quarters follow the federal fiscal year (Q1 = Oct–Dec).
+                Quarters are calendar year (Q1 = Jan–Mar).
               </p>
             )}
 

@@ -265,19 +265,17 @@ export type PriorityDateGrain = 'month' | 'quarter' | 'year';
 /**
  * Federal / USCIS fiscal year: Oct 1 – Sep 30.
  * October–December of calendar year Y belong to FY Y+1.
+ * Used only by the Fiscal years grain.
  */
 export function fiscalYear(calendarYear: number, month: number): number {
   return month >= 10 ? calendarYear + 1 : calendarYear;
 }
 
-/**
- * Fiscal quarter within a federal FY:
- * Q1 Oct–Dec, Q2 Jan–Mar, Q3 Apr–Jun, Q4 Jul–Sep.
- */
-export function fiscalQuarter(month: number): 1 | 2 | 3 | 4 {
-  if (month >= 10) return 1;
-  if (month <= 3) return 2;
-  if (month <= 6) return 3;
+/** Calendar quarter: Q1 Jan–Mar, Q2 Apr–Jun, Q3 Jul–Sep, Q4 Oct–Dec. */
+export function calendarQuarter(month: number): 1 | 2 | 3 | 4 {
+  if (month <= 3) return 1;
+  if (month <= 6) return 2;
+  if (month <= 9) return 3;
   return 4;
 }
 
@@ -312,12 +310,11 @@ export function priorityDateBucket(
   }
 
   if (grain === 'quarter') {
-    const fy = fiscalYear(y, m);
-    const q = fiscalQuarter(m);
+    const q = calendarQuarter(m);
     return {
-      key: `fy${fy}-q${q}`,
-      label: `FY${fy} Q${q}`,
-      shortLabel: q === 1 ? `FY${String(fy).slice(2)}` : `Q${q}`,
+      key: `${y}-q${q}`,
+      label: `Q${q} ${y}`,
+      shortLabel: q === 1 ? String(y) : `Q${q}`,
     };
   }
 
