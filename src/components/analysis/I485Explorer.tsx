@@ -1198,9 +1198,12 @@ export default function I485Explorer({
             </p>
             {compareFacetSplit !== 'none' ? (
               compareFacets && compareFacets.length > 0 ? (
-                <div className="divide-y divide-base-300">
+                <div className="-mx-4 divide-y divide-base-300 sm:-mx-5">
                   {compareFacets.map((facet) => (
-                    <div key={facet.key} className="space-y-1.5 py-5 first:pt-0 last:pb-0">
+                    <div
+                      key={facet.key}
+                      className="space-y-1.5 px-4 py-5 first:pt-0 last:pb-0 sm:px-5"
+                    >
                       <h3 className="text-sm font-semibold text-primary">{facet.label}</h3>
                       {facet.bars.some((d) => d.value !== 0) ? (
                         <DiffBarChart
@@ -1369,9 +1372,12 @@ export default function I485Explorer({
             <p className="text-xs text-neutral/70">{cohortContextCaption}</p>
             {cohortFacetSplit !== 'none' ? (
               cohortFacets && cohortFacets.length > 0 ? (
-                <div className="divide-y divide-base-300">
+                <div className="-mx-4 divide-y divide-base-300 sm:-mx-5">
                   {cohortFacets.map((facet) => (
-                    <div key={facet.key} className="space-y-1.5 py-5 first:pt-0 last:pb-0">
+                    <div
+                      key={facet.key}
+                      className="space-y-1.5 px-4 py-5 first:pt-0 last:pb-0 sm:px-5"
+                    >
                       <h3 className="text-sm font-semibold text-primary">{facet.label}</h3>
                       {facet.split && facet.split.series.length > 0 ? (
                         <MultiSeriesLineChart
