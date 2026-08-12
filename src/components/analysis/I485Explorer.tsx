@@ -10,7 +10,6 @@ import I485PriorityDateRangePicker from '@/components/analysis/I485PriorityDateR
 import {
   COHORT_SPLIT_OPTIONS,
   DEFAULT_I485_CATEGORIES,
-  MONTH_LABELS,
   SNAPSHOT_SPLIT_OPTIONS,
   USCIS_DATA_PAGE_URL,
   aggregateByPriorityDateGrain,
