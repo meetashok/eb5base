@@ -58,6 +58,67 @@ async function openShareSheet(shareData: ShareData): Promise<'shared' | 'aborted
   return 'unavailable';
 }
 
+/**
+ * Copy helpers. Browsers drop the click "user activation" after `await fetch`,
+ * so we copy the long URL first, then mint a short link in the background.
+ */
+async function copyViaClipboardApi(text: string): Promise<boolean> {
+  try {
+    if (!navigator.clipboard?.writeText) return false;
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function copyViaExecCommand(text: string): boolean {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '0';
+    ta.style.left = '0';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0, text.length);
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return ok;
+  } catch {
+    return false;
+  }
+}
+
+async function copyText(text: string, allowPrompt = false): Promise<boolean> {
+  if (await copyViaClipboardApi(text)) return true;
+  if (copyViaExecCommand(text)) return true;
+  if (!allowPrompt) return false;
+  try {
+    return window.prompt('Copy this link:', text) !== null;
+  } catch {
+    return false;
+  }
+}
+
+async function mintShortShareUrl(payload: I485SharePayload): Promise<string | null> {
+  try {
+    const res = await fetch('/api/analysis/i485/share', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = (await res.json().catch(() => null)) as { url?: string } | null;
+    if (res.ok && data?.url) return data.url;
+  } catch {
+    // Keep long URL.
+  }
+  return null;
+}
+
 export default function I485ShareButton({
   buildPayload,
 }: {
@@ -71,34 +132,39 @@ export default function I485ShareButton({
     try {
       const payload = buildPayload();
       const title = shareViewTitle(payload.view);
-      const text = `${title} — EB5 Base`;
-      // Immediate absolute URL so we always have something to share if minting fails.
+      const text = `${title} · EB5 Base`;
       const longUrl = `${SITE_URL}${chartPathWithParams(payload)}`;
-      let url = longUrl;
+      const mintPromise = mintShortShareUrl(payload);
 
-      try {
-        const res = await fetch('/api/analysis/i485/share', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-        const data = (await res.json().catch(() => null)) as
-          | { url?: string; error?: string }
-          | null;
-        if (res.ok && data?.url) url = data.url;
-      } catch {
-        // Keep longUrl — still open the share sheet.
+      // Copy first so we still have user activation (fetch would burn it).
+      const copiedEarly = await copyText(longUrl, false);
+
+      if (typeof navigator.share === 'function') {
+        const minted = await mintPromise;
+        const url = minted ?? longUrl;
+        const result = await openShareSheet({ title, text, url });
+        if (result === 'shared' || result === 'aborted') {
+          setStatus('idle');
+          return;
+        }
+        if (minted && minted !== longUrl) {
+          void copyText(minted, false);
+        }
+      } else {
+        const minted = await mintPromise;
+        if (minted) {
+          void copyText(minted, false);
+        }
       }
 
-      const result = await openShareSheet({ title, text, url });
-      if (result === 'shared' || result === 'aborted') {
-        setStatus('idle');
+      if (copiedEarly || (await copyText(longUrl, true))) {
+        setStatus('copied');
+        window.setTimeout(() => setStatus('idle'), 2000);
         return;
       }
 
-      await navigator.clipboard.writeText(url);
-      setStatus('copied');
-      window.setTimeout(() => setStatus('idle'), 2000);
+      setStatus('error');
+      window.setTimeout(() => setStatus('idle'), 2500);
     } catch {
       setStatus('error');
       window.setTimeout(() => setStatus('idle'), 2500);
