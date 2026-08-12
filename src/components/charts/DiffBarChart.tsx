@@ -37,6 +37,11 @@ export interface DiffBarChartProps {
   ariaLabel?: string;
   /** Caption under the plot clarifying what the X axis measures. */
   xAxisLabel?: string;
+  /**
+   * Force a shared Y domain (e.g. across facet charts). When omitted, the
+   * domain is inferred from this chart's data alone.
+   */
+  yDomain?: [number, number];
   upColor?: string;
   downColor?: string;
   hoverColor?: string;
@@ -71,6 +76,7 @@ export default function DiffBarChart({
   showTick,
   ariaLabel = 'Change bar chart',
   xAxisLabel,
+  yDomain,
   upColor = chartColors.barUp,
   downColor = chartColors.barDown,
   hoverColor = chartColors.barHover,
@@ -78,8 +84,12 @@ export default function DiffBarChart({
   const [hoverKey, setHoverKey] = useState<string | null>(null);
   const { ref, width } = useElementWidth<HTMLDivElement>();
 
-  const dataMin = Math.min(0, ...data.map((d) => d.value));
-  const dataMax = Math.max(0, ...data.map((d) => d.value));
+  const dataMin = yDomain
+    ? yDomain[0]
+    : Math.min(0, ...data.map((d) => d.value));
+  const dataMax = yDomain
+    ? yDomain[1]
+    : Math.max(0, ...data.map((d) => d.value));
   const { ticks, domain } = useMemo(
     () => niceSignedTicks(dataMin, dataMax),
     [dataMin, dataMax],

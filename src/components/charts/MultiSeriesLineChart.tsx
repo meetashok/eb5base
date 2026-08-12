@@ -56,6 +56,11 @@ export interface MultiSeriesLineChartProps {
   seriesColors?: Record<string, string>;
   /** When false, hide the legend row (parent may render a shared one). */
   showLegend?: boolean;
+  /**
+   * Force a shared Y max (e.g. across facet charts). When omitted, the max
+   * is inferred from visible series in this chart alone.
+   */
+  yMax?: number;
 }
 
 const margin = { top: 12, right: 12, bottom: 28, left: 40 };
@@ -95,6 +100,7 @@ export default function MultiSeriesLineChart({
   onLegendFocusChange,
   seriesColors,
   showLegend = true,
+  yMax: yMaxProp,
 }: MultiSeriesLineChartProps) {
   const { ref, width } = useElementWidth<HTMLDivElement>();
   const [hoverKey, setHoverKey] = useState<string | null>(null);
@@ -167,7 +173,10 @@ export default function MultiSeriesLineChart({
     return { strokeWidth: 1.5, opacity: 0.22 };
   }
 
-  const dataMax = Math.max(1, ...visible.flatMap((s) => s.data.map((d) => d.value)));
+  const dataMax =
+    yMaxProp != null
+      ? Math.max(1, yMaxProp)
+      : Math.max(1, ...visible.flatMap((s) => s.data.map((d) => d.value)));
   const ticks = useMemo(() => niceTicks(dataMax), [dataMax]);
   const axisMax = ticks[ticks.length - 1] || dataMax;
 

@@ -30,6 +30,11 @@ export interface LineChartProps {
   lineColor?: string;
   pointColor?: string;
   pointHoverColor?: string;
+  /**
+   * Force a shared Y max (e.g. across facet charts). When omitted, the max
+   * is inferred from this chart's data alone.
+   */
+  yMax?: number;
 }
 
 const margin = { top: 12, right: 12, bottom: 28, left: 40 };
@@ -43,10 +48,11 @@ function LineChartInner({
   lineColor,
   pointColor,
   pointHoverColor,
+  yMax: yMaxProp,
 }: LineChartProps & { width: number; height: number }) {
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
 
-  const dataMax = Math.max(...data.map((d) => d.value), 1);
+  const dataMax = Math.max(1, yMaxProp ?? Math.max(...data.map((d) => d.value), 1));
   const ticks = useMemo(() => niceTicks(dataMax), [dataMax]);
   const axisMax = ticks[ticks.length - 1] || dataMax;
 
@@ -197,6 +203,7 @@ export default function LineChart({
   lineColor = chartColors.line,
   pointColor = chartColors.point,
   pointHoverColor = chartColors.pointHover,
+  yMax,
 }: LineChartProps) {
   return (
     <div className="w-full space-y-1">
@@ -212,6 +219,7 @@ export default function LineChart({
               lineColor={lineColor}
               pointColor={pointColor}
               pointHoverColor={pointHoverColor}
+              yMax={yMax}
             />
           )}
         </ParentSize>

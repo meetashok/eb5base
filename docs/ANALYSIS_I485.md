@@ -59,14 +59,16 @@ always monthly USCIS snapshots (one point per release). Two independent controls
   snapshot
 - **Split**: None · By country · By category — country/category open **one chart
   per facet** (small multiples). Combines with priority-date series when both
-  are set
+  are set. When Split is on, a **Shared Y-axis** toggle (default on) keeps
+  facet scales aligned; turn it off for independent axes per facet.
 
 Compare diffs two snapshot releases by priority-date bucket (later − earlier).
 It uses the same priority-date year chips as cohort (defaults **2023–2024** so
 recent growth does not dominate older cohorts), a **Priority date** grain toggle
 (months / quarters / fiscal years), and **Split** into faceted diff charts by
-country or category. Hover on a bar shows earlier → later counts and the signed
-change; **Show data** reveals the underlying table.
+country or category (with the same Shared Y-axis toggle). Hover on a bar shows
+earlier → later counts and the signed change; **Show data** reveals the
+underlying table.
 
 ## Data caveats (reflected in page copy)
 

@@ -250,6 +250,29 @@ function CohortFacetSplitToggle({
   );
 }
 
+function SharedYAxisToggle({
+  value,
+  onChange,
+}: {
+  value: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <label className="flex cursor-pointer select-none items-center gap-2">
+      <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral/55">
+        Shared Y-axis
+      </span>
+      <input
+        type="checkbox"
+        className="toggle toggle-xs toggle-primary"
+        checked={value}
+        onChange={(e) => onChange(e.target.checked)}
+        aria-label="Share Y-axis scale across facet charts"
+      />
+    </label>
+  );
+}
+
 function showPriorityDateTick(
   grain: PriorityDateGrain,
   data: { meta: TimeBucketMeta }[],
@@ -317,6 +340,8 @@ export default function I485Explorer({
   const [cohortFacetSplit, setCohortFacetSplit] = useState<CohortFacetSplit>('none');
   const [compareFacetSplit, setCompareFacetSplit] = useState<CohortFacetSplit>('none');
   const [compareShowData, setCompareShowData] = useState(false);
+  /** When faceted, use one Y scale across small multiples (default on). */
+  const [facetSharedYAxis, setFacetSharedYAxis] = useState(true);
   const [cohortCells, setCohortCells] = useState<I485Cell[] | null>(null);
   /** Shared across country/category facet charts so legend toggles stay in sync. */
   const [cohortSharedHiddenKeys, setCohortSharedHiddenKeys] = useState<Set<string>>(
@@ -362,6 +387,7 @@ export default function I485Explorer({
       setCohortFacetSplit(stored.cohortFacetSplit);
       setCompareFacetSplit(stored.compareFacetSplit);
       setCompareShowData(stored.compareShowData);
+      setFacetSharedYAxis(stored.facetSharedYAxis);
       if (ids.releaseId != null) setReleaseId(ids.releaseId);
       if (ids.compareFromId != null) setCompareFromId(ids.compareFromId);
       if (ids.compareToId != null) setCompareToId(ids.compareToId);
@@ -392,6 +418,7 @@ export default function I485Explorer({
       cohortFacetSplit,
       compareFacetSplit,
       compareShowData,
+      facetSharedYAxis,
       releaseId,
       compareFromId,
       compareToId,
@@ -409,6 +436,7 @@ export default function I485Explorer({
     cohortFacetSplit,
     compareFacetSplit,
     compareShowData,
+    facetSharedYAxis,
     releaseId,
     compareFromId,
     compareToId,
@@ -721,6 +749,21 @@ export default function I485Explorer({
     selectedPdYears,
   ]);
 
+  const cohortSharedYMax = useMemo(() => {
+    if (!facetSharedYAxis || !cohortFacets || cohortFacets.length === 0) return undefined;
+    let max = 1;
+    for (const facet of cohortFacets) {
+      if (facet.splitLines.length > 0) {
+        for (const s of facet.splitLines) {
+          for (const p of s.data) max = Math.max(max, p.value);
+        }
+      } else {
+        for (const p of facet.line) max = Math.max(max, p.value);
+      }
+    }
+    return max;
+  }, [facetSharedYAxis, cohortFacets]);
+
   const cohortFacetSeriesKeys = useMemo(() => {
     if (!cohortFacets) return [] as string[];
     const seen = new Map<string, string>();
@@ -884,6 +927,19 @@ export default function I485Explorer({
     countries,
     categories,
   ]);
+
+  const compareSharedYDomain = useMemo((): [number, number] | undefined => {
+    if (!facetSharedYAxis || !compareFacets || compareFacets.length === 0) return undefined;
+    let min = 0;
+    let max = 0;
+    for (const facet of compareFacets) {
+      for (const bar of facet.bars) {
+        min = Math.min(min, bar.value);
+        max = Math.max(max, bar.value);
+      }
+    }
+    return [min, max];
+  }, [facetSharedYAxis, compareFacets]);
 
   const compareNet = useMemo(() => {
     const earlierTotal = totalWithNote(compareRows.map((r) => r.earlier));
@@ -1190,6 +1246,12 @@ export default function I485Explorer({
                     value={compareFacetSplit}
                     onChange={setCompareFacetSplit}
                   />
+                  {compareFacetSplit !== 'none' ? (
+                    <SharedYAxisToggle
+                      value={facetSharedYAxis}
+                      onChange={setFacetSharedYAxis}
+                    />
+                  ) : null}
                 </div>
               </div>
             </ChartHeader>
@@ -1210,6 +1272,7 @@ export default function I485Explorer({
                           data={facet.bars}
                           height={200}
                           minBarWidth={grain === 'month' ? 8 : grain === 'quarter' ? 22 : 36}
+                          yDomain={compareSharedYDomain}
                           showTick={(d, i) =>
                             showPriorityDateTick(
                               grain,
@@ -1366,6 +1429,12 @@ export default function I485Explorer({
                     value={cohortFacetSplit}
                     onChange={setCohortFacetSplit}
                   />
+                  {cohortFacetSplit !== 'none' ? (
+                    <SharedYAxisToggle
+                      value={facetSharedYAxis}
+                      onChange={setFacetSharedYAxis}
+                    />
+                  ) : null}
                 </div>
               </div>
             </ChartHeader>
@@ -1386,6 +1455,7 @@ export default function I485Explorer({
                           height={180}
                           xAxisLabel="USCIS snapshot"
                           hoverLabelPrefix="Snapshot date"
+                          yMax={cohortSharedYMax}
                           hiddenKeys={cohortSharedHiddenKeys}
                           onToggleSeries={toggleCohortSharedSeries}
                           legendFocusKey={cohortSharedLegendFocus}
@@ -1407,6 +1477,7 @@ export default function I485Explorer({
                           height={180}
                           xAxisLabel="USCIS snapshot"
                           hoverLabelPrefix="Snapshot date"
+                          yMax={cohortSharedYMax}
                           ariaLabel={`${facet.label} pending applications across USCIS snapshots`}
                         />
                       )}

@@ -39,6 +39,8 @@ export interface I485ExplorerPrefs {
   cohortFacetSplit: CohortFacetSplit;
   compareFacetSplit: CohortFacetSplit;
   compareShowData: boolean;
+  /** Share Y scale across facet small multiples (compare + cohort). */
+  facetSharedYAxis: boolean;
   /** Snapshot as-of release id, when still present in the catalog. */
   releaseId: number | null;
   compareFromId: number | null;
@@ -109,6 +111,7 @@ export function defaultI485ExplorerPrefs(): I485ExplorerPrefs {
     cohortFacetSplit: 'none',
     compareFacetSplit: 'none',
     compareShowData: false,
+    facetSharedYAxis: true,
     releaseId: null,
     compareFromId: null,
     compareToId: null,
@@ -161,6 +164,7 @@ export function parseI485ExplorerPrefs(
     cohortFacetSplit,
     compareFacetSplit,
     compareShowData: Boolean(o.compareShowData),
+    facetSharedYAxis: o.facetSharedYAxis === undefined ? true : Boolean(o.facetSharedYAxis),
     releaseId: asNumber(o.releaseId),
     compareFromId: asNumber(o.compareFromId),
     compareToId: asNumber(o.compareToId),
