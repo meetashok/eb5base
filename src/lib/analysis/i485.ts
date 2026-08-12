@@ -132,28 +132,40 @@ function isSetAsideDetail(value: string): boolean {
 
 /**
  * Toggle a category chip with exclusivity rules:
- * - EB-5 (all) is exclusive (only that filter).
+ * - EB-5 filters and non-EB5 filters cannot mix.
+ * - EB-5 (all) is exclusive within EB-5 (only that filter).
  * - Set-asides cannot combine with Rural / High unemp. / Infrastructure.
- * - Selection never collapses to empty (falls back to default).
+ * - Selection never collapses to empty (falls back to default EB-5 or EB-1).
  */
 export function toggleCategoryFilter(current: string[], next: string): string[] {
+  const selectingNonEb5 = !isEb5CategoryFilter(next);
+
+  if (selectingNonEb5) {
+    const nonEb5 = current.filter((v) => !isEb5CategoryFilter(v));
+    if (nonEb5.includes(next)) {
+      const without = nonEb5.filter((v) => v !== next);
+      return without.length > 0 ? without : [OTHER_CATEGORY_BUTTONS[0]!.value];
+    }
+    return [...nonEb5, next];
+  }
+
+  // Selecting any EB-5 chip drops all non-EB5 filters.
+  const eb5Only = current.filter((v) => isEb5CategoryFilter(v));
+
   if (next === 'EB5_ALL') {
-    return current.length === 1 && current[0] === 'EB5_ALL'
+    return eb5Only.length === 1 && eb5Only[0] === 'EB5_ALL'
       ? [...DEFAULT_I485_CATEGORIES]
       : ['EB5_ALL'];
   }
 
-  let base = current.filter((v) => v !== 'EB5_ALL');
+  let base = eb5Only.filter((v) => v !== 'EB5_ALL');
 
   if (next === 'EB5_SET_ASIDES') {
     if (base.includes(next)) {
       const without = base.filter((v) => v !== next);
       return without.length > 0 ? without : [...DEFAULT_I485_CATEGORIES];
     }
-    return [
-      ...base.filter((v) => !isSetAsideDetail(v)),
-      'EB5_SET_ASIDES',
-    ];
+    return [...base.filter((v) => !isSetAsideDetail(v)), 'EB5_SET_ASIDES'];
   }
 
   if (isSetAsideDetail(next)) {
@@ -170,6 +182,12 @@ export function toggleCategoryFilter(current: string[], next: string): string[] 
   }
 
   return [...base, next];
+}
+
+/** Enter non-EB5 mode (clears EB-5). Defaults to EB-1 when empty. */
+export function enterNonEb5Categories(current: string[]): string[] {
+  const nonEb5 = current.filter((v) => !isEb5CategoryFilter(v));
+  return nonEb5.length > 0 ? nonEb5 : [OTHER_CATEGORY_BUTTONS[0]!.value];
 }
 
 export const MONTH_LABELS = [
