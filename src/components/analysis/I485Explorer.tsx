@@ -117,28 +117,34 @@ function ChartHeader({ children }: { children: ReactNode }) {
   );
 }
 
-/** Right-side header controls: compact so 2–3 rows fit beside title + subtitle + Share. */
+/** Right-side header controls. Full-width on mobile; end-aligned beside the title on sm+. */
 function ChartHeaderControls({ children }: { children: ReactNode }) {
   return (
-    <div className="flex flex-col items-stretch sm:items-end gap-1">{children}</div>
+    <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:items-end sm:gap-1.5">
+      {children}
+    </div>
   );
 }
 
-const headerToggleRowClass = 'flex flex-wrap items-center gap-1.5';
+const headerToggleRowClass = 'flex flex-wrap items-center gap-2 sm:gap-1.5';
 const headerToggleLabelClass =
-  'text-[10px] font-semibold uppercase tracking-wide text-neutral/55';
+  'text-[11px] font-semibold uppercase tracking-wide text-neutral/55 sm:text-[10px]';
 const headerToggleGroupClass =
-  'inline-flex max-w-full flex-wrap rounded-full border border-base-300 p-px bg-base-200/60';
+  'inline-flex max-w-full flex-wrap rounded-full border border-base-300 p-0.5 bg-base-200/60 gap-0.5';
 
 function headerToggleBtnClass(active: boolean, extra = ''): string {
   return [
-    'rounded-full border-0 h-5 min-h-0 px-1.5 text-[10px] font-semibold leading-none transition-colors',
+    'rounded-full border-0 min-h-0 h-7 px-2.5 text-xs font-semibold leading-none transition-colors sm:h-6 sm:px-2 sm:text-[10px]',
     active ? 'bg-primary text-primary-content' : 'bg-transparent text-neutral hover:bg-base-300/70',
     extra,
   ]
     .filter(Boolean)
     .join(' ');
 }
+
+/** Title + controls: stack on mobile so neither side squeezes the other. */
+const chartHeaderRowClass =
+  'flex flex-col items-stretch gap-3 sm:flex-row sm:items-start sm:justify-between';
 
 /** Chart card title + quieter metric line (number is support, not the headline). */
 function ChartTitleBlock({
@@ -158,7 +164,7 @@ function ChartTitleBlock({
   action?: ReactNode;
 }) {
   return (
-    <div className="min-w-0 flex-1 space-y-1">
+    <div className="min-w-0 w-full space-y-1 sm:flex-1">
       <h2 className="text-sm font-semibold leading-snug text-primary sm:text-base">
         {title}
         {loading ? (
@@ -1251,7 +1257,7 @@ export default function I485Explorer({
 
       <div className="max-w-4xl mx-auto px-4 pt-6 sm:pt-8 space-y-5">
       {/* Filters — contained so controls are anchored, not floating on the page surface */}
-      <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4">
+      <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
       {(view === 'snapshot' || view === 'compare') && (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {view === 'snapshot' && (
@@ -1338,7 +1344,7 @@ export default function I485Explorer({
       )}
 
       {/* Results */}
-      <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4">
+      <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
         {loading && !snapshotCells && view === 'snapshot' && (
           <p className="text-sm text-neutral/70">Loading inventory…</p>
         )}
@@ -1354,7 +1360,7 @@ export default function I485Explorer({
         {view === 'snapshot' && snapshotCells && (
           <>
             <ChartHeader>
-              <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className={chartHeaderRowClass}>
                 <ChartTitleBlock
                   title="Pending I-485 by priority date"
                   metric={
@@ -1428,7 +1434,7 @@ export default function I485Explorer({
         {view === 'compare' && compareFromCells && compareToCells && (
           <>
             <ChartHeader>
-              <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className={chartHeaderRowClass}>
                 <ChartTitleBlock
                   title="Change in pending I-485 between two snapshots"
                   metric={formatSignedCount(compareNet.delta)}
@@ -1600,7 +1606,7 @@ export default function I485Explorer({
         {view === 'cohort' && cohortCells && (
           <>
             <ChartHeader>
-              <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className={chartHeaderRowClass}>
                 <ChartTitleBlock
                   title="Pending I-485 across USCIS snapshots"
                   metric={

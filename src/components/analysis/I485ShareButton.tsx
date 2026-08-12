@@ -45,7 +45,7 @@ async function openShareSheet(shareData: ShareData): Promise<'shared' | 'aborted
     if (isAbortError(err)) return 'aborted';
   }
 
-  // Retry with URL only (widest support).
+  // Retry with URL only (widest support on iOS).
   if (shareData.url) {
     try {
       await navigator.share({ url: shareData.url });
@@ -58,10 +58,6 @@ async function openShareSheet(shareData: ShareData): Promise<'shared' | 'aborted
   return 'unavailable';
 }
 
-/**
- * Copy helpers. Browsers drop the click "user activation" after `await fetch`,
- * so we copy the long URL first, then mint a short link in the background.
- */
 async function copyViaClipboardApi(text: string): Promise<boolean> {
   try {
     if (!navigator.clipboard?.writeText) return false;
@@ -134,37 +130,32 @@ export default function I485ShareButton({
       const title = shareViewTitle(payload.view);
       const text = `${title} · EB5 Base`;
       const longUrl = `${SITE_URL}${chartPathWithParams(payload)}`;
-      const mintPromise = mintShortShareUrl(payload);
+      const canNativeShare = typeof navigator.share === 'function';
 
-      // Copy first so we still have user activation (fetch would burn it).
-      const copiedEarly = await copyText(longUrl, false);
-
-      if (typeof navigator.share === 'function') {
-        const minted = await mintPromise;
-        const url = minted ?? longUrl;
-        const result = await openShareSheet({ title, text, url });
+      // Mobile: open the share sheet immediately with the long URL.
+      // Awaiting fetch/clipboard first burns the click gesture on iOS/Android.
+      if (canNativeShare) {
+        const result = await openShareSheet({ title, text, url: longUrl });
         if (result === 'shared' || result === 'aborted') {
           setStatus('idle');
+          void mintShortShareUrl(payload);
           return;
         }
-        if (minted && minted !== longUrl) {
-          void copyText(minted, false);
-        }
-      } else {
-        const minted = await mintPromise;
-        if (minted) {
-          void copyText(minted, false);
-        }
       }
 
-      if (copiedEarly || (await copyText(longUrl, true))) {
-        setStatus('copied');
-        window.setTimeout(() => setStatus('idle'), 2000);
+      // Desktop / share unavailable: copy while the gesture is still usable.
+      if (!(await copyText(longUrl, true))) {
+        setStatus('error');
+        window.setTimeout(() => setStatus('idle'), 2500);
         return;
       }
+      setStatus('copied');
+      window.setTimeout(() => setStatus('idle'), 2000);
 
-      setStatus('error');
-      window.setTimeout(() => setStatus('idle'), 2500);
+      const minted = await mintShortShareUrl(payload);
+      if (minted) {
+        void copyText(minted, false);
+      }
     } catch {
       setStatus('error');
       window.setTimeout(() => setStatus('idle'), 2500);
