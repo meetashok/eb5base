@@ -107,25 +107,43 @@ export default function I485SourceDataPage() {
             Monthly workbooks ({files.length})
           </h2>
           <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 space-y-4">
+            <p className="text-xs text-neutral/70 leading-relaxed">
+              Dates are the inventory as-of day; muted text is when USCIS posted the workbook.
+              Each link downloads the XLSX from uscis.gov.
+            </p>
             {years.map((year) => (
               <div key={year} className="space-y-1.5">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-neutral/60">
                   {year}
                 </h3>
-                <ul className="flex flex-wrap gap-x-3 gap-y-1.5">
-                  {(byYear.get(year) ?? []).map((f) => (
-                    <li key={f.as_of_date}>
-                      <a
-                        href={f.source_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title={f.source_title}
-                        className="text-sm font-medium text-secondary underline underline-offset-2 hover:text-primary tabular-nums"
-                      >
-                        {formatAsOfShortDay(f.as_of_date)}
-                      </a>
-                    </li>
-                  ))}
+                <ul className="flex flex-wrap gap-x-4 gap-y-2">
+                  {(byYear.get(year) ?? []).map((f) => {
+                    const asOf = formatAsOfShortDay(f.as_of_date);
+                    const posted = f.published_date
+                      ? formatAsOfShortDay(f.published_date)
+                      : null;
+                    const tip = posted
+                      ? `Inventory as of ${formatAsOfLong(f.as_of_date)} · Posted ${formatAsOfLong(f.published_date!)}`
+                      : `Inventory as of ${formatAsOfLong(f.as_of_date)}`;
+                    return (
+                      <li key={f.as_of_date} className="leading-tight">
+                        <a
+                          href={f.source_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title={tip}
+                          className="text-sm font-medium text-secondary underline underline-offset-2 hover:text-primary tabular-nums"
+                        >
+                          {asOf}
+                        </a>
+                        {posted && (
+                          <span className="block text-[10px] text-neutral/55 tabular-nums">
+                            posted {posted}
+                          </span>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             ))}
