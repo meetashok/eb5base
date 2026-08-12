@@ -76,14 +76,14 @@ export default async function I485InventoryPage() {
         subtitle="USCIS publishes a monthly count of pending adjustment-of-status applications by preference category, country of chargeability, and priority date. See the queue at any snapshot, compare two dates, or follow how a priority-date cohort has moved since February 2024."
       />
 
-      <section className="max-w-4xl mx-auto px-4 py-8 space-y-6">
-        <I485Explorer
-          initialReleases={initial.releases}
-          initialReleaseId={initial.releaseId}
-          initialSnapshotCells={initial.cells}
-          initialError={initial.error}
-        />
+      <I485Explorer
+        initialReleases={initial.releases}
+        initialReleaseId={initial.releaseId}
+        initialSnapshotCells={initial.cells}
+        initialError={initial.error}
+      />
 
+      <section className="max-w-4xl mx-auto px-4 pt-6 pb-8 space-y-6">
         <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 text-sm text-neutral leading-relaxed space-y-2">
           <h2 className="text-sm font-bold text-primary">How to read this data</h2>
           <ul className="list-disc pl-5 space-y-1.5">

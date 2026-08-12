@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { BarChart, DiffBarChart, LineChart, formatSignedCount } from '@/components/charts';
+import I485ViewBar, { type I485ViewId } from '@/components/analysis/I485ViewBar';
 import {
   CATEGORY_OPTIONS,
   COUNTRY_OPTIONS,
@@ -23,7 +24,7 @@ import {
   type TimeBucketMeta,
 } from '@/lib/analysis/i485';
 
-type ViewId = 'snapshot' | 'cohort' | 'compare';
+type ViewId = I485ViewId;
 
 const nf = new Intl.NumberFormat('en-US');
 const DEFAULT_CATEGORY = 'EB5_ALL';
@@ -413,31 +414,10 @@ export default function I485Explorer({
   }
 
   return (
-    <div className="space-y-5">
-      {/* View toggle */}
-      <div className="flex flex-wrap gap-2" role="tablist" aria-label="Inventory views">
-        {(
-          [
-            { id: 'snapshot', label: 'Inventory at a point in time' },
-            { id: 'compare', label: 'Compare two snapshots' },
-            { id: 'cohort', label: 'Track a priority-date cohort' },
-          ] as { id: ViewId; label: string }[]
-        ).map((v) => (
-          <button
-            key={v.id}
-            type="button"
-            role="tab"
-            aria-selected={view === v.id}
-            className={`btn btn-sm rounded-full ${
-              view === v.id ? 'btn-primary text-primary-content' : 'btn-outline border-neutral/30'
-            }`}
-            onClick={() => setView(v.id)}
-          >
-            {v.label}
-          </button>
-        ))}
-      </div>
+    <div>
+      <I485ViewBar active={view} onSelect={setView} />
 
+      <div className="max-w-4xl mx-auto px-4 pt-6 sm:pt-8 space-y-5">
       {/* Filters */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {view === 'snapshot' && (
@@ -802,6 +782,7 @@ export default function I485Explorer({
           official USCIS XLSX downloads
           {releases.length > 0 ? ` · ${releases.length} monthly reports` : ''}
         </p>
+      </div>
       </div>
     </div>
   );
