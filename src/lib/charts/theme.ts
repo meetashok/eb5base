@@ -12,7 +12,7 @@ export const chartColors = {
   axis: '#6b7280',
   zero: '#c4bdb2',
   /** Distinct strokes for multi-series split charts (brand-aligned, no purple). */
-  series: ['#0a1628', '#2d5a47', '#9e3a3a', '#b8860b', '#3d6b8c', '#6b5b4f'] as const,
+  series: ['#0a1628', '#c9892e', '#9e3a3a', '#2d5a47', '#2f6f8f', '#8b6914'] as const,
 } as const;
 
 export function seriesColor(index: number): string {
