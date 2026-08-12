@@ -664,12 +664,6 @@ export default function I485Explorer({
           <>
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div className="space-y-1 min-w-0">
-                <p className="text-xs font-medium text-neutral/55">
-                  Pending I-485 by priority date
-                  {loading ? (
-                    <span className="ml-2 font-normal text-neutral/40">Updating…</span>
-                  ) : null}
-                </p>
                 <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                   <span className="text-2xl font-bold tabular-nums text-primary">
                     {nf.format(snapshotTotal.count)}
@@ -680,6 +674,12 @@ export default function I485Explorer({
                     {selectedRelease ? ` as of ${formatAsOf(selectedRelease.as_of_date)}` : ''}
                   </span>
                 </div>
+                <p className="text-xs font-medium text-neutral/55">
+                  Pending I-485 by priority date
+                  {loading ? (
+                    <span className="ml-2 font-normal text-neutral/40">Updating…</span>
+                  ) : null}
+                </p>
               </div>
               <div className="flex flex-col items-stretch sm:items-end gap-2">
                 <GrainToggle grain={grain} onChange={setGrain} />
