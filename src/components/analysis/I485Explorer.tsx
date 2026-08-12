@@ -108,6 +108,43 @@ function ChartHeader({ children }: { children: ReactNode }) {
   );
 }
 
+/** Chart card title + quieter metric line (number is support, not the headline). */
+function ChartTitleBlock({
+  title,
+  metric,
+  metricClassName = 'text-primary',
+  metricNote,
+  loading,
+}: {
+  title: ReactNode;
+  metric?: ReactNode;
+  metricClassName?: string;
+  metricNote?: ReactNode;
+  loading?: boolean;
+}) {
+  return (
+    <div className="min-w-0 space-y-1">
+      <h2 className="text-sm font-semibold leading-snug text-primary sm:text-base">
+        {title}
+        {loading ? (
+          <span className="ml-2 text-xs font-normal text-neutral/40">Updating…</span>
+        ) : null}
+      </h2>
+      {metric != null || metricNote != null ? (
+        <p className="text-sm leading-snug text-neutral/70">
+          {metric != null ? (
+            <span className={`font-semibold tabular-nums ${metricClassName}`}>{metric}</span>
+          ) : null}
+          {metric != null && metricNote != null ? (
+            <span className="text-neutral/45"> · </span>
+          ) : null}
+          {metricNote != null ? <span>{metricNote}</span> : null}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 function GrainToggle({
   grain,
   onChange,
@@ -1143,24 +1180,21 @@ export default function I485Explorer({
           <>
             <ChartHeader>
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="space-y-1 min-w-0">
-                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                    <span className="text-2xl font-bold tabular-nums text-primary">
+                <ChartTitleBlock
+                  title="Pending I-485 by priority date"
+                  metric={
+                    <>
                       {nf.format(snapshotTotal.count)}
                       {snapshotTotal.suppressedCells > 0 ? '+' : ''}
-                    </span>
-                    <span className="text-xs text-neutral/70">
-                      total pending
-                      {selectedRelease ? ` as of ${formatAsOf(selectedRelease.as_of_date)}` : ''}
-                    </span>
-                  </div>
-                  <p className="text-xs font-medium text-neutral/55">
-                    Pending I-485 by priority date
-                    {loading ? (
-                      <span className="ml-2 font-normal text-neutral/40">Updating…</span>
-                    ) : null}
-                  </p>
-                </div>
+                    </>
+                  }
+                  metricNote={
+                    selectedRelease
+                      ? `total pending as of ${formatAsOf(selectedRelease.as_of_date)}`
+                      : 'total pending'
+                  }
+                  loading={loading}
+                />
                 <div className="flex flex-col items-stretch sm:items-end gap-2">
                   <GrainToggle grain={grain} onChange={setGrain} />
                   <SplitToggle split={split} onChange={setSplit} />
@@ -1219,38 +1253,30 @@ export default function I485Explorer({
           <>
             <ChartHeader>
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="space-y-1 min-w-0">
-                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                    <span
-                      className={`text-2xl font-bold tabular-nums ${
-                        compareNet.delta > 0
-                          ? 'text-secondary'
-                          : compareNet.delta < 0
-                            ? 'text-error'
-                            : 'text-primary'
-                      }`}
-                    >
-                      {formatSignedCount(compareNet.delta)}
-                    </span>
-                    <span className="text-xs text-neutral/70">
-                      net change
-                      {compareFromRelease && compareToRelease
-                        ? ` from ${formatAsOfShort(compareFromRelease.as_of_date)} to ${formatAsOfShort(compareToRelease.as_of_date)}`
+                <ChartTitleBlock
+                  title={
+                    <>
+                      Change in pending I-485 by priority date
+                      {selectedComparePdYears.length > 0
+                        ? ` · ${formatPriorityDateYears(selectedComparePdYears)}`
                         : ''}
-                      {' · '}
-                      {nf.format(compareNet.earlier.count)} → {nf.format(compareNet.later.count)}
-                    </span>
-                  </div>
-                  <p className="text-xs font-medium text-neutral/55">
-                    Change in pending I-485 by priority date
-                    {selectedComparePdYears.length > 0
-                      ? ` · ${formatPriorityDateYears(selectedComparePdYears)}`
-                      : ''}
-                    {loading ? (
-                      <span className="ml-2 font-normal text-neutral/40">Updating…</span>
-                    ) : null}
-                  </p>
-                </div>
+                    </>
+                  }
+                  metric={formatSignedCount(compareNet.delta)}
+                  metricClassName={
+                    compareNet.delta > 0
+                      ? 'text-secondary'
+                      : compareNet.delta < 0
+                        ? 'text-error'
+                        : 'text-primary'
+                  }
+                  metricNote={
+                    compareFromRelease && compareToRelease
+                      ? `net change from ${formatAsOfShort(compareFromRelease.as_of_date)} to ${formatAsOfShort(compareToRelease.as_of_date)}`
+                      : 'net change'
+                  }
+                  loading={loading}
+                />
                 <div className="flex flex-col items-stretch sm:items-end gap-2">
                   <GrainToggle grain={grain} onChange={setGrain} />
                   <CohortFacetSplitToggle
@@ -1407,23 +1433,17 @@ export default function I485Explorer({
           <>
             <ChartHeader>
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="space-y-1 min-w-0">
-                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                    <span className="text-2xl font-bold tabular-nums text-primary">
+                <ChartTitleBlock
+                  title={`Priority dates ${formatPriorityDateYears(selectedPdYears)}`}
+                  metric={
+                    <>
                       {nf.format(cohortLatestTotal.count)}
                       {cohortLatestTotal.suppressedCells > 0 ? '+' : ''}
-                    </span>
-                    <span className="text-xs text-neutral/70">
-                      pending in latest snapshot
-                      {loading ? (
-                        <span className="ml-2 font-normal text-neutral/40">Updating…</span>
-                      ) : null}
-                    </span>
-                  </div>
-                  <p className="text-xs font-medium text-neutral/55">
-                    Priority dates {formatPriorityDateYears(selectedPdYears)}, by USCIS snapshot
-                  </p>
-                </div>
+                    </>
+                  }
+                  metricNote="pending in the latest USCIS snapshot"
+                  loading={loading}
+                />
                 <div className="flex flex-col items-stretch sm:items-end gap-2">
                   <CohortPdSplitToggle value={cohortPdSplit} onChange={setCohortPdSplit} />
                   <CohortFacetSplitToggle
