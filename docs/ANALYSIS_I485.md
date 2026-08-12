@@ -49,6 +49,10 @@ a priority-date grain toggle (months / calendar quarters / fiscal years) and a
 lines). Split lines are still pending stock by priority date in one snapshot —
 not a time series across releases.
 
+Cohort tracks a **priority-date range** across USCIS releases. Granularity
+groups snapshots (latest value in each quarter / fiscal year). Split can break
+the line out by priority-date month, quarter, or fiscal year.
+
 ## Data caveats (reflected in page copy)
 
 - Counts are pending applications at USCIS only: no DOS consular queue, no

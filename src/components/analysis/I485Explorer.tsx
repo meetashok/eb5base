@@ -7,12 +7,14 @@ import I485ViewBar, { type I485ViewId } from '@/components/analysis/I485ViewBar'
 import I485CategoryPicker from '@/components/analysis/I485CategoryPicker';
 import I485CountryPicker from '@/components/analysis/I485CountryPicker';
 import {
+  COHORT_SPLIT_OPTIONS,
   DEFAULT_I485_CATEGORIES,
   MONTH_LABELS,
   SNAPSHOT_SPLIT_OPTIONS,
   USCIS_DATA_PAGE_URL,
-  aggregateBy,
   aggregateByPriorityDateGrain,
+  aggregateCohortBySnapshotGrain,
+  aggregateCohortSplitByPriorityDate,
   aggregateSplitByPriorityDateGrain,
   categoryMembersForMany,
   countryLabel,
@@ -20,14 +22,18 @@ import {
   fetchI485Releases,
   formatAsOf,
   formatAsOfShort,
+  formatPriorityDateRange,
   isI485DataAvailable,
+  normalizePriorityDateRange,
   resolveCategorySplitSeries,
   splitCountriesForFilter,
   type AggregatedBucket,
+  type CohortSplit,
   type I485Cell,
   type I485Country,
   type I485Release,
   type PriorityDateGrain,
+  type PriorityDateRange,
   type SnapshotSplit,
   type TimeBucketMeta,
 } from '@/lib/analysis/i485';
@@ -157,6 +163,76 @@ function SplitToggle({
   );
 }
 
+function CohortSplitToggle({
+  split,
+  onChange,
+}: {
+  split: CohortSplit;
+  onChange: (s: CohortSplit) => void;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral/55">
+        Split
+      </span>
+      <div
+        className="inline-flex rounded-full border border-base-300 p-0.5 bg-base-200/60"
+        role="group"
+        aria-label="Cohort split series"
+      >
+        {COHORT_SPLIT_OPTIONS.map((o) => (
+          <button
+            key={o.value}
+            type="button"
+            className={`btn btn-xs rounded-full border-0 ${
+              split === o.value ? 'btn-primary text-primary-content' : 'btn-ghost text-neutral'
+            }`}
+            aria-pressed={split === o.value}
+            onClick={() => onChange(o.value)}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SeriesGrainToggle({
+  grain,
+  onChange,
+}: {
+  grain: PriorityDateGrain;
+  onChange: (g: PriorityDateGrain) => void;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral/55">
+        Series
+      </span>
+      <div
+        className="inline-flex rounded-full border border-base-300 p-0.5 bg-base-200/60"
+        role="group"
+        aria-label="Priority-date series grouping"
+      >
+        {GRAIN_OPTIONS.map((o) => (
+          <button
+            key={o.value}
+            type="button"
+            className={`btn btn-xs rounded-full border-0 ${
+              grain === o.value ? 'btn-primary text-primary-content' : 'btn-ghost text-neutral'
+            }`}
+            aria-pressed={grain === o.value}
+            onClick={() => onChange(o.value)}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function showPriorityDateTick(
   grain: PriorityDateGrain,
   data: { meta: TimeBucketMeta }[],
@@ -213,8 +289,16 @@ export default function I485Explorer({
   const [snapshotCells, setSnapshotCells] = useState<I485Cell[] | null>(initialSnapshotCells);
 
   // Cohort view state
-  const [pdYear, setPdYear] = useState<number>(2024);
-  const [pdMonth, setPdMonth] = useState<number | 'all'>('all');
+  const [pdRange, setPdRange] = useState<PriorityDateRange>({
+    fromYear: 2024,
+    fromMonth: 1,
+    toYear: 2026,
+    toMonth: 12,
+  });
+  const [cohortSnapshotGrain, setCohortSnapshotGrain] =
+    useState<PriorityDateGrain>('quarter');
+  const [cohortSplit, setCohortSplit] = useState<CohortSplit>('none');
+  const [cohortPdGrain, setCohortPdGrain] = useState<PriorityDateGrain>('quarter');
   const [cohortCells, setCohortCells] = useState<I485Cell[] | null>(null);
 
   // Compare view state
@@ -310,11 +394,12 @@ export default function I485Explorer({
     if (!available || view !== 'cohort') return;
     let cancel = false;
     setLoading(true);
+    const range = normalizePriorityDateRange(pdRange);
     fetchI485Cells({
       countries: countryFilter,
       categories: members,
-      pdYear,
-      pdMonth: pdMonth === 'all' ? undefined : pdMonth,
+      pdYearGte: range.fromYear,
+      pdYearLte: range.toYear,
     })
       .then((cells) => {
         if (!cancel) setCohortCells(cells);
@@ -324,7 +409,7 @@ export default function I485Explorer({
     return () => {
       cancel = true;
     };
-  }, [available, view, countries, countryFilter, members, pdYear, pdMonth]);
+  }, [available, view, countries, countryFilter, members, pdRange]);
 
   // Compare data (both snapshots)
   useEffect(() => {
@@ -407,31 +492,73 @@ export default function I485Explorer({
     [snapshotSeries],
   );
 
+  const normalizedPdRange = useMemo(
+    () => normalizePriorityDateRange(pdRange),
+    [pdRange],
+  );
+
   const cohortSeries = useMemo(() => {
     if (!cohortCells) return [];
-    const byRelease = aggregateBy(cohortCells, (c) => c.release_id);
-    return releases.map((r) => ({
-      key: String(r.id),
-      label: formatAsOfShort(r.as_of_date),
-      bucket: byRelease.get(r.id) ?? { count: 0, suppressedCells: 0 },
-    }));
-  }, [cohortCells, releases]);
+    return aggregateCohortBySnapshotGrain(
+      cohortCells,
+      releases,
+      cohortSnapshotGrain,
+      normalizedPdRange,
+    );
+  }, [cohortCells, releases, cohortSnapshotGrain, normalizedPdRange]);
 
   const cohortLine = useMemo(
     () =>
       cohortSeries.map((p) => ({
-        key: p.key,
-        label: p.label,
+        key: p.meta.key,
+        label: p.meta.label,
         value: p.bucket.count,
         valueLabel: bucketLabel(p.bucket),
       })),
     [cohortSeries],
   );
 
-  const cohortSuppressed = useMemo(
-    () => totalWithNote(cohortSeries.map((p) => p.bucket)).suppressedCells,
-    [cohortSeries],
-  );
+  const cohortSplitData = useMemo(() => {
+    if (!cohortCells || cohortSplit !== 'priority_date') return null;
+    return aggregateCohortSplitByPriorityDate(
+      cohortCells,
+      releases,
+      cohortSnapshotGrain,
+      cohortPdGrain,
+      normalizedPdRange,
+    );
+  }, [
+    cohortCells,
+    releases,
+    cohortSnapshotGrain,
+    cohortPdGrain,
+    normalizedPdRange,
+    cohortSplit,
+  ]);
+
+  const cohortSplitLines = useMemo(() => {
+    if (!cohortSplitData) return [];
+    return cohortSplitData.series.map((s) => ({
+      key: s.key,
+      label: s.label,
+      data: s.points.map((p) => ({ key: p.key, value: p.value })),
+    }));
+  }, [cohortSplitData]);
+
+  const cohortSuppressed = useMemo(() => {
+    if (cohortSplit === 'priority_date' && cohortSplitData) {
+      return cohortSplitData.series.reduce(
+        (sum, s) => sum + s.points.reduce((a, p) => a + p.suppressedCells, 0),
+        0,
+      );
+    }
+    return totalWithNote(cohortSeries.map((p) => p.bucket)).suppressedCells;
+  }, [cohortSplit, cohortSplitData, cohortSeries]);
+
+  const cohortLatestTotal = useMemo(() => {
+    if (cohortSeries.length === 0) return { count: 0, suppressedCells: 0 };
+    return cohortSeries[cohortSeries.length - 1]!.bucket;
+  }, [cohortSeries]);
 
   const compareRows = useMemo(() => {
     if (!compareFromCells || !compareToCells) return [];
@@ -595,38 +722,73 @@ export default function I485Explorer({
           <>
             <label className="form-control">
               <span className="label-text text-xs font-semibold text-neutral/80 pb-1">
-                Priority-date year
+                Priority date from
               </span>
-              <select
-                className="select select-bordered select-sm"
-                value={pdYear}
-                onChange={(e) => setPdYear(Number(e.target.value))}
-              >
-                {pdYearOptions.map((y) => (
-                  <option key={y} value={y}>
-                    {y}
-                  </option>
-                ))}
-              </select>
+              <div className="flex gap-2">
+                <select
+                  className="select select-bordered select-sm min-w-0 flex-1"
+                  value={pdRange.fromYear}
+                  onChange={(e) =>
+                    setPdRange((prev) => ({ ...prev, fromYear: Number(e.target.value) }))
+                  }
+                  aria-label="Priority date from year"
+                >
+                  {pdYearOptions.map((y) => (
+                    <option key={y} value={y}>
+                      {y}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  className="select select-bordered select-sm min-w-0 flex-1"
+                  value={pdRange.fromMonth}
+                  onChange={(e) =>
+                    setPdRange((prev) => ({ ...prev, fromMonth: Number(e.target.value) }))
+                  }
+                  aria-label="Priority date from month"
+                >
+                  {MONTH_LABELS.map((m, i) => (
+                    <option key={m} value={i + 1}>
+                      {m}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </label>
             <label className="form-control">
               <span className="label-text text-xs font-semibold text-neutral/80 pb-1">
-                Priority-date month
+                Priority date to
               </span>
-              <select
-                className="select select-bordered select-sm"
-                value={pdMonth}
-                onChange={(e) =>
-                  setPdMonth(e.target.value === 'all' ? 'all' : Number(e.target.value))
-                }
-              >
-                <option value="all">All months</option>
-                {MONTH_LABELS.map((m, i) => (
-                  <option key={m} value={i + 1}>
-                    {m}
-                  </option>
-                ))}
-              </select>
+              <div className="flex gap-2">
+                <select
+                  className="select select-bordered select-sm min-w-0 flex-1"
+                  value={pdRange.toYear}
+                  onChange={(e) =>
+                    setPdRange((prev) => ({ ...prev, toYear: Number(e.target.value) }))
+                  }
+                  aria-label="Priority date to year"
+                >
+                  {pdYearOptions.map((y) => (
+                    <option key={y} value={y}>
+                      {y}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  className="select select-bordered select-sm min-w-0 flex-1"
+                  value={pdRange.toMonth}
+                  onChange={(e) =>
+                    setPdRange((prev) => ({ ...prev, toMonth: Number(e.target.value) }))
+                  }
+                  aria-label="Priority date to month"
+                >
+                  {MONTH_LABELS.map((m, i) => (
+                    <option key={m} value={i + 1}>
+                      {m}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </label>
           </>
         )}
@@ -861,19 +1023,55 @@ export default function I485Explorer({
         {view === 'cohort' && cohortCells && (
           <>
             <ChartHeader>
-              <h3 className="text-sm font-semibold text-primary">
-                Pending I-485 with a{' '}
-                {pdMonth === 'all' ? '' : `${MONTH_LABELS[(pdMonth as number) - 1]} `}
-                {pdYear} priority date, snapshot by snapshot
-                {loading ? (
-                  <span className="ml-2 font-normal text-neutral/55">Updating…</span>
-                ) : null}
-              </h3>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="space-y-1 min-w-0">
+                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <span className="text-2xl font-bold tabular-nums text-primary">
+                      {nf.format(cohortLatestTotal.count)}
+                      {cohortLatestTotal.suppressedCells > 0 ? '+' : ''}
+                    </span>
+                    <span className="text-xs text-neutral/70">
+                      pending in latest snapshot
+                      {loading ? (
+                        <span className="ml-2 font-normal text-neutral/40">Updating…</span>
+                      ) : null}
+                    </span>
+                  </div>
+                  <p className="text-xs font-medium text-neutral/55">
+                    Priority dates {formatPriorityDateRange(normalizedPdRange)}, by USCIS snapshot
+                  </p>
+                </div>
+                <div className="flex flex-col items-stretch sm:items-end gap-2">
+                  <GrainToggle grain={cohortSnapshotGrain} onChange={setCohortSnapshotGrain} />
+                  <CohortSplitToggle split={cohortSplit} onChange={setCohortSplit} />
+                  {cohortSplit === 'priority_date' && (
+                    <SeriesGrainToggle grain={cohortPdGrain} onChange={setCohortPdGrain} />
+                  )}
+                </div>
+              </div>
             </ChartHeader>
             <p className="text-xs text-neutral/70">
-              Change mixes new filings into the cohort with completions leaving it.
+              {cohortSplit === 'priority_date'
+                ? 'Each line is a priority-date group across USCIS snapshots.'
+                : 'Change mixes new filings into the cohort with completions leaving it.'}
+              {cohortSnapshotGrain !== 'month'
+                ? ' Granularity uses the latest snapshot in each period.'
+                : ''}
             </p>
-            {cohortLine.some((p) => p.value > 0) ? (
+            {cohortSplit === 'priority_date' ? (
+              cohortSplitData && cohortSplitData.series.length > 0 ? (
+                <MultiSeriesLineChart
+                  xAxis={cohortSplitData.xAxis}
+                  series={cohortSplitLines}
+                  height={240}
+                  ariaLabel="Pending I-485 cohort split by priority date across snapshots"
+                />
+              ) : (
+                <p className="text-sm text-neutral">
+                  No pending applications reported for this cohort in any snapshot.
+                </p>
+              )
+            ) : cohortLine.some((p) => p.value > 0) ? (
               <LineChart
                 data={cohortLine}
                 height={220}

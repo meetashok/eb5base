@@ -221,6 +221,10 @@ export interface CellFilters {
   categories?: I485Category[];
   pdYear?: number;
   pdMonth?: number;
+  /** Inclusive priority-date year lower bound (for cohort ranges). */
+  pdYearGte?: number;
+  /** Inclusive priority-date year upper bound (for cohort ranges). */
+  pdYearLte?: number;
 }
 
 const PAGE = 1000;
@@ -247,6 +251,8 @@ export async function fetchI485Cells(
     if (filters.categories && filters.categories.length > 0) q = q.in('category', filters.categories);
     if (filters.pdYear != null) q = q.eq('pd_year', filters.pdYear);
     if (filters.pdMonth != null) q = q.eq('pd_month', filters.pdMonth);
+    if (filters.pdYearGte != null) q = q.gte('pd_year', filters.pdYearGte);
+    if (filters.pdYearLte != null) q = q.lte('pd_year', filters.pdYearLte);
     const { data, error } = await q;
     if (error) throw new Error(error.message);
     out.push(...((data ?? []) as I485Cell[]));
@@ -537,6 +543,178 @@ export function aggregateSplitByPriorityDateGrain(
 export function splitCountriesForFilter(selected: I485Country[]): I485Country[] {
   if (selected.length === 0) return [...SPLIT_COUNTRY_ORDER];
   return SPLIT_COUNTRY_ORDER.filter((c) => selected.includes(c));
+}
+
+export type CohortSplit = 'none' | 'priority_date';
+
+export const COHORT_SPLIT_OPTIONS: { value: CohortSplit; label: string }[] = [
+  { value: 'none', label: 'None' },
+  { value: 'priority_date', label: 'By priority date' },
+];
+
+export interface PriorityDateRange {
+  fromYear: number;
+  fromMonth: number;
+  toYear: number;
+  toMonth: number;
+}
+
+export function yearMonthIndex(year: number, month: number): number {
+  return year * 12 + month;
+}
+
+export function cellInPriorityDateRange(
+  cell: Pick<I485Cell, 'pd_year' | 'pd_month'>,
+  range: PriorityDateRange,
+): boolean {
+  if (cell.pd_year === 0) return false;
+  const v = yearMonthIndex(cell.pd_year, cell.pd_month);
+  return (
+    v >= yearMonthIndex(range.fromYear, range.fromMonth) &&
+    v <= yearMonthIndex(range.toYear, range.toMonth)
+  );
+}
+
+export function normalizePriorityDateRange(range: PriorityDateRange): PriorityDateRange {
+  const from = yearMonthIndex(range.fromYear, range.fromMonth);
+  const to = yearMonthIndex(range.toYear, range.toMonth);
+  if (from <= to) return range;
+  return {
+    fromYear: range.toYear,
+    fromMonth: range.toMonth,
+    toYear: range.fromYear,
+    toMonth: range.fromMonth,
+  };
+}
+
+export function formatPriorityDateRange(range: PriorityDateRange): string {
+  const r = normalizePriorityDateRange(range);
+  const fromLabel = `${MONTH_LABELS[r.fromMonth - 1] ?? r.fromMonth} ${r.fromYear}`;
+  const toLabel = `${MONTH_LABELS[r.toMonth - 1] ?? r.toMonth} ${r.toYear}`;
+  if (fromLabel === toLabel) return fromLabel;
+  return `${fromLabel} – ${toLabel}`;
+}
+
+/** Bucket a USCIS as-of date for cohort X-axis grouping. */
+export function asOfDateBucket(asOfIso: string, grain: PriorityDateGrain): TimeBucketMeta {
+  const d = new Date(`${asOfIso}T00:00:00Z`);
+  const y = d.getUTCFullYear();
+  const m = d.getUTCMonth() + 1;
+  return priorityDateBucket({ pd_year: y, pd_month: m }, grain);
+}
+
+/**
+ * Group releases onto a snapshot grain; each bucket keeps the latest release.
+ */
+export function latestReleasesByGrain(
+  releases: I485Release[],
+  grain: PriorityDateGrain,
+): { meta: TimeBucketMeta; release: I485Release }[] {
+  const byKey = new Map<string, { meta: TimeBucketMeta; release: I485Release }>();
+  for (const release of releases) {
+    const meta = asOfDateBucket(release.as_of_date, grain);
+    const existing = byKey.get(meta.key);
+    if (!existing || release.as_of_date >= existing.release.as_of_date) {
+      byKey.set(meta.key, { meta, release });
+    }
+  }
+  return Array.from(byKey.values()).sort((a, b) =>
+    a.release.as_of_date.localeCompare(b.release.as_of_date),
+  );
+}
+
+/** Enumerate priority-date series buckets covering an inclusive month range. */
+export function priorityDateSeriesInRange(
+  range: PriorityDateRange,
+  grain: PriorityDateGrain,
+): TimeBucketMeta[] {
+  const r = normalizePriorityDateRange(range);
+  const seen = new Map<string, TimeBucketMeta>();
+  let y = r.fromYear;
+  let m = r.fromMonth;
+  while (yearMonthIndex(y, m) <= yearMonthIndex(r.toYear, r.toMonth)) {
+    const meta = priorityDateBucket({ pd_year: y, pd_month: m }, grain);
+    if (!seen.has(meta.key)) seen.set(meta.key, meta);
+    m += 1;
+    if (m > 12) {
+      m = 1;
+      y += 1;
+    }
+  }
+  return Array.from(seen.values());
+}
+
+/**
+ * Cohort totals across releases, optionally grouped by snapshot grain
+ * (latest snapshot value in each quarter / fiscal year).
+ */
+export function aggregateCohortBySnapshotGrain(
+  cells: I485Cell[],
+  releases: I485Release[],
+  snapshotGrain: PriorityDateGrain,
+  range: PriorityDateRange,
+): { meta: TimeBucketMeta; bucket: AggregatedBucket; releaseId: number }[] {
+  const filtered = cells.filter((c) => cellInPriorityDateRange(c, range));
+  const byRelease = aggregateBy(filtered, (c) => c.release_id);
+  return latestReleasesByGrain(releases, snapshotGrain).map(({ meta, release }) => ({
+    meta,
+    releaseId: release.id,
+    bucket: byRelease.get(release.id) ?? { count: 0, suppressedCells: 0 },
+  }));
+}
+
+/**
+ * Cohort multi-series: X = snapshot grain, series = priority-date grain buckets.
+ */
+export function aggregateCohortSplitByPriorityDate(
+  cells: I485Cell[],
+  releases: I485Release[],
+  snapshotGrain: PriorityDateGrain,
+  pdGrain: PriorityDateGrain,
+  range: PriorityDateRange,
+): SplitPriorityDateResult {
+  const filtered = cells.filter((c) => cellInPriorityDateRange(c, range));
+  const xPoints = latestReleasesByGrain(releases, snapshotGrain);
+  const xAxis = xPoints.map((p) => p.meta);
+  const seriesMetas = priorityDateSeriesInRange(range, pdGrain);
+
+  const counts = new Map<string, Map<number, AggregatedBucket>>();
+  for (const s of seriesMetas) counts.set(s.key, new Map());
+
+  for (const cell of filtered) {
+    const seriesMeta = priorityDateBucket(cell, pdGrain);
+    const byRelease = counts.get(seriesMeta.key);
+    if (!byRelease) continue;
+    const bucket = byRelease.get(cell.release_id) ?? { count: 0, suppressedCells: 0 };
+    if (cell.suppressed) bucket.suppressedCells += 1;
+    else bucket.count += cell.count ?? 0;
+    byRelease.set(cell.release_id, bucket);
+  }
+
+  // Keep series that have any disclosed count (avoid empty PD lines).
+  const activeSeries = seriesMetas.filter((s) => {
+    const byRelease = counts.get(s.key);
+    if (!byRelease) return false;
+    return Array.from(byRelease.values()).some((b) => b.count > 0 || b.suppressedCells > 0);
+  });
+
+  const series: SplitSeries[] = activeSeries.map((s) => {
+    const byRelease = counts.get(s.key)!;
+    return {
+      key: s.key,
+      label: s.label,
+      points: xPoints.map(({ meta, release }) => {
+        const bucket = byRelease.get(release.id) ?? { count: 0, suppressedCells: 0 };
+        return {
+          key: meta.key,
+          value: bucket.count,
+          suppressedCells: bucket.suppressedCells,
+        };
+      }),
+    };
+  });
+
+  return { xAxis, series };
 }
 
 export function formatAsOf(iso: string): string {
