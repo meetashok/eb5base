@@ -9,5 +9,5 @@ export {
   formatAxisCount,
   formatSignedCount,
   niceTicks,
-  niceSymmetricTicks,
+  niceSignedTicks,
 } from '@/lib/charts/theme';

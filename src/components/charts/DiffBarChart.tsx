@@ -10,7 +10,7 @@ import {
   chartColors,
   formatAxisCount,
   formatSignedCount,
-  niceSymmetricTicks,
+  niceSignedTicks,
 } from '@/lib/charts/theme';
 
 export interface DiffBarDatum {
@@ -68,9 +68,12 @@ export default function DiffBarChart({
   const [hoverKey, setHoverKey] = useState<string | null>(null);
   const { ref, width } = useElementWidth<HTMLDivElement>();
 
-  const maxAbs = Math.max(...data.map((d) => Math.abs(d.value)), 1);
-  const ticks = useMemo(() => niceSymmetricTicks(maxAbs), [maxAbs]);
-  const axisMax = Math.max(...ticks.map((t) => Math.abs(t)), maxAbs);
+  const dataMin = Math.min(0, ...data.map((d) => d.value));
+  const dataMax = Math.max(0, ...data.map((d) => d.value));
+  const { ticks, domain } = useMemo(
+    () => niceSignedTicks(dataMin, dataMax),
+    [dataMin, dataMax],
+  );
 
   const innerHeight = height - margin.top - margin.bottom;
   const availablePlotWidth = Math.max(width - margin.left, 0);
@@ -92,11 +95,11 @@ export default function DiffBarChart({
   const yScale = useMemo(
     () =>
       scaleLinear<number>({
-        domain: [-axisMax, axisMax],
+        domain,
         range: [innerHeight, 0],
         nice: false,
       }),
-    [axisMax, innerHeight],
+    [domain, innerHeight],
   );
 
   const zeroY = yScale(0) ?? innerHeight / 2;

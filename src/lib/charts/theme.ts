@@ -50,14 +50,38 @@ export function niceTicks(maxValue: number, tickCount = 4): number[] {
   return ticks;
 }
 
-/** Symmetric ticks around zero for signed (delta) charts. */
-export function niceSymmetricTicks(maxAbs: number, tickCount = 4): number[] {
-  const positive = niceTicks(Math.max(maxAbs, 1), tickCount);
-  const ceiling = positive[positive.length - 1] || 1;
-  const step = positive.length > 1 ? positive[1]! : ceiling;
+function niceStepSize(maxAbs: number, tickCount = 4): number {
+  const safe = Math.max(maxAbs, 1);
+  const raw = safe / tickCount;
+  const pow = 10 ** Math.floor(Math.log10(raw));
+  const normalized = raw / pow;
+  const nice =
+    normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10;
+  return nice * pow;
+}
+
+/**
+ * Signed-chart ticks that include 0, with independent positive/negative
+ * extents inferred from the data (not forced to ± the same max).
+ */
+export function niceSignedTicks(
+  minValue: number,
+  maxValue: number,
+  tickCount = 4,
+): { ticks: number[]; domain: [number, number] } {
+  const dataMin = Math.min(0, minValue);
+  const dataMax = Math.max(0, maxValue);
+  const step = niceStepSize(Math.max(dataMax, -dataMin, 1), tickCount);
+  const hi = dataMax === 0 ? 0 : Math.ceil(dataMax / step) * step;
+  const lo = dataMin === 0 ? 0 : Math.floor(dataMin / step) * step;
   const ticks: number[] = [];
-  for (let v = -ceiling; v <= ceiling + step / 1000; v += step) {
+  for (let v = lo; v <= hi + step / 1000; v += step) {
     ticks.push(Math.round(v * 1e6) / 1e6);
   }
-  return ticks;
+  if (!ticks.includes(0)) {
+    // Guard against float drift leaving 0 out.
+    ticks.push(0);
+    ticks.sort((a, b) => a - b);
+  }
+  return { ticks, domain: [lo, hi] };
 }
