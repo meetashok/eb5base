@@ -7,11 +7,12 @@ import I485ViewBar, { type I485ViewId } from '@/components/analysis/I485ViewBar'
 import I485CategoryPicker from '@/components/analysis/I485CategoryPicker';
 import I485CountryPicker from '@/components/analysis/I485CountryPicker';
 import {
-  CATEGORY_OPTIONS,
+  DEFAULT_I485_CATEGORY,
   MONTH_LABELS,
   USCIS_DATA_PAGE_URL,
   aggregateBy,
   aggregateByPriorityDateGrain,
+  categoryMembersFor,
   fetchI485Cells,
   fetchI485Releases,
   formatAsOf,
@@ -28,16 +29,12 @@ import {
 type ViewId = I485ViewId;
 
 const nf = new Intl.NumberFormat('en-US');
-const DEFAULT_CATEGORY = 'EB5_ALL';
+const DEFAULT_CATEGORY = DEFAULT_I485_CATEGORY;
 const GRAIN_OPTIONS: { value: PriorityDateGrain; label: string }[] = [
   { value: 'month', label: 'Months' },
   { value: 'quarter', label: 'Quarters' },
   { value: 'year', label: 'Fiscal years' },
 ];
-
-function categoryMembers(value: string) {
-  return CATEGORY_OPTIONS.find((o) => o.value === value)?.members ?? [];
-}
 
 function bucketLabel(b: AggregatedBucket): string {
   if (b.suppressedCells === 0) return nf.format(b.count);
@@ -206,7 +203,7 @@ export default function I485Explorer({
   const selectedRelease = releases.find((r) => r.id === releaseId) ?? null;
   const compareFromRelease = releases.find((r) => r.id === compareFromId) ?? null;
   const compareToRelease = releases.find((r) => r.id === compareToId) ?? null;
-  const members = useMemo(() => categoryMembers(category), [category]);
+  const members = useMemo(() => categoryMembersFor(category), [category]);
   const countryFilter = useMemo(
     () => (countries.length > 0 ? countries : undefined),
     [countries],

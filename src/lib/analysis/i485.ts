@@ -79,6 +79,13 @@ export const CATEGORY_OPTIONS: { value: string; label: string; members: I485Cate
   { value: 'CRW', label: 'EB-4 Religious Workers', members: ['CRW'] },
 ];
 
+/** Default explorer category filter (Set-asides). */
+export const DEFAULT_I485_CATEGORY = 'EB5_SET_ASIDES';
+
+export function categoryMembersFor(value: string): I485Category[] {
+  return CATEGORY_OPTIONS.find((o) => o.value === value)?.members ?? [];
+}
+
 /** Compact button labels for the explorer category picker. */
 export const EB5_CATEGORY_BUTTONS: { value: string; label: string }[] = [
   { value: 'EB5_ALL', label: 'EB-5 (all)' },
