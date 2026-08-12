@@ -87,24 +87,29 @@ function GrainToggle({
   onChange: (g: PriorityDateGrain) => void;
 }) {
   return (
-    <div
-      className="inline-flex rounded-full border border-base-300 p-0.5 bg-base-200/60"
-      role="group"
-      aria-label="Priority-date grouping"
-    >
-      {GRAIN_OPTIONS.map((o) => (
-        <button
-          key={o.value}
-          type="button"
-          className={`btn btn-xs rounded-full border-0 ${
-            grain === o.value ? 'btn-primary text-primary-content' : 'btn-ghost text-neutral'
-          }`}
-          aria-pressed={grain === o.value}
-          onClick={() => onChange(o.value)}
-        >
-          {o.label}
-        </button>
-      ))}
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral/55">
+        Granularity
+      </span>
+      <div
+        className="inline-flex rounded-full border border-base-300 p-0.5 bg-base-200/60"
+        role="group"
+        aria-label="Priority-date grouping"
+      >
+        {GRAIN_OPTIONS.map((o) => (
+          <button
+            key={o.value}
+            type="button"
+            className={`btn btn-xs rounded-full border-0 ${
+              grain === o.value ? 'btn-primary text-primary-content' : 'btn-ghost text-neutral'
+            }`}
+            aria-pressed={grain === o.value}
+            onClick={() => onChange(o.value)}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
