@@ -52,6 +52,15 @@ export function normalizeComment(
     sourceLink,
     posterType,
     posterLabel,
+    eb5baseLikelihood:
+      flat.eb5base_likelihood ?? nested.eb5baseLikelihood,
+    eb5baseConfidence:
+      flat.eb5base_confidence ?? nested.eb5baseConfidence,
+    eb5baseSignals: flat.eb5base_signals ?? nested.eb5baseSignals,
+    eb5baseAntiSignals:
+      flat.eb5base_anti_signals ?? nested.eb5baseAntiSignals,
+    eb5baseAttributionVersion:
+      flat.eb5base_attribution_version ?? nested.eb5baseAttributionVersion,
   };
 }
 

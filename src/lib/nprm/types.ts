@@ -1,3 +1,13 @@
+/** Heuristic EB5 Base Write-tab fingerprint (not a regs.gov source tag). */
+export type Eb5BaseLikelihood = 'likely' | 'possible' | 'unlikely';
+export type Eb5BaseConfidence = 'high' | 'medium' | 'low';
+
+export interface Eb5BaseAttributionCounts {
+  likely: number;
+  possible: number;
+  unlikely: number;
+}
+
 export interface NprmStats {
   docket_id: string;
   total_comments: number;
@@ -5,6 +15,9 @@ export interface NprmStats {
   comment_period_ends: string;
   source: string;
   check_log?: string;
+  eb5base_attribution_version?: number;
+  eb5base_attribution?: Eb5BaseAttributionCounts;
+  eb5base_attribution_note?: string;
 }
 
 export type KeyTopicPolarity = 'agree' | 'disagree';
@@ -92,6 +105,10 @@ export interface NprmCommentAttributes {
   aiSummary?: string;
 }
 
+/** Heuristic EB5 Base Write-tab fingerprint (not a regs.gov source tag). */
+export type Eb5BaseLikelihood = 'likely' | 'possible' | 'unlikely';
+export type Eb5BaseConfidence = 'high' | 'medium' | 'low';
+
 /**
  * Normalized comment. Hatch may publish either regs.gov nested `attributes`
  * or a flat id+link+theme+ai_summary row; fetch normalizes both.
@@ -110,6 +127,12 @@ export interface NprmComment {
   posterType?: 'anonymous' | 'named' | 'org';
   /** UI-safe label: Anonymous / Named person / Organization. */
   posterLabel?: string;
+  /** Heuristic: likely drafted via EB5 Base Write tab. */
+  eb5baseLikelihood?: Eb5BaseLikelihood;
+  eb5baseConfidence?: Eb5BaseConfidence;
+  eb5baseSignals?: string[];
+  eb5baseAntiSignals?: string[];
+  eb5baseAttributionVersion?: number;
 }
 
 /** Raw flat comment row in public/data/nprm/all_comments.json. */
@@ -125,6 +148,11 @@ export interface NprmFlatComment {
   comment?: string;
   poster_type?: 'anonymous' | 'named' | 'org';
   poster_label?: string;
+  eb5base_likelihood?: Eb5BaseLikelihood;
+  eb5base_confidence?: Eb5BaseConfidence;
+  eb5base_signals?: string[];
+  eb5base_anti_signals?: string[];
+  eb5base_attribution_version?: number;
   attributes?: NprmCommentAttributes;
 }
 
@@ -134,6 +162,8 @@ export interface NprmCommentsEnvelope {
   docket_id?: string;
   source?: string;
   mode?: string;
+  eb5base_attribution_version?: number;
+  eb5base_attribution?: Eb5BaseAttributionCounts;
   comments: Array<NprmComment | NprmFlatComment>;
 }
 

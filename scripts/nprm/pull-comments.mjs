@@ -2,6 +2,8 @@
 /**
  * Pull NPRM comments from regulations.gov (api.data.gov) and write first-party
  * JSON under public/data/nprm/. No Meta feed. API key via REGULATIONS_GOV_API_KEY.
+ * Each comment is also scored with a heuristic EB5 Base Write-tab fingerprint
+ * (eb5base_likelihood / confidence / signals) — not ground truth.
  *
  * Usage:
  *   REGULATIONS_GOV_API_KEY=... node scripts/nprm/pull-comments.mjs
@@ -9,6 +11,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  assessEb5BaseAttribution,
+  attributionCounts,
+} from './eb5base-attribution.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
@@ -16,6 +22,8 @@ const OUT_DIR = path.join(ROOT, 'public/data/nprm');
 const DOCUMENT_ID = 'USCIS-2026-0100-0001';
 const DOCKET_ID = 'USCIS-2026-0100';
 const API = 'https://api.regulations.gov/v4';
+/** Bump when classifier heuristics change so stored assessments can be re-read. */
+const ATTRIBUTION_VERSION = 1;
 
 function loadEnvFile(filePath) {
   if (!fs.existsSync(filePath)) return;
@@ -300,6 +308,7 @@ async function main() {
     const body = decodeEntities(a.comment || '');
     const theme = pickTheme(`${title}\n${body}`);
     const ai_summary = buildAiSummary(body, posterType, rawName);
+    const attribution = assessEb5BaseAttribution(body);
     comments.push({
       id,
       // Generic title only; never persist real person/org names in public JSON.
@@ -311,6 +320,12 @@ async function main() {
       theme_id: theme.theme_id,
       theme_title: theme.theme_title,
       ai_summary,
+      // Heuristic fingerprint vs EB5 Base Write-tab style (not ground truth).
+      eb5base_likelihood: attribution.eb5base_likelihood,
+      eb5base_confidence: attribution.eb5base_confidence,
+      eb5base_signals: attribution.eb5base_signals,
+      eb5base_anti_signals: attribution.eb5base_anti_signals,
+      eb5base_attribution_version: ATTRIBUTION_VERSION,
       type: 'comments',
     });
     if ((i + 1) % 10 === 0 || i === listed.length - 1) {
@@ -328,12 +343,15 @@ async function main() {
 
   const now = new Date();
   const stamp = now.toISOString();
+  const eb5base_attribution = attributionCounts(comments);
   const envelope = {
     docket_id: DOCKET_ID,
     retrieved: stamp,
     total: comments.length,
     source: 'regulations.gov via api.data.gov',
     mode: 'first_party_anonymized_id_link_theme_summary',
+    eb5base_attribution_version: ATTRIBUTION_VERSION,
+    eb5base_attribution,
     comments,
   };
 
@@ -348,6 +366,10 @@ async function main() {
     anonymized: true,
     mode: 'first_party_anonymized_id_link_theme_summary',
     ai_summaries_added: comments.filter((c) => c.ai_summary).length,
+    eb5base_attribution_version: ATTRIBUTION_VERSION,
+    eb5base_attribution,
+    eb5base_attribution_note:
+      'Heuristic fingerprint vs Write-tab prompt style; not a regs.gov filing source tag',
   };
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
@@ -364,6 +386,7 @@ async function main() {
     `${stamp} first-party pull via regulations.gov API`,
     `document ${DOCUMENT_ID} objectId ${objectId}`,
     `comments ${comments.length}; summaries ${stats.ai_summaries_added}`,
+    `eb5base attribution v${ATTRIBUTION_VERSION}: likely=${eb5base_attribution.likely} possible=${eb5base_attribution.possible} unlikely=${eb5base_attribution.unlikely}`,
     'anonymized poster labels; Meta feed not used',
     '',
   ].join('\n');
@@ -377,6 +400,8 @@ async function main() {
     total_comments: comments.length,
     source: 'regulations.gov via api.data.gov',
     notes: 'First-party anonymized pull; no Meta dependency',
+    eb5base_attribution_version: ATTRIBUTION_VERSION,
+    eb5base_attribution,
   };
   fs.writeFileSync(
     path.join(OUT_DIR, 'last-check.json'),
@@ -385,6 +410,9 @@ async function main() {
 
   console.log('Wrote', path.join(OUT_DIR, 'all_comments.json'));
   console.log('Wrote', path.join(OUT_DIR, 'stats.json'));
+  console.log(
+    `EB5 Base attribution: likely=${eb5base_attribution.likely} possible=${eb5base_attribution.possible} unlikely=${eb5base_attribution.unlikely}`
+  );
   console.log('Done.');
 }
 
