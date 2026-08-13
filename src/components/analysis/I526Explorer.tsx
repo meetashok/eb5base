@@ -13,7 +13,6 @@ import {
 import { filterChipClass } from '@/components/analysis/filterChipClass';
 import I526ShareButton from '@/components/analysis/I526ShareButton';
 import I526RatioChart from '@/components/analysis/I526RatioChart';
-import { chartColors } from '@/lib/charts/theme';
 import {
   COUNTRY_FILTER_OPTIONS,
   DEFAULT_COUNTRIES,
@@ -476,6 +475,7 @@ export default function I526Explorer({
   const [ratioCells, setRatioCells] = useState<I526FilingCell[] | null>(null);
   const [ratioSplit, setRatioSplit] = useState<RatioSplit>('none');
   const [ratioBoth, setRatioBoth] = useState<RatioBothMode>('exclude');
+  const [ratioCumulative, setRatioCumulative] = useState(true);
 
   // Throughput state
   const [throughputBIds, setThroughputBIds] = useState<number[]>(
@@ -737,6 +737,8 @@ export default function I526Explorer({
     const cumVals = cumulativeArrays.flat().filter((v): v is number => v != null);
     const cumMax = cumVals.length ? Math.max(...cumVals) : 0;
     const yMax = Math.max(3, cumMax * 1.5);
+    const pick = (f: (typeof data.facets)[number]) =>
+      ratioCumulative ? f.cumulative : f.monthly;
     if (ratioSplit === 'none') {
       const f = data.facets[0];
       if (!f) return null;
@@ -744,13 +746,11 @@ export default function I526Explorer({
         xAxis: data.xAxis,
         yMax,
         series: [
-          { key: 'cumulative', label: 'Cumulative', color: seriesColor(0), data: f.cumulative },
           {
-            key: 'monthly',
-            label: 'Per-period',
-            color: chartColors.axis,
-            muted: true,
-            data: f.monthly,
+            key: 'ratio',
+            label: ratioCumulative ? 'Cumulative' : 'Per-period',
+            color: seriesColor(0),
+            data: pick(f),
           },
         ],
       };
@@ -762,10 +762,10 @@ export default function I526Explorer({
         key: f.key,
         label: f.label,
         color: seriesColor(i),
-        data: f.cumulative,
+        data: pick(f),
       })),
     };
-  }, [ratioCells, grain, ratioSplit, ratioBoth]);
+  }, [ratioCells, grain, ratioSplit, ratioBoth, ratioCumulative]);
 
   // Throughput data
   const throughputChartData = useMemo(() => {
@@ -1086,6 +1086,31 @@ export default function I526Explorer({
                           {o.label}
                         </button>
                       ))}
+                    </div>
+                  </div>
+                  <div className={headerToggleRowClass}>
+                    <span className={headerToggleLabelClass}>View</span>
+                    <div
+                      className={headerToggleGroupClass}
+                      role="group"
+                      aria-label="Ratio accumulation"
+                    >
+                      <button
+                        type="button"
+                        className={headerToggleBtnClass(!ratioCumulative)}
+                        aria-pressed={!ratioCumulative}
+                        onClick={() => setRatioCumulative(false)}
+                      >
+                        Periodic
+                      </button>
+                      <button
+                        type="button"
+                        className={headerToggleBtnClass(ratioCumulative)}
+                        aria-pressed={ratioCumulative}
+                        onClick={() => setRatioCumulative(true)}
+                      >
+                        Cumulative
+                      </button>
                     </div>
                   </div>
                 </ChartHeaderControls>
