@@ -26,7 +26,7 @@ const OPTIONS: Option[] = [
     id: 'i526',
     label: 'I-526 / I-526E Filings',
     shortLabel: 'I-526',
-    description: 'Quarterly filings, throughput, processing times',
+    description: 'Quarterly filings by country and TEA set-aside',
     href: I526_DEFAULT_PATH,
   },
 ];
