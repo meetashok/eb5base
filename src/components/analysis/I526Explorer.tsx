@@ -81,7 +81,17 @@ const SPLIT_OPTIONS: { value: FilingSplit; label: string }[] = [
   { value: 'country', label: 'Country' },
 ];
 
-function ChartFooter({ cells, link = '/analysis/i526/data' }: { cells: number; link?: string }) {
+function ChartFooter({
+  cells,
+  link = '/analysis/i526/data',
+  onToggleHowToRead,
+  howToReadOpen,
+}: {
+  cells: number;
+  link?: string;
+  onToggleHowToRead?: () => void;
+  howToReadOpen?: boolean;
+}) {
   return (
     <p className="text-xs text-neutral/70 leading-relaxed pt-1">
       {cells > 0 && (
@@ -98,7 +108,65 @@ function ChartFooter({ cells, link = '/analysis/i526/data' }: { cells: number; l
       >
         Source data
       </Link>
+      {onToggleHowToRead ? (
+        <>
+          {' · '}
+          <button
+            type="button"
+            onClick={onToggleHowToRead}
+            aria-expanded={howToReadOpen}
+            className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+          >
+            How to read the data
+          </button>
+        </>
+      ) : null}
     </p>
+  );
+}
+
+function HowToReadCard() {
+  return (
+    <section className="max-w-4xl mx-auto px-4 pt-2 pb-8 space-y-6">
+      <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 text-sm text-neutral leading-relaxed space-y-2">
+        <h2 className="text-sm font-bold text-primary">How to read this data</h2>
+        <ul className="list-disc pl-5 space-y-1.5">
+          <li>
+            <span className="font-semibold">I-526 filings data:</span> USCIS{' '}
+            <span className="font-semibold">receipts</span> per Form I-526 (standalone) or I-526E
+            (regional center) per country of birth, per TEA set-aside category, per receipt month.
+          </li>
+          <li>
+            <span className="font-semibold">Throughput &amp; processing data:</span> Service-wide
+            throughput (receipts, approvals, denials, completions, pending, median processing
+            months) - aggregated across all countries/categories for the whole EB-5 family.
+          </li>
+          <li>
+            I-526 legacy = petitions filed before the RIA. These are a legacy pipeline; no new
+            receipts today but approvals/denials continue. New I-526 standalone = post-RIA
+            non-regional center filings.
+          </li>
+          <li>
+            The TEA &quot;Rural &amp; High-UE combined&quot; bucket is reported separately by USCIS
+            in some reports - it is <span className="font-semibold">not</span> a double-count of
+            Rural + High unemployment.
+          </li>
+          <li>
+            Suppression: values 1-10 masked as D/H; treated as 0 in sums, flagged as suppressed
+            cells in the footer.
+          </li>
+          <li>
+            Median processing time is USCIS-reported median months from receipt to completion for
+            petitions finalized during the quarter; it is not the wait time a filer experiences
+            today.
+          </li>
+          <li>
+            Publication cadence is quarterly, ~10-12 weeks after quarter end. FY26 Q3 and Q4 are
+            not yet posted as of this build.
+          </li>
+        </ul>
+      </div>
+    </section>
   );
 }
 
@@ -389,6 +457,7 @@ export default function I526Explorer({
     initialPrefs?.showCumulative ?? false,
   );
   const [trendCells, setTrendCells] = useState<I526FilingCell[] | null>(initialFilingCells);
+  const [showHowToRead, setShowHowToRead] = useState(false);
 
   // Throughput state
   const [throughputBIds, setThroughputBIds] = useState<number[]>(
@@ -876,7 +945,11 @@ export default function I526Explorer({
               )}
             </div>
 
-            <ChartFooter cells={mainChartData?.suppressedCells ?? 0} />
+            <ChartFooter
+              cells={mainChartData?.suppressedCells ?? 0}
+              onToggleHowToRead={() => setShowHowToRead((v) => !v)}
+              howToReadOpen={showHowToRead}
+            />
           </div>
         </div>
       </Wrapper>
@@ -967,7 +1040,11 @@ export default function I526Explorer({
                 </div>
               )}
             </div>
-            <ChartFooter cells={throughputChartData?.suppressedCells ?? 0} />
+            <ChartFooter
+              cells={throughputChartData?.suppressedCells ?? 0}
+              onToggleHowToRead={() => setShowHowToRead((v) => !v)}
+              howToReadOpen={showHowToRead}
+            />
           </div>
 
           <div className="space-y-4">
@@ -1082,6 +1159,7 @@ export default function I526Explorer({
     <>
       {view === 'trend' && <TrendView />}
       {view === 'throughput' && <ThroughputView />}
+      {showHowToRead ? <HowToReadCard /> : null}
     </>
   );
 }
