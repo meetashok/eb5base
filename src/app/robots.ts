@@ -21,7 +21,6 @@ const DISALLOW = [
   '/projects',
   '/rc',
   '/regional-centers',
-  '/timeline',
 ];
 
 const PUBLIC_ALLOW = [

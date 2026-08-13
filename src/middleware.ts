@@ -20,7 +20,6 @@ const RETIRED_DIRECTORY_PREFIXES = [
   '/projects',
   '/rc',
   '/regional-centers',
-  '/timeline',
   '/api/suggestions',
 ];
 
