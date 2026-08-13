@@ -60,8 +60,11 @@ export async function loadInitialI526(): Promise<{
     }
     const aReleases = releases.filter((r) => r.dataset === 'FILINGS_COUNTRY_TEA');
     const bReleases = releases.filter((r) => r.dataset === 'ALL_FORMS_SUMMARY');
-    const latestAFilingReleaseIds = aReleases.slice(-2).map((r) => r.id);
-    const latestBReleaseIds = bReleases.slice(-2).map((r) => r.id);
+    // Time-series charts show the full receipt-period history, so seed with every
+    // release (not just the latest). The default form/TEA/country filter keeps the
+    // SSR payload small, and the client reuses this data without a refetch.
+    const latestAFilingReleaseIds = aReleases.map((r) => r.id);
+    const latestBReleaseIds = bReleases.map((r) => r.id);
 
     const formMembers = resolveFilterMembers(FORM_FILTERS_A, DEFAULT_FORM_A) as FilingFormType[];
     const teaMembers = resolveFilterMembers(TEA_FILTER_OPTIONS, DEFAULT_TEA) as TeaCategory[];
