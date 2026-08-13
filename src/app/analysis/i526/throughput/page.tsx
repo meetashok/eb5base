@@ -1,25 +1,8 @@
-import type { Metadata } from 'next';
-import I526ExplorerPage from '@/components/analysis/I526ExplorerPage';
+import { redirect } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: 'I-526 throughput & processing times - USCIS EB-5 data | EB5 Base',
-  description:
-    'EB-5 family quarterly throughput: approvals, denials, completions, pending inventory, and median processing months for I-526 legacy, I-526 standalone, I-526E, I-829, and I-956 forms.',
-  alternates: { canonical: 'https://eb5base.com/analysis/i526/throughput' },
-  openGraph: {
-    title: 'I-526 throughput & processing',
-    description:
-      'Service-wide adjudications, pending inventory, and median processing months for the EB-5 family.',
-    url: 'https://eb5base.com/analysis/i526/throughput',
-  },
-};
-
-export const dynamic = 'force-dynamic';
-
-export default function I526ThroughputRoute({
-  searchParams,
-}: {
-  searchParams: Record<string, string | string[] | undefined>;
-}) {
-  return <I526ExplorerPage view="throughput" searchParams={searchParams} />;
+// 'Throughput & processing' is hidden for now (tab removed from I526ViewBar).
+// To revisit, restore the I526ExplorerPage render below (see git history) and
+// re-add the tab in src/components/analysis/I526ViewBar.tsx.
+export default function I526ThroughputRoute() {
+  redirect('/analysis/i526/trend');
 }

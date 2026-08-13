@@ -22,12 +22,7 @@ export const I526_VIEWS: {
     shortLabel: 'Filings',
     href: I526_TAB_PATHS.trend,
   },
-  {
-    id: 'throughput',
-    label: 'Throughput & processing',
-    shortLabel: 'Throughput',
-    href: I526_TAB_PATHS.throughput,
-  },
+  // 'Throughput & processing' hidden for now; re-add here to restore the tab.
 ];
 
 function tabClass(selected: boolean): string {
