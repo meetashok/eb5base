@@ -12,6 +12,8 @@ import {
 } from '@/components/charts';
 import { filterChipClass } from '@/components/analysis/filterChipClass';
 import I526ShareButton from '@/components/analysis/I526ShareButton';
+import I526RatioChart from '@/components/analysis/I526RatioChart';
+import { chartColors } from '@/lib/charts/theme';
 import {
   COUNTRY_FILTER_OPTIONS,
   DEFAULT_COUNTRIES,
@@ -25,6 +27,8 @@ import {
   aggregateFilingTimeSeries,
   aggregateSplitFilingTimeSeries,
   calendarQuarterLabelForAsOf,
+  computeI526RatioData,
+  RATIO_TEAS,
   fetchI526FilingCells,
   fetchI526Processing,
   fetchI526Releases,
@@ -50,6 +54,8 @@ import {
   type I526Release,
   type ProcessingFormType,
   type ProcessingMetricKey,
+  type RatioBothMode,
+  type RatioSplit,
   type TeaCategory,
 } from '@/lib/analysis/i526';
 import {
@@ -78,6 +84,18 @@ const SPLIT_OPTIONS: { value: FilingSplit; label: string }[] = [
   { value: 'form_type', label: 'Form' },
   { value: 'tea', label: 'TEA' },
   { value: 'country', label: 'Country' },
+];
+
+const RATIO_SPLIT_OPTIONS: { value: RatioSplit; label: string }[] = [
+  { value: 'none', label: 'Total' },
+  { value: 'form_type', label: 'Form' },
+  { value: 'country', label: 'Country' },
+];
+
+const RATIO_BOTH_OPTIONS: { value: RatioBothMode; label: string }[] = [
+  { value: 'exclude', label: 'Exclude' },
+  { value: 'rural', label: 'As rural' },
+  { value: 'split', label: 'Split' },
 ];
 
 function ChartFooter({
@@ -454,6 +472,11 @@ export default function I526Explorer({
   const [trendCells, setTrendCells] = useState<I526FilingCell[] | null>(initialFilingCells);
   const [showHowToRead, setShowHowToRead] = useState(false);
 
+  // Rural : HUA ratio state (uses rural/HUA/both cells; respects form + country).
+  const [ratioCells, setRatioCells] = useState<I526FilingCell[] | null>(null);
+  const [ratioSplit, setRatioSplit] = useState<RatioSplit>('none');
+  const [ratioBoth, setRatioBoth] = useState<RatioBothMode>('exclude');
+
   // Throughput state
   const [throughputBIds, setThroughputBIds] = useState<number[]>(
     initialPrefs?.throughputBIds && initialPrefs.throughputBIds.length > 0
@@ -590,6 +613,25 @@ export default function I526Explorer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [available, trendAReleaseIds.join(','), formA.join('|'), teas.join('|'), countries.join('|')]);
 
+  // Ratio needs rural/HUA/both regardless of the category chips; fetch its own
+  // slice (respecting form + country). Trend view only.
+  useEffect(() => {
+    if (!available) return;
+    if (view !== 'trend') return;
+    if (trendAReleaseIds.length === 0) return;
+    const formMembers = resolveFilterMembers(FORM_FILTERS_A, formA) as FilingFormType[];
+    const countryMembers = resolveFilterMembers(COUNTRY_FILTER_OPTIONS, countries) as FilingCountry[];
+    fetchI526FilingCells({
+      releaseIds: trendAReleaseIds,
+      formTypes: formMembers,
+      teas: [...RATIO_TEAS] as TeaCategory[],
+      countries: countryMembers,
+    })
+      .then((cells) => setRatioCells(cells))
+      .catch((e: Error) => setLoadError(e.message));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [available, view, trendAReleaseIds.join(','), formA.join('|'), countries.join('|')]);
+
   useEffect(() => {
     if (!available) return;
     if (throughputBIds.length === 0) return;
@@ -679,6 +721,38 @@ export default function I526Explorer({
       suppressedCells,
     };
   }, [trendCells, grain, split]);
+
+  const ratioChartSeries = useMemo(() => {
+    if (!ratioCells) return null;
+    const data = computeI526RatioData(ratioCells, grain, ratioSplit, ratioBoth);
+    if (data.xAxis.length === 0) return null;
+    if (ratioSplit === 'none') {
+      const f = data.facets[0];
+      if (!f) return null;
+      return {
+        xAxis: data.xAxis,
+        series: [
+          { key: 'cumulative', label: 'Cumulative', color: seriesColor(0), data: f.cumulative },
+          {
+            key: 'monthly',
+            label: 'Per-period',
+            color: chartColors.axis,
+            muted: true,
+            data: f.monthly,
+          },
+        ],
+      };
+    }
+    return {
+      xAxis: data.xAxis,
+      series: data.facets.map((f, i) => ({
+        key: f.key,
+        label: f.label,
+        color: seriesColor(i),
+        data: f.cumulative,
+      })),
+    };
+  }, [ratioCells, grain, ratioSplit, ratioBoth]);
 
   // Throughput data
   const throughputChartData = useMemo(() => {
@@ -945,6 +1019,85 @@ export default function I526Explorer({
               onToggleHowToRead={() => setShowHowToRead((v) => !v)}
               howToReadOpen={showHowToRead}
             />
+          </div>
+        </div>
+
+        <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
+          <div className="space-y-4">
+            <ChartHeader>
+              <div className={chartHeaderRowClass}>
+                <div className="flex flex-1 flex-col gap-2 items-start">
+                  <div className="min-w-0 w-full space-y-1">
+                    <h2 className="text-sm font-semibold leading-snug text-primary sm:text-base">
+                      Rural : HUA application ratio
+                    </h2>
+                    <p className="text-sm leading-snug text-neutral/70">
+                      Rural set-aside visas are twice HUA, so a ratio of 2 means demand is balanced
+                      to supply. Uses Rural vs High-unemployment filings only (ignores the category
+                      chips); respects the form and country filters.
+                    </p>
+                  </div>
+                </div>
+                <ChartHeaderControls>
+                  <div className={headerToggleRowClass}>
+                    <span className={headerToggleLabelClass}>Split</span>
+                    <div className={headerToggleGroupClass} role="group" aria-label="Ratio split">
+                      {RATIO_SPLIT_OPTIONS.map((o) => (
+                        <button
+                          key={o.value}
+                          type="button"
+                          className={headerToggleBtnClass(ratioSplit === o.value)}
+                          aria-pressed={ratioSplit === o.value}
+                          onClick={() => setRatioSplit(o.value)}
+                        >
+                          {o.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className={headerToggleRowClass}>
+                    <span className={headerToggleLabelClass}>Rural &amp; HUA</span>
+                    <div
+                      className={headerToggleGroupClass}
+                      role="group"
+                      aria-label="Dual-qualifying allocation"
+                    >
+                      {RATIO_BOTH_OPTIONS.map((o) => (
+                        <button
+                          key={o.value}
+                          type="button"
+                          className={headerToggleBtnClass(ratioBoth === o.value)}
+                          aria-pressed={ratioBoth === o.value}
+                          onClick={() => setRatioBoth(o.value)}
+                        >
+                          {o.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </ChartHeaderControls>
+              </div>
+            </ChartHeader>
+
+            <div className="pt-2">
+              {ratioChartSeries && ratioChartSeries.series.length > 0 ? (
+                <I526RatioChart
+                  xAxis={ratioChartSeries.xAxis}
+                  series={ratioChartSeries.series}
+                  referenceValue={2}
+                  referenceLabel="Balanced (2:1)"
+                  height={260}
+                  xAxisLabel="Receipt period"
+                  ariaLabel="Rural to HUA application ratio over receipt period"
+                />
+              ) : (
+                <div className="h-60 flex items-center justify-center text-sm text-neutral/50">
+                  {!ratioCells ? 'Loading…' : 'Not enough rural / HUA data for this selection.'}
+                </div>
+              )}
+            </div>
+
+            <ChartFooter cells={0} />
           </div>
         </div>
       </Wrapper>
