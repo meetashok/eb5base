@@ -14,7 +14,15 @@ const CRAWLER_AGENTS = [
 ];
 
 /** Keep /api/crawl-test crawlable; do not blanket-disallow /api/. */
-const DISALLOW = ['/admin/', '/api/private/'];
+const DISALLOW = [
+  '/admin/',
+  '/api/private/',
+  // Retired project directory (pivoted to the NPRM tool).
+  '/projects',
+  '/rc',
+  '/regional-centers',
+  '/timeline',
+];
 
 const PUBLIC_ALLOW = [
   '/',

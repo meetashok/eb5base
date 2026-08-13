@@ -12,6 +12,25 @@ import { updateSession } from '@/lib/supabase-middleware';
 const BYPASS_MAX_AGE_SEC = 60 * 60 * 24 * 30; // 30 days
 
 /**
+ * Legacy project-directory surfaces retired after the pivot to the NPRM tool.
+ * They stay in the codebase but must not be publicly reachable; visitors are
+ * sent to the home page. Covers each route plus its sub-paths.
+ */
+const RETIRED_DIRECTORY_PREFIXES = [
+  '/projects',
+  '/rc',
+  '/regional-centers',
+  '/timeline',
+  '/api/suggestions',
+];
+
+function isRetiredDirectoryPath(pathname: string): boolean {
+  return RETIRED_DIRECTORY_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+  );
+}
+
+/**
  * Maintenance passthrough for public tools and crawler surfaces.
  * Intentionally does NOT inspect User-Agent: bots and browsers share the same SSR path.
  */
@@ -136,6 +155,14 @@ export async function middleware(request: NextRequest) {
   if (legacyTab) return legacyTab;
 
   const { pathname } = request.nextUrl;
+
+  // Retired project directory: block regardless of maintenance mode.
+  if (isRetiredDirectoryPath(pathname)) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/';
+    url.search = '';
+    return NextResponse.redirect(url);
+  }
 
   // Static JSON/log under /data must stay public: NPRM SSR falls back to
   // HTTP when public/ is not on the serverless filesystem (Vercel).
