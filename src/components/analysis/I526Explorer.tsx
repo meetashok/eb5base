@@ -75,7 +75,7 @@ const GRAIN_OPTIONS: { value: FilingGrain; label: string }[] = [
 ];
 
 const SPLIT_OPTIONS: { value: FilingSplit; label: string }[] = [
-  { value: 'none', label: 'Total' },
+  { value: 'none', label: 'None' },
   { value: 'form_type', label: 'Form' },
   { value: 'tea', label: 'TEA' },
   { value: 'country', label: 'Country' },
