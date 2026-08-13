@@ -18,8 +18,8 @@ export const I526_VIEWS: {
 }[] = [
   {
     id: 'trend',
-    label: 'Filings by month',
-    shortLabel: 'Trend',
+    label: 'EB5 filings',
+    shortLabel: 'Filings',
     href: I526_TAB_PATHS.trend,
   },
   {

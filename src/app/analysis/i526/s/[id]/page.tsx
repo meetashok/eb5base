@@ -53,7 +53,7 @@ export const dynamic = 'force-dynamic';
 
 function summaryForPayload(p: I526SharePayload): string {
   const parts: string[] = [];
-  if (p.view === 'trend') parts.push('Filings by month');
+  if (p.view === 'trend') parts.push('EB5 filings');
   else if (p.view === 'throughput') parts.push('Throughput & processing');
   else parts.push('Source data');
   if (p.countries.length > 0) parts.push(p.countries.join(', '));
