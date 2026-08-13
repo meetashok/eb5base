@@ -759,7 +759,7 @@ export default function I526Explorer({
         <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
           <div className="space-y-4">
             <ChartHeader>
-              <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className={chartHeaderRowClass}>
                 <div className="flex flex-1 flex-col gap-2 items-start">
                   <div className="min-w-0 w-full space-y-1">
                     <h2 className="text-sm font-semibold leading-snug text-primary sm:text-base">
@@ -911,7 +911,7 @@ export default function I526Explorer({
         <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
           <div className="space-y-4">
             <ChartHeader>
-              <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className={chartHeaderRowClass}>
                 <div className="flex flex-1 flex-col gap-2 items-start">
                   <div className="min-w-0 w-full space-y-1">
                     <h2 className="text-sm font-semibold leading-snug text-primary sm:text-base">
