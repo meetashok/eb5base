@@ -71,15 +71,54 @@ export default function I526RatioChart({
 }: I526RatioChartProps) {
   const { ref, width } = useElementWidth<HTMLDivElement>();
   const [hoverKey, setHoverKey] = useState<string | null>(null);
+  const [focusKey, setFocusKey] = useState<string | null>(null);
+  const [hiddenKeys, setHiddenKeys] = useState<Set<string>>(() => new Set());
+
+  const seriesKeySig = series.map((s) => s.key).join('|');
+  useEffect(() => {
+    setHiddenKeys(new Set());
+    setFocusKey(null);
+  }, [seriesKeySig]);
+
+  const visible = useMemo(
+    () => series.filter((s) => !hiddenKeys.has(s.key)),
+    [series, hiddenKeys],
+  );
+  const drawOrder = useMemo(() => {
+    if (!focusKey) return visible;
+    return [...visible].sort((a, b) =>
+      a.key === focusKey ? 1 : b.key === focusKey ? -1 : 0,
+    );
+  }, [visible, focusKey]);
+
+  function toggleSeries(key: string) {
+    setHiddenKeys((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+        return next;
+      }
+      // Keep at least one series visible.
+      if (series.length - next.size <= 1) return prev;
+      next.add(key);
+      return next;
+    });
+  }
+
+  function seriesEmphasis(key: string): { strokeWidth: number; opacity: number } {
+    if (!focusKey) return { strokeWidth: 2.25, opacity: 1 };
+    if (focusKey === key) return { strokeWidth: 3.25, opacity: 1 };
+    return { strokeWidth: 1.5, opacity: 0.25 };
+  }
 
   const dataMax = useMemo(() => {
     if (yMax != null) return Math.max(1, yMax);
-    const vals = series.flatMap((s) =>
+    const vals = visible.flatMap((s) =>
       s.data.filter((v): v is number => v != null),
     );
     if (referenceValue != null) vals.push(referenceValue);
     return Math.max(1, ...vals);
-  }, [series, referenceValue, yMax]);
+  }, [visible, referenceValue, yMax]);
 
   const ticks = useMemo(() => niceTicks(dataMax), [dataMax]);
   const axisMax = ticks[ticks.length - 1] || dataMax;
@@ -114,17 +153,47 @@ export default function I526RatioChart({
 
   return (
     <div className="w-full space-y-2" onMouseLeave={() => setHoverKey(null)}>
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
-        {series.map((s) => (
-          <span key={s.key} className="inline-flex items-center gap-1.5 text-neutral/80">
-            <span
-              className="inline-block w-4"
-              style={{ borderTop: `2px ${s.muted ? 'dashed' : 'solid'} ${s.color}` }}
-              aria-hidden
-            />
-            {s.label}
-          </span>
-        ))}
+      <div
+        className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs"
+        role="group"
+        aria-label="Toggle ratio series"
+        onMouseLeave={() => setFocusKey(null)}
+      >
+        {series.map((s) => {
+          const on = !hiddenKeys.has(s.key);
+          const focused = focusKey === s.key;
+          return (
+            <button
+              key={s.key}
+              type="button"
+              className={`inline-flex items-center gap-1.5 rounded-md px-1.5 py-0.5 transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary ${
+                on ? (focused ? 'bg-base-200 text-primary' : 'text-neutral/80') : 'text-neutral/35'
+              }`}
+              aria-pressed={on}
+              title={on ? `Hide ${s.label}` : `Show ${s.label}`}
+              onClick={() => {
+                toggleSeries(s.key);
+                setFocusKey(null);
+              }}
+              onMouseEnter={() => {
+                if (on) setFocusKey(s.key);
+              }}
+              onFocus={() => {
+                if (on) setFocusKey(s.key);
+              }}
+              onBlur={() => {
+                if (focusKey === s.key) setFocusKey(null);
+              }}
+            >
+              <span
+                className="inline-block w-4"
+                style={{ borderTop: `2px solid ${on ? s.color : '#c4bdb2'}` }}
+                aria-hidden
+              />
+              <span className={on ? undefined : 'line-through'}>{s.label}</span>
+            </button>
+          );
+        })}
         {referenceValue != null ? (
           <span className="inline-flex items-center gap-1.5" style={{ color: REFERENCE_COLOR }}>
             <span
@@ -146,7 +215,7 @@ export default function I526RatioChart({
             <div className="ml-auto max-w-full space-y-0.5 text-right">
               <div className="truncate font-medium text-neutral/55">{hoverMeta.label}</div>
               <div className="flex flex-wrap justify-end gap-x-3 gap-y-0.5 tabular-nums text-primary">
-                {series.map((s) => {
+                {visible.map((s) => {
                   const v = hoverIdx >= 0 ? s.data[hoverIdx] : null;
                   if (v == null) return null;
                   return (
@@ -237,8 +306,9 @@ export default function I526RatioChart({
                   </g>
                 ) : null}
 
-                {series.map((s) => {
+                {drawOrder.map((s) => {
                   const pts = xAxis.map((x, i) => ({ key: x.key, value: s.data[i] ?? null }));
+                  const { strokeWidth, opacity } = seriesEmphasis(s.key);
                   return (
                     <LinePath
                       key={s.key}
@@ -248,8 +318,8 @@ export default function I526RatioChart({
                       defined={(d) => d.value != null}
                       curve={curveMonotoneX}
                       stroke={s.color}
-                      strokeWidth={s.muted ? 1.5 : 2.25}
-                      strokeOpacity={s.muted ? 0.55 : 1}
+                      strokeWidth={s.muted ? 1.5 : strokeWidth}
+                      strokeOpacity={s.muted ? 0.55 : opacity}
                       strokeDasharray={s.muted ? '4 3' : undefined}
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -285,7 +355,7 @@ export default function I526RatioChart({
                         />
                       ) : null}
                       {active
-                        ? series.map((s) => {
+                        ? visible.map((s) => {
                             const v = s.data[i];
                             if (v == null) return null;
                             return (
