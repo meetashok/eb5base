@@ -86,7 +86,7 @@ const SPLIT_OPTIONS: { value: FilingSplit; label: string }[] = [
 ];
 
 const RATIO_SPLIT_OPTIONS: { value: RatioSplit; label: string }[] = [
-  { value: 'none', label: 'Total' },
+  { value: 'none', label: 'None' },
   { value: 'form_type', label: 'Form' },
   { value: 'country', label: 'Country' },
 ];
