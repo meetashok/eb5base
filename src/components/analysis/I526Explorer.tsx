@@ -12,6 +12,7 @@ import {
 } from '@/components/charts';
 import { filterChipClass } from '@/components/analysis/filterChipClass';
 import I526ShareButton from '@/components/analysis/I526ShareButton';
+import I526RatioChart from '@/components/analysis/I526RatioChart';
 import {
   COUNTRY_FILTER_OPTIONS,
   DEFAULT_COUNTRIES,
@@ -25,6 +26,8 @@ import {
   aggregateFilingTimeSeries,
   aggregateSplitFilingTimeSeries,
   calendarQuarterLabelForAsOf,
+  computeI526RatioData,
+  RATIO_TEAS,
   fetchI526FilingCells,
   fetchI526Processing,
   fetchI526Releases,
@@ -50,11 +53,12 @@ import {
   type I526Release,
   type ProcessingFormType,
   type ProcessingMetricKey,
+  type RatioBothMode,
+  type RatioSplit,
   type TeaCategory,
 } from '@/lib/analysis/i526';
 import {
   makeSharePayload,
-  searchParamsToSharePayload,
   sharePayloadToSearchParams,
   type I526SharePayload,
 } from '@/lib/analysis/i526ShareParams';
@@ -75,13 +79,35 @@ const GRAIN_OPTIONS: { value: FilingGrain; label: string }[] = [
 ];
 
 const SPLIT_OPTIONS: { value: FilingSplit; label: string }[] = [
-  { value: 'none', label: 'Total' },
+  { value: 'none', label: 'None' },
   { value: 'form_type', label: 'Form' },
   { value: 'tea', label: 'TEA' },
   { value: 'country', label: 'Country' },
 ];
 
-function ChartFooter({ cells, link = '/analysis/i526/data' }: { cells: number; link?: string }) {
+const RATIO_SPLIT_OPTIONS: { value: RatioSplit; label: string }[] = [
+  { value: 'none', label: 'None' },
+  { value: 'form_type', label: 'Form' },
+  { value: 'country', label: 'Country' },
+];
+
+const RATIO_BOTH_OPTIONS: { value: RatioBothMode; label: string }[] = [
+  { value: 'exclude', label: 'Exclude' },
+  { value: 'rural', label: 'As rural' },
+  { value: 'split', label: 'Split' },
+];
+
+function ChartFooter({
+  cells,
+  link = '/analysis/i526/data',
+  onToggleHowToRead,
+  howToReadOpen,
+}: {
+  cells: number;
+  link?: string;
+  onToggleHowToRead?: () => void;
+  howToReadOpen?: boolean;
+}) {
   return (
     <p className="text-xs text-neutral/70 leading-relaxed pt-1">
       {cells > 0 && (
@@ -98,7 +124,65 @@ function ChartFooter({ cells, link = '/analysis/i526/data' }: { cells: number; l
       >
         Source data
       </Link>
+      {onToggleHowToRead ? (
+        <>
+          {' · '}
+          <button
+            type="button"
+            onClick={onToggleHowToRead}
+            aria-expanded={howToReadOpen}
+            className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
+          >
+            How to read the data
+          </button>
+        </>
+      ) : null}
     </p>
+  );
+}
+
+function HowToReadCard() {
+  return (
+    <section className="max-w-4xl mx-auto px-4 pt-2 pb-8 space-y-6">
+      <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 text-sm text-neutral leading-relaxed space-y-2">
+        <h2 className="text-sm font-bold text-primary">How to read this data</h2>
+        <ul className="list-disc pl-5 space-y-1.5">
+          <li>
+            <span className="font-semibold">I-526 filings data:</span> USCIS{' '}
+            <span className="font-semibold">receipts</span> per Form I-526 (standalone) or I-526E
+            (regional center) per country of birth, per TEA set-aside category, per receipt month.
+          </li>
+          <li>
+            <span className="font-semibold">Throughput &amp; processing data:</span> Service-wide
+            throughput (receipts, approvals, denials, completions, pending, median processing
+            months) - aggregated across all countries/categories for the whole EB-5 family.
+          </li>
+          <li>
+            I-526 legacy = petitions filed before the RIA. These are a legacy pipeline; no new
+            receipts today but approvals/denials continue. New I-526 standalone = post-RIA
+            non-regional center filings.
+          </li>
+          <li>
+            The TEA &quot;Rural &amp; High-UE combined&quot; bucket is reported separately by USCIS
+            in some reports - it is <span className="font-semibold">not</span> a double-count of
+            Rural + High unemployment.
+          </li>
+          <li>
+            Suppression: values 1-10 masked as D/H; treated as 0 in sums, flagged as suppressed
+            cells in the footer.
+          </li>
+          <li>
+            Median processing time is USCIS-reported median months from receipt to completion for
+            petitions finalized during the quarter; it is not the wait time a filer experiences
+            today.
+          </li>
+          <li>
+            Publication cadence is quarterly, ~10-12 weeks after quarter end. FY26 Q3 and Q4 are
+            not yet posted as of this build.
+          </li>
+        </ul>
+      </div>
+    </section>
   );
 }
 
@@ -356,13 +440,9 @@ export default function I526Explorer({
     [initialReleases],
   );
 
-  const initialPrefs = useMemo(() => {
-    if (initialSharePayload) return initialSharePayload;
-    if (typeof window === 'undefined') return null;
-    const sp = new URLSearchParams(window.location.search);
-    const p = searchParamsToSharePayload(sp, view);
-    return p;
-  }, [initialSharePayload, view]);
+  // Server passes the URL-derived prefs as initialSharePayload, so both SSR and
+  // the first client render use the same values (no window read during render).
+  const initialPrefs = initialSharePayload;
 
   // Trend / filings state
   const [trendAReleaseIds, setTrendAReleaseIds] = useState<number[]>(
@@ -389,6 +469,17 @@ export default function I526Explorer({
     initialPrefs?.showCumulative ?? false,
   );
   const [trendCells, setTrendCells] = useState<I526FilingCell[] | null>(initialFilingCells);
+  const [showHowToRead, setShowHowToRead] = useState(false);
+
+  // Rural : HUA ratio state (uses rural/HUA/both cells; respects form + country).
+  const [ratioCells, setRatioCells] = useState<I526FilingCell[] | null>(null);
+  const [ratioSplit, setRatioSplit] = useState<RatioSplit>(initialPrefs?.ratioSplit ?? 'none');
+  const [ratioBoth, setRatioBoth] = useState<RatioBothMode>(
+    initialPrefs?.ratioBoth ?? 'exclude',
+  );
+  const [ratioCumulative, setRatioCumulative] = useState(
+    initialPrefs?.ratioCumulative ?? true,
+  );
 
   // Throughput state
   const [throughputBIds, setThroughputBIds] = useState<number[]>(
@@ -424,6 +515,9 @@ export default function I526Explorer({
       formB: [...formB],
       throughputBIds: [...throughputBIds],
       throughputMetric,
+      ratioSplit,
+      ratioBoth,
+      ratioCumulative,
     });
   }
 
@@ -442,6 +536,9 @@ export default function I526Explorer({
       formB.join('|'),
       throughputBIds.join(','),
       throughputMetric,
+      ratioSplit,
+      ratioBoth,
+      ratioCumulative,
     ],
   );
 
@@ -525,6 +622,25 @@ export default function I526Explorer({
       .finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [available, trendAReleaseIds.join(','), formA.join('|'), teas.join('|'), countries.join('|')]);
+
+  // Ratio needs rural/HUA/both regardless of the category chips; fetch its own
+  // slice (respecting form + country). Trend view only.
+  useEffect(() => {
+    if (!available) return;
+    if (view !== 'trend') return;
+    if (trendAReleaseIds.length === 0) return;
+    const formMembers = resolveFilterMembers(FORM_FILTERS_A, formA) as FilingFormType[];
+    const countryMembers = resolveFilterMembers(COUNTRY_FILTER_OPTIONS, countries) as FilingCountry[];
+    fetchI526FilingCells({
+      releaseIds: trendAReleaseIds,
+      formTypes: formMembers,
+      teas: [...RATIO_TEAS] as TeaCategory[],
+      countries: countryMembers,
+    })
+      .then((cells) => setRatioCells(cells))
+      .catch((e: Error) => setLoadError(e.message));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [available, view, trendAReleaseIds.join(','), formA.join('|'), countries.join('|')]);
 
   useEffect(() => {
     if (!available) return;
@@ -615,6 +731,53 @@ export default function I526Explorer({
       suppressedCells,
     };
   }, [trendCells, grain, split]);
+
+  const ratioChartSeries = useMemo(() => {
+    if (!ratioCells) return null;
+    const data = computeI526RatioData(ratioCells, grain, ratioSplit, ratioBoth);
+    if (data.xAxis.length === 0) return null;
+    // Scale from the (smooth) cumulative line + reference, so noisy early
+    // per-period spikes cannot bury the y=2 reference line.
+    const cumulativeArrays =
+      ratioSplit === 'none'
+        ? data.facets[0]
+          ? [data.facets[0].cumulative]
+          : []
+        : data.facets.map((f) => f.cumulative);
+    const cumVals = cumulativeArrays.flat().filter((v): v is number => v != null);
+    const cumMax = cumVals.length ? Math.max(...cumVals) : 0;
+    // Scale from the (smooth) cumulative peak; the chart adds the reference
+    // line + a little headroom. Keeps per-period spikes clamped to this.
+    const yMax = cumMax;
+    const pick = (f: (typeof data.facets)[number]) =>
+      ratioCumulative ? f.cumulative : f.monthly;
+    if (ratioSplit === 'none') {
+      const f = data.facets[0];
+      if (!f) return null;
+      return {
+        xAxis: data.xAxis,
+        yMax,
+        series: [
+          {
+            key: 'ratio',
+            label: ratioCumulative ? 'Cumulative' : 'Per-period',
+            color: seriesColor(0),
+            data: pick(f),
+          },
+        ],
+      };
+    }
+    return {
+      xAxis: data.xAxis,
+      yMax,
+      series: data.facets.map((f, i) => ({
+        key: f.key,
+        label: f.label,
+        color: seriesColor(i),
+        data: pick(f),
+      })),
+    };
+  }, [ratioCells, grain, ratioSplit, ratioBoth, ratioCumulative]);
 
   // Throughput data
   const throughputChartData = useMemo(() => {
@@ -759,7 +922,7 @@ export default function I526Explorer({
         <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
           <div className="space-y-4">
             <ChartHeader>
-              <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className={chartHeaderRowClass}>
                 <div className="flex flex-1 flex-col gap-2 items-start">
                   <div className="min-w-0 w-full space-y-1">
                     <h2 className="text-sm font-semibold leading-snug text-primary sm:text-base">
@@ -876,7 +1039,116 @@ export default function I526Explorer({
               )}
             </div>
 
-            <ChartFooter cells={mainChartData?.suppressedCells ?? 0} />
+            <ChartFooter
+              cells={mainChartData?.suppressedCells ?? 0}
+              onToggleHowToRead={() => setShowHowToRead((v) => !v)}
+              howToReadOpen={showHowToRead}
+            />
+          </div>
+        </div>
+
+        <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
+          <div className="space-y-4">
+            <ChartHeader>
+              <div className={chartHeaderRowClass}>
+                <div className="flex flex-1 flex-col gap-2 items-start">
+                  <div className="min-w-0 w-full space-y-1">
+                    <h2 className="text-sm font-semibold leading-snug text-primary sm:text-base">
+                      Rural : HUA application ratio
+                    </h2>
+                    <p className="text-sm leading-snug text-neutral/70">
+                      Rural set-aside visas are 2x HUA, so a ratio of 2 means demand is balanced to
+                      supply.
+                    </p>
+                  </div>
+                  <I526ShareButton buildPayload={currentSharePayload} shareKey={shareKey} />
+                </div>
+                <ChartHeaderControls>
+                  <div className={headerToggleRowClass}>
+                    <span className={headerToggleLabelClass}>Split</span>
+                    <div className={headerToggleGroupClass} role="group" aria-label="Ratio split">
+                      {RATIO_SPLIT_OPTIONS.map((o) => (
+                        <button
+                          key={o.value}
+                          type="button"
+                          className={headerToggleBtnClass(ratioSplit === o.value)}
+                          aria-pressed={ratioSplit === o.value}
+                          onClick={() => setRatioSplit(o.value)}
+                        >
+                          {o.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className={headerToggleRowClass}>
+                    <span className={headerToggleLabelClass}>Rural &amp; HUA</span>
+                    <div
+                      className={headerToggleGroupClass}
+                      role="group"
+                      aria-label="Dual-qualifying allocation"
+                    >
+                      {RATIO_BOTH_OPTIONS.map((o) => (
+                        <button
+                          key={o.value}
+                          type="button"
+                          className={headerToggleBtnClass(ratioBoth === o.value)}
+                          aria-pressed={ratioBoth === o.value}
+                          onClick={() => setRatioBoth(o.value)}
+                        >
+                          {o.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className={headerToggleRowClass}>
+                    <span className={headerToggleLabelClass}>View</span>
+                    <div
+                      className={headerToggleGroupClass}
+                      role="group"
+                      aria-label="Ratio accumulation"
+                    >
+                      <button
+                        type="button"
+                        className={headerToggleBtnClass(!ratioCumulative)}
+                        aria-pressed={!ratioCumulative}
+                        onClick={() => setRatioCumulative(false)}
+                      >
+                        Periodic
+                      </button>
+                      <button
+                        type="button"
+                        className={headerToggleBtnClass(ratioCumulative)}
+                        aria-pressed={ratioCumulative}
+                        onClick={() => setRatioCumulative(true)}
+                      >
+                        Cumulative
+                      </button>
+                    </div>
+                  </div>
+                </ChartHeaderControls>
+              </div>
+            </ChartHeader>
+
+            <div className="pt-2">
+              {ratioChartSeries && ratioChartSeries.series.length > 0 ? (
+                <I526RatioChart
+                  xAxis={ratioChartSeries.xAxis}
+                  series={ratioChartSeries.series}
+                  referenceValue={2}
+                  referenceLabel="Balanced (2:1)"
+                  yMax={ratioChartSeries.yMax}
+                  height={260}
+                  xAxisLabel="Receipt period"
+                  ariaLabel="Rural to HUA application ratio over receipt period"
+                />
+              ) : (
+                <div className="h-60 flex items-center justify-center text-sm text-neutral/50">
+                  {!ratioCells ? 'Loading…' : 'Not enough rural / HUA data for this selection.'}
+                </div>
+              )}
+            </div>
+
+            <ChartFooter cells={0} />
           </div>
         </div>
       </Wrapper>
@@ -911,7 +1183,7 @@ export default function I526Explorer({
         <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
           <div className="space-y-4">
             <ChartHeader>
-              <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className={chartHeaderRowClass}>
                 <div className="flex flex-1 flex-col gap-2 items-start">
                   <div className="min-w-0 w-full space-y-1">
                     <h2 className="text-sm font-semibold leading-snug text-primary sm:text-base">
@@ -967,7 +1239,11 @@ export default function I526Explorer({
                 </div>
               )}
             </div>
-            <ChartFooter cells={throughputChartData?.suppressedCells ?? 0} />
+            <ChartFooter
+              cells={throughputChartData?.suppressedCells ?? 0}
+              onToggleHowToRead={() => setShowHowToRead((v) => !v)}
+              howToReadOpen={showHowToRead}
+            />
           </div>
 
           <div className="space-y-4">
@@ -1082,6 +1358,7 @@ export default function I526Explorer({
     <>
       {view === 'trend' && <TrendView />}
       {view === 'throughput' && <ThroughputView />}
+      {showHowToRead ? <HowToReadCard /> : null}
     </>
   );
 }

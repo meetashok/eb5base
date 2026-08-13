@@ -372,7 +372,7 @@ export function toggleFormBFilter(current: string[], next: string): string[] {
     const without = current.filter((v) => v !== next);
     return without.length > 0 ? without : [...DEFAULT_FORM_B];
   }
-  const withoutGroups = current.filter((v) => !groupValues.has(next));
+  const withoutGroups = current.filter(() => !groupValues.has(next));
   return [...withoutGroups, next];
 }
 
@@ -846,6 +846,117 @@ export function aggregateSplitFilingTimeSeries(
   return { xAxis, series };
 }
 
+// ---------------------------------------------------------------------------
+// Rural : HUA application ratio
+// ---------------------------------------------------------------------------
+
+/** TEA categories that feed the Rural : HUA ratio (fetch filter). */
+export const RATIO_TEAS = [
+  'RURAL',
+  'HIGH_UNEMPLOYMENT',
+  'RURAL_AND_HIGH_UNEMPLOYMENT',
+] as const;
+
+/** How to allocate the dual-qualifying "Rural & HUA" bucket in the ratio. */
+export type RatioBothMode = 'exclude' | 'rural' | 'split';
+export type RatioSplit = 'none' | 'form_type' | 'country';
+
+export interface I526RatioFacet {
+  key: string;
+  label: string;
+  /** Per-period ratio (rural / hua); null where hua is 0 for that period. */
+  monthly: (number | null)[];
+  /** Cumulative ratio (running rural / running hua); null until hua > 0. */
+  cumulative: (number | null)[];
+}
+
+export interface I526RatioData {
+  xAxis: TimeBucketMeta[];
+  facets: I526RatioFacet[];
+}
+
+/**
+ * Rural : High-unemployment application ratio over time. Rural set-aside visas
+ * are twice HUA (20% vs 10%), so a ratio of 2 means demand is balanced to
+ * supply. `bothMode` controls how the dual-qualifying "Rural & HUA" bucket is
+ * allocated: excluded (default), counted as rural, or split evenly.
+ */
+export function computeI526RatioData(
+  cells: I526FilingCell[],
+  grain: FilingGrain,
+  split: RatioSplit,
+  bothMode: RatioBothMode,
+): I526RatioData {
+  const xMap = new Map<string, TimeBucketMeta>();
+  const facetMap = new Map<
+    string,
+    Map<string, { rural: number; hua: number; both: number }>
+  >();
+
+  const facetKeyOf = (c: I526FilingCell): string =>
+    split === 'none' ? 'all' : split === 'form_type' ? c.form_type : c.country;
+
+  for (const c of cells) {
+    if (c.suppressed) continue;
+    const meta = filingTimeBucket(c, grain);
+    if (!meta) continue;
+    xMap.set(meta.key, meta);
+    const fk = facetKeyOf(c);
+    const byX =
+      facetMap.get(fk) ??
+      new Map<string, { rural: number; hua: number; both: number }>();
+    const agg = byX.get(meta.key) ?? { rural: 0, hua: 0, both: 0 };
+    const n = c.count ?? 0;
+    if (c.tea_category === 'RURAL') agg.rural += n;
+    else if (c.tea_category === 'HIGH_UNEMPLOYMENT') agg.hua += n;
+    else if (c.tea_category === 'RURAL_AND_HIGH_UNEMPLOYMENT') agg.both += n;
+    byX.set(meta.key, agg);
+    facetMap.set(fk, byX);
+  }
+
+  const xAxis = Array.from(xMap.values()).sort((a, b) =>
+    a.sortKey.localeCompare(b.sortKey),
+  );
+
+  const allocate = (agg: { rural: number; hua: number; both: number }) => {
+    if (bothMode === 'rural') return { rural: agg.rural + agg.both, hua: agg.hua };
+    if (bothMode === 'split')
+      return { rural: agg.rural + agg.both / 2, hua: agg.hua + agg.both / 2 };
+    return { rural: agg.rural, hua: agg.hua };
+  };
+
+  const facetKeys =
+    split === 'none'
+      ? ['all']
+      : stableSplitOrder(split as FilingSplit, Array.from(facetMap.keys()));
+
+  const facets: I526RatioFacet[] = facetKeys.map((fk) => {
+    const byX =
+      facetMap.get(fk) ??
+      new Map<string, { rural: number; hua: number; both: number }>();
+    const monthly: (number | null)[] = [];
+    const cumulative: (number | null)[] = [];
+    let cumR = 0;
+    let cumH = 0;
+    for (const x of xAxis) {
+      const raw = byX.get(x.key) ?? { rural: 0, hua: 0, both: 0 };
+      const { rural, hua } = allocate(raw);
+      cumR += rural;
+      cumH += hua;
+      monthly.push(hua > 0 ? rural / hua : null);
+      cumulative.push(cumH > 0 ? cumR / cumH : null);
+    }
+    return {
+      key: fk,
+      label: split === 'none' ? 'All' : filingSplitLabel(fk, split as FilingSplit),
+      monthly,
+      cumulative,
+    };
+  });
+
+  return { xAxis, facets };
+}
+
 // Breakdown across all cells (trend section 3 & compare tab): split by TEA/country/form
 export function aggregateBreakdown(
   cells: I526FilingCell[],
@@ -887,19 +998,15 @@ export function compareBreakdown(
     .map((k) => {
       const er = e.get(k)?.bucket ?? { count: 0, suppressedCells: 0 };
       const lr = l.get(k)?.bucket ?? { count: 0, suppressedCells: 0 };
-      const any =
-        er.count || er.suppressedCells || lr.count || lr.suppressedCells ? true : false;
+      const hasData = Boolean(
+        er.count || er.suppressedCells || lr.count || lr.suppressedCells,
+      );
       const lbl =
         e.get(k)?.label ?? l.get(k)?.label ?? filingSplitLabel(k, split);
-      return {
-        key: k,
-        label: lbl,
-        earlier: er,
-        later: lr,
-        __any: any,
-      };
+      return { key: k, label: lbl, earlier: er, later: lr, hasData };
     })
-    .filter((r: any) => r.__any) as any;
+    .filter((r) => r.hasData)
+    .map(({ key, label, earlier, later }) => ({ key, label, earlier, later }));
 }
 
 // ---------------------------------------------------------------------------

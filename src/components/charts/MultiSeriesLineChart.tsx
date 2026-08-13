@@ -414,26 +414,27 @@ export default function MultiSeriesLineChart({
                           pointerEvents="none"
                         />
                       )}
-                      {visibleDrawOrder.map((s) => {
-                        const pt = s.data.find((d) => d.key === meta.key);
-                        if (!pt) return null;
-                        const cy = yScale(pt.value) ?? 0;
-                        const { opacity } = seriesEmphasis(s.key);
-                        const focused = legendFocusKey === s.key;
-                        return (
-                          <circle
-                            key={`${s.key}-${meta.key}`}
-                            cx={cx}
-                            cy={cy}
-                            r={active || focused ? 4.5 : 2.5}
-                            fill={s.color}
-                            stroke="#faf7f2"
-                            strokeWidth={active || focused ? 2 : 1}
-                            opacity={opacity}
-                            pointerEvents="none"
-                          />
-                        );
-                      })}
+                      {active
+                        ? visibleDrawOrder.map((s) => {
+                            const pt = s.data.find((d) => d.key === meta.key);
+                            if (!pt) return null;
+                            const cy = yScale(pt.value) ?? 0;
+                            const { opacity } = seriesEmphasis(s.key);
+                            return (
+                              <circle
+                                key={`${s.key}-${meta.key}`}
+                                cx={cx}
+                                cy={cy}
+                                r={4.5}
+                                fill={s.color}
+                                stroke="#faf7f2"
+                                strokeWidth={2}
+                                opacity={opacity}
+                                pointerEvents="none"
+                              />
+                            );
+                          })
+                        : null}
                     </g>
                   );
                 })}

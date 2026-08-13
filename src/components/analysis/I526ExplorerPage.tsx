@@ -3,6 +3,7 @@ import PageHero from '@/components/PageHero';
 import I526Explorer from '@/components/analysis/I526Explorer';
 import I526ViewBar, { type I526ViewId } from '@/components/analysis/I526ViewBar';
 import AnalysisDatasetCrumb from '@/components/analysis/AnalysisDatasetCrumb';
+import { searchParamsToSharePayload } from '@/lib/analysis/i526ShareParams';
 import {
   DEFAULT_COUNTRIES,
   DEFAULT_FORM_A,
@@ -60,8 +61,11 @@ export async function loadInitialI526(): Promise<{
     }
     const aReleases = releases.filter((r) => r.dataset === 'FILINGS_COUNTRY_TEA');
     const bReleases = releases.filter((r) => r.dataset === 'ALL_FORMS_SUMMARY');
-    const latestAFilingReleaseIds = aReleases.slice(-2).map((r) => r.id);
-    const latestBReleaseIds = bReleases.slice(-2).map((r) => r.id);
+    // Time-series charts show the full receipt-period history, so seed with every
+    // release (not just the latest). The default form/TEA/country filter keeps the
+    // SSR payload small, and the client reuses this data without a refetch.
+    const latestAFilingReleaseIds = aReleases.map((r) => r.id);
+    const latestBReleaseIds = bReleases.map((r) => r.id);
 
     const formMembers = resolveFilterMembers(FORM_FILTERS_A, DEFAULT_FORM_A) as FilingFormType[];
     const teaMembers = resolveFilterMembers(TEA_FILTER_OPTIONS, DEFAULT_TEA) as TeaCategory[];
@@ -115,53 +119,33 @@ export async function loadInitialI526(): Promise<{
   }
 }
 
-function HowToRead() {
-  return (
-    <section className="max-w-4xl mx-auto px-4 pt-6 pb-8 space-y-6">
-      <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 text-sm text-neutral leading-relaxed space-y-2">
-        <h2 className="text-sm font-bold text-primary">How to read this data</h2>
-        <ul className="list-disc pl-5 space-y-1.5">
-          <li>
-            <span className="font-semibold">I-526 filings data:</span> USCIS{' '}
-            <span className="font-semibold">receipts</span> per Form I-526 (standalone) or I-526E
-            (regional center) per country of birth, per TEA set-aside category, per receipt month.
-          </li>
-          <li>
-            <span className="font-semibold">Throughput &amp; processing data:</span> Service-wide
-            throughput (receipts, approvals, denials, completions, pending, median processing
-            months) — aggregated across all countries/categories for the whole EB-5 family.
-          </li>
-          <li>
-            I-526 legacy = petitions filed before the RIA. These are a legacy pipeline; no new
-            receipts today but approvals/denials continue. New I-526 standalone = post-RIA
-            non-regional center filings.
-          </li>
-          <li>
-            The TEA &quot;Rural &amp; High-UE combined&quot; bucket is reported separately by USCIS
-            in some reports - it is <span className="font-semibold">not</span> a double-count of
-            Rural + High unemployment.
-          </li>
-          <li>
-            Suppression: values 1-10 masked as D/H; treated as 0 in sums, flagged as suppressed
-            cells in the footer.
-          </li>
-          <li>
-            Median processing time is USCIS-reported median months from receipt to completion for
-            petitions finalized during the quarter; it is not the wait time a filer experiences
-            today.
-          </li>
-          <li>
-            Publication cadence is quarterly, ~10-12 weeks after quarter end. FY26 Q3 and Q4 are
-            not yet posted as of this build.
-          </li>
-        </ul>
-      </div>
-    </section>
-  );
+function toURLSearchParams(
+  sp: Record<string, string | string[] | undefined>,
+): URLSearchParams {
+  const usp = new URLSearchParams();
+  for (const [key, value] of Object.entries(sp)) {
+    if (Array.isArray(value)) {
+      for (const v of value) usp.append(key, v);
+    } else if (value != null) {
+      usp.set(key, value);
+    }
+  }
+  return usp;
 }
 
-export default async function I526ExplorerPage({ view }: { view: I526ViewId }) {
+export default async function I526ExplorerPage({
+  view,
+  searchParams,
+}: {
+  view: I526ViewId;
+  searchParams?: Record<string, string | string[] | undefined>;
+}) {
   const initial = await loadInitialI526();
+  // Parse filter prefs from the URL on the server so SSR and the first client
+  // render match (avoids a hydration mismatch from reading window during render).
+  const initialSharePayload = searchParams
+    ? searchParamsToSharePayload(toURLSearchParams(searchParams), view)
+    : null;
 
   return (
     <div>
@@ -174,14 +158,15 @@ export default async function I526ExplorerPage({ view }: { view: I526ViewId }) {
             / <AnalysisDatasetCrumb current="i526" />
           </span>
         }
-        title="I-526 / I-526E filings & EB-5 throughput"
-        subtitle="Quarterly USCIS data on EB-5 petition receipts by country and TEA set-aside, plus service-wide adjudications and processing times for the whole EB-5 family (I-526 legacy, I-526 standalone, I-526E, I-829, and I-956 regional center forms)."
+        title="I-526 / I-526E filings"
+        subtitle="Quarterly USCIS data on EB-5 petition receipts by country and TEA set-aside category (I-526 standalone and I-526E regional center)."
       />
 
       <I526ViewBar active={view} />
 
       <I526Explorer
         initialView={view}
+        initialSharePayload={initialSharePayload}
         initialReleases={initial.releases}
         initialLatestAIds={initial.latestAFilingReleaseIds}
         initialLatestBIds={initial.latestBReleaseIds}
@@ -189,8 +174,6 @@ export default async function I526ExplorerPage({ view }: { view: I526ViewId }) {
         initialProcessingRows={initial.processingRows}
         initialError={initial.error}
       />
-
-      <HowToRead />
     </div>
   );
 }

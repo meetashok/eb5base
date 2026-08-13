@@ -9,6 +9,8 @@ import {
   type FilingGrain,
   type FilingSplit,
   type ProcessingMetricKey,
+  type RatioBothMode,
+  type RatioSplit,
 } from '@/lib/analysis/i526';
 import { I526_TAB_PATHS, type I526TabId } from '@/lib/analysis/i526Routes';
 import { SITE_URL } from '@/lib/constants';
@@ -30,6 +32,10 @@ export interface I526SharePayload {
   formB: string[];
   throughputBIds: number[];
   throughputMetric: ProcessingMetricKey;
+  // Rural : HUA ratio
+  ratioSplit: RatioSplit;
+  ratioBoth: RatioBothMode;
+  ratioCumulative: boolean;
 }
 
 const DEFAULT_FORM_B = ['KEY_PETITIONS'];
@@ -46,7 +52,7 @@ export function makeSharePayload(p: Partial<I526SharePayload>): I526SharePayload
     v: I526_SHARE_VERSION,
     view: p.view ?? 'trend',
     teas: p.teas ?? [...DEFAULT_TEA],
-    countries: p.countries ?? [...DEFAULT_COUNTRIES],
+    countries: p.countries ?? ([...DEFAULT_COUNTRIES] as FilingCountry[]),
     formA: p.formA ?? [...DEFAULT_FORM_A],
     grain: p.grain ?? 'month',
     split: p.split ?? 'form_type',
@@ -55,6 +61,9 @@ export function makeSharePayload(p: Partial<I526SharePayload>): I526SharePayload
     formB: p.formB ?? [...DEFAULT_FORM_B],
     throughputBIds: p.throughputBIds ?? [],
     throughputMetric: p.throughputMetric ?? DEFAULT_THROUGHPUT_METRIC,
+    ratioSplit: p.ratioSplit ?? 'none',
+    ratioBoth: p.ratioBoth ?? 'exclude',
+    ratioCumulative: p.ratioCumulative ?? true,
   };
 }
 
@@ -78,6 +87,14 @@ function validateFilingGrain(v: unknown): FilingGrain {
 function validateFilingSplit(v: unknown): FilingSplit {
   if (v === 'none' || v === 'form_type' || v === 'tea' || v === 'country') return v;
   return 'form_type';
+}
+function validateRatioSplit(v: unknown): RatioSplit {
+  if (v === 'none' || v === 'form_type' || v === 'country') return v;
+  return 'none';
+}
+function validateRatioBoth(v: unknown): RatioBothMode {
+  if (v === 'exclude' || v === 'rural' || v === 'split') return v;
+  return 'exclude';
 }
 function validateProcessingMetric(v: unknown): ProcessingMetricKey {
   const ALLOWED: ProcessingMetricKey[] = [
@@ -103,7 +120,9 @@ export function parseSharePayload(raw: unknown): I526SharePayload | null {
   const payload: I526SharePayload = makeSharePayload({
     view: validateI526View(o.view),
     teas: isPlainStringArray(o.teas) ? o.teas : [...DEFAULT_TEA],
-    countries: isPlainStringArray(o.countries) ? (o.countries as FilingCountry[]) : [...DEFAULT_COUNTRIES],
+    countries: isPlainStringArray(o.countries)
+      ? (o.countries as FilingCountry[])
+      : ([...DEFAULT_COUNTRIES] as FilingCountry[]),
     formA: isPlainStringArray(o.formA) ? o.formA : [...DEFAULT_FORM_A],
     grain: validateFilingGrain(o.grain),
     split: validateFilingSplit(o.split),
@@ -112,6 +131,9 @@ export function parseSharePayload(raw: unknown): I526SharePayload | null {
     formB: isPlainStringArray(o.formB) ? o.formB : [...DEFAULT_FORM_B],
     throughputBIds: isPlainNumberArray(o.throughputBIds) ? o.throughputBIds : [],
     throughputMetric: validateProcessingMetric(o.throughputMetric),
+    ratioSplit: validateRatioSplit(o.ratioSplit),
+    ratioBoth: validateRatioBoth(o.ratioBoth),
+    ratioCumulative: typeof o.ratioCumulative === 'boolean' ? o.ratioCumulative : true,
   });
   return payload;
 }
@@ -158,6 +180,11 @@ export function sharePayloadToSearchParams(payload: I526SharePayload): URLSearch
   if (payload.throughputMetric !== d.throughputMetric) {
     params.set('tm', payload.throughputMetric);
   }
+  if (payload.ratioSplit !== d.ratioSplit) params.set('rsp', payload.ratioSplit);
+  if (payload.ratioBoth !== d.ratioBoth) params.set('rb', payload.ratioBoth);
+  if (payload.ratioCumulative !== d.ratioCumulative) {
+    params.set('rcm', payload.ratioCumulative ? '1' : '0');
+  }
   return params;
 }
 
@@ -180,6 +207,9 @@ export function searchParamsToSharePayload(
   const fbRaw = params.get('fb');
   const tbRaw = params.get('tb');
   const tmRaw = params.get('tm');
+  const rspRaw = params.get('rsp');
+  const rbRaw = params.get('rb');
+  const rcmRaw = params.get('rcm');
 
   const splitCsv = (s: string | null) =>
     s ? s.split(',').filter(Boolean) : null;
@@ -206,6 +236,9 @@ export function searchParamsToSharePayload(
     formB: splitCsv(fbRaw) ?? [...DEFAULT_FORM_B],
     throughputBIds: splitInts(tbRaw) ?? [],
     throughputMetric: validateProcessingMetric(tmRaw),
+    ratioSplit: validateRatioSplit(rspRaw),
+    ratioBoth: validateRatioBoth(rbRaw),
+    ratioCumulative: rcmRaw != null ? rcmRaw === '1' : undefined,
   });
 }
 

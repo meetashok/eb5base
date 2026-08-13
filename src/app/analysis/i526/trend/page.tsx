@@ -16,6 +16,10 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default function I526TrendRoute() {
-  return <I526ExplorerPage view="trend" />;
+export default function I526TrendRoute({
+  searchParams,
+}: {
+  searchParams: Record<string, string | string[] | undefined>;
+}) {
+  return <I526ExplorerPage view="trend" searchParams={searchParams} />;
 }

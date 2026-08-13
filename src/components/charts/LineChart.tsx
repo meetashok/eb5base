@@ -46,7 +46,6 @@ function LineChartInner({
   ariaLabel,
   hoverLabelPrefix,
   lineColor,
-  pointColor,
   pointHoverColor,
   yMax: yMaxProp,
 }: LineChartProps & { width: number; height: number }) {
@@ -180,15 +179,17 @@ function LineChartInner({
                     if (point) setHoverIdx(i);
                   }}
                 />
-                <circle
-                  cx={cx}
-                  cy={cy}
-                  r={active ? 5 : 3.5}
-                  fill={active ? pointHoverColor : pointColor}
-                  stroke="#faf7f2"
-                  strokeWidth={2}
-                  pointerEvents="none"
-                />
+                {active ? (
+                  <circle
+                    cx={cx}
+                    cy={cy}
+                    r={5}
+                    fill={pointHoverColor}
+                    stroke="#faf7f2"
+                    strokeWidth={2}
+                    pointerEvents="none"
+                  />
+                ) : null}
               </g>
             );
           })}
@@ -205,7 +206,6 @@ export default function LineChart({
   xAxisLabel,
   hoverLabelPrefix,
   lineColor = chartColors.line,
-  pointColor = chartColors.point,
   pointHoverColor = chartColors.pointHover,
   yMax,
 }: LineChartProps) {
@@ -221,7 +221,6 @@ export default function LineChart({
               ariaLabel={ariaLabel}
               hoverLabelPrefix={hoverLabelPrefix}
               lineColor={lineColor}
-              pointColor={pointColor}
               pointHoverColor={pointHoverColor}
               yMax={yMax}
             />
