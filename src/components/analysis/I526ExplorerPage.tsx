@@ -3,6 +3,7 @@ import PageHero from '@/components/PageHero';
 import I526Explorer from '@/components/analysis/I526Explorer';
 import I526ViewBar, { type I526ViewId } from '@/components/analysis/I526ViewBar';
 import AnalysisDatasetCrumb from '@/components/analysis/AnalysisDatasetCrumb';
+import { searchParamsToSharePayload } from '@/lib/analysis/i526ShareParams';
 import {
   DEFAULT_COUNTRIES,
   DEFAULT_FORM_A,
@@ -118,8 +119,33 @@ export async function loadInitialI526(): Promise<{
   }
 }
 
-export default async function I526ExplorerPage({ view }: { view: I526ViewId }) {
+function toURLSearchParams(
+  sp: Record<string, string | string[] | undefined>,
+): URLSearchParams {
+  const usp = new URLSearchParams();
+  for (const [key, value] of Object.entries(sp)) {
+    if (Array.isArray(value)) {
+      for (const v of value) usp.append(key, v);
+    } else if (value != null) {
+      usp.set(key, value);
+    }
+  }
+  return usp;
+}
+
+export default async function I526ExplorerPage({
+  view,
+  searchParams,
+}: {
+  view: I526ViewId;
+  searchParams?: Record<string, string | string[] | undefined>;
+}) {
   const initial = await loadInitialI526();
+  // Parse filter prefs from the URL on the server so SSR and the first client
+  // render match (avoids a hydration mismatch from reading window during render).
+  const initialSharePayload = searchParams
+    ? searchParamsToSharePayload(toURLSearchParams(searchParams), view)
+    : null;
 
   return (
     <div>
@@ -140,6 +166,7 @@ export default async function I526ExplorerPage({ view }: { view: I526ViewId }) {
 
       <I526Explorer
         initialView={view}
+        initialSharePayload={initialSharePayload}
         initialReleases={initial.releases}
         initialLatestAIds={initial.latestAFilingReleaseIds}
         initialLatestBIds={initial.latestBReleaseIds}

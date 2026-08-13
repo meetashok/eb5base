@@ -16,6 +16,10 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default function I526ThroughputRoute() {
-  return <I526ExplorerPage view="throughput" />;
+export default function I526ThroughputRoute({
+  searchParams,
+}: {
+  searchParams: Record<string, string | string[] | undefined>;
+}) {
+  return <I526ExplorerPage view="throughput" searchParams={searchParams} />;
 }

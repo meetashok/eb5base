@@ -54,7 +54,6 @@ import {
 } from '@/lib/analysis/i526';
 import {
   makeSharePayload,
-  searchParamsToSharePayload,
   sharePayloadToSearchParams,
   type I526SharePayload,
 } from '@/lib/analysis/i526ShareParams';
@@ -424,13 +423,9 @@ export default function I526Explorer({
     [initialReleases],
   );
 
-  const initialPrefs = useMemo(() => {
-    if (initialSharePayload) return initialSharePayload;
-    if (typeof window === 'undefined') return null;
-    const sp = new URLSearchParams(window.location.search);
-    const p = searchParamsToSharePayload(sp, view);
-    return p;
-  }, [initialSharePayload, view]);
+  // Server passes the URL-derived prefs as initialSharePayload, so both SSR and
+  // the first client render use the same values (no window read during render).
+  const initialPrefs = initialSharePayload;
 
   // Trend / filings state
   const [trendAReleaseIds, setTrendAReleaseIds] = useState<number[]>(
