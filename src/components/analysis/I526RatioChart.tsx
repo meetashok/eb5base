@@ -42,8 +42,8 @@ function fmtRatio(n: number): string {
   return n >= 10 ? n.toFixed(0) : n.toFixed(1);
 }
 
-/** Ratio-friendly ticks: allows 0.5 steps so a ~1.5-2.5 range doesn't jump to 3. */
-function ratioTicks(peak: number): number[] {
+/** Nice tick values (0.5 steps for typical ratios) from 0 up to `peak`. */
+function ratioTickValues(peak: number): number[] {
   const steps = [0.25, 0.5, 1, 2, 5];
   const maxTicks = 6;
   let step = steps[steps.length - 1]!;
@@ -53,11 +53,8 @@ function ratioTicks(peak: number): number[] {
       break;
     }
   }
-  let ceiling = Math.ceil(peak / step) * step;
-  // Only pad when the peak lands exactly on a tick (keeps top line/label clear).
-  if (ceiling <= peak + 1e-9) ceiling += step;
   const ticks: number[] = [];
-  for (let v = 0; v <= ceiling + step / 1000; v += step) {
+  for (let v = 0; v <= peak + 1e-9; v += step) {
     ticks.push(Math.round(v * 100) / 100);
   }
   return ticks;
@@ -143,8 +140,9 @@ export default function I526RatioChart({
     return Math.max(base, referenceValue ?? 0, 1);
   }, [visible, referenceValue, yMax]);
 
-  const ticks = useMemo(() => ratioTicks(peak), [peak]);
-  const axisMax = ticks[ticks.length - 1] || peak;
+  const ticks = useMemo(() => ratioTickValues(peak), [peak]);
+  // Snug ceiling: just above the highest line / the reference, not rounded up.
+  const axisMax = peak + 0.1;
 
   const innerWidth = Math.max(width - margin.left - margin.right, 0);
   const innerHeight = height - margin.top - margin.bottom;
