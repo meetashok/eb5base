@@ -194,16 +194,6 @@ export default function I526RatioChart({
             </button>
           );
         })}
-        {referenceValue != null ? (
-          <span className="inline-flex items-center gap-1.5" style={{ color: REFERENCE_COLOR }}>
-            <span
-              className="inline-block w-4"
-              style={{ borderTop: `2px dashed ${REFERENCE_COLOR}` }}
-              aria-hidden
-            />
-            {referenceLabel ?? `Balanced (${fmtRatio(referenceValue)})`}
-          </span>
-        ) : null}
       </div>
 
       <div className="relative w-full pt-12">
@@ -294,14 +284,14 @@ export default function I526RatioChart({
                       strokeOpacity={0.9}
                     />
                     <text
-                      x={innerWidth}
+                      x={2}
                       y={yScale(referenceValue) - 4}
-                      textAnchor="end"
+                      textAnchor="start"
                       fontSize={10}
                       fontWeight={600}
                       fill={REFERENCE_COLOR}
                     >
-                      {fmtRatio(referenceValue)} balanced
+                      {referenceLabel ?? `Balanced (${fmtRatio(referenceValue)})`}
                     </text>
                   </g>
                 ) : null}
