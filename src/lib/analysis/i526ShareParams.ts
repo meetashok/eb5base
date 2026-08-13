@@ -52,7 +52,7 @@ export function makeSharePayload(p: Partial<I526SharePayload>): I526SharePayload
     v: I526_SHARE_VERSION,
     view: p.view ?? 'trend',
     teas: p.teas ?? [...DEFAULT_TEA],
-    countries: p.countries ?? [...DEFAULT_COUNTRIES],
+    countries: p.countries ?? ([...DEFAULT_COUNTRIES] as FilingCountry[]),
     formA: p.formA ?? [...DEFAULT_FORM_A],
     grain: p.grain ?? 'month',
     split: p.split ?? 'form_type',
@@ -120,7 +120,9 @@ export function parseSharePayload(raw: unknown): I526SharePayload | null {
   const payload: I526SharePayload = makeSharePayload({
     view: validateI526View(o.view),
     teas: isPlainStringArray(o.teas) ? o.teas : [...DEFAULT_TEA],
-    countries: isPlainStringArray(o.countries) ? (o.countries as FilingCountry[]) : [...DEFAULT_COUNTRIES],
+    countries: isPlainStringArray(o.countries)
+      ? (o.countries as FilingCountry[])
+      : ([...DEFAULT_COUNTRIES] as FilingCountry[]),
     formA: isPlainStringArray(o.formA) ? o.formA : [...DEFAULT_FORM_A],
     grain: validateFilingGrain(o.grain),
     split: validateFilingSplit(o.split),

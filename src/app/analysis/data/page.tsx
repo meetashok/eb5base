@@ -9,7 +9,6 @@ import { I526_DEFAULT_PATH } from '@/lib/analysis/i526Routes';
 import {
   I526_PROCESSING_SUMMARY_CSV_PATH,
   I526_QUARTERLY_CSV_PATH,
-  USCIS_DATA_LIBRARY_URL,
   calendarQuarterLabelForAsOf,
 } from '@/lib/analysis/i526';
 

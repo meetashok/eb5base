@@ -372,7 +372,7 @@ export function toggleFormBFilter(current: string[], next: string): string[] {
     const without = current.filter((v) => v !== next);
     return without.length > 0 ? without : [...DEFAULT_FORM_B];
   }
-  const withoutGroups = current.filter((v) => !groupValues.has(next));
+  const withoutGroups = current.filter(() => !groupValues.has(next));
   return [...withoutGroups, next];
 }
 
@@ -998,19 +998,15 @@ export function compareBreakdown(
     .map((k) => {
       const er = e.get(k)?.bucket ?? { count: 0, suppressedCells: 0 };
       const lr = l.get(k)?.bucket ?? { count: 0, suppressedCells: 0 };
-      const any =
-        er.count || er.suppressedCells || lr.count || lr.suppressedCells ? true : false;
+      const hasData = Boolean(
+        er.count || er.suppressedCells || lr.count || lr.suppressedCells,
+      );
       const lbl =
         e.get(k)?.label ?? l.get(k)?.label ?? filingSplitLabel(k, split);
-      return {
-        key: k,
-        label: lbl,
-        earlier: er,
-        later: lr,
-        __any: any,
-      };
+      return { key: k, label: lbl, earlier: er, later: lr, hasData };
     })
-    .filter((r: any) => r.__any) as any;
+    .filter((r) => r.hasData)
+    .map(({ key, label, earlier, later }) => ({ key, label, earlier, later }));
 }
 
 // ---------------------------------------------------------------------------
