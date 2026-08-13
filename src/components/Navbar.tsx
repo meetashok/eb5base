@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import Logo from '@/components/Logo';
@@ -15,6 +15,72 @@ export default function Navbar() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [analysisOpen, setAnalysisOpen] = useState(false);
+  const analysisDropdownRef = useRef<HTMLDivElement | null>(null);
+  const analysisCloseTimer = useRef<number | null>(null);
+
+  // ---------------------------------------------------------------------------
+  // Analysis dropdown open/close helpers
+  // ---------------------------------------------------------------------------
+  const openAnalysis = useCallback(() => {
+    if (analysisCloseTimer.current !== null) {
+      window.clearTimeout(analysisCloseTimer.current);
+      analysisCloseTimer.current = null;
+    }
+    setAnalysisOpen(true);
+  }, []);
+  const scheduleCloseAnalysis = useCallback(() => {
+    if (analysisCloseTimer.current !== null) {
+      window.clearTimeout(analysisCloseTimer.current);
+    }
+    analysisCloseTimer.current = window.setTimeout(() => {
+      setAnalysisOpen(false);
+      analysisCloseTimer.current = null;
+    }, 240);
+  }, []);
+  const closeAnalysisNow = useCallback(() => {
+    if (analysisCloseTimer.current !== null) {
+      window.clearTimeout(analysisCloseTimer.current);
+      analysisCloseTimer.current = null;
+    }
+    setAnalysisOpen(false);
+  }, []);
+
+  // Close dropdown on Escape or on outside click
+  useEffect(() => {
+    if (!analysisOpen) return;
+    function onDocClick(event: MouseEvent) {
+      if (!analysisDropdownRef.current) return;
+      const target = event.target as Node | null;
+      if (target && analysisDropdownRef.current.contains(target)) return;
+      closeAnalysisNow();
+    }
+    function onKey(event: KeyboardEvent) {
+      if (event.key === 'Escape') closeAnalysisNow();
+    }
+    document.addEventListener('mousedown', onDocClick);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDocClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [analysisOpen, closeAnalysisNow]);
+
+  // Close dropdown whenever route changes (SPA navigation)
+  useEffect(() => {
+    closeAnalysisNow();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+  // Ensure we always clean up any pending close timer on unmount
+  useEffect(() => {
+    return () => {
+      if (analysisCloseTimer.current !== null) {
+        window.clearTimeout(analysisCloseTimer.current);
+        analysisCloseTimer.current = null;
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const supabase = createClient();
@@ -100,10 +166,116 @@ export default function Navbar() {
     );
   };
 
+  const analysisMenu = (
+    <div
+      ref={analysisDropdownRef}
+      className="relative inline-block pb-1.5"
+      onMouseEnter={openAnalysis}
+      onMouseLeave={scheduleCloseAnalysis}
+    >
+      <Link
+        href="/analysis"
+        aria-haspopup="menu"
+        aria-expanded={analysisOpen}
+        onMouseEnter={openAnalysis}
+        onClick={() => {
+          if (analysisOpen) scheduleCloseAnalysis();
+          else openAnalysis();
+        }}
+        className={`px-2 lg:px-3 py-2 text-sm whitespace-nowrap transition-all duration-150 hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent rounded-sm inline-flex items-center gap-1.5 ${
+          isActive('/analysis')
+            ? 'font-bold text-accent'
+            : 'font-medium text-primary-content/90'
+        }`}
+      >
+        <span>Analysis</span>
+        <span className="status-badge-on-dark">New</span>
+        <svg
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden="true"
+          className={`w-3.5 h-3.5 opacity-70 transition-transform duration-150 ${
+            analysisOpen ? 'rotate-180' : ''
+          }`}
+        >
+          <path
+            fillRule="evenodd"
+            d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z"
+            clipRule="evenodd"
+          />
+        </svg>
+      </Link>
+      <div
+        role="menu"
+        aria-hidden={!analysisOpen}
+        onMouseEnter={openAnalysis}
+        onMouseLeave={scheduleCloseAnalysis}
+        className={`absolute left-0 right-auto mt-0 z-[100] transition-all duration-150 ease-out ${
+          analysisOpen
+            ? 'opacity-100 translate-y-0 visible pointer-events-auto'
+            : 'opacity-0 -translate-y-1 invisible pointer-events-none'
+        }`}
+      >
+        <ul className="menu rounded-box w-56 p-1.5 pt-1 shadow-nav border border-primary-content/15 space-y-0.5 bg-neutral/95 backdrop-blur text-primary-content ring-1 ring-black/5">
+          <li role="none">
+            <Link
+              href="/analysis/i485"
+              role="menuitem"
+              onClick={closeAnalysisNow}
+              className="rounded-md !py-2 hover:!bg-primary-content/10 hover:!text-primary-content !text-primary-content focus:!bg-primary-content/10 focus:!outline-none"
+            >
+              <span className="flex flex-col gap-0.5">
+                <span className="font-semibold">I-485</span>
+                <span className="text-xs text-primary-content/70 font-normal">
+                  Pending inventory data
+                </span>
+              </span>
+            </Link>
+          </li>
+          <li role="none">
+            <Link
+              href="/analysis/i526"
+              role="menuitem"
+              onClick={closeAnalysisNow}
+              className="rounded-md !py-2 hover:!bg-primary-content/10 hover:!text-primary-content !text-primary-content focus:!bg-primary-content/10 focus:!outline-none"
+            >
+              <span className="flex flex-col gap-0.5">
+                <span className="font-semibold">I-526 / I-526E</span>
+                <span className="text-xs text-primary-content/70 font-normal">
+                  EB5 filings data
+                </span>
+              </span>
+            </Link>
+          </li>
+          <li
+            role="separator"
+            className="my-1 border-t border-primary-content/10 mx-1"
+            aria-hidden="true"
+          />
+          <li role="none">
+            <Link
+              href="/analysis/data"
+              role="menuitem"
+              onClick={closeAnalysisNow}
+              className="rounded-md !py-2 hover:!bg-primary-content/10 hover:!text-primary-content !text-primary-content focus:!bg-primary-content/10 focus:!outline-none"
+            >
+              <span className="flex flex-col gap-0.5">
+                <span className="font-semibold">Source data</span>
+                <span className="text-xs text-primary-content/70 font-normal">
+                  Every USCIS file we use
+                </span>
+              </span>
+            </Link>
+          </li>
+        </ul>
+      </div>
+    </div>
+  );
+
   const mainLinks = (
     <>
       {navLink('/nprm', 'NPRM')}
-      {badgeLink('/analysis', 'Analysis', 'New')}
+      {analysisMenu}
       {navLink('/status', 'Status Update')}
       {badgeLink('/tracker', 'Case Tracker', 'Soon')}
       {navLink('/resources', 'Resources')}

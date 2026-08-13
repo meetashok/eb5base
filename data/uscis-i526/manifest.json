@@ -1,0 +1,297 @@
+{
+  "source_page": "https://www.uscis.gov/tools/reports-and-studies/immigration-and-citizenship-data",
+  "notes": "EB-5 Form I-526 (standalone) and I-526E (regional center) quarterly filings + throughput data. Dataset A = filings by country/TEA/month; Dataset B = aggregate throughput per form type. Annual FY22-FY24 workbook is published as a single consolidated XLSX with 12 quarterly releases embedded; we split them via form_sheets and as_of_quarter.",
+  "files": [
+    {
+      "dataset": "FILINGS_COUNTRY_TEA",
+      "file": "i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "form_sheets": ["I-526 FY22", "I-526E FY22"],
+      "as_of_quarter": "FY2022Q1",
+      "period_start": "2021-10-01",
+      "period_end": "2021-12-31",
+      "published_date": "2025-07-01",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "source_title": "Form I-526 and I-526E -- Fiscal Year 2022 (Quarter 1, extracted from FY22-FY24 consolidated workbook)",
+      "source_note": "Dataset A, extracted from consolidated annual workbook. Sheet pair I-526 FY22 + I-526E FY22."
+    },
+    {
+      "dataset": "FILINGS_COUNTRY_TEA",
+      "file": "i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "form_sheets": ["I-526 FY22", "I-526E FY22"],
+      "as_of_quarter": "FY2022Q2",
+      "period_start": "2022-01-01",
+      "period_end": "2022-03-31",
+      "published_date": "2025-07-01",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "source_title": "Form I-526 and I-526E -- Fiscal Year 2022 (Quarter 2, extracted from FY22-FY24 consolidated workbook)"
+    },
+    {
+      "dataset": "FILINGS_COUNTRY_TEA",
+      "file": "i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "form_sheets": ["I-526 FY22", "I-526E FY22"],
+      "as_of_quarter": "FY2022Q3",
+      "period_start": "2022-04-01",
+      "period_end": "2022-06-30",
+      "published_date": "2025-07-01",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "source_title": "Form I-526 and I-526E -- Fiscal Year 2022 (Quarter 3, extracted from FY22-FY24 consolidated workbook)"
+    },
+    {
+      "dataset": "FILINGS_COUNTRY_TEA",
+      "file": "i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "form_sheets": ["I-526 FY22", "I-526E FY22"],
+      "as_of_quarter": "FY2022Q4",
+      "period_start": "2022-07-01",
+      "period_end": "2022-09-30",
+      "published_date": "2025-07-01",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "source_title": "Form I-526 and I-526E -- Fiscal Year 2022 (Quarter 4, extracted from FY22-FY24 consolidated workbook)"
+    },
+    {
+      "dataset": "FILINGS_COUNTRY_TEA",
+      "file": "i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "form_sheets": ["I-526 FY23", "I-526E FY23"],
+      "as_of_quarter": "FY2023Q1",
+      "period_start": "2022-10-01",
+      "period_end": "2022-12-31",
+      "published_date": "2025-07-01",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "source_title": "Form I-526 and I-526E -- Fiscal Year 2023 (Quarter 1, extracted from FY22-FY24 consolidated workbook)"
+    },
+    {
+      "dataset": "FILINGS_COUNTRY_TEA",
+      "file": "i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "form_sheets": ["I-526 FY23", "I-526E FY23"],
+      "as_of_quarter": "FY2023Q2",
+      "period_start": "2023-01-01",
+      "period_end": "2023-03-31",
+      "published_date": "2025-07-01",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "source_title": "Form I-526 and I-526E -- Fiscal Year 2023 (Quarter 2, extracted from FY22-FY24 consolidated workbook)"
+    },
+    {
+      "dataset": "FILINGS_COUNTRY_TEA",
+      "file": "i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "form_sheets": ["I-526 FY23", "I-526E FY23"],
+      "as_of_quarter": "FY2023Q3",
+      "period_start": "2023-04-01",
+      "period_end": "2023-06-30",
+      "published_date": "2025-07-01",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "source_title": "Form I-526 and I-526E -- Fiscal Year 2023 (Quarter 3, extracted from FY22-FY24 consolidated workbook)"
+    },
+    {
+      "dataset": "FILINGS_COUNTRY_TEA",
+      "file": "i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "form_sheets": ["I-526 FY23", "I-526E FY23"],
+      "as_of_quarter": "FY2023Q4",
+      "period_start": "2023-07-01",
+      "period_end": "2023-09-30",
+      "published_date": "2025-07-01",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "source_title": "Form I-526 and I-526E -- Fiscal Year 2023 (Quarter 4, extracted from FY22-FY24 consolidated workbook)"
+    },
+    {
+      "dataset": "FILINGS_COUNTRY_TEA",
+      "file": "i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "form_sheets": ["I-526 FY24", "I-526E FY24"],
+      "as_of_quarter": "FY2024Q1",
+      "period_start": "2023-10-01",
+      "period_end": "2023-12-31",
+      "published_date": "2025-07-01",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "source_title": "Form I-526 and I-526E -- Fiscal Year 2024 (Quarter 1, extracted from FY22-FY24 consolidated workbook)"
+    },
+    {
+      "dataset": "FILINGS_COUNTRY_TEA",
+      "file": "i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "form_sheets": ["I-526 FY24", "I-526E FY24"],
+      "as_of_quarter": "FY2024Q2",
+      "period_start": "2024-01-01",
+      "period_end": "2024-03-31",
+      "published_date": "2025-07-01",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "source_title": "Form I-526 and I-526E -- Fiscal Year 2024 (Quarter 2, extracted from FY22-FY24 consolidated workbook)"
+    },
+    {
+      "dataset": "FILINGS_COUNTRY_TEA",
+      "file": "i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "form_sheets": ["I-526 FY24", "I-526E FY24"],
+      "as_of_quarter": "FY2024Q3",
+      "period_start": "2024-04-01",
+      "period_end": "2024-06-30",
+      "published_date": "2025-07-01",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "source_title": "Form I-526 and I-526E -- Fiscal Year 2024 (Quarter 3, extracted from FY22-FY24 consolidated workbook)"
+    },
+    {
+      "dataset": "FILINGS_COUNTRY_TEA",
+      "file": "i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "form_sheets": ["I-526 FY24", "I-526E FY24"],
+      "as_of_quarter": "FY2024Q4",
+      "period_start": "2024-07-01",
+      "period_end": "2024-09-30",
+      "published_date": "2025-07-01",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/i526_i526E_cob_pref_r_fy22_fy23_fy24.xlsx",
+      "source_title": "Form I-526 and I-526E -- Fiscal Year 2024 (Quarter 4, extracted from FY22-FY24 consolidated workbook)"
+    },
+    {
+      "dataset": "FILINGS_COUNTRY_TEA",
+      "file": "_suzanne_eb5_backlog.xlsx",
+      "as_of_quarter": "FY2025Q1",
+      "period_start": "2024-10-01",
+      "period_end": "2024-12-31",
+      "published_date": "2024-12-15",
+      "source_url": "https://www.dropbox.com/scl/fi/xkbkaox1hgepg6nn6v3l9/EB5-Backlog-Analysis.xlsx",
+      "source_title": "EB5 Backlog Analysis -- I-526/I-526E filings for FY2025 Q1 (Oct-Dec 2024, Suzanne Lazicki shared workbook)",
+      "source_note": "Dataset A. Layout variant: single concatenated-sheet workbook shared by Suzanne Lazicki with Form col A, Month-Year+InvestmentType merged col B, then country columns. Extracted via suzanne_probe_and_parse.mjs + ingest-suzanne-i526-gap.mjs dedicated scripts."
+    },
+    {
+      "dataset": "FILINGS_COUNTRY_TEA",
+      "file": "_suzanne_eb5_backlog.xlsx",
+      "as_of_quarter": "FY2025Q2",
+      "period_start": "2025-01-01",
+      "period_end": "2025-03-31",
+      "published_date": "2025-03-15",
+      "source_url": "https://www.dropbox.com/scl/fi/xkbkaox1hgepg6nn6v3l9/EB5-Backlog-Analysis.xlsx",
+      "source_title": "EB5 Backlog Analysis -- I-526/I-526E filings for FY2025 Q2 (Jan-Mar 2025, Suzanne Lazicki shared workbook)",
+      "source_note": "Dataset A. Same concatenated Suzanne workbook layout variant. FY25Q2 months = Jan, Feb, Mar 2025."
+    },
+    {
+      "dataset": "FILINGS_COUNTRY_TEA",
+      "file": "i526_i526E_r_cob_pref_fy2025_q3.xlsx",
+      "as_of_quarter": "FY2025Q3",
+      "period_start": "2025-04-01",
+      "period_end": "2025-06-30",
+      "published_date": "2025-10-09",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/i526_i526E_r_cob_pref_fy2025_q3.xlsx",
+      "source_title": "Form I-526, Immigrant Petition by Standalone Investor and Form I-526E, Immigrant Petition by Regional Center Investor (Fiscal Year 2025, Quarter 3)",
+      "source_note": "Dataset A. Two sheets: I-526 Summary and I-526E Summary. Header uses Investment Type column (same TEA semantics as Set-Aside Category in FY22-24 sheets)."
+    },
+    {
+      "dataset": "FILINGS_COUNTRY_TEA",
+      "file": "i526_i526E_r_cob_pref_fy2025_q4_v1.xlsx",
+      "as_of_quarter": "FY2025Q4",
+      "period_start": "2025-07-01",
+      "period_end": "2025-09-30",
+      "published_date": "2026-03-20",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/i526_i526E_r_cob_pref_fy2025_q4_v1.xlsx",
+      "source_title": "Form I-526, Immigrant Petition by Standalone Investor and Form I-526E, Immigrant Petition by Regional Center Investor (Fiscal Year 2025, Quarter 4)"
+    },
+    {
+      "dataset": "FILINGS_COUNTRY_TEA",
+      "file": "i526_i526E_r_cob_pref_fy2026_q1_v1.xlsx",
+      "as_of_quarter": "FY2026Q1",
+      "period_start": "2025-10-01",
+      "period_end": "2025-12-31",
+      "published_date": "2026-06-12",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/reports/i526_i526E_r_cob_pref_fy2026_q1_v1.xlsx",
+      "source_title": "Form I-526, Immigrant Petition by Standalone Investor and Form I-526E, Immigrant Petition by Regional Center Investor -- Fiscal Year 2026, Quarter 1",
+      "source_note": "Dataset A. Two sheets: I-526 Summary and I-526E Summary. Columns are receipt months (Oct/Nov/Dec for Q1) by country of birth and investment/TEA type."
+    },
+    {
+      "dataset": "FILINGS_COUNTRY_TEA",
+      "file": "i526_i526E_r_cob_pref_fy2026_q2_v1.xlsx",
+      "as_of_quarter": "FY2026Q2",
+      "period_start": "2026-01-01",
+      "period_end": "2026-03-31",
+      "published_date": "2026-08-04",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/i526_i526E_r_cob_pref_fy2026_q2_v1.xlsx",
+      "source_title": "Form I-526, Immigrant Petition by Standalone Investor and Form I-526E, Immigrant Petition by Regional Center Investor -- Fiscal Year 2026, Quarter 2",
+      "source_note": "Dataset A. Same two-sheet layout. Values for the entire fiscal year through Q2 are shown; we only extract the months belonging to the as_of_quarter."
+    },
+    {
+      "dataset": "ALL_FORMS_SUMMARY",
+      "file": "quarterly_all_forms_fy2024_q1.xlsx",
+      "as_of_quarter": "FY2024Q1",
+      "period_start": "2023-10-01",
+      "period_end": "2023-12-31",
+      "published_date": "2024-02-01",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/quarterly_all_forms_fy2024_q1.xlsx",
+      "source_title": "All USCIS Application and Petition Form Types -- Fiscal Year 2024, Quarter 1",
+      "source_note": "Dataset B, legacy header format FY24Q1AllForms sheet with Description column."
+    },
+    {
+      "dataset": "ALL_FORMS_SUMMARY",
+      "file": "quarterly_all_forms_fy2024_q3.xlsx",
+      "as_of_quarter": "FY2024Q3",
+      "period_start": "2024-04-01",
+      "period_end": "2024-06-30",
+      "published_date": "2024-08-29",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/quarterly_all_forms_fy2024_q3.xlsx",
+      "source_title": "All USCIS Application and Petition Form Types -- Fiscal Year 2024, Quarter 3"
+    },
+    {
+      "dataset": "ALL_FORMS_SUMMARY",
+      "file": "quarterly_all_forms_fy2024_q4.xlsx",
+      "as_of_quarter": "FY2024Q4",
+      "period_start": "2024-07-01",
+      "period_end": "2024-09-30",
+      "published_date": "2024-12-01",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/quarterly_all_forms_fy2024_q4.xlsx",
+      "source_title": "All USCIS Application and Petition Form Types -- Fiscal Year 2024, Quarter 4"
+    },
+    {
+      "dataset": "ALL_FORMS_SUMMARY",
+      "file": "quarterly_all_forms_fy2025_q1.xlsx",
+      "as_of_quarter": "FY2025Q1",
+      "period_start": "2024-10-01",
+      "period_end": "2024-12-31",
+      "published_date": "2025-02-01",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/quarterly_all_forms_fy2025_q1.xlsx",
+      "source_title": "All USCIS Application and Petition Form Types -- Fiscal Year 2025, Quarter 1"
+    },
+    {
+      "dataset": "ALL_FORMS_SUMMARY",
+      "file": "quarterly_all_forms_fy2025_q2.xlsx",
+      "as_of_quarter": "FY2025Q2",
+      "period_start": "2025-01-01",
+      "period_end": "2025-03-31",
+      "published_date": "2025-05-01",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/quarterly_all_forms_fy2025_q2.xlsx",
+      "source_title": "All USCIS Application and Petition Form Types -- Fiscal Year 2025, Quarter 2"
+    },
+    {
+      "dataset": "ALL_FORMS_SUMMARY",
+      "file": "quarterly_all_forms_fy2025_q3.xlsx",
+      "as_of_quarter": "FY2025Q3",
+      "period_start": "2025-04-01",
+      "period_end": "2025-06-30",
+      "published_date": "2025-10-09",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/quarterly_all_forms_fy2025_q3.xlsx",
+      "source_title": "All USCIS Application and Petition Form Types -- Fiscal Year 2025, Quarter 3"
+    },
+    {
+      "dataset": "ALL_FORMS_SUMMARY",
+      "file": "quarterly_all_forms_fy2025_q4_v1.xlsx",
+      "as_of_quarter": "FY2025Q4",
+      "period_start": "2025-07-01",
+      "period_end": "2025-09-30",
+      "published_date": "2026-03-20",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/quarterly_all_forms_fy2025_q4_v1.xlsx",
+      "source_title": "All USCIS Application and Petition Form Types -- Fiscal Year 2025, Quarter 4"
+    },
+    {
+      "dataset": "ALL_FORMS_SUMMARY",
+      "file": "quarterly_all_forms_fy2026_q1_v1.xlsx",
+      "as_of_quarter": "FY2026Q1",
+      "period_start": "2025-10-01",
+      "period_end": "2025-12-31",
+      "published_date": "2026-06-12",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/reports/quarterly_all_forms_fy2026_q1_v1.xlsx",
+      "source_title": "All USCIS Application and Petition Form Types -- Fiscal Year 2026, Quarter 1",
+      "source_note": "Dataset B. Service-wide report sheet FY26Q1_All_Forms; EB-5 rows are I-526 Legacy (L18), I-526 Standalone (L19), I-526E (L20), I-829 (L25), I-956 (L27), I-956F (L28), I-956G (L29), I-956H (L30), I-956K (L31)."
+    },
+    {
+      "dataset": "ALL_FORMS_SUMMARY",
+      "file": "quarterly_all_forms_fy2026_q2_v1.xlsx",
+      "as_of_quarter": "FY2026Q2",
+      "period_start": "2026-01-01",
+      "period_end": "2026-03-31",
+      "published_date": "2026-08-04",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/quarterly_all_forms_fy2026_q2_v1.xlsx",
+      "source_title": "All USCIS Application and Petition Form Types -- Fiscal Year 2026, Quarter 2",
+      "source_note": "Dataset B. Single sheet FY26Q2_All_Forms. Same EB-5 row positions as Q1."
+    }
+  ]
+}

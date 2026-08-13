@@ -1,0 +1,694 @@
+{
+  "cells": [
+    {
+      "form_type": "I526E",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "china",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 88,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "india",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 26,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "korea_south",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 12,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "taiwan",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 9,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "vietnam",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 8,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "rest_of_the_world",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 55,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "china",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 2,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "india",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 2,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "rest_of_the_world",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 13,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL",
+      "country": "china",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 124,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL",
+      "country": "india",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 31,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL",
+      "country": "korea_south",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 1,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL",
+      "country": "taiwan",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 1,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL",
+      "country": "vietnam",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 4,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL",
+      "country": "rest_of_the_world",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 45,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526",
+      "tea_category": "RURAL",
+      "country": "india",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 1,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526",
+      "tea_category": "RURAL",
+      "country": "rest_of_the_world",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 2,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL_AND_HIGH_UNEMPLOYMENT",
+      "country": "china",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 2,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL_AND_HIGH_UNEMPLOYMENT",
+      "country": "india",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 1,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL_AND_HIGH_UNEMPLOYMENT",
+      "country": "korea_south",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 1,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL_AND_HIGH_UNEMPLOYMENT",
+      "country": "rest_of_the_world",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 2,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "UNKNOWN_TEA",
+      "country": "india",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 1,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526",
+      "tea_category": "UNRESERVED",
+      "country": "rest_of_the_world",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 6,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526",
+      "tea_category": "UNKNOWN_TEA",
+      "country": "rest_of_the_world",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 10,
+      "count": 1,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "china",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 76,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "india",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 28,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "korea_south",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 16,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "taiwan",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 13,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "vietnam",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 13,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "rest_of_the_world",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 29,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "china",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 2,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "india",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 5,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "korea_south",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 1,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "rest_of_the_world",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 14,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL",
+      "country": "china",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 136,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL",
+      "country": "india",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 65,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL",
+      "country": "korea_south",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 1,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL",
+      "country": "taiwan",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 3,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL",
+      "country": "vietnam",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 4,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL",
+      "country": "rest_of_the_world",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 18,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526",
+      "tea_category": "RURAL",
+      "country": "rest_of_the_world",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 2,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL_AND_HIGH_UNEMPLOYMENT",
+      "country": "china",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 4,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL_AND_HIGH_UNEMPLOYMENT",
+      "country": "korea_south",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 1,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL_AND_HIGH_UNEMPLOYMENT",
+      "country": "rest_of_the_world",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 1,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "UNRESERVED",
+      "country": "china",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 1,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "UNRESERVED",
+      "country": "india",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 2,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "UNRESERVED",
+      "country": "rest_of_the_world",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 2,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "UNKNOWN_TEA",
+      "country": "rest_of_the_world",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 1,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526",
+      "tea_category": "UNRESERVED",
+      "country": "rest_of_the_world",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 11,
+      "count": 3,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "china",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 12,
+      "count": 117,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "india",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 12,
+      "count": 36,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "korea_south",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 12,
+      "count": 21,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "taiwan",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 12,
+      "count": 14,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "vietnam",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 12,
+      "count": 9,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "rest_of_the_world",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 12,
+      "count": 31,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "china",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 12,
+      "count": 1,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "india",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 12,
+      "count": 1,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526",
+      "tea_category": "HIGH_UNEMPLOYMENT",
+      "country": "rest_of_the_world",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 12,
+      "count": 7,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL",
+      "country": "china",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 12,
+      "count": 187,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL",
+      "country": "india",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 12,
+      "count": 92,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL",
+      "country": "taiwan",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 12,
+      "count": 2,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL",
+      "country": "vietnam",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 12,
+      "count": 5,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL",
+      "country": "rest_of_the_world",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 12,
+      "count": 15,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526",
+      "tea_category": "RURAL",
+      "country": "rest_of_the_world",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 12,
+      "count": 2,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL_AND_HIGH_UNEMPLOYMENT",
+      "country": "china",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 12,
+      "count": 1,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "RURAL_AND_HIGH_UNEMPLOYMENT",
+      "country": "india",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 12,
+      "count": 2,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "UNRESERVED",
+      "country": "rest_of_the_world",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 12,
+      "count": 1,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526E",
+      "tea_category": "UNKNOWN_TEA",
+      "country": "rest_of_the_world",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 12,
+      "count": 3,
+      "suppressed": false
+    },
+    {
+      "form_type": "I526",
+      "tea_category": "UNRESERVED",
+      "country": "rest_of_the_world",
+      "receipt_year": 2024,
+      "receipt_quarter": 1,
+      "receipt_month": 12,
+      "count": 4,
+      "suppressed": false
+    }
+  ]
+}

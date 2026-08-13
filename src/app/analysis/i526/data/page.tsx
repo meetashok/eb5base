@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import PageHero from '@/components/PageHero';
 
-export default function I485SourceDataRedirect() {
+export default function I526SourceDataRedirect() {
   const router = useRouter();
   useEffect(() => {
     router.replace('/analysis/data');

@@ -3,37 +3,30 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  I485_TAB_PATHS,
-  i485TabFromPathname,
-  type I485TabId,
-} from '@/lib/analysis/i485Routes';
+  I526_TAB_PATHS,
+  i526TabFromPathname,
+  type I526TabId,
+} from '@/lib/analysis/i526Routes';
 
-/** Chart views only (Data is a sibling tab, not an explorer mode). */
-export type I485ViewId = 'snapshot' | 'compare' | 'cohort';
+export type I526ViewId = I526TabId;
 
-export const I485_VIEWS: {
-  id: I485TabId;
+export const I526_VIEWS: {
+  id: I526TabId;
   label: string;
   shortLabel: string;
   href: string;
 }[] = [
   {
-    id: 'snapshot',
-    label: 'Inventory at a point in time',
-    shortLabel: 'Inventory',
-    href: I485_TAB_PATHS.snapshot,
+    id: 'trend',
+    label: 'Filings by month',
+    shortLabel: 'Trend',
+    href: I526_TAB_PATHS.trend,
   },
   {
-    id: 'cohort',
-    label: 'Track a priority-date cohort',
-    shortLabel: 'Priority date',
-    href: I485_TAB_PATHS.cohort,
-  },
-  {
-    id: 'compare',
-    label: 'Compare two snapshots',
-    shortLabel: 'Compare',
-    href: I485_TAB_PATHS.compare,
+    id: 'throughput',
+    label: 'Throughput & processing',
+    shortLabel: 'Throughput',
+    href: I526_TAB_PATHS.throughput,
   },
 ];
 
@@ -44,25 +37,24 @@ function tabClass(selected: boolean): string {
   return 'shrink-0 whitespace-nowrap px-2.5 sm:px-3.5 md:px-4 py-2 text-[13px] sm:text-sm font-semibold rounded-lg transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary text-neutral bg-base-200/80 hover:bg-base-300 hover:text-primary';
 }
 
-export default function I485ViewBar({
+export default function I526ViewBar({
   active,
 }: {
-  /** Optional override; defaults to the tab matching the current path. */
-  active?: I485TabId;
+  active?: I526TabId;
 }) {
   const pathname = usePathname();
-  const fromPath = i485TabFromPathname(pathname ?? '');
-  const current = active ?? fromPath ?? 'snapshot';
+  const fromPath = i526TabFromPathname(pathname ?? '');
+  const current = active ?? fromPath ?? 'trend';
 
   return (
     <div className="border-b-2 border-base-300 bg-base-100 sticky top-[var(--site-sticky-offset)] z-30 shadow-sm">
       <div className="max-w-4xl mx-auto px-3 sm:px-4">
         <div
           role="tablist"
-          aria-label="I-485 inventory sections"
+          aria-label="I-526 filings & processing sections"
           className="flex gap-1 py-2.5 -mx-1 px-1 overflow-x-auto scrollbar-thin"
         >
-          {I485_VIEWS.map((t) => {
+          {I526_VIEWS.map((t) => {
             const selected = current === t.id;
             return (
               <Link
@@ -70,7 +62,7 @@ export default function I485ViewBar({
                 href={t.href}
                 role="tab"
                 aria-selected={selected}
-                id={`i485-view-${t.id}`}
+                id={`i526-view-${t.id}`}
                 className={`${tabClass(selected)} text-center`}
                 scroll={false}
               >
