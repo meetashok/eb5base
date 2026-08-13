@@ -473,9 +473,13 @@ export default function I526Explorer({
 
   // Rural : HUA ratio state (uses rural/HUA/both cells; respects form + country).
   const [ratioCells, setRatioCells] = useState<I526FilingCell[] | null>(null);
-  const [ratioSplit, setRatioSplit] = useState<RatioSplit>('none');
-  const [ratioBoth, setRatioBoth] = useState<RatioBothMode>('exclude');
-  const [ratioCumulative, setRatioCumulative] = useState(true);
+  const [ratioSplit, setRatioSplit] = useState<RatioSplit>(initialPrefs?.ratioSplit ?? 'none');
+  const [ratioBoth, setRatioBoth] = useState<RatioBothMode>(
+    initialPrefs?.ratioBoth ?? 'exclude',
+  );
+  const [ratioCumulative, setRatioCumulative] = useState(
+    initialPrefs?.ratioCumulative ?? true,
+  );
 
   // Throughput state
   const [throughputBIds, setThroughputBIds] = useState<number[]>(
@@ -511,6 +515,9 @@ export default function I526Explorer({
       formB: [...formB],
       throughputBIds: [...throughputBIds],
       throughputMetric,
+      ratioSplit,
+      ratioBoth,
+      ratioCumulative,
     });
   }
 
@@ -529,6 +536,9 @@ export default function I526Explorer({
       formB.join('|'),
       throughputBIds.join(','),
       throughputMetric,
+      ratioSplit,
+      ratioBoth,
+      ratioCumulative,
     ],
   );
 
@@ -1047,11 +1057,11 @@ export default function I526Explorer({
                       Rural : HUA application ratio
                     </h2>
                     <p className="text-sm leading-snug text-neutral/70">
-                      Rural set-aside visas are twice HUA, so a ratio of 2 means demand is balanced
-                      to supply. Uses Rural vs High-unemployment filings only (ignores the category
-                      chips); respects the form and country filters.
+                      Rural set-aside visas are 2x HUA, so a ratio of 2 means demand is balanced to
+                      supply.
                     </p>
                   </div>
+                  <I526ShareButton buildPayload={currentSharePayload} shareKey={shareKey} />
                 </div>
                 <ChartHeaderControls>
                   <div className={headerToggleRowClass}>
