@@ -158,8 +158,8 @@ export default async function I526ExplorerPage({
             / <AnalysisDatasetCrumb current="i526" />
           </span>
         }
-        title="I-526 / I-526E filings & EB-5 throughput"
-        subtitle="Quarterly USCIS data on EB-5 petition receipts by country and TEA set-aside, plus service-wide adjudications and processing times for the whole EB-5 family (I-526 legacy, I-526 standalone, I-526E, I-829, and I-956 regional center forms)."
+        title="I-526 / I-526E filings"
+        subtitle="Quarterly USCIS data on EB-5 petition receipts by country and TEA set-aside category (I-526 standalone and I-526E regional center)."
       />
 
       <I526ViewBar active={view} />
