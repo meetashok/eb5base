@@ -726,11 +726,23 @@ export default function I526Explorer({
     if (!ratioCells) return null;
     const data = computeI526RatioData(ratioCells, grain, ratioSplit, ratioBoth);
     if (data.xAxis.length === 0) return null;
+    // Scale from the (smooth) cumulative line + reference, so noisy early
+    // per-period spikes cannot bury the y=2 reference line.
+    const cumulativeArrays =
+      ratioSplit === 'none'
+        ? data.facets[0]
+          ? [data.facets[0].cumulative]
+          : []
+        : data.facets.map((f) => f.cumulative);
+    const cumVals = cumulativeArrays.flat().filter((v): v is number => v != null);
+    const cumMax = cumVals.length ? Math.max(...cumVals) : 0;
+    const yMax = Math.max(3, cumMax * 1.5);
     if (ratioSplit === 'none') {
       const f = data.facets[0];
       if (!f) return null;
       return {
         xAxis: data.xAxis,
+        yMax,
         series: [
           { key: 'cumulative', label: 'Cumulative', color: seriesColor(0), data: f.cumulative },
           {
@@ -745,6 +757,7 @@ export default function I526Explorer({
     }
     return {
       xAxis: data.xAxis,
+      yMax,
       series: data.facets.map((f, i) => ({
         key: f.key,
         label: f.label,
@@ -1086,6 +1099,7 @@ export default function I526Explorer({
                   series={ratioChartSeries.series}
                   referenceValue={2}
                   referenceLabel="Balanced (2:1)"
+                  yMax={ratioChartSeries.yMax}
                   height={260}
                   xAxisLabel="Receipt period"
                   ariaLabel="Rural to HUA application ratio over receipt period"

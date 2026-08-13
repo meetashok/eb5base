@@ -27,12 +27,16 @@ export interface I526RatioChartProps {
   /** Horizontal reference line (e.g. 2 = quota-balanced). */
   referenceValue?: number;
   referenceLabel?: string;
+  /** Force the Y-axis ceiling (keeps the reference line in view past spikes). */
+  yMax?: number;
   height?: number;
   ariaLabel?: string;
   xAxisLabel?: string;
 }
 
 const margin = { top: 12, right: 16, bottom: 40, left: 40 };
+/** Rose is reserved for annotations (never a data series color). */
+const REFERENCE_COLOR = '#be123c';
 
 function fmtRatio(n: number): string {
   return n >= 10 ? n.toFixed(0) : n.toFixed(1);
@@ -60,6 +64,7 @@ export default function I526RatioChart({
   series,
   referenceValue,
   referenceLabel,
+  yMax,
   height = 260,
   ariaLabel = 'Ratio chart',
   xAxisLabel,
@@ -68,12 +73,13 @@ export default function I526RatioChart({
   const [hoverKey, setHoverKey] = useState<string | null>(null);
 
   const dataMax = useMemo(() => {
+    if (yMax != null) return Math.max(1, yMax);
     const vals = series.flatMap((s) =>
       s.data.filter((v): v is number => v != null),
     );
     if (referenceValue != null) vals.push(referenceValue);
     return Math.max(1, ...vals);
-  }, [series, referenceValue]);
+  }, [series, referenceValue, yMax]);
 
   const ticks = useMemo(() => niceTicks(dataMax), [dataMax]);
   const axisMax = ticks[ticks.length - 1] || dataMax;
@@ -120,10 +126,10 @@ export default function I526RatioChart({
           </span>
         ))}
         {referenceValue != null ? (
-          <span className="inline-flex items-center gap-1.5 text-neutral/55">
+          <span className="inline-flex items-center gap-1.5" style={{ color: REFERENCE_COLOR }}>
             <span
               className="inline-block w-4"
-              style={{ borderTop: `1px dashed ${chartColors.axis}` }}
+              style={{ borderTop: `2px dashed ${REFERENCE_COLOR}` }}
               aria-hidden
             />
             {referenceLabel ?? `Balanced (${fmtRatio(referenceValue)})`}
@@ -207,17 +213,28 @@ export default function I526RatioChart({
                 />
 
                 {referenceValue != null && referenceValue <= axisMax ? (
-                  <line
-                    x1={0}
-                    x2={innerWidth}
-                    y1={yScale(referenceValue)}
-                    y2={yScale(referenceValue)}
-                    stroke={chartColors.axis}
-                    strokeWidth={1}
-                    strokeDasharray="4 4"
-                    strokeOpacity={0.7}
-                    pointerEvents="none"
-                  />
+                  <g pointerEvents="none">
+                    <line
+                      x1={0}
+                      x2={innerWidth}
+                      y1={yScale(referenceValue)}
+                      y2={yScale(referenceValue)}
+                      stroke={REFERENCE_COLOR}
+                      strokeWidth={1.5}
+                      strokeDasharray="5 4"
+                      strokeOpacity={0.9}
+                    />
+                    <text
+                      x={innerWidth}
+                      y={yScale(referenceValue) - 4}
+                      textAnchor="end"
+                      fontSize={10}
+                      fontWeight={600}
+                      fill={REFERENCE_COLOR}
+                    >
+                      {fmtRatio(referenceValue)} balanced
+                    </text>
+                  </g>
                 ) : null}
 
                 {series.map((s) => {
@@ -227,7 +244,7 @@ export default function I526RatioChart({
                       key={s.key}
                       data={pts}
                       x={(d) => xScale(d.key) ?? 0}
-                      y={(d) => yScale(d.value ?? 0) ?? 0}
+                      y={(d) => yScale(Math.min(d.value ?? 0, axisMax)) ?? 0}
                       defined={(d) => d.value != null}
                       curve={curveMonotoneX}
                       stroke={s.color}
@@ -275,7 +292,7 @@ export default function I526RatioChart({
                               <circle
                                 key={s.key}
                                 cx={cx}
-                                cy={yScale(v) ?? 0}
+                                cy={yScale(Math.min(v, axisMax)) ?? 0}
                                 r={4}
                                 fill={s.color}
                                 stroke="#faf7f2"
