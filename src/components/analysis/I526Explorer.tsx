@@ -736,7 +736,9 @@ export default function I526Explorer({
         : data.facets.map((f) => f.cumulative);
     const cumVals = cumulativeArrays.flat().filter((v): v is number => v != null);
     const cumMax = cumVals.length ? Math.max(...cumVals) : 0;
-    const yMax = Math.max(3, cumMax * 1.5);
+    // Scale from the (smooth) cumulative peak; the chart adds the reference
+    // line + a little headroom. Keeps per-period spikes clamped to this.
+    const yMax = cumMax;
     const pick = (f: (typeof data.facets)[number]) =>
       ratioCumulative ? f.cumulative : f.monthly;
     if (ratioSplit === 'none') {

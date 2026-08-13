@@ -7,7 +7,7 @@ import { Group } from '@visx/group';
 import { scaleLinear, scalePoint } from '@visx/scale';
 import { LinePath } from '@visx/shape';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { chartColors, niceTicks } from '@/lib/charts/theme';
+import { chartColors } from '@/lib/charts/theme';
 import ChartXAxisLabel from '@/components/charts/ChartXAxisLabel';
 import type { TimeBucketMeta } from '@/lib/analysis/i526';
 
@@ -40,6 +40,27 @@ const REFERENCE_COLOR = '#be123c';
 
 function fmtRatio(n: number): string {
   return n >= 10 ? n.toFixed(0) : n.toFixed(1);
+}
+
+/** Ratio-friendly ticks: allows 0.5 steps so a ~1.5-2.5 range doesn't jump to 3. */
+function ratioTicks(peak: number): number[] {
+  const steps = [0.25, 0.5, 1, 2, 5];
+  const maxTicks = 6;
+  let step = steps[steps.length - 1]!;
+  for (const s of steps) {
+    if (peak / s <= maxTicks) {
+      step = s;
+      break;
+    }
+  }
+  let ceiling = Math.ceil(peak / step) * step;
+  // Only pad when the peak lands exactly on a tick (keeps top line/label clear).
+  if (ceiling <= peak + 1e-9) ceiling += step;
+  const ticks: number[] = [];
+  for (let v = 0; v <= ceiling + step / 1000; v += step) {
+    ticks.push(Math.round(v * 100) / 100);
+  }
+  return ticks;
 }
 
 function useElementWidth<T extends HTMLElement>() {
@@ -111,17 +132,19 @@ export default function I526RatioChart({
     return { strokeWidth: 1.5, opacity: 0.25 };
   }
 
-  const dataMax = useMemo(() => {
-    if (yMax != null) return Math.max(1, yMax);
-    const vals = visible.flatMap((s) =>
-      s.data.filter((v): v is number => v != null),
-    );
-    if (referenceValue != null) vals.push(referenceValue);
-    return Math.max(1, ...vals);
+  const peak = useMemo(() => {
+    const base =
+      yMax != null
+        ? yMax
+        : Math.max(
+            0,
+            ...visible.flatMap((s) => s.data.filter((v): v is number => v != null)),
+          );
+    return Math.max(base, referenceValue ?? 0, 1);
   }, [visible, referenceValue, yMax]);
 
-  const ticks = useMemo(() => niceTicks(dataMax), [dataMax]);
-  const axisMax = ticks[ticks.length - 1] || dataMax;
+  const ticks = useMemo(() => ratioTicks(peak), [peak]);
+  const axisMax = ticks[ticks.length - 1] || peak;
 
   const innerWidth = Math.max(width - margin.left - margin.right, 0);
   const innerHeight = height - margin.top - margin.bottom;
