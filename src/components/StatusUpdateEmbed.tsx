@@ -33,10 +33,36 @@ export default function StatusUpdateEmbed() {
       : 2400
   );
   const [ready, setReady] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [shouldLoad, setShouldLoad] = useState(false);
 
   const applyDesktopHeight = useCallback(() => {
     setHeight(desktopFrameHeight());
   }, []);
+
+  // Defer loading the (heavy) builder iframe until it is near the viewport, so
+  // it doesn't compete with the hero on first paint. Fires ~immediately when
+  // the iframe is above the fold.
+  useEffect(() => {
+    if (shouldLoad) return;
+    const el = containerRef.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === 'undefined') {
+      setShouldLoad(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setShouldLoad(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: '600px' },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [shouldLoad]);
 
   useEffect(() => {
     const mq = window.matchMedia(DESKTOP_MQ);
@@ -120,6 +146,7 @@ export default function StatusUpdateEmbed() {
 
   return (
     <div
+      ref={containerRef}
       className={`w-full pb-8 relative ${
         isDesktop
           ? 'lg:sticky lg:top-[var(--site-sticky-offset)] lg:z-10 lg:pb-3'
@@ -135,10 +162,10 @@ export default function StatusUpdateEmbed() {
       <iframe
         ref={iframeRef}
         title="EB-5 Status Update Builder"
-        src="/status/embed.html"
+        src={shouldLoad ? '/status/embed.html' : undefined}
         className={`w-full border-0 bg-transparent ${ready ? 'opacity-100' : 'opacity-0'}`}
         style={{ height }}
-        loading="eager"
+        loading="lazy"
       />
     </div>
   );
