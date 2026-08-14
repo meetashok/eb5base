@@ -7,11 +7,18 @@ import { ChartFooter, HowToReadCard } from '@/components/analysis/ChartFooter';
 import { ChartCard, ChartHeader, ControlLabel, ToggleGroup } from '@/components/analysis/chart-kit';
 import VisaBulletinShareButton from '@/components/analysis/VisaBulletinShareButton';
 import type { VisaBulletinSharePayload } from '@/lib/analysis/visaBulletinShareParams';
+import dynamic from 'next/dynamic';
+import ChartSkeleton from '@/components/charts/ChartSkeleton';
 import VisaBulletinTable from '@/components/analysis/VisaBulletinTable';
-import VisaBulletinTrendChart, {
-  type TrendSeries,
-  type TrendXMeta,
+import type {
+  TrendSeries,
+  TrendXMeta,
 } from '@/components/analysis/VisaBulletinTrendChart';
+
+const VisaBulletinTrendChart = dynamic(
+  () => import('@/components/analysis/VisaBulletinTrendChart'),
+  { ssr: false, loading: () => <ChartSkeleton height={300} /> },
+);
 import {
   CATEGORY_ROWS,
   COUNTRY_LABELS,

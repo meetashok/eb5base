@@ -3,13 +3,11 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import {
-  BarChart,
-  LineChart,
-  MultiSeriesLineChart,
-  formatSignedCount,
-  seriesColor,
-} from '@/components/charts';
+import dynamic from 'next/dynamic';
+import { formatSignedCount, seriesColor } from '@/components/charts';
+import { BarChart, LineChart, MultiSeriesLineChart } from '@/components/charts/lazy';
+import ChartSkeleton from '@/components/charts/ChartSkeleton';
+import DeferUntilVisible from '@/components/analysis/DeferUntilVisible';
 import { filterChipClass } from '@/components/analysis/filterChipClass';
 import { ChartFooter, HowToReadCard } from '@/components/analysis/ChartFooter';
 import {
@@ -24,7 +22,10 @@ import {
   toggleGroupClass as headerToggleGroupClass,
 } from '@/components/analysis/chart-kit';
 import I526ShareButton from '@/components/analysis/I526ShareButton';
-import I526RatioChart from '@/components/analysis/I526RatioChart';
+const I526RatioChart = dynamic(() => import('@/components/analysis/I526RatioChart'), {
+  ssr: false,
+  loading: () => <ChartSkeleton height={260} />,
+});
 import {
   COUNTRY_FILTER_OPTIONS,
   DEFAULT_COUNTRIES,
@@ -1019,22 +1020,24 @@ export default function I526Explorer({
             </ChartHeader>
 
             <div className="pt-2">
-              {ratioChartSeries && ratioChartSeries.series.length > 0 ? (
-                <I526RatioChart
-                  xAxis={ratioChartSeries.xAxis}
-                  series={ratioChartSeries.series}
-                  referenceValue={2}
-                  referenceLabel="Balanced (2:1)"
-                  yMax={ratioChartSeries.yMax}
-                  height={260}
-                  xAxisLabel="Receipt period"
-                  ariaLabel="Rural to HUA application ratio over receipt period"
-                />
-              ) : (
-                <div className="h-60 flex items-center justify-center text-sm text-neutral/50">
-                  {!ratioCells ? 'Loading…' : 'Not enough rural / HUA data for this selection.'}
-                </div>
-              )}
+              <DeferUntilVisible minHeight={260}>
+                {ratioChartSeries && ratioChartSeries.series.length > 0 ? (
+                  <I526RatioChart
+                    xAxis={ratioChartSeries.xAxis}
+                    series={ratioChartSeries.series}
+                    referenceValue={2}
+                    referenceLabel="Balanced (2:1)"
+                    yMax={ratioChartSeries.yMax}
+                    height={260}
+                    xAxisLabel="Receipt period"
+                    ariaLabel="Rural to HUA application ratio over receipt period"
+                  />
+                ) : (
+                  <div className="h-60 flex items-center justify-center text-sm text-neutral/50">
+                    {!ratioCells ? 'Loading…' : 'Not enough rural / HUA data for this selection.'}
+                  </div>
+                )}
+              </DeferUntilVisible>
             </div>
 
             <ChartFooter sourceHref="/analysis/i526/data" />
