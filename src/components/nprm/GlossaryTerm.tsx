@@ -92,12 +92,15 @@ export function GlossaryText({
 
 export default function GlossaryTerm({
   term,
+  tip: tipOverride,
   children,
 }: {
   term: GlossaryKey | string;
+  /** Explicit definition for terms not in the shared GLOSSARY. */
+  tip?: string;
   children?: ReactNode;
 }) {
-  const tip = resolveTip(term);
+  const tip = tipOverride ?? resolveTip(term);
   const label = children ?? term;
   const tipId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);

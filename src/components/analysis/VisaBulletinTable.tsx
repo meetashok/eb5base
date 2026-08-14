@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
+import GlossaryTerm from '@/components/nprm/GlossaryTerm';
 import {
   CATEGORY_ROWS,
   COUNTRY_LABELS,
@@ -180,12 +181,12 @@ export default function VisaBulletinTable({
             {COUNTRY_ORDER.map((c) => (
               <th key={c} className="px-2 py-2 text-right font-semibold text-primary">
                 {c === 'WORLDWIDE' ? (
-                  <abbr
-                    title="Rest of the World - all chargeability areas except those listed separately"
-                    className="cursor-help underline decoration-dotted decoration-neutral/40 underline-offset-2"
+                  <GlossaryTerm
+                    term="Rest of the World"
+                    tip="All chargeability areas except those listed separately."
                   >
                     RoW
-                  </abbr>
+                  </GlossaryTerm>
                 ) : (
                   COUNTRY_LABELS[c]
                 )}
