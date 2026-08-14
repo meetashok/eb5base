@@ -4,6 +4,8 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { seriesColor } from '@/components/charts';
 import { ChartFooter, HowToReadCard } from '@/components/analysis/ChartFooter';
+import VisaBulletinShareButton from '@/components/analysis/VisaBulletinShareButton';
+import type { VisaBulletinSharePayload } from '@/lib/analysis/visaBulletinShareParams';
 import VisaBulletinTable from '@/components/analysis/VisaBulletinTable';
 import VisaBulletinTrendChart, {
   type TrendSeries,
@@ -53,44 +55,15 @@ const controlLabelClass = 'text-[11px] font-semibold uppercase tracking-wide tex
 const chartHeaderRowClass =
   'flex flex-col items-stretch gap-3 sm:flex-row sm:items-start sm:justify-between';
 
-function ShareButton() {
-  const [copied, setCopied] = useState(false);
-  return (
-    <button
-      type="button"
-      onClick={async () => {
-        try {
-          await navigator.clipboard.writeText(window.location.href);
-          setCopied(true);
-          setTimeout(() => setCopied(false), 1500);
-        } catch {
-          /* clipboard unavailable */
-        }
-      }}
-      className="inline-flex items-center gap-1.5 rounded-full border border-base-300 px-2.5 py-1 text-xs font-semibold text-secondary transition-colors hover:bg-base-200 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary"
-      aria-label="Copy a shareable link to this view"
-    >
-      <svg viewBox="0 0 20 20" fill="none" aria-hidden className="h-3.5 w-3.5">
-        <path
-          d="M13 6.5a2.5 2.5 0 1 0-2.4-3.2M13 13.5a2.5 2.5 0 1 0-2.4 3.2M7 10a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Zm4.2-4.6L7.2 8.6m0 2.8 4 3.2"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-      {copied ? 'Copied' : 'Share'}
-    </button>
-  );
-}
-
 function SectionHeader({
   title,
   subtitle,
+  share,
   controls,
 }: {
   title: string;
   subtitle: ReactNode;
+  share: ReactNode;
   controls: ReactNode;
 }) {
   return (
@@ -98,9 +71,7 @@ function SectionHeader({
       <div className="min-w-0 w-full space-y-1 sm:flex-1">
         <h2 className="text-sm font-semibold leading-snug text-primary sm:text-base">{title}</h2>
         <p className="text-sm leading-snug text-neutral/70">{subtitle}</p>
-        <div className="pt-0.5">
-          <ShareButton />
-        </div>
+        <div className="pt-0.5">{share}</div>
       </div>
       <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:items-end sm:gap-1.5">
         {controls}
@@ -151,6 +122,19 @@ export default function VisaBulletinExplorer({
   const [pref, sub] = categoryKey.split('.');
   const categoryLabel =
     CATEGORY_ROWS.find((r) => r.preference === pref && r.subcategory === sub)?.label ?? categoryKey;
+
+  const buildPayload = (): VisaBulletinSharePayload => ({
+    v: 1,
+    ...(selected ? { m: selected.bulletin_month.slice(0, 7) } : {}),
+    cat: categoryKey,
+    dt: dateType,
+    y: yMode,
+    sc: scope,
+  });
+  const shareKey = selected
+    ? `${selected.bulletin_month.slice(0, 7)}|${categoryKey}|${dateType}|${yMode}|${scope}`
+    : '';
+  const shareButton = <VisaBulletinShareButton buildPayload={buildPayload} shareKey={shareKey} />;
 
   // Keep the URL in sync (shareable) without re-rendering the server tree.
   useEffect(() => {
@@ -226,6 +210,7 @@ export default function VisaBulletinExplorer({
           <SectionHeader
             title="Bulletin table"
             subtitle="Dates for Filing, with Final Action shown as an offset and full detail on hover."
+            share={shareButton}
             controls={
               <div className="flex items-center gap-1.5">
                 <span className={controlLabelClass}>Show</span>
@@ -305,6 +290,7 @@ export default function VisaBulletinExplorer({
           <SectionHeader
             title="Cut-off dates over time"
             subtitle={`${categoryLabel} - ${dateType === 'FINAL_ACTION' ? 'Final Action Dates' : 'Dates for Filing'}, by country. Click a point to load that bulletin above.`}
+            share={shareButton}
             controls={
               <>
                 <label className="flex items-center gap-1.5 text-xs">
