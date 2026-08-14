@@ -8,6 +8,11 @@
  *   node scripts/visa-bulletin/ingest.mjs --month 2026-07
  *   node scripts/visa-bulletin/ingest.mjs --backfill 2015-10..2026-01
  *   node scripts/visa-bulletin/ingest.mjs --backfill 2015-10..2026-01 --dry-run
+ *   node scripts/visa-bulletin/ingest.mjs --dir path/to/saved-html   # ingest a folder
+ *
+ * --dir ingests every "visa-bulletin-for-<month>-<year>.html" file in a folder
+ * (month/year derived from the filename). Use this to hand off pages downloaded
+ * elsewhere when this environment cannot reach travel.state.gov directly.
  *
  * Source of HTML (--source):
  *   live   (default) travel.state.gov  -- use in CI / from a non-blocked IP
@@ -19,7 +24,7 @@
  * Env (write mode): NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
  * (reads .env.local automatically if present).
  */
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { parseBulletinHtml } from './parse.mjs';
 
@@ -95,6 +100,15 @@ function parseMonthArg(s) {
   return { year: Number(m[1]), monthNum: Number(m[2]) };
 }
 
+/** Derive { year, monthNum } from a bulletin filename, or null. */
+function fileToMonth(filename) {
+  const m = /visa-bulletin-for-([a-z]+)-(\d{4})/i.exec(filename);
+  if (!m) return null;
+  const monthNum = MONTH_NAMES.indexOf(m[1].toLowerCase()) + 1;
+  if (!monthNum) return null;
+  return { year: Number(m[2]), monthNum };
+}
+
 function monthList(fromStr, toStr) {
   const from = parseMonthArg(fromStr);
   const to = parseMonthArg(toStr);
@@ -110,8 +124,8 @@ function monthList(fromStr, toStr) {
   return out;
 }
 
-async function ingestMonth(supabase, { year, monthNum }, source) {
-  const html = await getMonthHtml(year, monthNum, source);
+async function ingestMonth(supabase, { year, monthNum }, source, preloadedHtml) {
+  const html = preloadedHtml ?? (await getMonthHtml(year, monthNum, source));
   const { rows, meta } = parseBulletinHtml(html, { month: `${year}-${String(monthNum).padStart(2, '0')}` });
   if (meta.employmentTables === 0 || rows.length === 0) {
     throw new Error(`no employment rows parsed for ${year}-${monthNum}`);
@@ -172,6 +186,35 @@ async function getSupabase() {
 async function main() {
   const source = argValue('--source') || (process.argv.includes('--file') ? 'file' : 'live');
   const supabase = await getSupabase();
+
+  // --dir: ingest a folder of downloaded bulletin HTML files.
+  if (process.argv.includes('--dir')) {
+    const dir = argValue('--dir');
+    const files = readdirSync(dir)
+      .filter((f) => /visa-bulletin-for-.+\.html?$/i.test(f))
+      .sort();
+    let ok = 0;
+    let fail = 0;
+    for (const f of files) {
+      const m = fileToMonth(f);
+      if (!m) {
+        console.warn(`  ${f}  SKIP: cannot derive month from filename`);
+        fail += 1;
+        continue;
+      }
+      try {
+        const html = readFileSync(path.join(dir, f), 'utf8');
+        const s = await ingestMonth(supabase, m, 'file', html);
+        ok += 1;
+        console.log(`  ${s.month}  rows=${String(s.rows).padStart(4)}  eb5=${s.eb5}${DRY_RUN ? '  (dry)' : ''}  <- ${f}`);
+      } catch (err) {
+        fail += 1;
+        console.warn(`  ${f}  SKIP: ${err.message}`);
+      }
+    }
+    console.log(`\nDone. ok=${ok} fail=${fail}${DRY_RUN ? ' (dry run)' : ''}`);
+    return;
+  }
 
   let months;
   if (process.argv.includes('--backfill')) {
