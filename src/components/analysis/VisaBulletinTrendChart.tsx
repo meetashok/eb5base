@@ -22,6 +22,12 @@ export interface TrendSeries {
   color: string;
   /** One value per xAxis entry; null renders a gap (e.g. Unavailable). */
   data: (number | null)[];
+  /**
+   * Optional per-point tooltip override (e.g. "Unavailable" / "Current").
+   * When set for an index, the tooltip shows it instead of the numeric value,
+   * so a gap month still reports its status.
+   */
+  statusText?: (string | null)[];
 }
 
 export interface VisaBulletinTrendChartProps {
@@ -229,7 +235,8 @@ export default function VisaBulletinTrendChart({
               <div className="flex flex-wrap justify-end gap-x-3 gap-y-0.5 tabular-nums text-primary">
                 {visible.map((s) => {
                   const v = hoverIdx >= 0 ? s.data[hoverIdx] : null;
-                  if (v == null) return null;
+                  const st = hoverIdx >= 0 ? s.statusText?.[hoverIdx] : null;
+                  if (v == null && !st) return null;
                   return (
                     <span key={s.key} className="inline-flex items-center gap-1">
                       <span
@@ -237,7 +244,8 @@ export default function VisaBulletinTrendChart({
                         style={{ backgroundColor: s.color }}
                         aria-hidden
                       />
-                      <span className="font-medium text-neutral/55">{s.label}</span> {formatY(v)}
+                      <span className="font-medium text-neutral/55">{s.label}</span>{' '}
+                      {st ?? formatY(v as number)}
                     </span>
                   );
                 })}

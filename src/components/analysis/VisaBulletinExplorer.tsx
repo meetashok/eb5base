@@ -162,22 +162,34 @@ export default function VisaBulletinExplorer({
   );
 
   const series: TrendSeries[] = useMemo(() => {
-    return COUNTRY_ORDER.map((country, i) => ({
-      key: country,
-      label: COUNTRY_LABELS[country],
-      color: seriesColor(i),
-      data: releases.map((r) => {
+    return COUNTRY_ORDER.map((country, i) => {
+      const points = releases.map((r) => {
         const cell = index.get(cellKey(r.id, pref, sub, country, dateType));
-        if (!cell || cell.status === 'UNAVAILABLE') return null;
+        if (!cell) return { value: null as number | null, status: null as string | null };
+        if (cell.status === 'UNAVAILABLE') return { value: null, status: 'Unavailable' };
         if (cell.status === 'CURRENT') {
-          return yMode === 'years' ? 0 : dateToOrdinal(r.bulletin_month);
+          return {
+            value: yMode === 'years' ? 0 : dateToOrdinal(r.bulletin_month),
+            status: 'Current',
+          };
         }
-        if (!cell.cutoff_date) return null;
-        return yMode === 'years'
-          ? yearsBehind(r.bulletin_month, cell.cutoff_date)
-          : dateToOrdinal(cell.cutoff_date);
-      }),
-    }));
+        if (!cell.cutoff_date) return { value: null, status: null };
+        return {
+          value:
+            yMode === 'years'
+              ? yearsBehind(r.bulletin_month, cell.cutoff_date)
+              : dateToOrdinal(cell.cutoff_date),
+          status: null,
+        };
+      });
+      return {
+        key: country,
+        label: COUNTRY_LABELS[country],
+        color: seriesColor(i),
+        data: points.map((p) => p.value),
+        statusText: points.map((p) => p.status),
+      };
+    });
   }, [releases, index, pref, sub, dateType, yMode]);
 
   const formatY = useMemo(
