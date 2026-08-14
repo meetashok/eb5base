@@ -235,7 +235,7 @@ export default function VisaBulletinExplorer({
         <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
           <SectionHeader
             title="Cut-off dates by category and country"
-            subtitle={`One bulletin at a time - ${tablePrimary === 'FILING' ? 'Dates for Filing' : 'Final Action Dates'}, with ${tablePrimary === 'FILING' ? 'Final Action' : 'Dates for Filing'} shown as an offset and full detail on hover.`}
+            subtitle="One bulletin - hover any cell for detail."
             share={shareButton}
             controls={
               <>
@@ -344,7 +344,7 @@ export default function VisaBulletinExplorer({
         <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
           <SectionHeader
             title="Cut-off dates over time"
-            subtitle={`${categoryLabel} - ${dateType === 'FINAL_ACTION' ? 'Final Action Dates' : 'Dates for Filing'}, by country. Click a point to load that bulletin above.`}
+            subtitle="By country over time - click to select."
             share={shareButton}
             controls={
               <>
