@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { seriesColor } from '@/components/charts';
 import { ChartFooter, HowToReadCard } from '@/components/analysis/ChartFooter';
 import VisaBulletinTable from '@/components/analysis/VisaBulletinTable';
@@ -40,36 +41,129 @@ function ordinalToMonthLabel(ord: number): string {
 
 const DEFAULT_HIDDEN_COUNTRIES: VbCountry[] = ['MEXICO', 'PHILIPPINES'];
 
-const toggleGroupClass =
-  'inline-flex rounded-full border border-base-300 p-0.5 bg-base-200/60 gap-0.5';
+const toggleGroupClass = 'inline-flex rounded-full border border-base-300 p-0.5 bg-base-200/60 gap-0.5';
 function toggleBtnClass(active: boolean): string {
   return [
     'rounded-full h-7 px-2.5 text-xs font-semibold leading-none transition-colors',
     active ? 'bg-primary text-primary-content' : 'bg-transparent text-neutral hover:bg-base-300/70',
   ].join(' ');
 }
+const controlLabelClass = 'text-[11px] font-semibold uppercase tracking-wide text-neutral/55';
+
+const chartHeaderRowClass =
+  'flex flex-col items-stretch gap-3 sm:flex-row sm:items-start sm:justify-between';
+
+function ShareButton() {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={async () => {
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1500);
+        } catch {
+          /* clipboard unavailable */
+        }
+      }}
+      className="inline-flex items-center gap-1.5 rounded-full border border-base-300 px-2.5 py-1 text-xs font-semibold text-secondary transition-colors hover:bg-base-200 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary"
+      aria-label="Copy a shareable link to this view"
+    >
+      <svg viewBox="0 0 20 20" fill="none" aria-hidden className="h-3.5 w-3.5">
+        <path
+          d="M13 6.5a2.5 2.5 0 1 0-2.4-3.2M13 13.5a2.5 2.5 0 1 0-2.4 3.2M7 10a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Zm4.2-4.6L7.2 8.6m0 2.8 4 3.2"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+      {copied ? 'Copied' : 'Share'}
+    </button>
+  );
+}
+
+function SectionHeader({
+  title,
+  subtitle,
+  controls,
+}: {
+  title: string;
+  subtitle: ReactNode;
+  controls: ReactNode;
+}) {
+  return (
+    <div className={chartHeaderRowClass}>
+      <div className="min-w-0 w-full space-y-1 sm:flex-1">
+        <h2 className="text-sm font-semibold leading-snug text-primary sm:text-base">{title}</h2>
+        <p className="text-sm leading-snug text-neutral/70">{subtitle}</p>
+        <div className="pt-0.5">
+          <ShareButton />
+        </div>
+      </div>
+      <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:items-end sm:gap-1.5">
+        {controls}
+      </div>
+    </div>
+  );
+}
 
 export default function VisaBulletinExplorer({
   releases,
   dates,
   error,
+  initialMonth,
+  initialCategory,
+  initialDateType,
+  initialYMode,
+  initialScope,
 }: {
   releases: VisaBulletinRelease[];
   dates: VisaBulletinDate[];
   error: string | null;
+  initialMonth?: string;
+  initialCategory?: string;
+  initialDateType?: VbDateType;
+  initialYMode?: 'date' | 'years';
+  initialScope?: 'eb5' | 'all';
 }) {
+  const pathname = usePathname();
   const index = useMemo(() => indexDates(dates), [dates]);
-  const [selectedIdx, setSelectedIdx] = useState(Math.max(0, releases.length - 1));
-  const [categoryKey, setCategoryKey] = useState('EB5|UNRESERVED');
-  const [dateType, setDateType] = useState<VbDateType>('FINAL_ACTION');
-  const [yMode, setYMode] = useState<'date' | 'years'>('date');
+
+  const initialIdx = useMemo(() => {
+    if (initialMonth) {
+      const i = releases.findIndex((r) => r.bulletin_month.slice(0, 7) === initialMonth);
+      if (i >= 0) return i;
+    }
+    return Math.max(0, releases.length - 1);
+  }, [releases, initialMonth]);
+
+  const [selectedIdx, setSelectedIdx] = useState(initialIdx);
+  const [categoryKey, setCategoryKey] = useState(initialCategory ?? 'EB5.UNRESERVED');
+  const [dateType, setDateType] = useState<VbDateType>(initialDateType ?? 'FINAL_ACTION');
+  const [yMode, setYMode] = useState<'date' | 'years'>(initialYMode ?? 'years');
+  const [scope, setScope] = useState<'eb5' | 'all'>(initialScope ?? 'eb5');
   const [showHowToRead, setShowHowToRead] = useState(false);
 
   const selected = releases[selectedIdx];
   const prev = selectedIdx > 0 ? releases[selectedIdx - 1] : null;
-  const [pref, sub] = categoryKey.split('|');
+  const [pref, sub] = categoryKey.split('.');
   const categoryLabel =
     CATEGORY_ROWS.find((r) => r.preference === pref && r.subcategory === sub)?.label ?? categoryKey;
+
+  // Keep the URL in sync (shareable) without re-rendering the server tree.
+  useEffect(() => {
+    if (!selected) return;
+    const params = new URLSearchParams({
+      m: selected.bulletin_month.slice(0, 7),
+      cat: categoryKey,
+      dt: dateType === 'FINAL_ACTION' ? 'fa' : 'dff',
+      y: yMode,
+      sc: scope,
+    });
+    window.history.replaceState(null, '', `${pathname}?${params.toString()}`);
+  }, [pathname, selected, categoryKey, dateType, yMode, scope]);
 
   const xAxis: TrendXMeta[] = useMemo(
     () =>
@@ -129,17 +223,27 @@ export default function VisaBulletinExplorer({
       <div className="max-w-4xl mx-auto px-4 pt-6 sm:pt-8 space-y-5">
         {/* Section 1: bulletin table */}
         <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="min-w-0">
-              <h2 className="text-sm font-semibold leading-snug text-primary sm:text-base">
-                Bulletin table
-              </h2>
-              <p className="text-sm leading-snug text-neutral/70">
-                Final Action Dates, with movement vs the previous bulletin and the Dates-for-Filing
-                gap in each cell.
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
+          <SectionHeader
+            title="Bulletin table"
+            subtitle="Dates for Filing, with Final Action shown as an offset and full detail on hover."
+            controls={
+              <div className="flex items-center gap-1.5">
+                <span className={controlLabelClass}>Show</span>
+                <div className={toggleGroupClass} role="group" aria-label="Category scope">
+                  <button type="button" className={toggleBtnClass(scope === 'eb5')} onClick={() => setScope('eb5')}>
+                    EB-5 only
+                  </button>
+                  <button type="button" className={toggleBtnClass(scope === 'all')} onClick={() => setScope('all')}>
+                    All categories
+                  </button>
+                </div>
+              </div>
+            }
+          />
+
+          {/* Month selector below the header */}
+          <div className="space-y-2 border-t border-base-200 pt-3">
+            <div className="flex items-center justify-center gap-2">
               <button
                 type="button"
                 aria-label="Previous bulletin"
@@ -162,26 +266,26 @@ export default function VisaBulletinExplorer({
                 ›
               </button>
             </div>
-          </div>
-
-          <input
-            type="range"
-            min={0}
-            max={releases.length - 1}
-            value={selectedIdx}
-            onChange={(e) => setSelectedIdx(Number(e.target.value))}
-            aria-label="Select bulletin month"
-            className="range range-xs range-primary"
-          />
-          <div className="flex justify-between text-[11px] text-neutral/50">
-            <span>{formatBulletinMonth(releases[0].bulletin_month)}</span>
-            <span>{formatBulletinMonth(releases[releases.length - 1].bulletin_month)}</span>
+            <input
+              type="range"
+              min={0}
+              max={releases.length - 1}
+              value={selectedIdx}
+              onChange={(e) => setSelectedIdx(Number(e.target.value))}
+              aria-label="Select bulletin month"
+              className="range range-xs range-primary"
+            />
+            <div className="flex justify-between text-[11px] text-neutral/50">
+              <span>{formatBulletinMonth(releases[0].bulletin_month)}</span>
+              <span>{formatBulletinMonth(releases[releases.length - 1].bulletin_month)}</span>
+            </div>
           </div>
 
           <VisaBulletinTable
             index={index}
             releaseId={selected.id}
             prevReleaseId={prev?.id ?? null}
+            eb5Only={scope === 'eb5'}
           />
 
           <p className="text-xs text-neutral/70">
@@ -198,64 +302,57 @@ export default function VisaBulletinExplorer({
 
         {/* Section 2: time series */}
         <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
-          <div className="flex flex-col gap-3">
-            <div className="min-w-0">
-              <h2 className="text-sm font-semibold leading-snug text-primary sm:text-base">
-                Cut-off dates over time
-              </h2>
-              <p className="text-sm leading-snug text-neutral/70">
-                {categoryLabel} - {dateType === 'FINAL_ACTION' ? 'Final Action Dates' : 'Dates for Filing'},
-                by country. Click a point to load that bulletin above.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-              <label className="flex items-center gap-1.5 text-xs">
-                <span className="font-semibold uppercase tracking-wide text-neutral/55">Category</span>
-                <select
-                  className="select select-bordered select-xs"
-                  value={categoryKey}
-                  onChange={(e) => setCategoryKey(e.target.value)}
-                >
-                  {CATEGORY_ROWS.map((r) => (
-                    <option key={`${r.preference}|${r.subcategory}`} value={`${r.preference}|${r.subcategory}`}>
-                      {r.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-semibold uppercase tracking-wide text-neutral/55">Dates</span>
-                <div className={toggleGroupClass} role="group" aria-label="Date type">
-                  <button type="button" className={toggleBtnClass(dateType === 'FINAL_ACTION')} onClick={() => setDateType('FINAL_ACTION')}>
-                    Final Action
-                  </button>
-                  <button type="button" className={toggleBtnClass(dateType === 'FILING')} onClick={() => setDateType('FILING')}>
-                    Filing
-                  </button>
+          <SectionHeader
+            title="Cut-off dates over time"
+            subtitle={`${categoryLabel} - ${dateType === 'FINAL_ACTION' ? 'Final Action Dates' : 'Dates for Filing'}, by country. Click a point to load that bulletin above.`}
+            controls={
+              <>
+                <label className="flex items-center gap-1.5 text-xs">
+                  <span className={controlLabelClass}>Category</span>
+                  <select
+                    className="select select-bordered select-xs"
+                    value={categoryKey}
+                    onChange={(e) => setCategoryKey(e.target.value)}
+                  >
+                    {CATEGORY_ROWS.map((r) => (
+                      <option key={`${r.preference}.${r.subcategory}`} value={`${r.preference}.${r.subcategory}`}>
+                        {r.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <div className="flex items-center gap-1.5">
+                  <span className={controlLabelClass}>Dates</span>
+                  <div className={toggleGroupClass} role="group" aria-label="Date type">
+                    <button type="button" className={toggleBtnClass(dateType === 'FINAL_ACTION')} onClick={() => setDateType('FINAL_ACTION')}>
+                      Final Action
+                    </button>
+                    <button type="button" className={toggleBtnClass(dateType === 'FILING')} onClick={() => setDateType('FILING')}>
+                      Filing
+                    </button>
+                  </div>
                 </div>
-              </div>
-
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-semibold uppercase tracking-wide text-neutral/55">Y-axis</span>
-                <div className={toggleGroupClass} role="group" aria-label="Y-axis mode">
-                  <button type="button" className={toggleBtnClass(yMode === 'date')} onClick={() => setYMode('date')}>
-                    Cut-off date
-                  </button>
-                  <button type="button" className={toggleBtnClass(yMode === 'years')} onClick={() => setYMode('years')}>
-                    Years behind
-                  </button>
+                <div className="flex items-center gap-1.5">
+                  <span className={controlLabelClass}>Y-axis</span>
+                  <div className={toggleGroupClass} role="group" aria-label="Y-axis mode">
+                    <button type="button" className={toggleBtnClass(yMode === 'years')} onClick={() => setYMode('years')}>
+                      Years behind
+                    </button>
+                    <button type="button" className={toggleBtnClass(yMode === 'date')} onClick={() => setYMode('date')}>
+                      Cut-off date
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
+              </>
+            }
+          />
 
           <VisaBulletinTrendChart
             xAxis={xAxis}
             series={series}
             formatY={formatY}
             yMin={yMode === 'years' ? 0 : undefined}
+            invertY={yMode === 'date'}
             selectedKey={String(selected.id)}
             onSelectX={(key) => {
               const idx = releases.findIndex((r) => String(r.id) === key);
@@ -279,28 +376,30 @@ export default function VisaBulletinExplorer({
           <li>
             <span className="font-semibold">Final Action Dates</span> = when a green card can actually
             be issued; <span className="font-semibold">Dates for Filing</span> = when you may submit
-            the application. A cut-off means only priority dates earlier than it are being processed.
+            the application (usually a few months ahead of Final Action). A cut-off means only
+            priority dates earlier than it are being processed.
           </li>
           <li>
             <span className="font-semibold">Current</span> means no backlog (any priority date is
-            eligible); <span className="font-semibold">Unavailable</span> means no numbers are
-            available that month. In the trend chart, Current sits at 0 years behind (or at the
-            bulletin month in date mode) and Unavailable is drawn as a gap.
+            eligible); <span className="font-semibold">Unavailable</span> means no numbers that month
+            (drawn as a gap in the trend).
           </li>
           <li>
-            In the table, each cell shows the Final Action Date, its movement vs the previous bulletin
-            (advanced/retrogressed), and how far the Dates-for-Filing cut-off sits ahead of it.
+            In the table, each cell shows the Dates-for-Filing cut-off with Final Action as a relative
+            offset; hover any cell for the exact Final Action and Filing dates and their movement vs
+            the previous bulletin.
           </li>
           <li>
             <span className="font-semibold">Years behind</span> = how old the priority date being
-            processed is relative to the bulletin month - a rough measure of backlog depth.
+            processed is relative to the bulletin month (backlog depth). Both Y-axis modes are
+            oriented the same way: a more backlogged / older cut-off sits higher.
           </li>
           <li>
-            EB-5 is split into <span className="font-semibold">Unreserved</span> and the RIA
-            set-asides: Rural (20%), High Unemployment (10%), Infrastructure (2%). Set-asides only
-            appear from FY2023; earlier months show the pre-RIA regional-center rows.
+            EB-5 splits into <span className="font-semibold">Unreserved</span> and the RIA set-asides:
+            Rural (20%), High Unemployment (10%), Infrastructure (2%). Set-asides only appear from
+            FY2023; earlier months show the pre-RIA regional-center rows.
           </li>
-          <li>This is information only, not legal or financial advice. Verify against the linked official bulletin.</li>
+          <li>Information only, not legal or financial advice. Verify against the linked official bulletin.</li>
         </HowToReadCard>
       ) : null}
     </>

@@ -14,6 +14,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Page() {
-  return <VisaBulletinExplorerPage />;
+export default function Page({
+  searchParams,
+}: {
+  searchParams: Record<string, string | string[] | undefined>;
+}) {
+  return <VisaBulletinExplorerPage searchParams={searchParams} />;
 }

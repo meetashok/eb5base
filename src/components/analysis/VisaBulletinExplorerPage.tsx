@@ -26,8 +26,20 @@ export async function loadVisaBulletin(): Promise<{
   }
 }
 
-export default async function VisaBulletinExplorerPage() {
+function first(v: string | string[] | undefined): string | undefined {
+  return Array.isArray(v) ? v[0] : v;
+}
+
+export default async function VisaBulletinExplorerPage({
+  searchParams,
+}: {
+  searchParams?: Record<string, string | string[] | undefined>;
+}) {
   const initial = await loadVisaBulletin();
+
+  const dtParam = first(searchParams?.dt);
+  const yParam = first(searchParams?.y);
+  const scParam = first(searchParams?.sc);
 
   return (
     <div>
@@ -48,6 +60,11 @@ export default async function VisaBulletinExplorerPage() {
         releases={initial.releases}
         dates={initial.dates}
         error={initial.error}
+        initialMonth={first(searchParams?.m)}
+        initialCategory={first(searchParams?.cat)}
+        initialDateType={dtParam === 'dff' ? 'FILING' : dtParam === 'fa' ? 'FINAL_ACTION' : undefined}
+        initialYMode={yParam === 'date' || yParam === 'years' ? yParam : undefined}
+        initialScope={scParam === 'eb5' || scParam === 'all' ? scParam : undefined}
       />
     </div>
   );

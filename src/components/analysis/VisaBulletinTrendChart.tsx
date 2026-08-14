@@ -31,6 +31,12 @@ export interface VisaBulletinTrendChartProps {
   formatY: (v: number) => string;
   /** Pin the Y-axis floor (e.g. 0 for "years behind"). */
   yMin?: number;
+  /**
+   * Invert the Y axis (larger value at the bottom). Used for the cut-off-date
+   * mode so its line shape matches "years behind" (a more backlogged / older
+   * cut-off sits higher, an improving one sits lower).
+   */
+  invertY?: boolean;
   /** The x key currently selected in the table (draws a marker). */
   selectedKey?: string | null;
   onSelectX?: (key: string) => void;
@@ -41,7 +47,7 @@ export interface VisaBulletinTrendChartProps {
   xAxisLabel?: string;
 }
 
-const margin = { top: 12, right: 16, bottom: 40, left: 52 };
+const margin = { top: 12, right: 16, bottom: 40, left: 68 };
 const SELECT_COLOR = '#2d5a47'; // secondary
 
 function useElementWidth<T extends HTMLElement>() {
@@ -75,6 +81,7 @@ export default function VisaBulletinTrendChart({
   series,
   formatY,
   yMin,
+  invertY,
   selectedKey,
   onSelectX,
   initialHiddenKeys,
@@ -147,8 +154,13 @@ export default function VisaBulletinTrendChart({
     [xAxis, innerWidth],
   );
   const yScale = useMemo(
-    () => scaleLinear<number>({ domain: [domainMin, domainMax], range: [innerHeight, 0], nice: false }),
-    [domainMin, domainMax, innerHeight],
+    () =>
+      scaleLinear<number>({
+        domain: [domainMin, domainMax],
+        range: invertY ? [0, innerHeight] : [innerHeight, 0],
+        nice: false,
+      }),
+    [domainMin, domainMax, innerHeight, invertY],
   );
 
   const xTickKeys = useMemo(() => {

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, type ReactNode } from 'react';
 import {
   CATEGORY_ROWS,
   COUNTRY_LABELS,
@@ -14,80 +15,100 @@ interface Props {
   index: Map<string, VisaBulletinDate>;
   releaseId: number;
   prevReleaseId: number | null;
+  eb5Only: boolean;
 }
 
-function shortStatus(row: VisaBulletinDate | undefined): string {
-  if (!row) return '';
-  if (row.status === 'CURRENT') return 'C';
-  if (row.status === 'UNAVAILABLE') return 'U';
-  return 'date';
+/** Movement of a cut-off vs the previous bulletin, as text. */
+function movementText(
+  row: VisaBulletinDate | undefined,
+  prev: VisaBulletinDate | undefined,
+): string {
+  if (!row) return '-';
+  if (!prev) return 'new';
+  if (row.status === 'DATE' && prev.status === 'DATE') {
+    const d = cutoffDeltaDays(prev.cutoff_date, row.cutoff_date) ?? 0;
+    if (d === 0) return 'no change';
+    return `${d > 0 ? '+' : ''}${d}d`;
+  }
+  if (row.status === prev.status) return 'no change';
+  const to = row.status === 'CURRENT' ? 'Current' : row.status === 'UNAVAILABLE' ? 'Unavailable' : 'dated';
+  return `-> ${to}`;
 }
 
-/** Movement of the final action date vs the previous bulletin. */
-function MovementChip({
-  fad,
-  prevFad,
-}: {
-  fad: VisaBulletinDate | undefined;
-  prevFad: VisaBulletinDate | undefined;
-}) {
-  if (!fad) return null;
-  const now = shortStatus(fad);
-  const before = shortStatus(prevFad);
+function movementClass(
+  row: VisaBulletinDate | undefined,
+  prev: VisaBulletinDate | undefined,
+): string {
+  if (!row || !prev || row.status !== 'DATE' || prev.status !== 'DATE') return 'text-neutral/50';
+  const d = cutoffDeltaDays(prev.cutoff_date, row.cutoff_date) ?? 0;
+  if (d > 0) return 'text-secondary';
+  if (d < 0) return 'text-error';
+  return 'text-neutral/50';
+}
 
-  if (!prevFad) return <span className="text-neutral/40">new</span>;
+interface CellData {
+  fad?: VisaBulletinDate;
+  filing?: VisaBulletinDate;
+  prevFad?: VisaBulletinDate;
+  prevFiling?: VisaBulletinDate;
+}
 
-  if (now === 'date' && before === 'date') {
-    const d = cutoffDeltaDays(prevFad.cutoff_date, fad.cutoff_date) ?? 0;
-    if (d === 0) return <span className="text-neutral/40">no change</span>;
-    const cls = d > 0 ? 'text-secondary' : 'text-error';
+/** Compact in-cell display: filing date on top, final action as an offset. */
+function CellFace({ fad, filing }: CellData) {
+  const primary = filing ?? fad;
+  let secondary: ReactNode = null;
+  if (filing?.status === 'DATE' && fad?.status === 'DATE') {
+    const months = Math.round((cutoffDeltaDays(filing.cutoff_date, fad.cutoff_date) ?? 0) / 30);
+    secondary = <span className="text-neutral/45">FA {months > 0 ? '+' : ''}{months}mo</span>;
+  } else if (fad && fad !== primary) {
+    secondary = <span className="text-neutral/45">FA: {statusLabel(fad)}</span>;
+  }
+  return (
+    <>
+      <div className="font-semibold text-primary">{primary ? statusLabel(primary) : '-'}</div>
+      {secondary ? <div className="mt-0.5 text-[11px] leading-tight">{secondary}</div> : null}
+    </>
+  );
+}
+
+export default function VisaBulletinTable({ index, releaseId, prevReleaseId, eb5Only }: Props) {
+  const [tip, setTip] = useState<{ x: number; y: number; node: ReactNode } | null>(null);
+
+  const rows = CATEGORY_ROWS.filter(
+    (r) =>
+      (!eb5Only || r.preference === 'EB5') &&
+      COUNTRY_ORDER.some(
+        (c) =>
+          index.has(cellKey(releaseId, r.preference, r.subcategory, c, 'FINAL_ACTION')) ||
+          index.has(cellKey(releaseId, r.preference, r.subcategory, c, 'FILING')),
+      ),
+  );
+
+  function tooltipFor(label: string, country: string, cell: CellData): ReactNode {
     return (
-      <span className={cls}>
-        {d > 0 ? '▲' : '▼'} {d > 0 ? '+' : ''}
-        {d}d
-      </span>
+      <div className="space-y-1">
+        <div className="font-semibold text-primary-content">
+          {label} - {COUNTRY_LABELS[country as keyof typeof COUNTRY_LABELS] ?? country}
+        </div>
+        <div className="grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5 text-primary-content/85">
+          <span className="text-primary-content/60">Final Action</span>
+          <span className="tabular-nums">
+            {statusLabel(cell.fad ?? { status: 'UNAVAILABLE', cutoff_date: null })}{' '}
+            <span className={movementClass(cell.fad, cell.prevFad)}>({movementText(cell.fad, cell.prevFad)})</span>
+          </span>
+          <span className="text-primary-content/60">Dates for Filing</span>
+          <span className="tabular-nums">
+            {cell.filing ? statusLabel(cell.filing) : '-'}{' '}
+            {cell.filing ? (
+              <span className={movementClass(cell.filing, cell.prevFiling)}>
+                ({movementText(cell.filing, cell.prevFiling)})
+              </span>
+            ) : null}
+          </span>
+        </div>
+      </div>
     );
   }
-  if (now === before) return <span className="text-neutral/40">no change</span>;
-  // Status transition (e.g. Current -> date, date -> Unavailable).
-  const toLabel = fad.status === 'CURRENT' ? 'Current' : fad.status === 'UNAVAILABLE' ? 'Unavail.' : 'dated';
-  return <span className="text-neutral/50">→ {toLabel}</span>;
-}
-
-/** Gap between Dates for Filing and Final Action for the same cell. */
-function FilingChip({
-  fad,
-  filing,
-}: {
-  fad: VisaBulletinDate | undefined;
-  filing: VisaBulletinDate | undefined;
-}) {
-  if (!filing) return null;
-  if (filing.status === 'CURRENT') return <span className="text-neutral/45">Filing: C</span>;
-  if (filing.status === 'UNAVAILABLE') return <span className="text-neutral/45">Filing: U</span>;
-  if (!fad || fad.status !== 'DATE') {
-    return <span className="text-neutral/45">Filing dated</span>;
-  }
-  const d = cutoffDeltaDays(fad.cutoff_date, filing.cutoff_date) ?? 0;
-  const months = Math.round(d / 30);
-  if (months === 0) return <span className="text-neutral/45">Filing = FA</span>;
-  return (
-    <span className="text-neutral/45">
-      Filing {months > 0 ? '+' : ''}
-      {months}mo
-    </span>
-  );
-}
-
-export default function VisaBulletinTable({ index, releaseId, prevReleaseId }: Props) {
-  // Only render rows that exist for this bulletin (pre-RIA lacks set-asides).
-  const rows = CATEGORY_ROWS.filter((r) =>
-    COUNTRY_ORDER.some(
-      (c) =>
-        index.has(cellKey(releaseId, r.preference, r.subcategory, c, 'FINAL_ACTION')) ||
-        index.has(cellKey(releaseId, r.preference, r.subcategory, c, 'FILING')),
-    ),
-  );
 
   return (
     <div className="overflow-x-auto">
@@ -115,21 +136,26 @@ export default function VisaBulletinTable({ index, releaseId, prevReleaseId }: P
                 {r.label}
               </th>
               {COUNTRY_ORDER.map((c) => {
-                const fad = index.get(cellKey(releaseId, r.preference, r.subcategory, c, 'FINAL_ACTION'));
-                const filing = index.get(cellKey(releaseId, r.preference, r.subcategory, c, 'FILING'));
-                const prevFad = prevReleaseId
-                  ? index.get(cellKey(prevReleaseId, r.preference, r.subcategory, c, 'FINAL_ACTION'))
-                  : undefined;
-                const primary = fad ?? filing;
+                const cell: CellData = {
+                  fad: index.get(cellKey(releaseId, r.preference, r.subcategory, c, 'FINAL_ACTION')),
+                  filing: index.get(cellKey(releaseId, r.preference, r.subcategory, c, 'FILING')),
+                  prevFad: prevReleaseId
+                    ? index.get(cellKey(prevReleaseId, r.preference, r.subcategory, c, 'FINAL_ACTION'))
+                    : undefined,
+                  prevFiling: prevReleaseId
+                    ? index.get(cellKey(prevReleaseId, r.preference, r.subcategory, c, 'FILING'))
+                    : undefined,
+                };
                 return (
-                  <td key={c} className="px-2 py-2 text-right tabular-nums">
-                    <div className="font-semibold text-primary">
-                      {primary ? statusLabel(primary) : '-'}
-                    </div>
-                    <div className="mt-0.5 flex flex-col items-end gap-0.5 text-[11px] leading-tight">
-                      <MovementChip fad={fad} prevFad={prevFad} />
-                      <FilingChip fad={fad} filing={filing} />
-                    </div>
+                  <td
+                    key={c}
+                    className="px-2 py-2 text-right tabular-nums"
+                    onMouseMove={(e) =>
+                      setTip({ x: e.clientX, y: e.clientY, node: tooltipFor(r.label, c, cell) })
+                    }
+                    onMouseLeave={() => setTip(null)}
+                  >
+                    <CellFace {...cell} />
                   </td>
                 );
               })}
@@ -137,6 +163,15 @@ export default function VisaBulletinTable({ index, releaseId, prevReleaseId }: P
           ))}
         </tbody>
       </table>
+
+      {tip ? (
+        <div
+          className="pointer-events-none fixed z-50 max-w-xs rounded-lg border border-primary-content/15 bg-neutral/95 px-3 py-2 text-xs shadow-nav backdrop-blur"
+          style={{ left: Math.min(tip.x + 14, (typeof window !== 'undefined' ? window.innerWidth : 9999) - 280), top: tip.y + 14 }}
+        >
+          {tip.node}
+        </div>
+      ) : null}
     </div>
   );
 }
