@@ -30,10 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: title,
     alternates: { canonical: url },
     icons: {
-      icon: [
-        { url: '/favicon-32.png', sizes: '32x32', type: 'image/png' },
-        { url: '/logo.png', type: 'image/png' },
-      ],
+      icon: [{ url: '/favicon-32.png', sizes: '32x32', type: 'image/png' }],
       apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
     },
     openGraph: {
