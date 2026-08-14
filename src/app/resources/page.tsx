@@ -48,7 +48,7 @@ function ResourceList({ items }: { items: ResourceLink[] }) {
             href={item.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1.5 sm:gap-4 px-3 py-3 sm:px-3.5 transition-colors hover:bg-base-100"
+            className="group flex flex-col gap-1 px-3 py-3 sm:px-3.5 transition-colors hover:bg-base-100"
           >
             <div className="min-w-0 space-y-0.5">
               <h3 className="text-sm font-semibold text-primary leading-snug group-hover:text-secondary transition-colors">
@@ -58,7 +58,7 @@ function ResourceList({ items }: { items: ResourceLink[] }) {
                 {item.body}
               </p>
             </div>
-            <span className="text-xs font-semibold text-secondary shrink-0 sm:pt-0.5 sm:text-right">
+            <span className="inline-flex items-center text-xs font-semibold text-secondary">
               {item.short}
               <span
                 aria-hidden
