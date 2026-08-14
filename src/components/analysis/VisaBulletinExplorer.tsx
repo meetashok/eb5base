@@ -251,7 +251,7 @@ export default function VisaBulletinExplorer({
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className={controlLabelClass}>Lead</span>
+                  <span className={controlLabelClass}>Primary date</span>
                   <div className={toggleGroupClass} role="group" aria-label="Primary date">
                     <button type="button" className={toggleBtnClass(tablePrimary === 'FINAL_ACTION')} onClick={() => setTablePrimary('FINAL_ACTION')}>
                       Final Action
