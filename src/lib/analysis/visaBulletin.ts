@@ -161,7 +161,6 @@ export const CATEGORY_ROWS: CategoryRow[] = [
   { preference: 'EB4', subcategory: 'MAIN', label: '4th (EB-4)' },
   { preference: 'EB4', subcategory: 'RELIGIOUS_WORKERS', label: 'Certain Religious Workers' },
   { preference: 'EB5', subcategory: 'UNRESERVED', label: '5th Unreserved', eb5: true },
-  { preference: 'EB5', subcategory: 'REGIONAL_CENTER', label: '5th Regional Center (pre-RIA)', eb5: true },
   { preference: 'EB5', subcategory: 'RURAL', label: '5th Set-Aside: Rural (20%)', eb5: true },
   { preference: 'EB5', subcategory: 'HIGH_UNEMPLOYMENT', label: '5th Set-Aside: High Unemployment (10%)', eb5: true },
   { preference: 'EB5', subcategory: 'INFRASTRUCTURE', label: '5th Set-Aside: Infrastructure (2%)', eb5: true },
