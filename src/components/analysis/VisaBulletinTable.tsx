@@ -53,6 +53,13 @@ interface CellData {
   prevFiling?: VisaBulletinDate;
 }
 
+/** Color the primary value: Current green, Unavailable grey, dates dark. */
+function statusColorClass(status: VisaBulletinDate['status'] | undefined): string {
+  if (status === 'CURRENT') return 'text-secondary';
+  if (status === 'UNAVAILABLE') return 'text-neutral/45';
+  return 'text-primary';
+}
+
 /** Compact in-cell display: filing date on top, final action as an offset. */
 function CellFace({ fad, filing }: CellData) {
   const primary = filing ?? fad;
@@ -65,7 +72,9 @@ function CellFace({ fad, filing }: CellData) {
   }
   return (
     <>
-      <div className="font-semibold text-primary">{primary ? statusLabel(primary) : '-'}</div>
+      <div className={`font-semibold ${statusColorClass(primary?.status)}`}>
+        {primary ? statusLabel(primary) : '-'}
+      </div>
       {secondary ? <div className="mt-0.5 text-[11px] leading-tight">{secondary}</div> : null}
     </>
   );
