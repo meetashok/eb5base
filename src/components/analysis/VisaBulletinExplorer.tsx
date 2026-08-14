@@ -354,7 +354,7 @@ export default function VisaBulletinExplorer({
                   >
                     {CATEGORY_ROWS.map((r) => (
                       <option key={`${r.preference}.${r.subcategory}`} value={`${r.preference}.${r.subcategory}`}>
-                        {r.label}
+                        {r.short}
                       </option>
                     ))}
                   </select>

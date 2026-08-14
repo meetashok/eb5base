@@ -148,22 +148,25 @@ export function statusLabel(row: Pick<VisaBulletinDate, 'status' | 'cutoff_date'
 export interface CategoryRow {
   preference: EbPreference;
   subcategory: string;
+  /** Descriptive label for the table. */
   label: string;
+  /** Compact label for the category dropdown. */
+  short: string;
   /** EB-5 rows get slight emphasis in the table. */
   eb5?: boolean;
 }
 
 export const CATEGORY_ROWS: CategoryRow[] = [
-  { preference: 'EB1', subcategory: 'MAIN', label: '1st (EB-1)' },
-  { preference: 'EB2', subcategory: 'MAIN', label: '2nd (EB-2)' },
-  { preference: 'EB3', subcategory: 'PROFESSIONAL_SKILLED', label: '3rd (EB-3)' },
-  { preference: 'EB3', subcategory: 'OTHER_WORKERS', label: 'Other Workers' },
-  { preference: 'EB4', subcategory: 'MAIN', label: '4th (EB-4)' },
-  { preference: 'EB4', subcategory: 'RELIGIOUS_WORKERS', label: 'Certain Religious Workers' },
-  { preference: 'EB5', subcategory: 'UNRESERVED', label: '5th Unreserved', eb5: true },
-  { preference: 'EB5', subcategory: 'RURAL', label: '5th Set-Aside: Rural (20%)', eb5: true },
-  { preference: 'EB5', subcategory: 'HIGH_UNEMPLOYMENT', label: '5th Set-Aside: High Unemployment (10%)', eb5: true },
-  { preference: 'EB5', subcategory: 'INFRASTRUCTURE', label: '5th Set-Aside: Infrastructure (2%)', eb5: true },
+  { preference: 'EB1', subcategory: 'MAIN', label: '1st (EB-1)', short: 'EB-1' },
+  { preference: 'EB2', subcategory: 'MAIN', label: '2nd (EB-2)', short: 'EB-2' },
+  { preference: 'EB3', subcategory: 'PROFESSIONAL_SKILLED', label: '3rd (EB-3)', short: 'EB-3' },
+  { preference: 'EB3', subcategory: 'OTHER_WORKERS', label: 'Other Workers', short: 'EB-3 Other Workers' },
+  { preference: 'EB4', subcategory: 'MAIN', label: '4th (EB-4)', short: 'EB-4' },
+  { preference: 'EB4', subcategory: 'RELIGIOUS_WORKERS', label: 'Certain Religious Workers', short: 'EB-4 Religious' },
+  { preference: 'EB5', subcategory: 'UNRESERVED', label: '5th Unreserved', short: 'EB-5 Unreserved', eb5: true },
+  { preference: 'EB5', subcategory: 'RURAL', label: '5th Set-Aside: Rural (20%)', short: 'EB-5 Rural (20%)', eb5: true },
+  { preference: 'EB5', subcategory: 'HIGH_UNEMPLOYMENT', label: '5th Set-Aside: High Unemployment (10%)', short: 'EB-5 HUA (10%)', eb5: true },
+  { preference: 'EB5', subcategory: 'INFRASTRUCTURE', label: '5th Set-Aside: Infrastructure (2%)', short: 'EB-5 Infrastructure (2%)', eb5: true },
 ];
 
 export const COUNTRY_ORDER: VbCountry[] = [
