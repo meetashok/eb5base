@@ -67,16 +67,18 @@ function SectionHeader({
   controls: ReactNode;
 }) {
   return (
-    <div className={chartHeaderRowClass}>
-      <div className="min-w-0 w-full space-y-1 sm:flex-1">
-        <h2 className="text-sm font-semibold leading-snug text-primary sm:text-base">{title}</h2>
-        <p className="text-sm leading-snug text-neutral/70">{subtitle}</p>
-        <div className="pt-0.5">{share}</div>
+    <header className="-mx-4 border-b-2 border-base-300 bg-base-200/50 px-4 py-3 first:-mt-4 first:rounded-t-[0.65rem] sm:-mx-5 sm:px-5 sm:py-3.5 sm:first:-mt-5">
+      <div className={chartHeaderRowClass}>
+        <div className="min-w-0 w-full space-y-1 sm:flex-1">
+          <h2 className="text-sm font-semibold leading-snug text-primary sm:text-base">{title}</h2>
+          <p className="text-sm leading-snug text-neutral/70">{subtitle}</p>
+          <div className="pt-0.5">{share}</div>
+        </div>
+        <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:items-end sm:gap-1.5">
+          {controls}
+        </div>
       </div>
-      <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:items-end sm:gap-1.5">
-        {controls}
-      </div>
-    </div>
+    </header>
   );
 }
 
@@ -227,7 +229,7 @@ export default function VisaBulletinExplorer({
           />
 
           {/* Month selector below the header */}
-          <div className="space-y-2 border-t border-base-200 pt-3">
+          <div className="space-y-2">
             <div className="flex items-center justify-center gap-2">
               <button
                 type="button"
