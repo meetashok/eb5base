@@ -37,6 +37,12 @@ const INVESTOR_COMMUNITIES: ResourceLink[] = [
     short: 'investornetworkcollective.org',
     body: 'Peer-driven EB-5 community (501(c)(3) nonprofit). Discord forums for investors and professionals, anonymized timeline tracking, and moderated discussion without sales pressure.',
   },
+  {
+    title: 'EB-5 Visa Group (Telegram)',
+    href: 'https://t.me/EB5VisaGroup',
+    short: 't.me/EB5VisaGroup',
+    body: 'Public Telegram community where EB-5 investors ask questions, share updates, and compare notes.',
+  },
 ];
 
 function ResourceList({ items }: { items: ResourceLink[] }) {
