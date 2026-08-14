@@ -4,6 +4,7 @@ import PageHero from '@/components/PageHero';
 import { BrandWordmark } from '@/components/Logo';
 import CaseTrackerWaitlistForm from '@/components/CaseTrackerWaitlistForm';
 import { createClient } from '@/lib/supabase-server';
+import { isPreviewAllowed } from '@/lib/tracker/preview';
 
 export const metadata = {
   title: 'Case Tracker',
@@ -62,15 +63,14 @@ export default async function TrackerLandingPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (user) {
+  // Allowlisted preview users skip the waitlist and go straight into the app.
+  if (user && isPreviewAllowed(user.email)) {
     const { data: profile } = await supabase
       .from('profiles')
       .select('onboarding_complete')
       .eq('id', user.id)
       .maybeSingle();
-    if (profile?.onboarding_complete) {
-      redirect('/tracker/timeline');
-    }
+    redirect(profile?.onboarding_complete ? '/tracker/timeline' : '/tracker/onboarding');
   }
 
   return (

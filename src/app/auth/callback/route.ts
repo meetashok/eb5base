@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { getSupabaseConfig, isSupabaseConfigured } from '@/lib/supabase-env';
 import { avatarFromAuthUser } from '@/lib/profile-avatar';
+import { PREVIEW_DENIED_MESSAGE, isPreviewAllowed } from '@/lib/tracker/preview';
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -59,6 +60,28 @@ export async function GET(request: Request) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // Private-preview gate: only allowlisted emails may hold a session while the
+  // Case Tracker is invite-only. Everyone else is signed back out immediately.
+  if (user && !isPreviewAllowed(user.email)) {
+    const denied = NextResponse.redirect(
+      buildUrl(`/login?error=${encodeURIComponent(PREVIEW_DENIED_MESSAGE)}`),
+    );
+    const signOutClient = createServerClient(url, key, {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            denied.cookies.set(name, value, options);
+          });
+        },
+      },
+    });
+    await signOutClient.auth.signOut();
+    return denied;
+  }
 
   if (user) {
     const avatar = avatarFromAuthUser(user);

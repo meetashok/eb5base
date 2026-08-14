@@ -1,10 +1,11 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import AuthBrandPanel from '@/components/AuthBrandPanel';
 import Logo, { BrandWordmark } from '@/components/Logo';
+import { createClient } from '@/lib/supabase';
 
 function GoogleIcon() {
   return (
@@ -32,6 +33,22 @@ function GoogleIcon() {
 function LoginForm() {
   const searchParams = useSearchParams();
   const urlError = searchParams.get('error');
+  const redirectParam = searchParams.get('redirect');
+  const nextPath =
+    redirectParam && redirectParam.startsWith('/') ? redirectParam : '/tracker/onboarding';
+  const [loading, setLoading] = useState(false);
+
+  async function signInWithGoogle() {
+    setLoading(true);
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`,
+      },
+    });
+    if (error) setLoading(false);
+  }
 
   return (
     <div className="flex min-h-[calc(100vh-8rem)]">
@@ -44,8 +61,8 @@ function LoginForm() {
               Sign in to <BrandWordmark variant="on-light" className="text-[1.05em]" />
             </h1>
             <p className="text-neutral/60 mt-2 leading-relaxed">
-              Sign-in is not necessary right now. You can use the NPRM guide, Status
-              Update, and other public tools without an account.
+              Sign in with Google to access the Case Tracker preview. The rest of EB5 Base
+              (NPRM guide, Status Update, analysis) stays free without an account.
             </p>
           </div>
 
@@ -53,31 +70,26 @@ function LoginForm() {
             <div className="card-body gap-4">
               {urlError ? <p className="text-error text-sm">{urlError}</p> : null}
 
-              <div
-                className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-950 leading-relaxed"
-                role="status"
-              >
-                Account sign-in is temporarily paused. Nothing on the public site requires
-                it today.
-              </div>
-
               <button
                 type="button"
-                className="btn btn-outline w-full gap-2 rounded-full opacity-60 cursor-not-allowed"
-                disabled
-                aria-disabled="true"
-                title="Sign-in is not available right now"
+                className="btn btn-outline w-full gap-2 rounded-full"
+                onClick={signInWithGoogle}
+                disabled={loading}
+                aria-busy={loading}
               >
                 <GoogleIcon />
-                Continue with Google
+                {loading ? 'Redirecting…' : 'Continue with Google'}
               </button>
 
               <p className="text-center text-sm text-neutral/60 leading-relaxed">
-                Google sign-in will return when account features reopen. Until then, browse
-                freely.
+                Case Tracker is in a private preview (invite-only). Not on the list yet?{' '}
+                <Link href="/tracker" className="link link-secondary">
+                  Join the waitlist
+                </Link>
+                .
               </p>
 
-              <Link href="/" className="btn btn-primary text-primary-content w-full rounded-full">
+              <Link href="/" className="btn btn-ghost w-full rounded-full">
                 Back to home
               </Link>
             </div>

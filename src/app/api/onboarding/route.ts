@@ -4,6 +4,7 @@ import { encryptCaseReceipt } from '@/lib/cases';
 import { isValidReceiptNumber } from '@/lib/receipt-validation';
 import { writeAuditLog } from '@/lib/audit';
 import { pollCases } from '@/lib/uscis/poller';
+import { isPreviewAllowed } from '@/lib/tracker/preview';
 import type { FormType, WomStatus } from '@/lib/types';
 import { DERIVATIVE_FORM_TYPES, PRIMARY_FORM_TYPES } from '@/lib/constants';
 
@@ -46,6 +47,14 @@ export async function POST(request: Request) {
 
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Private preview: only allowlisted emails may onboard while status is stubbed.
+  if (!isPreviewAllowed(user.email)) {
+    return NextResponse.json(
+      { error: 'Case Tracker is in a private preview.' },
+      { status: 403 },
+    );
   }
 
   let body: OnboardingBody;

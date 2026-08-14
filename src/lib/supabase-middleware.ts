@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { getSupabaseConfig, isSupabaseConfigured } from '@/lib/supabase-env';
+import { isPreviewAllowed } from '@/lib/tracker/preview';
 
 const AUTH_ONLY_PREFIXES = ['/profile/setup'];
 
@@ -158,6 +159,14 @@ export async function updateSession(request: NextRequest) {
 
   // Case Tracker app: gate on case-tracker onboarding, not directory profile setup.
   if (isTrackerAppPath(pathname)) {
+    // Private preview: non-allowlisted sessions never reach the tracker app.
+    if (!isPreviewAllowed(user.email)) {
+      const waitlistUrl = request.nextUrl.clone();
+      waitlistUrl.pathname = '/tracker';
+      waitlistUrl.search = '';
+      return NextResponse.redirect(waitlistUrl);
+    }
+
     const { data: profile } = await supabase
       .from('profiles')
       .select('onboarding_complete')
