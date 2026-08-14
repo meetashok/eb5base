@@ -169,7 +169,7 @@ export default function Navbar() {
   const analysisMenu = (
     <div
       ref={analysisDropdownRef}
-      className="relative inline-block py-1.5"
+      className="relative inline-block"
       onMouseEnter={openAnalysis}
       onMouseLeave={scheduleCloseAnalysis}
     >
