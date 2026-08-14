@@ -1,3 +1,26 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript"]
+  "extends": ["next/core-web-vitals", "next/typescript"],
+  "overrides": [
+    {
+      "files": ["src/components/analysis/**/*.tsx"],
+      "excludedFiles": ["src/components/analysis/chart-kit/**"],
+      "rules": {
+        "no-restricted-syntax": [
+          "warn",
+          {
+            "selector": "Literal[value=/rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden/]",
+            "message": "Use <ChartCard> from chart-kit instead of inlining the chart-card class string."
+          },
+          {
+            "selector": "Literal[value=/inline-flex max-w-full flex-wrap rounded-full border border-base-300 p-0.5 bg-base-200/]",
+            "message": "Use <ToggleGroup> from chart-kit instead of inlining the toggle-group class string."
+          },
+          {
+            "selector": "Literal[value=/border-b-2 border-base-300 bg-base-200/]",
+            "message": "Use <ChartHeader>/<ChartHeaderBar> from chart-kit instead of inlining the header-bar class string."
+          }
+        ]
+      }
+    }
+  ]
 }

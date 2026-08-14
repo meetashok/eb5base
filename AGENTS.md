@@ -22,3 +22,23 @@
     lives at the top of the collapsible `HowToReadCard` (passed via `suppressedCells`).
   - Dataset-specific "how to read" bullets are passed as `children` to `HowToReadCard`.
   - Keep new chart footers on this shared component for consistency.
+
+### Analysis chart kit (use it, don't re-derive chrome)
+- All analysis chart chrome is centralized so new charts inherit consistency by
+  construction. Do NOT paste chart-card / header / toggle class strings inline.
+- `src/components/analysis/chart-kit/` (import from the barrel `@/components/analysis/chart-kit`):
+  - `ChartCard` - the standard bordered chart/section card.
+  - `ChartHeader` - tinted header bar with `title` + `subtitle` (or `metric`/`metricNote`),
+    an `action` slot (share button), and a `controls` slot. `ChartHeaderBar` /
+    `ChartTitleBlock` / `ChartHeaderControls` are exported for manual composition.
+  - `ToggleGroup` (segmented pill toggle) + `ControlLabel`. Values must be strings.
+  - Class tokens (`chartCardClass`, `toggleBtnClass`, etc.) for the rare manual case.
+- Share: use `AnalysisShareButton` (or the thin per-dataset wrappers). Server side,
+  build routes/stores with `createShareRoute` / `createShareStore` and the shared
+  `generateShareId`/`isValidShareId` in `src/lib/analysis/shareId.ts`. Don't re-implement.
+- Multi-series chart internals live in `src/components/charts/`: `useElementWidth`,
+  `useSeriesLegend`, `ChartLegend`, `ChartHoverReadout`. Reuse these for new charts.
+- Typography tokens in `globals.css`: `.section-title`, `.eyebrow`, `.control-label`,
+  `.body-text`, `.body-muted` (alongside `.page-hero-*`). Prefer them over ad-hoc combos.
+- ESLint (`.eslintrc.json`) warns in `src/components/analysis/**` if the chart-card /
+  header-bar / toggle-group class strings are inlined - switch to the kit instead.

@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { BarChart, DiffBarChart, LineChart, MultiSeriesLineChart, formatSignedCount, seriesColor } from '@/components/charts';
 import { ChartFooter, HowToReadCard } from '@/components/analysis/ChartFooter';
 import {
