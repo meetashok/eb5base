@@ -2,6 +2,11 @@
 
 ## Cursor Cloud specific instructions
 
+### Branch & PR workflow
+- Keep ALL changes on the current working branch. Do NOT create a new branch per
+  change/fix. Only create a new branch when the maintainer explicitly asks for one
+  (e.g. "start a new branch"). Multiple unrelated fixes on one branch/PR is expected.
+
 ### Testing preferences
 - Do NOT record screen-recording video demos of GUI changes. The maintainer prefers
   to test UI changes themselves in the browser and give feedback. Verify GUI work with
