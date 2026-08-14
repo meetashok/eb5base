@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { formatSignedCount, seriesColor } from '@/components/charts';
+import { formatSignedCount, seriesColor } from '@/lib/charts/theme';
 import { BarChart, DiffBarChart, LineChart, MultiSeriesLineChart } from '@/components/charts/lazy';
 import { ChartFooter, HowToReadCard } from '@/components/analysis/ChartFooter';
 import {

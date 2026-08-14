@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { seriesColor } from '@/components/charts';
+import { seriesColor } from '@/lib/charts/theme';
 import { ChartFooter, HowToReadCard } from '@/components/analysis/ChartFooter';
 import { ChartCard, ChartHeader, ControlLabel, ToggleGroup } from '@/components/analysis/chart-kit';
 import VisaBulletinShareButton from '@/components/analysis/VisaBulletinShareButton';

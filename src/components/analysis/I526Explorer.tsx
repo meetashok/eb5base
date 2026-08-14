@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import dynamic from 'next/dynamic';
-import { formatSignedCount, seriesColor } from '@/components/charts';
+import { formatSignedCount, seriesColor } from '@/lib/charts/theme';
 import { BarChart, LineChart, MultiSeriesLineChart } from '@/components/charts/lazy';
 import ChartSkeleton from '@/components/charts/ChartSkeleton';
 import DeferUntilVisible from '@/components/analysis/DeferUntilVisible';
