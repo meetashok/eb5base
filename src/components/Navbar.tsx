@@ -233,6 +233,21 @@ export default function Navbar() {
               </span>
             </Link>
           </li>
+          <li role="none">
+            <Link
+              href="/analysis/visa-bulletin"
+              role="menuitem"
+              onClick={closeAnalysisNow}
+              className="rounded-md !py-2 hover:!bg-primary-content/10 hover:!text-primary-content !text-primary-content focus:!bg-primary-content/10 focus:!outline-none"
+            >
+              <span className="flex flex-col gap-0.5">
+                <span className="font-semibold">Visa Bulletin</span>
+                <span className="text-xs text-primary-content/70 font-normal">
+                  Cut-off dates over time
+                </span>
+              </span>
+            </Link>
+          </li>
           <li
             role="separator"
             className="my-1 border-t border-primary-content/10 mx-1"

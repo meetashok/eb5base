@@ -110,3 +110,87 @@ export function cutoffDeltaDays(prev: string | null, next: string | null): numbe
   if (!prev || !next) return null;
   return dateToOrdinal(next) - dateToOrdinal(prev);
 }
+
+/** Years the cut-off is behind the bulletin month (backlog depth). */
+export function yearsBehind(bulletinMonth: string, cutoff: string): number {
+  return (dateToOrdinal(bulletinMonth) - dateToOrdinal(cutoff)) / 365.25;
+}
+
+const MONTH_ABBR = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+];
+
+/** "01 Dec 2016" style label for a cut-off date. */
+export function formatCutoff(iso: string): string {
+  const [y, m, d] = iso.split('-').map(Number);
+  return `${String(d).padStart(2, '0')} ${MONTH_ABBR[m - 1]} ${y}`;
+}
+
+/** "August 2026" style label for a bulletin month (first-of-month ISO). */
+export function formatBulletinMonth(iso: string): string {
+  const [y, m] = iso.split('-').map(Number);
+  const full = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+  ];
+  return `${full[m - 1]} ${y}`;
+}
+
+/** Cell display label for any status. */
+export function statusLabel(row: Pick<VisaBulletinDate, 'status' | 'cutoff_date'>): string {
+  if (row.status === 'CURRENT') return 'Current';
+  if (row.status === 'UNAVAILABLE') return 'Unavailable';
+  return row.cutoff_date ? formatCutoff(row.cutoff_date) : '-';
+}
+
+/** Rows of the employment table, in the order DOS publishes them. */
+export interface CategoryRow {
+  preference: EbPreference;
+  subcategory: string;
+  label: string;
+  /** EB-5 rows get slight emphasis in the table. */
+  eb5?: boolean;
+}
+
+export const CATEGORY_ROWS: CategoryRow[] = [
+  { preference: 'EB1', subcategory: 'MAIN', label: '1st (EB-1)' },
+  { preference: 'EB2', subcategory: 'MAIN', label: '2nd (EB-2)' },
+  { preference: 'EB3', subcategory: 'PROFESSIONAL_SKILLED', label: '3rd (EB-3)' },
+  { preference: 'EB3', subcategory: 'OTHER_WORKERS', label: 'Other Workers' },
+  { preference: 'EB4', subcategory: 'MAIN', label: '4th (EB-4)' },
+  { preference: 'EB4', subcategory: 'RELIGIOUS_WORKERS', label: 'Certain Religious Workers' },
+  { preference: 'EB5', subcategory: 'UNRESERVED', label: '5th Unreserved', eb5: true },
+  { preference: 'EB5', subcategory: 'REGIONAL_CENTER', label: '5th Regional Center (pre-RIA)', eb5: true },
+  { preference: 'EB5', subcategory: 'RURAL', label: '5th Set-Aside: Rural (20%)', eb5: true },
+  { preference: 'EB5', subcategory: 'HIGH_UNEMPLOYMENT', label: '5th Set-Aside: High Unemployment (10%)', eb5: true },
+  { preference: 'EB5', subcategory: 'INFRASTRUCTURE', label: '5th Set-Aside: Infrastructure (2%)', eb5: true },
+];
+
+export const COUNTRY_ORDER: VbCountry[] = [
+  'WORLDWIDE',
+  'CHINA',
+  'INDIA',
+  'MEXICO',
+  'PHILIPPINES',
+];
+
+/** O(1) lookup key for a single cut-off cell. */
+export function cellKey(
+  releaseId: number,
+  preference: string,
+  subcategory: string,
+  country: string,
+  dateType: string,
+): string {
+  return `${releaseId}|${preference}|${subcategory}|${country}|${dateType}`;
+}
+
+/** Index all rows for O(1) cell lookup by the composite key above. */
+export function indexDates(rows: VisaBulletinDate[]): Map<string, VisaBulletinDate> {
+  const map = new Map<string, VisaBulletinDate>();
+  for (const r of rows) {
+    map.set(cellKey(r.release_id, r.preference, r.subcategory, r.country, r.date_type), r);
+  }
+  return map;
+}

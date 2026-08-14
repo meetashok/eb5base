@@ -22,6 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/analysis/i485/priority-date',
     '/analysis/i485/compare',
     '/analysis/i485/data',
+    '/analysis/visa-bulletin',
     '/tracker',
     '/case-tracker',
     '/about',

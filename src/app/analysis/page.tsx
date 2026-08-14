@@ -33,12 +33,12 @@ const DATASETS = [
     cta: 'Explore the filings',
   },
   {
-    href: null,
+    href: '/analysis/visa-bulletin',
     title: 'Visa Bulletin (EB-5)',
-    status: 'Planned',
-    live: false,
-    body: 'Monthly Final Action Dates and Dates for Filing over time, split into EB-5 Unreserved and the set-aside categories (Rural, High Unemployment, Infrastructure), by country of chargeability.',
-    cta: null,
+    status: 'Live',
+    live: true,
+    body: 'Monthly Final Action Dates and Dates for Filing over time, split into EB-5 Unreserved and the set-aside categories (Rural, High Unemployment, Infrastructure), by country of chargeability. 2015 to present.',
+    cta: 'Explore the bulletin',
   },
 ];
 
