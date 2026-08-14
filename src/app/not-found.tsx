@@ -13,7 +13,7 @@ export default function NotFound() {
               width={180}
               height={180}
               className="shrink-0 w-36 h-36 md:w-44 md:h-44 object-contain"
-              priority
+              sizes="(min-width: 768px) 176px, 144px"
             />
             <div className="text-center md:text-left flex-1 min-w-0">
               <p className="hero-eyebrow mb-3">404 · Page not found</p>

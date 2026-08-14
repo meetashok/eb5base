@@ -293,6 +293,7 @@ export default function Navbar() {
               showWordmark
               wordmarkVariant="on-dark"
               wordmarkClassName="text-xl sm:text-[1.35rem]"
+              priority
             />
             <span className="status-badge-on-dark border border-rose/40">Beta</span>
           </Link>

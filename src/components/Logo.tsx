@@ -11,6 +11,8 @@ type LogoProps = {
   wordmarkVariant?: WordmarkVariant;
   /** When true, clips the image to rounded corners (usually unnecessary - logo PNG is pre-rounded). */
   rounded?: boolean;
+  /** Preload the image (only the above-the-fold navbar instance should set this). */
+  priority?: boolean;
 };
 
 const wordmarkPartStyles: Record<WordmarkVariant, { eb5: string; base: string }> = {
@@ -47,6 +49,7 @@ export default function Logo({
   wordmarkClassName,
   wordmarkVariant = 'on-dark',
   rounded = false,
+  priority = false,
 }: LogoProps) {
   return (
     <span className={cn('inline-flex items-center gap-2.5', className)}>
@@ -56,7 +59,8 @@ export default function Logo({
         width={size}
         height={size}
         className={cn('shrink-0', rounded && 'rounded-lg')}
-        priority
+        priority={priority}
+        sizes={`${size}px`}
       />
       {showWordmark && (
         <BrandWordmark className={wordmarkClassName} variant={wordmarkVariant} />

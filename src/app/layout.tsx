@@ -107,7 +107,7 @@ export default function RootLayout({
         <Script
           data-goatcounter="https://eb5base.goatcounter.com/count"
           src="https://gc.zgo.at/count.js"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
       </body>
     </html>
