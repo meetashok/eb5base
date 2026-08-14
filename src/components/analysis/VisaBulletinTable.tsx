@@ -121,13 +121,28 @@ export default function VisaBulletinTable({ index, releaseId, prevReleaseId, eb5
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[640px] border-collapse text-sm">
+      <table className="w-full min-w-[640px] table-fixed border-collapse text-sm">
+        <colgroup>
+          <col style={{ width: '30%' }} />
+          {COUNTRY_ORDER.map((c) => (
+            <col key={c} style={{ width: '14%' }} />
+          ))}
+        </colgroup>
         <thead>
           <tr className="border-b-2 border-base-300 text-left">
             <th className="py-2 pr-3 font-semibold text-primary">Employment-based</th>
             {COUNTRY_ORDER.map((c) => (
               <th key={c} className="px-2 py-2 text-right font-semibold text-primary">
-                {COUNTRY_LABELS[c]}
+                {c === 'WORLDWIDE' ? (
+                  <abbr
+                    title="Rest of the World - all chargeability areas except those listed separately"
+                    className="cursor-help underline decoration-dotted decoration-neutral/40 underline-offset-2"
+                  >
+                    RoW
+                  </abbr>
+                ) : (
+                  COUNTRY_LABELS[c]
+                )}
               </th>
             ))}
           </tr>
