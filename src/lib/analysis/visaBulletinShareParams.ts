@@ -13,6 +13,10 @@ export interface VisaBulletinSharePayload {
   dt: VbDateType;
   y: 'date' | 'years';
   sc: 'eb5' | 'all';
+  /** Table: which date leads each cell. */
+  tp: VbDateType;
+  /** Table: show the "change vs last bulletin" line. */
+  ch: boolean;
 }
 
 const CAT_RE = /^EB[1-5]\.[A-Z_]+$/;
@@ -24,8 +28,10 @@ export function parseSharePayload(body: unknown): VisaBulletinSharePayload | nul
   const dt: VbDateType = o.dt === 'FILING' ? 'FILING' : 'FINAL_ACTION';
   const y = o.y === 'date' ? 'date' : 'years';
   const sc = o.sc === 'all' ? 'all' : 'eb5';
+  const tp: VbDateType = o.tp === 'FINAL_ACTION' ? 'FINAL_ACTION' : 'FILING';
+  const ch = o.ch !== false;
   const m = typeof o.m === 'string' && /^\d{4}-\d{2}$/.test(o.m) ? o.m : undefined;
-  return { v: VB_SHARE_VERSION, ...(m ? { m } : {}), cat, dt, y, sc };
+  return { v: VB_SHARE_VERSION, ...(m ? { m } : {}), cat, dt, y, sc, tp, ch };
 }
 
 export function sharePayloadToSearchParams(p: VisaBulletinSharePayload): URLSearchParams {
@@ -35,6 +41,8 @@ export function sharePayloadToSearchParams(p: VisaBulletinSharePayload): URLSear
   params.set('dt', p.dt === 'FINAL_ACTION' ? 'fa' : 'dff');
   params.set('y', p.y);
   params.set('sc', p.sc);
+  params.set('tp', p.tp === 'FINAL_ACTION' ? 'fa' : 'dff');
+  params.set('ch', p.ch ? '1' : '0');
   return params;
 }
 
@@ -45,6 +53,8 @@ export function sharePayloadToSearchRecord(p: VisaBulletinSharePayload): Record<
     dt: p.dt === 'FINAL_ACTION' ? 'fa' : 'dff',
     y: p.y,
     sc: p.sc,
+    tp: p.tp === 'FINAL_ACTION' ? 'fa' : 'dff',
+    ch: p.ch ? '1' : '0',
   };
   if (p.m) rec.m = p.m;
   return rec;

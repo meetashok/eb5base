@@ -40,6 +40,8 @@ export default async function VisaBulletinExplorerPage({
   const dtParam = first(searchParams?.dt);
   const yParam = first(searchParams?.y);
   const scParam = first(searchParams?.sc);
+  const tpParam = first(searchParams?.tp);
+  const chParam = first(searchParams?.ch);
 
   return (
     <div>
@@ -65,6 +67,8 @@ export default async function VisaBulletinExplorerPage({
         initialDateType={dtParam === 'dff' ? 'FILING' : dtParam === 'fa' ? 'FINAL_ACTION' : undefined}
         initialYMode={yParam === 'date' || yParam === 'years' ? yParam : undefined}
         initialScope={scParam === 'eb5' || scParam === 'all' ? scParam : undefined}
+        initialTablePrimary={tpParam === 'fa' ? 'FINAL_ACTION' : tpParam === 'dff' ? 'FILING' : undefined}
+        initialShowChange={chParam === '0' ? false : chParam === '1' ? true : undefined}
       />
     </div>
   );

@@ -8,6 +8,7 @@ import {
   cellKey,
   cutoffDeltaDays,
   statusLabel,
+  type VbDateType,
   type VisaBulletinDate,
 } from '@/lib/analysis/visaBulletin';
 
@@ -16,6 +17,10 @@ interface Props {
   releaseId: number;
   prevReleaseId: number | null;
   eb5Only: boolean;
+  /** Which date leads each cell; the other is shown as an offset. */
+  primaryType: VbDateType;
+  /** Show the "change vs last bulletin" line. */
+  showChange: boolean;
 }
 
 /** Movement of a cut-off vs the previous bulletin, as text. */
@@ -72,27 +77,56 @@ function RowLabel({ label }: { label: string }) {
   );
 }
 
-/** Compact in-cell display: filing date on top, final action as an offset. */
-function CellFace({ fad, filing }: CellData) {
-  const primary = filing ?? fad;
-  let secondary: ReactNode = null;
-  if (filing?.status === 'DATE' && fad?.status === 'DATE') {
-    const months = Math.round((cutoffDeltaDays(filing.cutoff_date, fad.cutoff_date) ?? 0) / 30);
-    secondary = <span className="text-neutral/45">FA {months > 0 ? '+' : ''}{months}mo</span>;
-  } else if (fad && fad !== primary) {
-    secondary = <span className="text-neutral/45">FA: {statusLabel(fad)}</span>;
+/** Compact in-cell display: the chosen date leads, the other is an offset. */
+function CellFace({
+  cell,
+  primaryType,
+  showChange,
+}: {
+  cell: CellData;
+  primaryType: VbDateType;
+  showChange: boolean;
+}) {
+  const primary = primaryType === 'FILING' ? cell.filing ?? cell.fad : cell.fad ?? cell.filing;
+  const other = primaryType === 'FILING' ? cell.fad : cell.filing;
+  const prevPrimary = primaryType === 'FILING' ? cell.prevFiling : cell.prevFad;
+  const otherLabel = primaryType === 'FILING' ? 'FA' : 'Filing';
+
+  let offset: ReactNode = null;
+  if (primary?.status === 'DATE' && other?.status === 'DATE') {
+    const months = Math.round((cutoffDeltaDays(primary.cutoff_date, other.cutoff_date) ?? 0) / 30);
+    offset = (
+      <span className="text-neutral/45">
+        {otherLabel} {months > 0 ? '+' : ''}{months}mo
+      </span>
+    );
+  } else if (other && other !== primary) {
+    offset = <span className="text-neutral/45">{otherLabel}: {statusLabel(other)}</span>;
   }
+
   return (
     <>
       <div className={`font-semibold ${statusColorClass(primary?.status)}`}>
         {primary ? statusLabel(primary) : '-'}
       </div>
-      {secondary ? <div className="mt-0.5 text-[11px] leading-tight">{secondary}</div> : null}
+      {offset ? <div className="mt-0.5 text-[11px] leading-tight">{offset}</div> : null}
+      {showChange && primary ? (
+        <div className={`mt-0.5 text-[11px] leading-tight ${movementClass(primary, prevPrimary)}`}>
+          {movementText(primary, prevPrimary)}
+        </div>
+      ) : null}
     </>
   );
 }
 
-export default function VisaBulletinTable({ index, releaseId, prevReleaseId, eb5Only }: Props) {
+export default function VisaBulletinTable({
+  index,
+  releaseId,
+  prevReleaseId,
+  eb5Only,
+  primaryType,
+  showChange,
+}: Props) {
   const [tip, setTip] = useState<{ x: number; y: number; node: ReactNode } | null>(null);
 
   const rows = CATEGORY_ROWS.filter(
@@ -191,7 +225,7 @@ export default function VisaBulletinTable({ index, releaseId, prevReleaseId, eb5
                     }
                     onMouseLeave={() => setTip(null)}
                   >
-                    <CellFace {...cell} />
+                    <CellFace cell={cell} primaryType={primaryType} showChange={showChange} />
                   </td>
                 );
               })}

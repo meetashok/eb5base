@@ -91,6 +91,8 @@ export default function VisaBulletinExplorer({
   initialDateType,
   initialYMode,
   initialScope,
+  initialTablePrimary,
+  initialShowChange,
 }: {
   releases: VisaBulletinRelease[];
   dates: VisaBulletinDate[];
@@ -100,6 +102,8 @@ export default function VisaBulletinExplorer({
   initialDateType?: VbDateType;
   initialYMode?: 'date' | 'years';
   initialScope?: 'eb5' | 'all';
+  initialTablePrimary?: VbDateType;
+  initialShowChange?: boolean;
 }) {
   const pathname = usePathname();
   const index = useMemo(() => indexDates(dates), [dates]);
@@ -117,6 +121,8 @@ export default function VisaBulletinExplorer({
   const [dateType, setDateType] = useState<VbDateType>(initialDateType ?? 'FINAL_ACTION');
   const [yMode, setYMode] = useState<'date' | 'years'>(initialYMode ?? 'years');
   const [scope, setScope] = useState<'eb5' | 'all'>(initialScope ?? 'eb5');
+  const [tablePrimary, setTablePrimary] = useState<VbDateType>(initialTablePrimary ?? 'FILING');
+  const [showChange, setShowChange] = useState(initialShowChange ?? true);
   const [showHowToRead, setShowHowToRead] = useState(false);
 
   const selected = releases[selectedIdx];
@@ -132,9 +138,11 @@ export default function VisaBulletinExplorer({
     dt: dateType,
     y: yMode,
     sc: scope,
+    tp: tablePrimary,
+    ch: showChange,
   });
   const shareKey = selected
-    ? `${selected.bulletin_month.slice(0, 7)}|${categoryKey}|${dateType}|${yMode}|${scope}`
+    ? `${selected.bulletin_month.slice(0, 7)}|${categoryKey}|${dateType}|${yMode}|${scope}|${tablePrimary}|${showChange ? 1 : 0}`
     : '';
   const shareButton = <VisaBulletinShareButton buildPayload={buildPayload} shareKey={shareKey} />;
 
@@ -147,9 +155,11 @@ export default function VisaBulletinExplorer({
       dt: dateType === 'FINAL_ACTION' ? 'fa' : 'dff',
       y: yMode,
       sc: scope,
+      tp: tablePrimary === 'FINAL_ACTION' ? 'fa' : 'dff',
+      ch: showChange ? '1' : '0',
     });
     window.history.replaceState(null, '', `${pathname}?${params.toString()}`);
-  }, [pathname, selected, categoryKey, dateType, yMode, scope]);
+  }, [pathname, selected, categoryKey, dateType, yMode, scope, tablePrimary, showChange]);
 
   const xAxis: TrendXMeta[] = useMemo(
     () =>
@@ -223,20 +233,44 @@ export default function VisaBulletinExplorer({
         <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
           <SectionHeader
             title="Bulletin table"
-            subtitle="Dates for Filing, with Final Action shown as an offset and full detail on hover."
+            subtitle={`${tablePrimary === 'FILING' ? 'Dates for Filing' : 'Final Action Dates'}, with ${tablePrimary === 'FILING' ? 'Final Action' : 'Dates for Filing'} shown as an offset and full detail on hover.`}
             share={shareButton}
             controls={
-              <div className="flex items-center gap-1.5">
-                <span className={controlLabelClass}>Show</span>
-                <div className={toggleGroupClass} role="group" aria-label="Category scope">
-                  <button type="button" className={toggleBtnClass(scope === 'eb5')} onClick={() => setScope('eb5')}>
-                    EB-5 only
-                  </button>
-                  <button type="button" className={toggleBtnClass(scope === 'all')} onClick={() => setScope('all')}>
-                    All categories
-                  </button>
+              <>
+                <div className="flex items-center gap-1.5">
+                  <span className={controlLabelClass}>Show</span>
+                  <div className={toggleGroupClass} role="group" aria-label="Category scope">
+                    <button type="button" className={toggleBtnClass(scope === 'eb5')} onClick={() => setScope('eb5')}>
+                      EB-5 only
+                    </button>
+                    <button type="button" className={toggleBtnClass(scope === 'all')} onClick={() => setScope('all')}>
+                      All categories
+                    </button>
+                  </div>
                 </div>
-              </div>
+                <div className="flex items-center gap-1.5">
+                  <span className={controlLabelClass}>Lead</span>
+                  <div className={toggleGroupClass} role="group" aria-label="Primary date">
+                    <button type="button" className={toggleBtnClass(tablePrimary === 'FINAL_ACTION')} onClick={() => setTablePrimary('FINAL_ACTION')}>
+                      Final Action
+                    </button>
+                    <button type="button" className={toggleBtnClass(tablePrimary === 'FILING')} onClick={() => setTablePrimary('FILING')}>
+                      Filing
+                    </button>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className={controlLabelClass}>Change</span>
+                  <div className={toggleGroupClass} role="group" aria-label="Show change vs last bulletin">
+                    <button type="button" className={toggleBtnClass(showChange)} onClick={() => setShowChange(true)}>
+                      On
+                    </button>
+                    <button type="button" className={toggleBtnClass(!showChange)} onClick={() => setShowChange(false)}>
+                      Off
+                    </button>
+                  </div>
+                </div>
+              </>
             }
           />
 
@@ -285,6 +319,8 @@ export default function VisaBulletinExplorer({
             releaseId={selected.id}
             prevReleaseId={prev?.id ?? null}
             eb5Only={scope === 'eb5'}
+            primaryType={tablePrimary}
+            showChange={showChange}
           />
 
           <p className="text-xs text-neutral/70">
