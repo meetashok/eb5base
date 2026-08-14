@@ -46,7 +46,7 @@ export const EB5_SUBCATEGORY_LABELS: Record<string, string> = {
 };
 
 export const COUNTRY_LABELS: Record<VbCountry, string> = {
-  WORLDWIDE: 'Worldwide',
+  WORLDWIDE: 'Rest of the World',
   CHINA: 'China',
   INDIA: 'India',
   MEXICO: 'Mexico',
@@ -168,11 +168,11 @@ export const CATEGORY_ROWS: CategoryRow[] = [
 ];
 
 export const COUNTRY_ORDER: VbCountry[] = [
-  'WORLDWIDE',
   'CHINA',
   'INDIA',
   'MEXICO',
   'PHILIPPINES',
+  'WORLDWIDE',
 ];
 
 /** O(1) lookup key for a single cut-off cell. */
