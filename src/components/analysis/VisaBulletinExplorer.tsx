@@ -1,9 +1,10 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { seriesColor } from '@/components/charts';
 import { ChartFooter, HowToReadCard } from '@/components/analysis/ChartFooter';
+import { ChartCard, ChartHeader, ControlLabel, ToggleGroup } from '@/components/analysis/chart-kit';
 import VisaBulletinShareButton from '@/components/analysis/VisaBulletinShareButton';
 import type { VisaBulletinSharePayload } from '@/lib/analysis/visaBulletinShareParams';
 import VisaBulletinTable from '@/components/analysis/VisaBulletinTable';
@@ -42,47 +43,6 @@ function ordinalToMonthLabel(ord: number): string {
 }
 
 const DEFAULT_HIDDEN_COUNTRIES: VbCountry[] = ['MEXICO', 'PHILIPPINES'];
-
-const toggleGroupClass =
-  'inline-flex max-w-full flex-wrap rounded-full border border-base-300 p-0.5 bg-base-200/60 gap-0.5';
-function toggleBtnClass(active: boolean): string {
-  return [
-    'rounded-full border-0 min-h-0 h-7 px-2.5 text-xs font-semibold leading-none transition-colors sm:h-6 sm:px-2 sm:text-[10px]',
-    active ? 'bg-primary text-primary-content' : 'bg-transparent text-neutral hover:bg-base-300/70',
-  ].join(' ');
-}
-const controlLabelClass =
-  'text-[11px] font-semibold uppercase tracking-wide text-neutral/55 sm:text-[10px]';
-
-const chartHeaderRowClass =
-  'flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between';
-
-function SectionHeader({
-  title,
-  subtitle,
-  share,
-  controls,
-}: {
-  title: string;
-  subtitle: ReactNode;
-  share: ReactNode;
-  controls: ReactNode;
-}) {
-  return (
-    <header className="-mx-4 border-b-2 border-base-300 bg-base-200/50 px-4 py-3 first:-mt-4 first:rounded-t-[0.65rem] sm:-mx-5 sm:px-5 sm:py-3.5 sm:first:-mt-5">
-      <div className={chartHeaderRowClass}>
-        <div className="min-w-0 w-full space-y-1 sm:flex-1">
-          <h2 className="text-sm font-semibold leading-snug text-primary sm:text-base">{title}</h2>
-          <p className="text-sm leading-snug text-neutral/70">{subtitle}</p>
-          <div className="pt-0.5">{share}</div>
-        </div>
-        <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:items-end sm:gap-1.5">
-          {controls}
-        </div>
-      </div>
-    </header>
-  );
-}
 
 export default function VisaBulletinExplorer({
   releases,
@@ -232,15 +192,15 @@ export default function VisaBulletinExplorer({
     <>
       <div className="max-w-4xl mx-auto px-4 pt-6 sm:pt-8 space-y-5">
         {/* Section 1: time series */}
-        <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
-          <SectionHeader
+        <ChartCard>
+          <ChartHeader
             title="Cut-off dates over time"
             subtitle="Split by country - click to load below."
-            share={shareButton}
+            action={shareButton}
             controls={
               <>
-                <label className="flex items-center gap-1.5 text-xs">
-                  <span className={controlLabelClass}>Category</span>
+                <label className="flex flex-wrap items-center gap-2 text-xs sm:gap-1.5">
+                  <ControlLabel>Category</ControlLabel>
                   <select
                     className="select select-bordered select-xs"
                     value={categoryKey}
@@ -253,28 +213,26 @@ export default function VisaBulletinExplorer({
                     ))}
                   </select>
                 </label>
-                <div className="flex items-center gap-1.5">
-                  <span className={controlLabelClass}>Dates</span>
-                  <div className={toggleGroupClass} role="group" aria-label="Date type">
-                    <button type="button" className={toggleBtnClass(dateType === 'FINAL_ACTION')} onClick={() => setDateType('FINAL_ACTION')}>
-                      Final Action
-                    </button>
-                    <button type="button" className={toggleBtnClass(dateType === 'FILING')} onClick={() => setDateType('FILING')}>
-                      Filing
-                    </button>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className={controlLabelClass}>Y-axis</span>
-                  <div className={toggleGroupClass} role="group" aria-label="Y-axis mode">
-                    <button type="button" className={toggleBtnClass(yMode === 'years')} onClick={() => setYMode('years')}>
-                      Years behind
-                    </button>
-                    <button type="button" className={toggleBtnClass(yMode === 'date')} onClick={() => setYMode('date')}>
-                      Cut-off date
-                    </button>
-                  </div>
-                </div>
+                <ToggleGroup
+                  label="Dates"
+                  ariaLabel="Date type"
+                  value={dateType}
+                  onChange={setDateType}
+                  options={[
+                    { value: 'FINAL_ACTION', label: 'Final Action' },
+                    { value: 'FILING', label: 'Filing' },
+                  ]}
+                />
+                <ToggleGroup
+                  label="Y-axis"
+                  ariaLabel="Y-axis mode"
+                  value={yMode}
+                  onChange={setYMode}
+                  options={[
+                    { value: 'years', label: 'Years behind' },
+                    { value: 'date', label: 'Cut-off date' },
+                  ]}
+                />
               </>
             }
           />
@@ -300,49 +258,46 @@ export default function VisaBulletinExplorer({
             onToggleHowToRead={() => setShowHowToRead((v) => !v)}
             howToReadOpen={showHowToRead}
           />
-        </section>
+        </ChartCard>
 
         {/* Section 2: bulletin table */}
-        <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
-          <SectionHeader
+        <ChartCard>
+          <ChartHeader
             title="Cut-off dates by category and country"
             subtitle="One bulletin - hover any cell for detail."
-            share={shareButton}
+            action={shareButton}
             controls={
               <>
-                <div className="flex items-center gap-1.5">
-                  <span className={controlLabelClass}>Show</span>
-                  <div className={toggleGroupClass} role="group" aria-label="Category scope">
-                    <button type="button" className={toggleBtnClass(scope === 'eb5')} onClick={() => setScope('eb5')}>
-                      EB-5 only
-                    </button>
-                    <button type="button" className={toggleBtnClass(scope === 'all')} onClick={() => setScope('all')}>
-                      All categories
-                    </button>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className={controlLabelClass}>Primary date</span>
-                  <div className={toggleGroupClass} role="group" aria-label="Primary date">
-                    <button type="button" className={toggleBtnClass(tablePrimary === 'FINAL_ACTION')} onClick={() => setTablePrimary('FINAL_ACTION')}>
-                      Final Action
-                    </button>
-                    <button type="button" className={toggleBtnClass(tablePrimary === 'FILING')} onClick={() => setTablePrimary('FILING')}>
-                      Filing
-                    </button>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className={controlLabelClass}>Change vs last bulletin</span>
-                  <div className={toggleGroupClass} role="group" aria-label="Show change vs last bulletin">
-                    <button type="button" className={toggleBtnClass(showChange)} onClick={() => setShowChange(true)}>
-                      On
-                    </button>
-                    <button type="button" className={toggleBtnClass(!showChange)} onClick={() => setShowChange(false)}>
-                      Off
-                    </button>
-                  </div>
-                </div>
+                <ToggleGroup
+                  label="Show"
+                  ariaLabel="Category scope"
+                  value={scope}
+                  onChange={setScope}
+                  options={[
+                    { value: 'eb5', label: 'EB-5 only' },
+                    { value: 'all', label: 'All categories' },
+                  ]}
+                />
+                <ToggleGroup
+                  label="Primary date"
+                  ariaLabel="Primary date"
+                  value={tablePrimary}
+                  onChange={setTablePrimary}
+                  options={[
+                    { value: 'FINAL_ACTION', label: 'Final Action' },
+                    { value: 'FILING', label: 'Filing' },
+                  ]}
+                />
+                <ToggleGroup
+                  label="Change vs last bulletin"
+                  ariaLabel="Show change vs last bulletin"
+                  value={showChange ? 'on' : 'off'}
+                  onChange={(v) => setShowChange(v === 'on')}
+                  options={[
+                    { value: 'on', label: 'On' },
+                    { value: 'off', label: 'Off' },
+                  ]}
+                />
               </>
             }
           />
@@ -409,7 +364,7 @@ export default function VisaBulletinExplorer({
               View the official {formatBulletinMonth(selected.bulletin_month)} bulletin ↗
             </a>
           </p>
-        </section>
+        </ChartCard>
       </div>
 
       {showHowToRead ? (
