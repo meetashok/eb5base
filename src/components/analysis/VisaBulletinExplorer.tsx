@@ -234,8 +234,8 @@ export default function VisaBulletinExplorer({
         {/* Section 1: bulletin table */}
         <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
           <SectionHeader
-            title="Bulletin table"
-            subtitle={`${tablePrimary === 'FILING' ? 'Dates for Filing' : 'Final Action Dates'}, with ${tablePrimary === 'FILING' ? 'Final Action' : 'Dates for Filing'} shown as an offset and full detail on hover.`}
+            title="Cut-off dates by category and country"
+            subtitle={`One bulletin at a time - ${tablePrimary === 'FILING' ? 'Dates for Filing' : 'Final Action Dates'}, with ${tablePrimary === 'FILING' ? 'Final Action' : 'Dates for Filing'} shown as an offset and full detail on hover.`}
             share={shareButton}
             controls={
               <>
