@@ -12,6 +12,17 @@ import {
 } from '@/components/charts';
 import { filterChipClass } from '@/components/analysis/filterChipClass';
 import { ChartFooter, HowToReadCard } from '@/components/analysis/ChartFooter';
+import {
+  ChartHeaderBar as ChartHeader,
+  ChartHeaderControls,
+  ChartTitleBlock,
+  chartCardClass,
+  chartHeaderRowClass,
+  controlLabelClass as headerToggleLabelClass,
+  controlRowClass as headerToggleRowClass,
+  toggleBtnClass as headerToggleBtnClass,
+  toggleGroupClass as headerToggleGroupClass,
+} from '@/components/analysis/chart-kit';
 import I526ShareButton from '@/components/analysis/I526ShareButton';
 import I526RatioChart from '@/components/analysis/I526RatioChart';
 import {
@@ -135,80 +146,6 @@ function I526HowToReadBullets() {
         posted as of this build.
       </li>
     </>
-  );
-}
-
-function ChartHeader({ children }: { children: ReactNode }) {
-  return (
-    <header className="-mx-4 border-b-2 border-base-300 bg-base-200/50 px-4 py-3 first:-mt-4 first:rounded-t-[0.65rem] sm:-mx-5 sm:px-5 sm:py-3.5 sm:first:-mt-5">
-      {children}
-    </header>
-  );
-}
-
-function ChartHeaderControls({ children }: { children: ReactNode }) {
-  return (
-    <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:items-end sm:gap-1.5">
-      {children}
-    </div>
-  );
-}
-
-const headerToggleRowClass = 'flex flex-wrap items-center gap-2 sm:gap-1.5';
-const headerToggleLabelClass =
-  'text-[11px] font-semibold uppercase tracking-wide text-neutral/55 sm:text-[10px]';
-const headerToggleGroupClass =
-  'inline-flex max-w-full flex-wrap rounded-full border border-base-300 p-0.5 bg-base-200/60 gap-0.5';
-
-function headerToggleBtnClass(active: boolean, extra = ''): string {
-  return [
-    'rounded-full border-0 min-h-0 h-7 px-2.5 text-xs font-semibold leading-none transition-colors sm:h-6 sm:px-2 sm:text-[10px]',
-    active ? 'bg-primary text-primary-content' : 'bg-transparent text-neutral hover:bg-base-300/70',
-    extra,
-  ]
-    .filter(Boolean)
-    .join(' ');
-}
-
-const chartHeaderRowClass =
-  'flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between';
-
-function ChartTitleBlock({
-  title,
-  metric,
-  metricClassName = 'text-primary',
-  metricNote,
-  loading,
-  action,
-}: {
-  title: ReactNode;
-  metric?: ReactNode;
-  metricClassName?: string;
-  metricNote?: ReactNode;
-  loading?: boolean;
-  action?: ReactNode;
-}) {
-  return (
-    <div className="min-w-0 w-full space-y-1 sm:flex-1">
-      <h2 className="text-sm font-semibold leading-snug text-primary sm:text-base">
-        {title}
-        {loading ? (
-          <span className="ml-2 text-xs font-normal text-neutral/40">Updating…</span>
-        ) : null}
-      </h2>
-      {metric != null || metricNote != null ? (
-        <p className="text-sm leading-snug text-neutral/70">
-          {metric != null ? (
-            <span className={`font-semibold tabular-nums ${metricClassName}`}>{metric}</span>
-          ) : null}
-          {metric != null && metricNote != null ? (
-            <span className="text-neutral/45"> · </span>
-          ) : null}
-          {metricNote != null ? <span>{metricNote}</span> : null}
-        </p>
-      ) : null}
-      {action ? <div className="pt-0.5">{action}</div> : null}
-    </div>
   );
 }
 
@@ -867,11 +804,11 @@ export default function I526Explorer({
   function TrendView() {
     return (
       <Wrapper>
-        <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
+        <div className={chartCardClass}>
           {trendFilterRow}
         </div>
 
-        <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
+        <div className={chartCardClass}>
           <div className="space-y-4">
             <ChartHeader>
               <div className={chartHeaderRowClass}>
@@ -999,7 +936,7 @@ export default function I526Explorer({
           </div>
         </div>
 
-        <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
+        <div className={chartCardClass}>
           <div className="space-y-4">
             <ChartHeader>
               <div className={chartHeaderRowClass}>
@@ -1110,7 +1047,7 @@ export default function I526Explorer({
   function ThroughputView() {
     return (
       <Wrapper>
-        <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
+        <div className={chartCardClass}>
           <div className="space-y-3">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-wide text-neutral/55 mb-2">
@@ -1132,7 +1069,7 @@ export default function I526Explorer({
           </div>
         </div>
 
-        <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
+        <div className={chartCardClass}>
           <div className="space-y-4">
             <ChartHeader>
               <div className={chartHeaderRowClass}>

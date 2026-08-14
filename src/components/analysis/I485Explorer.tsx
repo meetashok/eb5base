@@ -4,6 +4,17 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { BarChart, DiffBarChart, LineChart, MultiSeriesLineChart, formatSignedCount, seriesColor } from '@/components/charts';
 import { ChartFooter, HowToReadCard } from '@/components/analysis/ChartFooter';
+import {
+  ChartHeaderBar as ChartHeader,
+  ChartHeaderControls,
+  ChartTitleBlock,
+  chartCardClass,
+  chartHeaderRowClass,
+  controlLabelClass as headerToggleLabelClass,
+  controlRowClass as headerToggleRowClass,
+  toggleBtnClass as headerToggleBtnClass,
+  toggleGroupClass as headerToggleGroupClass,
+} from '@/components/analysis/chart-kit';
 import I485ViewBar, { type I485ViewId } from '@/components/analysis/I485ViewBar';
 import I485CategoryPicker from '@/components/analysis/I485CategoryPicker';
 import I485CountryPicker from '@/components/analysis/I485CountryPicker';
@@ -117,84 +128,6 @@ function I485HowToReadBullets() {
         2025 snapshots were never published.
       </li>
     </>
-  );
-}
-
-function ChartHeader({ children }: { children: ReactNode }) {
-  return (
-    <header className="-mx-4 border-b-2 border-base-300 bg-base-200/50 px-4 py-3 first:-mt-4 first:rounded-t-[0.65rem] sm:-mx-5 sm:px-5 sm:py-3.5 sm:first:-mt-5">
-      {children}
-    </header>
-  );
-}
-
-/** Right-side header controls. Full-width on mobile; end-aligned beside the title on sm+. */
-function ChartHeaderControls({ children }: { children: ReactNode }) {
-  return (
-    <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:items-end sm:gap-1.5">
-      {children}
-    </div>
-  );
-}
-
-const headerToggleRowClass = 'flex flex-wrap items-center gap-2 sm:gap-1.5';
-const headerToggleLabelClass =
-  'text-[11px] font-semibold uppercase tracking-wide text-neutral/55 sm:text-[10px]';
-const headerToggleGroupClass =
-  'inline-flex max-w-full flex-wrap rounded-full border border-base-300 p-0.5 bg-base-200/60 gap-0.5';
-
-function headerToggleBtnClass(active: boolean, extra = ''): string {
-  return [
-    'rounded-full border-0 min-h-0 h-7 px-2.5 text-xs font-semibold leading-none transition-colors sm:h-6 sm:px-2 sm:text-[10px]',
-    active ? 'bg-primary text-primary-content' : 'bg-transparent text-neutral hover:bg-base-300/70',
-    extra,
-  ]
-    .filter(Boolean)
-    .join(' ');
-}
-
-/** Title + controls: stack on mobile so neither side squeezes the other. */
-const chartHeaderRowClass =
-  'flex flex-col items-stretch gap-3 sm:flex-row sm:items-start sm:justify-between';
-
-/** Chart card title + quieter metric line (number is support, not the headline). */
-function ChartTitleBlock({
-  title,
-  metric,
-  metricClassName = 'text-primary',
-  metricNote,
-  loading,
-  action,
-}: {
-  title: ReactNode;
-  metric?: ReactNode;
-  metricClassName?: string;
-  metricNote?: ReactNode;
-  loading?: boolean;
-  /** Compact action (e.g. Share) under the subtitle so it feels anchored. */
-  action?: ReactNode;
-}) {
-  return (
-    <div className="min-w-0 w-full space-y-1 sm:flex-1">
-      <h2 className="text-sm font-semibold leading-snug text-primary sm:text-base">
-        {title}
-        {loading ? (
-          <span className="ml-2 text-xs font-normal text-neutral/40">Updating…</span>
-        ) : null}
-      </h2>
-      {metric != null || metricNote != null ? (
-        <p className="text-sm leading-snug text-neutral/70">
-          {metric != null ? (
-            <span className={`font-semibold tabular-nums ${metricClassName}`}>{metric}</span>
-          ) : null}
-          {metric != null && metricNote != null ? (
-            <span className="text-neutral/45"> · </span>
-          ) : null}
-          {metricNote != null ? <span>{metricNote}</span> : null}
-        </p>
-      ) : null}
-      {action ? <div className="pt-0.5">{action}</div> : null}
-    </div>
   );
 }
 
@@ -1291,7 +1224,7 @@ export default function I485Explorer({
 
       <div className="max-w-4xl mx-auto px-4 pt-6 sm:pt-8 space-y-5">
       {/* Filters — contained so controls are anchored, not floating on the page surface */}
-      <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
+      <div className={chartCardClass}>
       {(view === 'snapshot' || view === 'compare') && (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {view === 'snapshot' && (
@@ -1378,7 +1311,7 @@ export default function I485Explorer({
       )}
 
       {/* Results */}
-      <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
+      <div className={chartCardClass}>
         {loading && !snapshotCells && view === 'snapshot' && (
           <p className="text-sm text-neutral/70">Loading inventory…</p>
         )}
