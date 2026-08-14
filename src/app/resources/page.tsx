@@ -12,7 +12,13 @@ type ResourceLink = {
   title: string;
   href: string;
   short: string;
-  body: string;
+  description: string;
+  /** Small outline pills shown above the title for quick scanning. */
+  tags: string[];
+  /** One short line under the link button (what/where it is). */
+  helper: string;
+  /** Used in the link's aria-label: "opens {destination} in a new tab". */
+  destination: string;
 };
 
 const COMMUNITY_FAQS: ResourceLink[] = [
@@ -20,13 +26,19 @@ const COMMUNITY_FAQS: ResourceLink[] = [
     title: 'EB-5 FAQs',
     href: 'https://bit.ly/EB5faqs',
     short: 'bit.ly/EB5faqs',
-    body: 'Frequently asked questions about the EB-5 immigrant investor program.',
+    description: 'Common questions about the EB-5 immigrant investor program.',
+    tags: ['Google Doc'],
+    helper: 'Community-maintained Google Doc.',
+    destination: 'a Google Doc',
   },
   {
     title: 'I-829 FAQs',
     href: 'https://bit.ly/829info',
     short: 'bit.ly/829info',
-    body: 'Frequently asked questions about the I-829 petition to remove conditions.',
+    description: 'Common questions about the I-829 petition to remove conditions.',
+    tags: ['Google Doc'],
+    helper: 'Community-maintained Google Doc.',
+    destination: 'a Google Doc',
   },
 ];
 
@@ -35,48 +47,84 @@ const INVESTOR_COMMUNITIES: ResourceLink[] = [
     title: 'Investor Network Collective',
     href: 'https://investornetworkcollective.org/',
     short: 'investornetworkcollective.org',
-    body: 'Peer-driven EB-5 community (501(c)(3) nonprofit). Discord forums for investors and professionals, anonymized timeline tracking, and moderated discussion without sales pressure.',
+    description:
+      'Peer-driven EB-5 community and 501(c)(3) nonprofit. Discord forums, anonymized timeline tracking, and moderated discussion without sales pressure.',
+    tags: ['Nonprofit', 'Discord'],
+    helper: 'Website with a Discord community.',
+    destination: 'the Investor Network Collective website',
   },
   {
     title: 'EB-5 Visa Group (Telegram)',
     href: 'https://t.me/EB5VisaGroup',
     short: 't.me/EB5VisaGroup',
-    body: 'Public Telegram community where EB-5 investors ask questions, share updates, and compare notes.',
+    description: 'Public Telegram group where investors ask questions and compare notes.',
+    tags: ['Public group'],
+    helper: 'Opens in Telegram.',
+    destination: 'the EB-5 Visa Group on Telegram',
   },
 ];
 
-function ResourceList({ items }: { items: ResourceLink[] }) {
+function ExternalLinkIcon() {
   return (
-    <ul className="rounded-lg border border-base-300 divide-y divide-base-300 overflow-hidden bg-base-200/30">
-      {items.map((item) => (
-        <li key={item.href}>
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      aria-hidden="true"
+      className="h-3.5 w-3.5 shrink-0"
+    >
+      <path
+        d="M11 3h6v6M17 3l-8 8M15 12v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h4"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function Pill({ label }: { label: string }) {
+  return (
+    <span className="inline-flex items-center rounded border border-base-300 bg-base-200/70 px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-widest text-neutral/60">
+      {label}
+    </span>
+  );
+}
+
+function ResourceItem({ item }: { item: ResourceLink }) {
+  return (
+    <li className="rounded-lg border border-base-300/70 bg-base-200/40 px-4 py-4 sm:px-5 sm:py-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+        <div className="min-w-0 space-y-1.5">
+          {item.tags.length > 0 && (
+            <div className="flex flex-wrap items-center gap-1.5">
+              {item.tags.map((tag) => (
+                <Pill key={tag} label={tag} />
+              ))}
+            </div>
+          )}
+          <h3 className="text-base font-semibold leading-snug text-primary">{item.title}</h3>
+          <p className="max-w-prose text-sm leading-relaxed text-neutral/80">{item.description}</p>
+        </div>
+
+        <div className="w-full shrink-0 space-y-1 sm:w-auto sm:text-right">
           <a
             href={item.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex flex-col gap-1 px-3 py-3 sm:px-3.5 transition-colors hover:bg-base-100"
+            aria-label={`${item.title}: opens ${item.destination} in a new tab`}
+            className="group inline-flex min-h-[44px] w-full items-center justify-center gap-1.5 rounded-md border border-base-300 bg-base-100 px-3 py-1.5 text-xs font-semibold text-secondary transition-colors hover:bg-base-100 hover:text-primary hover:underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 focus-visible:ring-offset-base-100 sm:w-auto sm:justify-start"
           >
-            <div className="min-w-0 space-y-0.5">
-              <h3 className="text-sm font-semibold text-primary leading-snug group-hover:text-secondary transition-colors">
-                {item.title}
-              </h3>
-              <p className="text-xs sm:text-sm text-neutral leading-relaxed">
-                {item.body}
-              </p>
-            </div>
-            <span className="inline-flex items-center text-xs font-semibold text-secondary">
-              {item.short}
-              <span
-                aria-hidden
-                className="ml-1 inline-block transition-transform group-hover:translate-x-0.5"
-              >
-                →
-              </span>
+            <span className="truncate">{item.short}</span>
+            <span aria-hidden className="transition-transform group-hover:translate-x-0.5">
+              →
             </span>
+            <ExternalLinkIcon />
           </a>
-        </li>
-      ))}
-    </ul>
+          <p className="text-[11px] leading-snug text-neutral/50">{item.helper}</p>
+        </div>
+      </div>
+    </li>
   );
 }
 
@@ -95,20 +143,24 @@ function ResourceSection({
 }) {
   return (
     <section
-      className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-soft space-y-3"
+      className="rounded-xl border-2 border-base-300 bg-base-100 p-4 shadow-soft sm:p-6"
       aria-labelledby={headingId}
     >
-      <header className="space-y-1">
-        <p className="page-hero-eyebrow mb-0">{eyebrow}</p>
+      <header className="mb-4 space-y-1">
+        <p className="page-hero-eyebrow mb-0 tracking-widest">{eyebrow}</p>
         <h2
           id={headingId}
-          className="text-base sm:text-lg font-bold text-primary leading-snug tracking-tight"
+          className="text-xl font-semibold leading-tight tracking-tight text-primary sm:text-2xl"
         >
           {title}
         </h2>
-        <p className="text-sm text-neutral leading-relaxed">{description}</p>
+        <p className="max-w-prose text-sm leading-relaxed text-neutral">{description}</p>
       </header>
-      <ResourceList items={items} />
+      <ul className="space-y-3">
+        {items.map((item) => (
+          <ResourceItem key={item.href} item={item} />
+        ))}
+      </ul>
     </section>
   );
 }
