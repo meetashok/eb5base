@@ -6,7 +6,8 @@ import { GridRows } from '@visx/grid';
 import { Group } from '@visx/group';
 import { scaleLinear, scalePoint } from '@visx/scale';
 import { LinePath } from '@visx/shape';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useElementWidth } from '@/components/charts/useElementWidth';
 import {
   chartColors,
   formatAxisCount,
@@ -65,26 +66,6 @@ export interface MultiSeriesLineChartProps {
 
 const margin = { top: 12, right: 12, bottom: 40, left: 40 };
 const nf = new Intl.NumberFormat('en-US');
-
-function useElementWidth<T extends HTMLElement>() {
-  const ref = useRef<T | null>(null);
-  const [width, setWidth] = useState(0);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const update = () => setWidth(el.clientWidth);
-    update();
-    const ro = new ResizeObserver((entries) => {
-      const entry = entries[0];
-      if (entry) setWidth(entry.contentRect.width);
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
-  return { ref, width };
-}
 
 export default function MultiSeriesLineChart({
   xAxis,

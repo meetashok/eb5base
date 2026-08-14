@@ -6,9 +6,13 @@ import { GridRows } from '@visx/grid';
 import { Group } from '@visx/group';
 import { scaleLinear, scalePoint } from '@visx/scale';
 import { LinePath } from '@visx/shape';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { chartColors } from '@/lib/charts/theme';
 import ChartXAxisLabel from '@/components/charts/ChartXAxisLabel';
+import ChartLegend from '@/components/charts/ChartLegend';
+import ChartHoverReadout, { type HoverRow } from '@/components/charts/ChartHoverReadout';
+import { useElementWidth } from '@/components/charts/useElementWidth';
+import { useSeriesLegend } from '@/components/charts/useSeriesLegend';
 
 export interface TrendXMeta {
   key: string;
@@ -56,23 +60,6 @@ export interface VisaBulletinTrendChartProps {
 const margin = { top: 12, right: 16, bottom: 40, left: 68 };
 const SELECT_COLOR = '#2d5a47'; // secondary
 
-function useElementWidth<T extends HTMLElement>() {
-  const ref = useRef<T | null>(null);
-  const [width, setWidth] = useState(0);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    setWidth(el.clientWidth);
-    const ro = new ResizeObserver((entries) => {
-      const entry = entries[0];
-      if (entry) setWidth(entry.contentRect.width);
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-  return { ref, width };
-}
-
 /** ~6 evenly spaced tick values across [min, max]. */
 function linearTicks(min: number, max: number, count = 6): number[] {
   if (max <= min) return [min];
@@ -97,18 +84,10 @@ export default function VisaBulletinTrendChart({
 }: VisaBulletinTrendChartProps) {
   const { ref, width } = useElementWidth<HTMLDivElement>();
   const [hoverKey, setHoverKey] = useState<string | null>(null);
-  const [focusKey, setFocusKey] = useState<string | null>(null);
-  const initialHiddenSig = (initialHiddenKeys ?? []).join('|');
-  const [hiddenKeys, setHiddenKeys] = useState<Set<string>>(
-    () => new Set(initialHiddenKeys ?? []),
+  const { hiddenKeys, focusKey, setFocusKey, toggleSeries, emphasis } = useSeriesLegend(
+    series.map((s) => s.key),
+    initialHiddenKeys ?? [],
   );
-
-  const seriesKeySig = series.map((s) => s.key).join('|');
-  useEffect(() => {
-    setHiddenKeys(new Set(initialHiddenKeys ?? []));
-    setFocusKey(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [seriesKeySig, initialHiddenSig]);
 
   const visible = useMemo(
     () => series.filter((s) => !hiddenKeys.has(s.key)),
@@ -118,25 +97,6 @@ export default function VisaBulletinTrendChart({
     if (!focusKey) return visible;
     return [...visible].sort((a, b) => (a.key === focusKey ? 1 : b.key === focusKey ? -1 : 0));
   }, [visible, focusKey]);
-
-  function toggleSeries(key: string) {
-    setHiddenKeys((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) {
-        next.delete(key);
-        return next;
-      }
-      if (series.length - next.size <= 1) return prev; // keep >= 1 visible
-      next.add(key);
-      return next;
-    });
-  }
-
-  function seriesEmphasis(key: string): { strokeWidth: number; opacity: number } {
-    if (!focusKey) return { strokeWidth: 2.25, opacity: 1 };
-    if (focusKey === key) return { strokeWidth: 3.25, opacity: 1 };
-    return { strokeWidth: 1.5, opacity: 0.25 };
-  }
 
   const [domainMin, domainMax] = useMemo(() => {
     const vals = visible.flatMap((s) => s.data.filter((v): v is number => v != null));
@@ -179,80 +139,30 @@ export default function VisaBulletinTrendChart({
   const hoverIdx = hoverKey ? xAxis.findIndex((d) => d.key === hoverKey) : -1;
   const ready = width >= 10 && xAxis.length > 0 && series.length > 0;
 
+  const hoverRows: HoverRow[] = hoverMeta
+    ? (visible
+        .map((s) => {
+          const v = hoverIdx >= 0 ? s.data[hoverIdx] : null;
+          const st = hoverIdx >= 0 ? s.statusText?.[hoverIdx] : null;
+          if (v == null && !st) return null;
+          return { key: s.key, color: s.color, label: s.label, value: st ?? formatY(v as number) };
+        })
+        .filter(Boolean) as HoverRow[])
+    : [];
+
   return (
     <div className="w-full space-y-2" onMouseLeave={() => setHoverKey(null)}>
-      <div
-        className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs"
-        role="group"
-        aria-label="Toggle country series"
-        onMouseLeave={() => setFocusKey(null)}
-      >
-        {series.map((s) => {
-          const on = !hiddenKeys.has(s.key);
-          const focused = focusKey === s.key;
-          return (
-            <button
-              key={s.key}
-              type="button"
-              className={`inline-flex items-center gap-1.5 rounded-md px-1.5 py-0.5 transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary ${
-                on ? (focused ? 'bg-base-200 text-primary' : 'text-neutral/80') : 'text-neutral/35'
-              }`}
-              aria-pressed={on}
-              title={on ? `Hide ${s.label}` : `Show ${s.label}`}
-              onClick={() => {
-                toggleSeries(s.key);
-                setFocusKey(null);
-              }}
-              onMouseEnter={() => {
-                if (on) setFocusKey(s.key);
-              }}
-              onFocus={() => {
-                if (on) setFocusKey(s.key);
-              }}
-              onBlur={() => {
-                if (focusKey === s.key) setFocusKey(null);
-              }}
-            >
-              <span
-                className="inline-block w-4"
-                style={{ borderTop: `2px solid ${on ? s.color : '#c4bdb2'}` }}
-                aria-hidden
-              />
-              <span className={on ? undefined : 'line-through'}>{s.label}</span>
-            </button>
-          );
-        })}
-      </div>
+      <ChartLegend
+        series={series.map((s) => ({ key: s.key, label: s.label, color: s.color }))}
+        hiddenKeys={hiddenKeys}
+        focusKey={focusKey}
+        onToggle={toggleSeries}
+        onFocus={setFocusKey}
+        ariaLabel="Toggle country series"
+      />
 
       <div className="relative w-full pt-12">
-        <div
-          className="pointer-events-none absolute inset-x-0 top-0 z-10 h-11 overflow-hidden text-xs font-semibold text-neutral"
-          aria-live="polite"
-        >
-          {hoverMeta ? (
-            <div className="ml-auto max-w-full space-y-0.5 text-right">
-              <div className="truncate font-medium text-neutral/55">{hoverMeta.label}</div>
-              <div className="flex flex-wrap justify-end gap-x-3 gap-y-0.5 tabular-nums text-primary">
-                {visible.map((s) => {
-                  const v = hoverIdx >= 0 ? s.data[hoverIdx] : null;
-                  const st = hoverIdx >= 0 ? s.statusText?.[hoverIdx] : null;
-                  if (v == null && !st) return null;
-                  return (
-                    <span key={s.key} className="inline-flex items-center gap-1">
-                      <span
-                        className="inline-block h-1.5 w-1.5 rounded-full"
-                        style={{ backgroundColor: s.color }}
-                        aria-hidden
-                      />
-                      <span className="font-medium text-neutral/55">{s.label}</span>{' '}
-                      {st ?? formatY(v as number)}
-                    </span>
-                  );
-                })}
-              </div>
-            </div>
-          ) : null}
-        </div>
+        <ChartHoverReadout metaLabel={hoverMeta?.label} rows={hoverRows} />
 
         <div ref={ref} className="w-full">
           {!ready ? (
@@ -316,7 +226,7 @@ export default function VisaBulletinTrendChart({
 
                 {drawOrder.map((s) => {
                   const pts = xAxis.map((x, i) => ({ key: x.key, value: s.data[i] ?? null }));
-                  const { strokeWidth, opacity } = seriesEmphasis(s.key);
+                  const { strokeWidth, opacity } = emphasis(s.key);
                   return (
                     <LinePath
                       key={s.key}

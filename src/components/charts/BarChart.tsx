@@ -5,7 +5,8 @@ import { GridRows } from '@visx/grid';
 import { Group } from '@visx/group';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { Bar } from '@visx/shape';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useElementWidth } from '@/components/charts/useElementWidth';
 import { chartColors, formatAxisCount, niceTicks } from '@/lib/charts/theme';
 import ChartXAxisLabel from '@/components/charts/ChartXAxisLabel';
 
@@ -37,28 +38,6 @@ export interface BarChartProps {
 }
 
 const margin = { top: 8, right: 12, bottom: 40, left: 40 };
-
-function useElementWidth<T extends HTMLElement>() {
-  const ref = useRef<T | null>(null);
-  const [width, setWidth] = useState(0);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const update = () => setWidth(el.clientWidth);
-    update();
-
-    const ro = new ResizeObserver((entries) => {
-      const entry = entries[0];
-      if (entry) setWidth(entry.contentRect.width);
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
-  return { ref, width };
-}
 
 export default function BarChart({
   data,
