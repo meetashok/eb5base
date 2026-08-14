@@ -1,0 +1,38 @@
+name: Visa Bulletin refresh
+
+# The DOS Visa Bulletin publishes once per month (next month's bulletin drops
+# ~mid-current-month). This job polls daily but is self-gating: ingest.mjs
+# --latest skips any bulletin month already stored, so once the new bulletin is
+# captured every subsequent daily run is a cheap no-op until the next one drops.
+# Writes straight to Supabase (no repo commits).
+
+on:
+  schedule:
+    - cron: '0 16 * * *' # ~09:00 America/Los_Angeles
+  workflow_dispatch: {}
+
+concurrency:
+  group: visa-bulletin-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm ci
+
+      - name: Ingest latest bulletin (self-gating)
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          # Primary: official travel.state.gov. Fallback: cached mirror (in case
+          # the runner IP is Cloudflare-blocked). Both are self-gating + idempotent.
+          node scripts/visa-bulletin/ingest.mjs --latest --source live || true
+          node scripts/visa-bulletin/ingest.mjs --latest --source mirror || true
