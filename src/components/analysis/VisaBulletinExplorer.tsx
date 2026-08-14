@@ -231,7 +231,78 @@ export default function VisaBulletinExplorer({
   return (
     <>
       <div className="max-w-4xl mx-auto px-4 pt-6 sm:pt-8 space-y-5">
-        {/* Section 1: bulletin table */}
+        {/* Section 1: time series */}
+        <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
+          <SectionHeader
+            title="Cut-off dates over time"
+            subtitle="Split by country - click to load below."
+            share={shareButton}
+            controls={
+              <>
+                <label className="flex items-center gap-1.5 text-xs">
+                  <span className={controlLabelClass}>Category</span>
+                  <select
+                    className="select select-bordered select-xs"
+                    value={categoryKey}
+                    onChange={(e) => setCategoryKey(e.target.value)}
+                  >
+                    {CATEGORY_ROWS.map((r) => (
+                      <option key={`${r.preference}.${r.subcategory}`} value={`${r.preference}.${r.subcategory}`}>
+                        {r.short}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <div className="flex items-center gap-1.5">
+                  <span className={controlLabelClass}>Dates</span>
+                  <div className={toggleGroupClass} role="group" aria-label="Date type">
+                    <button type="button" className={toggleBtnClass(dateType === 'FINAL_ACTION')} onClick={() => setDateType('FINAL_ACTION')}>
+                      Final Action
+                    </button>
+                    <button type="button" className={toggleBtnClass(dateType === 'FILING')} onClick={() => setDateType('FILING')}>
+                      Filing
+                    </button>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className={controlLabelClass}>Y-axis</span>
+                  <div className={toggleGroupClass} role="group" aria-label="Y-axis mode">
+                    <button type="button" className={toggleBtnClass(yMode === 'years')} onClick={() => setYMode('years')}>
+                      Years behind
+                    </button>
+                    <button type="button" className={toggleBtnClass(yMode === 'date')} onClick={() => setYMode('date')}>
+                      Cut-off date
+                    </button>
+                  </div>
+                </div>
+              </>
+            }
+          />
+
+          <VisaBulletinTrendChart
+            xAxis={xAxis}
+            series={series}
+            formatY={formatY}
+            yMin={yMode === 'years' ? 0 : undefined}
+            invertY={yMode === 'date'}
+            selectedKey={String(selected.id)}
+            onSelectX={(key) => {
+              const idx = releases.findIndex((r) => String(r.id) === key);
+              if (idx >= 0) setSelectedIdx(idx);
+            }}
+            initialHiddenKeys={DEFAULT_HIDDEN_COUNTRIES}
+            xAxisLabel="Bulletin month"
+            ariaLabel={`${categoryLabel} cut-off dates by country over time`}
+          />
+
+          <ChartFooter
+            sourceHref={selected.source_url}
+            onToggleHowToRead={() => setShowHowToRead((v) => !v)}
+            howToReadOpen={showHowToRead}
+          />
+        </section>
+
+        {/* Section 2: bulletin table */}
         <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
           <SectionHeader
             title="Cut-off dates by category and country"
@@ -338,77 +409,6 @@ export default function VisaBulletinExplorer({
               View the official {formatBulletinMonth(selected.bulletin_month)} bulletin ↗
             </a>
           </p>
-        </section>
-
-        {/* Section 2: time series */}
-        <section className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 shadow-sm space-y-4 overflow-x-hidden">
-          <SectionHeader
-            title="Cut-off dates over time"
-            subtitle="By country over time - click to select."
-            share={shareButton}
-            controls={
-              <>
-                <label className="flex items-center gap-1.5 text-xs">
-                  <span className={controlLabelClass}>Category</span>
-                  <select
-                    className="select select-bordered select-xs"
-                    value={categoryKey}
-                    onChange={(e) => setCategoryKey(e.target.value)}
-                  >
-                    {CATEGORY_ROWS.map((r) => (
-                      <option key={`${r.preference}.${r.subcategory}`} value={`${r.preference}.${r.subcategory}`}>
-                        {r.short}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <div className="flex items-center gap-1.5">
-                  <span className={controlLabelClass}>Dates</span>
-                  <div className={toggleGroupClass} role="group" aria-label="Date type">
-                    <button type="button" className={toggleBtnClass(dateType === 'FINAL_ACTION')} onClick={() => setDateType('FINAL_ACTION')}>
-                      Final Action
-                    </button>
-                    <button type="button" className={toggleBtnClass(dateType === 'FILING')} onClick={() => setDateType('FILING')}>
-                      Filing
-                    </button>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className={controlLabelClass}>Y-axis</span>
-                  <div className={toggleGroupClass} role="group" aria-label="Y-axis mode">
-                    <button type="button" className={toggleBtnClass(yMode === 'years')} onClick={() => setYMode('years')}>
-                      Years behind
-                    </button>
-                    <button type="button" className={toggleBtnClass(yMode === 'date')} onClick={() => setYMode('date')}>
-                      Cut-off date
-                    </button>
-                  </div>
-                </div>
-              </>
-            }
-          />
-
-          <VisaBulletinTrendChart
-            xAxis={xAxis}
-            series={series}
-            formatY={formatY}
-            yMin={yMode === 'years' ? 0 : undefined}
-            invertY={yMode === 'date'}
-            selectedKey={String(selected.id)}
-            onSelectX={(key) => {
-              const idx = releases.findIndex((r) => String(r.id) === key);
-              if (idx >= 0) setSelectedIdx(idx);
-            }}
-            initialHiddenKeys={DEFAULT_HIDDEN_COUNTRIES}
-            xAxisLabel="Bulletin month"
-            ariaLabel={`${categoryLabel} cut-off dates by country over time`}
-          />
-
-          <ChartFooter
-            sourceHref={selected.source_url}
-            onToggleHowToRead={() => setShowHowToRead((v) => !v)}
-            howToReadOpen={showHowToRead}
-          />
         </section>
       </div>
 
