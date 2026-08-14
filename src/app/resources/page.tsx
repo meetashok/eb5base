@@ -135,10 +135,10 @@ function ResourceSection({
       aria-labelledby={headingId}
     >
       <header className="mb-2.5">
-        <p className="page-hero-eyebrow mb-0 tracking-widest">{eyebrow}</p>
+        <p className="page-hero-eyebrow mb-0">{eyebrow}</p>
         <h2
           id={headingId}
-          className="text-base font-semibold leading-tight tracking-tight text-primary sm:text-lg"
+          className="text-base font-bold leading-snug text-primary sm:text-lg"
         >
           {title}
         </h2>
