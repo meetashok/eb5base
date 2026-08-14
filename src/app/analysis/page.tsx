@@ -5,7 +5,7 @@ import PageHero from '@/components/PageHero';
 export const metadata: Metadata = {
   title: 'Analysis - USCIS data for EB-5 investors | EB5 Base',
   description:
-    'Interactive views of public USCIS datasets for EB-5 and other employment-based investors. Start with the I-485 pending inventory by category, country, and priority date.',
+    'Interactive views of public USCIS datasets for EB-5 and other employment-based investors: I-485 pending inventory and I-526 / I-526E filings, by category, country, and priority date.',
   alternates: { canonical: 'https://eb5base.com/analysis' },
   openGraph: {
     title: 'Analysis - USCIS data for EB-5 investors',
@@ -25,11 +25,19 @@ const DATASETS = [
     cta: 'Explore the inventory',
   },
   {
-    href: null,
+    href: '/analysis/i526',
     title: 'I-526 / I-526E Filings',
+    status: 'Live',
+    live: true,
+    body: 'EB-5 petition receipts by form type, TEA set-aside category, and country of birth, from USCIS quarterly reports.',
+    cta: 'Explore the filings',
+  },
+  {
+    href: null,
+    title: 'Visa Bulletin (EB-5)',
     status: 'Planned',
     live: false,
-    body: 'EB-5 petition receipts and processing data by TEA category and country, from USCIS quarterly reports.',
+    body: 'Monthly Final Action Dates and Dates for Filing over time, split into EB-5 Unreserved and the set-aside categories (Rural, High Unemployment, Infrastructure), by country of chargeability.',
     cta: null,
   },
 ];
