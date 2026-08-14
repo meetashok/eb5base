@@ -48,14 +48,14 @@ export default function CaseTrackerWaitlistForm({
       : 'input input-bordered w-full';
   const buttonClass =
     variant === 'compact'
-      ? 'btn btn-sm btn-outline rounded-full border-neutral/30'
+      ? 'btn btn-sm btn-outline rounded-full border-neutral/30 shrink-0'
       : 'btn btn-primary text-primary-content shrink-0';
 
   if (status === 'success') {
     return (
       <p
         className={`text-sm text-secondary font-medium leading-relaxed ${
-          variant === 'compact' ? 'mt-5' : ''
+          variant === 'compact' ? 'mt-2' : ''
         }`}
         role="status"
       >
@@ -67,30 +67,32 @@ export default function CaseTrackerWaitlistForm({
   return (
     <form
       onSubmit={onSubmit}
-      className={
-        variant === 'compact'
-          ? 'mt-5 space-y-2'
-          : 'flex flex-col sm:flex-row gap-2 max-w-lg'
-      }
+      className={variant === 'compact' ? 'mt-2 space-y-1.5' : 'space-y-2 max-w-lg'}
     >
       <label className="sr-only" htmlFor={inputId}>
         Email for Case Tracker waitlist
       </label>
-      <input
-        id={inputId}
-        type="email"
-        name="email"
-        required
-        autoComplete="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="you@example.com"
-        className={inputClass}
-        disabled={status === 'loading'}
-      />
-      <button type="submit" className={buttonClass} disabled={status === 'loading'}>
-        {status === 'loading' ? 'Saving…' : 'Notify me'}
-      </button>
+      <div
+        className={
+          variant === 'compact' ? 'flex items-center gap-2' : 'flex flex-col sm:flex-row gap-2'
+        }
+      >
+        <input
+          id={inputId}
+          type="email"
+          name="email"
+          required
+          autoComplete="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="you@example.com"
+          className={inputClass}
+          disabled={status === 'loading'}
+        />
+        <button type="submit" className={buttonClass} disabled={status === 'loading'}>
+          {status === 'loading' ? 'Saving…' : 'Notify me'}
+        </button>
+      </div>
       {variant === 'compact' ? (
         <p className="text-[11px] text-neutral/60 leading-relaxed">
           We store your email only to notify you once when Case Tracker launches. No ads, no
@@ -102,7 +104,7 @@ export default function CaseTrackerWaitlistForm({
         </p>
       ) : null}
       {status === 'error' && message ? (
-        <p className="text-xs text-error leading-relaxed sm:basis-full" role="alert">
+        <p className="text-xs text-error leading-relaxed" role="alert">
           {message}
         </p>
       ) : null}
