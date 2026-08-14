@@ -11,6 +11,7 @@ import {
   seriesColor,
 } from '@/components/charts';
 import { filterChipClass } from '@/components/analysis/filterChipClass';
+import { ChartFooter, HowToReadCard } from '@/components/analysis/ChartFooter';
 import I526ShareButton from '@/components/analysis/I526ShareButton';
 import I526RatioChart from '@/components/analysis/I526RatioChart';
 import {
@@ -97,92 +98,43 @@ const RATIO_BOTH_OPTIONS: { value: RatioBothMode; label: string }[] = [
   { value: 'split', label: 'Split' },
 ];
 
-function ChartFooter({
-  cells,
-  link = '/analysis/i526/data',
-  onToggleHowToRead,
-  howToReadOpen,
-}: {
-  cells: number;
-  link?: string;
-  onToggleHowToRead?: () => void;
-  howToReadOpen?: boolean;
-}) {
+// Dataset-specific bullets for the shared HowToReadCard (see ChartFooter.tsx).
+function I526HowToReadBullets() {
   return (
-    <p className="text-xs text-neutral/70 leading-relaxed pt-1">
-      {cells > 0 && (
-        <>
-          {nf.format(cells)} value{cells === 1 ? '' : 's'} in this selection are suppressed by USCIS
-          (&quot;D&quot;, under 10 each) and are excluded from the totals shown. Actual totals can
-          be up to {nf.format(cells * 9)} higher.
-          {' · '}
-        </>
-      )}
-      <Link
-        href={link}
-        className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
-      >
-        Source data
-      </Link>
-      {onToggleHowToRead ? (
-        <>
-          {' · '}
-          <button
-            type="button"
-            onClick={onToggleHowToRead}
-            aria-expanded={howToReadOpen}
-            className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
-          >
-            How to read the data
-          </button>
-        </>
-      ) : null}
-    </p>
-  );
-}
-
-function HowToReadCard() {
-  return (
-    <section className="max-w-4xl mx-auto px-4 pt-2 pb-8 space-y-6">
-      <div className="rounded-xl border-2 border-base-300 bg-base-100 p-4 sm:p-5 text-sm text-neutral leading-relaxed space-y-2">
-        <h2 className="text-sm font-bold text-primary">How to read this data</h2>
-        <ul className="list-disc pl-5 space-y-1.5">
-          <li>
-            <span className="font-semibold">I-526 filings data:</span> USCIS{' '}
-            <span className="font-semibold">receipts</span> per Form I-526 (standalone) or I-526E
-            (regional center) per country of birth, per TEA set-aside category, per receipt month.
-          </li>
-          <li>
-            <span className="font-semibold">Throughput &amp; processing data:</span> Service-wide
-            throughput (receipts, approvals, denials, completions, pending, median processing
-            months) - aggregated across all countries/categories for the whole EB-5 family.
-          </li>
-          <li>
-            I-526 legacy = petitions filed before the RIA. These are a legacy pipeline; no new
-            receipts today but approvals/denials continue. New I-526 standalone = post-RIA
-            non-regional center filings.
-          </li>
-          <li>
-            The TEA &quot;Rural &amp; High-UE combined&quot; bucket is reported separately by USCIS
-            in some reports - it is <span className="font-semibold">not</span> a double-count of
-            Rural + High unemployment.
-          </li>
-          <li>
-            Suppression: values 1-10 masked as D/H; treated as 0 in sums, flagged as suppressed
-            cells in the footer.
-          </li>
-          <li>
-            Median processing time is USCIS-reported median months from receipt to completion for
-            petitions finalized during the quarter; it is not the wait time a filer experiences
-            today.
-          </li>
-          <li>
-            Publication cadence is quarterly, ~10-12 weeks after quarter end. FY26 Q3 and Q4 are
-            not yet posted as of this build.
-          </li>
-        </ul>
-      </div>
-    </section>
+    <>
+      <li>
+        <span className="font-semibold">I-526 filings data:</span> USCIS{' '}
+        <span className="font-semibold">receipts</span> per Form I-526 (standalone) or I-526E
+        (regional center) per country of birth, per TEA set-aside category, per receipt month.
+      </li>
+      <li>
+        <span className="font-semibold">Throughput &amp; processing data:</span> Service-wide
+        throughput (receipts, approvals, denials, completions, pending, median processing months) -
+        aggregated across all countries/categories for the whole EB-5 family.
+      </li>
+      <li>
+        I-526 legacy = petitions filed before the RIA. These are a legacy pipeline; no new receipts
+        today but approvals/denials continue. New I-526 standalone = post-RIA non-regional center
+        filings.
+      </li>
+      <li>
+        The TEA &quot;Rural &amp; High-UE combined&quot; bucket is reported separately by USCIS in
+        some reports - it is <span className="font-semibold">not</span> a double-count of Rural +
+        High unemployment.
+      </li>
+      <li>
+        Suppression: values 1-10 masked as D/H and treated as 0 in sums; when a selection hides any,
+        the amount is noted at the top of this card.
+      </li>
+      <li>
+        Median processing time is USCIS-reported median months from receipt to completion for
+        petitions finalized during the quarter; it is not the wait time a filer experiences today.
+      </li>
+      <li>
+        Publication cadence is quarterly, ~10-12 weeks after quarter end. FY26 Q3 and Q4 are not yet
+        posted as of this build.
+      </li>
+    </>
   );
 }
 
@@ -1040,7 +992,7 @@ export default function I526Explorer({
             </div>
 
             <ChartFooter
-              cells={mainChartData?.suppressedCells ?? 0}
+              sourceHref="/analysis/i526/data"
               onToggleHowToRead={() => setShowHowToRead((v) => !v)}
               howToReadOpen={showHowToRead}
             />
@@ -1148,7 +1100,7 @@ export default function I526Explorer({
               )}
             </div>
 
-            <ChartFooter cells={0} />
+            <ChartFooter sourceHref="/analysis/i526/data" />
           </div>
         </div>
       </Wrapper>
@@ -1240,7 +1192,7 @@ export default function I526Explorer({
               )}
             </div>
             <ChartFooter
-              cells={throughputChartData?.suppressedCells ?? 0}
+              sourceHref="/analysis/i526/data"
               onToggleHowToRead={() => setShowHowToRead((v) => !v)}
               howToReadOpen={showHowToRead}
             />
@@ -1297,7 +1249,7 @@ export default function I526Explorer({
                 </div>
               )}
             </div>
-            <ChartFooter cells={throughputChartData?.suppressedCells ?? 0} />
+            <ChartFooter sourceHref="/analysis/i526/data" />
           </div>
 
           <div className="space-y-4">
@@ -1347,7 +1299,7 @@ export default function I526Explorer({
                 </div>
               )}
             </div>
-            <ChartFooter cells={throughputChartData?.suppressedCells ?? 0} />
+            <ChartFooter sourceHref="/analysis/i526/data" />
           </div>
         </div>
       </Wrapper>
@@ -1358,7 +1310,11 @@ export default function I526Explorer({
     <>
       {view === 'trend' && <TrendView />}
       {view === 'throughput' && <ThroughputView />}
-      {showHowToRead ? <HowToReadCard /> : null}
+      {showHowToRead ? (
+        <HowToReadCard suppressedCells={mainChartData?.suppressedCells ?? 0}>
+          <I526HowToReadBullets />
+        </HowToReadCard>
+      ) : null}
     </>
   );
 }

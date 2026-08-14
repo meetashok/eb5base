@@ -1,9 +1,9 @@
 'use client';
 
-import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { BarChart, DiffBarChart, LineChart, MultiSeriesLineChart, formatSignedCount, seriesColor } from '@/components/charts';
+import { ChartFooter, HowToReadCard } from '@/components/analysis/ChartFooter';
 import I485ViewBar, { type I485ViewId } from '@/components/analysis/I485ViewBar';
 import I485CategoryPicker from '@/components/analysis/I485CategoryPicker';
 import I485CountryPicker from '@/components/analysis/I485CountryPicker';
@@ -88,24 +88,35 @@ function totalWithNote(buckets: AggregatedBucket[]): { count: number; suppressed
   );
 }
 
-function ChartFooter({ cells }: { cells: number }) {
+// Dataset-specific bullets for the shared HowToReadCard (see ChartFooter.tsx).
+function I485HowToReadBullets() {
   return (
-    <p className="text-xs text-neutral/70 leading-relaxed pt-1">
-      {cells > 0 && (
-        <>
-          {nf.format(cells)} value{cells === 1 ? '' : 's'} in this selection are suppressed by USCIS
-          (&quot;D&quot;, under 10 each) and are excluded from the totals shown. Actual totals can be
-          up to {nf.format(cells * 9)} higher.
-          {' · '}
-        </>
-      )}
-      <Link
-        href="/analysis/i485/data"
-        className="font-semibold text-secondary underline underline-offset-2 hover:text-primary"
-      >
-        Source data
-      </Link>
-    </p>
+    <>
+      <li>
+        Counts are <span className="font-semibold">pending applications at USCIS</span> on the
+        snapshot date - filed I-485s that have not yet been approved, denied, or withdrawn. They
+        exclude consular cases at the Department of State and anyone who has not filed an I-485 yet.
+      </li>
+      <li>
+        A cohort shrinking between snapshots usually means cases completed, but USCIS does not
+        publish adjudications in this report, so new filings and completions are mixed together in
+        the monthly change.
+      </li>
+      <li>
+        Values under 10 are suppressed by USCIS (shown as &quot;D&quot; in the source files). We
+        exclude them from totals; when a selection hides any, the amount is noted at the top of this
+        card.
+      </li>
+      <li>
+        EB-5 set-aside categories (Rural, High Unemployment, Infrastructure) are reported separately
+        starting with the August 2024 snapshot; earlier 2024 reports lump them together, which we
+        label as the legacy set-aside bucket.
+      </li>
+      <li>
+        USCIS publishes snapshots with a lag of roughly one to five months, and the June and July
+        2025 snapshots were never published.
+      </li>
+    </>
   );
 }
 
@@ -432,6 +443,7 @@ export default function I485Explorer({
 
   const [loading, setLoading] = useState(false);
   const [prefsHydrated, setPrefsHydrated] = useState(false);
+  const [showHowToRead, setShowHowToRead] = useState(false);
   const skipInitialSnapshotFetch = useRef(
     initialSnapshotCells != null && initialReleaseId != null && initialReleases.length > 0,
   );
@@ -1752,16 +1764,25 @@ export default function I485Explorer({
         )}
 
         <ChartFooter
-          cells={
+          sourceHref="/analysis/i485/data"
+          onToggleHowToRead={() => setShowHowToRead((v) => !v)}
+          howToReadOpen={showHowToRead}
+        />
+      </div>
+      </div>
+      {showHowToRead ? (
+        <HowToReadCard
+          suppressedCells={
             view === 'compare'
               ? compareNet.suppressedCells
               : view === 'cohort'
                 ? cohortSuppressed
                 : snapshotTotal.suppressedCells
           }
-        />
-      </div>
-      </div>
+        >
+          <I485HowToReadBullets />
+        </HowToReadCard>
+      ) : null}
     </div>
   );
 }
