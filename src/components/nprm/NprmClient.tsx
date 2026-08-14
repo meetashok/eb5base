@@ -3,12 +3,24 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import PageHero from '@/components/PageHero';
-import AboutTab from '@/components/nprm/AboutTab';
-import CommentsTab from '@/components/nprm/CommentsTab';
+import dynamic from 'next/dynamic';
 import NprmTabBar from '@/components/nprm/NprmTabBar';
 import OverviewTab from '@/components/nprm/OverviewTab';
-import SummaryTab from '@/components/nprm/SummaryTab';
-import WriteTab from '@/components/nprm/WriteTab';
+import { ListSkeleton } from '@/components/LoadingSkeleton';
+
+const tabLoading = () => (
+  <div className="max-w-6xl mx-auto px-4">
+    <ListSkeleton count={4} />
+  </div>
+);
+
+// Non-default tabs are code-split: their JS (WriteTab alone is ~1,200 lines plus
+// keyTopics/prompt) only loads when the user opens that tab. Overview stays
+// eager as the default landing view.
+const AboutTab = dynamic(() => import('@/components/nprm/AboutTab'), { loading: tabLoading });
+const CommentsTab = dynamic(() => import('@/components/nprm/CommentsTab'), { loading: tabLoading });
+const SummaryTab = dynamic(() => import('@/components/nprm/SummaryTab'), { loading: tabLoading });
+const WriteTab = dynamic(() => import('@/components/nprm/WriteTab'), { loading: tabLoading });
 import type { NprmPageData } from '@/lib/nprm/types';
 import {
   NPRM_TABS,
