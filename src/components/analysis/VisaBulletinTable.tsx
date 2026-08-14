@@ -60,6 +60,18 @@ function statusColorClass(status: VisaBulletinDate['status'] | undefined): strin
   return 'text-primary';
 }
 
+/** Split "5th Set-Aside: X" onto two lines to keep the column narrow. */
+function RowLabel({ label }: { label: string }) {
+  const m = label.match(/^(5th Set-Aside):\s*(.+)$/);
+  if (!m) return <>{label}</>;
+  return (
+    <>
+      <span className="block text-[11px] font-normal text-neutral/55">{m[1]}</span>
+      <span className="block">{m[2]}</span>
+    </>
+  );
+}
+
 /** Compact in-cell display: filing date on top, final action as an offset. */
 function CellFace({ fad, filing }: CellData) {
   const primary = filing ?? fad;
@@ -123,9 +135,9 @@ export default function VisaBulletinTable({ index, releaseId, prevReleaseId, eb5
     <div className="overflow-x-auto">
       <table className="w-full min-w-[640px] table-fixed border-collapse text-sm">
         <colgroup>
-          <col style={{ width: '30%' }} />
+          <col style={{ width: '25%' }} />
           {COUNTRY_ORDER.map((c) => (
-            <col key={c} style={{ width: '14%' }} />
+            <col key={c} style={{ width: '15%' }} />
           ))}
         </colgroup>
         <thead>
@@ -157,7 +169,7 @@ export default function VisaBulletinTable({ index, releaseId, prevReleaseId, eb5
                 scope="row"
                 className={`py-2 pr-3 text-left font-medium ${r.eb5 ? 'text-primary' : 'text-neutral'}`}
               >
-                {r.label}
+                <RowLabel label={r.label} />
               </th>
               {COUNTRY_ORDER.map((c) => {
                 const cell: CellData = {
