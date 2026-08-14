@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BrandWordmark } from '@/components/Logo';
-import CaseTrackerWaitlistForm from '@/components/CaseTrackerWaitlistForm';
+import dynamic from 'next/dynamic';
+// Below-the-fold form: split its client JS out of the homepage's initial bundle
+// (kept SSR'd so the card content still renders in HTML).
+const CaseTrackerWaitlistForm = dynamic(() => import('@/components/CaseTrackerWaitlistForm'));
 import HomeDeadlineCountdown from '@/components/HomeDeadlineCountdown';
 
 export const metadata: Metadata = {
