@@ -278,6 +278,9 @@ export default function VisaBulletinExplorer({
 
           {/* Month selector below the header */}
           <div className="space-y-2">
+            <p className="text-center text-[11px] font-semibold uppercase tracking-wide text-neutral/55">
+              Select a Visa Bulletin
+            </p>
             <div className="flex items-center justify-center gap-2">
               <button
                 type="button"
