@@ -260,7 +260,7 @@ export default function VisaBulletinExplorer({
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className={controlLabelClass}>Change</span>
+                  <span className={controlLabelClass}>Change vs last bulletin</span>
                   <div className={toggleGroupClass} role="group" aria-label="Show change vs last bulletin">
                     <button type="button" className={toggleBtnClass(showChange)} onClick={() => setShowChange(true)}>
                       On
