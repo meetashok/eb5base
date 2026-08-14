@@ -53,7 +53,7 @@ function toggleBtnClass(active: boolean): string {
 const controlLabelClass = 'text-[11px] font-semibold uppercase tracking-wide text-neutral/55';
 
 const chartHeaderRowClass =
-  'flex flex-col items-stretch gap-3 sm:flex-row sm:items-start sm:justify-between';
+  'flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between';
 
 function SectionHeader({
   title,
