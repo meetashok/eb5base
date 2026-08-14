@@ -43,14 +43,16 @@ function ordinalToMonthLabel(ord: number): string {
 
 const DEFAULT_HIDDEN_COUNTRIES: VbCountry[] = ['MEXICO', 'PHILIPPINES'];
 
-const toggleGroupClass = 'inline-flex rounded-full border border-base-300 p-0.5 bg-base-200/60 gap-0.5';
+const toggleGroupClass =
+  'inline-flex max-w-full flex-wrap rounded-full border border-base-300 p-0.5 bg-base-200/60 gap-0.5';
 function toggleBtnClass(active: boolean): string {
   return [
-    'rounded-full h-7 px-2.5 text-xs font-semibold leading-none transition-colors',
+    'rounded-full border-0 min-h-0 h-7 px-2.5 text-xs font-semibold leading-none transition-colors sm:h-6 sm:px-2 sm:text-[10px]',
     active ? 'bg-primary text-primary-content' : 'bg-transparent text-neutral hover:bg-base-300/70',
   ].join(' ');
 }
-const controlLabelClass = 'text-[11px] font-semibold uppercase tracking-wide text-neutral/55';
+const controlLabelClass =
+  'text-[11px] font-semibold uppercase tracking-wide text-neutral/55 sm:text-[10px]';
 
 const chartHeaderRowClass =
   'flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between';
