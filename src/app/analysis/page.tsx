@@ -58,7 +58,7 @@ export default function AnalysisPage() {
             className="rounded-xl border-2 border-base-300 bg-base-100 p-5 shadow-sm"
           >
             <div className="flex items-baseline gap-3 flex-wrap">
-              <h2 className="text-lg font-bold text-primary">{d.title}</h2>
+              <h2 className="section-title">{d.title}</h2>
               <span
                 className={`badge badge-sm rounded-full font-semibold ${
                   d.live

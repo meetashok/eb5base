@@ -181,6 +181,28 @@ body {
     @apply text-xs uppercase tracking-[0.22em] font-semibold text-secondary;
   }
 
+  /* Typography tokens. Reuse these instead of re-deriving ad-hoc text and font
+     utility combos, so section titles / eyebrows / body copy stay consistent. */
+  .eyebrow {
+    @apply text-xs uppercase tracking-[0.22em] font-semibold text-secondary;
+  }
+
+  .section-title {
+    @apply text-lg font-bold leading-snug text-primary;
+  }
+
+  .control-label {
+    @apply text-[11px] font-semibold uppercase tracking-wide text-neutral/55 sm:text-[10px];
+  }
+
+  .body-text {
+    @apply text-sm leading-relaxed text-neutral/80;
+  }
+
+  .body-muted {
+    @apply text-sm leading-relaxed text-neutral/60;
+  }
+
   .page-hero-copy {
     @apply flex flex-col items-start gap-2 min-w-0;
   }
