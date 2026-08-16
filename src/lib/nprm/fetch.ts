@@ -255,6 +255,9 @@ export async function loadNprmPageData(): Promise<NprmPageData> {
   const stats = {
     ...statsR.data,
     total_comments: merged.length || statsR.data.total_comments,
+    // "Last checked" advances on every poll (heartbeat); "last_pull" only when
+    // the comment set actually changes.
+    last_checked: lastR?.data.pulled_at ?? statsR.data.last_checked ?? statsR.data.last_pull,
   };
 
   // First-party key topics power Write (and Comments theme labels). Meta

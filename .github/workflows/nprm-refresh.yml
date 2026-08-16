@@ -50,18 +50,42 @@ jobs:
           REGULATIONS_GOV_API_KEY: ${{ secrets.REGULATIONS_GOV_API_KEY }}
         run: npm run nprm:pull-comments
 
-      - name: Commit & push if comments changed
+      - name: Commit changes / daily check heartbeat
         if: steps.gate.outputs.run == 'true'
         run: |
-          # Compare only the comments (ignore run timestamps) to avoid noise commits.
-          git show HEAD:public/data/nprm/all_comments.json | jq -S '.comments' > /tmp/old.json 2>/dev/null || echo '[]' > /tmp/old.json
-          jq -S '.comments' public/data/nprm/all_comments.json > /tmp/new.json
-          if diff -q /tmp/old.json /tmp/new.json >/dev/null; then
-            echo "No comment changes; nothing to commit."
-            exit 0
-          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/data/nprm
-          git commit -m "chore(nprm): scheduled comment refresh ($(TZ=America/Los_Angeles date '+%Y-%m-%d %I:%M %p %Z'))"
+
+          # Did the comment set actually change? (compare only comments, not the
+          # run timestamps, to avoid noise commits.)
+          git show HEAD:public/data/nprm/all_comments.json | jq -S '.comments' > /tmp/old.json 2>/dev/null || echo '[]' > /tmp/old.json
+          jq -S '.comments' public/data/nprm/all_comments.json > /tmp/new.json
+
+          if ! diff -q /tmp/old.json /tmp/new.json >/dev/null; then
+            # New / changed comments: publish the full refreshed dataset.
+            git add public/data/nprm
+            git commit -m "chore(nprm): scheduled comment refresh ($(TZ=America/Los_Angeles date '+%Y-%m-%d %I:%M %p %Z'))"
+            git push
+            exit 0
+          fi
+
+          # No comment change. Publish only the last-check heartbeat so the site
+          # can show "still checking" - and at most once per Pacific day, so we
+          # don't trigger 3 redeploys/day or churn the big data files.
+          TODAY=$(TZ=America/Los_Angeles date +%Y-%m-%d)
+          PREV_DAY=$(git show HEAD:public/data/nprm/last-check.json 2>/dev/null | jq -r '(.pulled_at // "")' | cut -dT -f1)
+          if [ "$PREV_DAY" = "$TODAY" ]; then
+            echo "No new comments; heartbeat already committed today ($TODAY)."
+            exit 0
+          fi
+
+          # Keep the big files unchanged (their only diff is a fresh timestamp);
+          # commit just the heartbeat.
+          git checkout -- public/data/nprm/all_comments.json public/data/nprm/stats.json public/data/nprm/check.log 2>/dev/null || true
+          git add public/data/nprm/last-check.json
+          if git diff --cached --quiet; then
+            echo "Heartbeat unchanged; nothing to commit."
+            exit 0
+          fi
+          git commit -m "chore(nprm): daily check heartbeat, no new comments ($(TZ=America/Los_Angeles date '+%Y-%m-%d %I:%M %p %Z'))"
           git push

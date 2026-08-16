@@ -1,7 +1,10 @@
 export interface NprmStats {
   docket_id: string;
   total_comments: number;
+  /** When the comment set last changed (advances only on a new/changed comment). */
   last_pull: string;
+  /** When the docket was last polled, even if nothing changed (daily heartbeat). */
+  last_checked?: string;
   comment_period_ends: string;
   source: string;
   check_log?: string;
@@ -139,7 +142,10 @@ export interface NprmCommentsEnvelope {
 
 export interface NprmLastCheck {
   retrieved?: string;
+  /** Timestamp of the most recent docket poll (written every run). */
+  pulled_at?: string;
   total?: number;
+  total_comments?: number;
   docket_id?: string;
   source?: string;
   metadata?: {

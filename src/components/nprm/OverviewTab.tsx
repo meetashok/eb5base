@@ -257,7 +257,8 @@ export default function OverviewTab({
           </div>
           <VolumeChart data={volume} />
           <p className="text-[9px] text-neutral/55 leading-snug -mt-2">
-            Last pull <LocalDateTime value={stats.last_pull} />. Data is not
+            Last checked <LocalDateTime value={stats.last_checked ?? stats.last_pull} />
+            {' · '}comments as of <LocalDateTime value={stats.last_pull} />. Data is not
             real-time; it updates daily. For real-time data, visit{' '}
             <a
               href={DOCKET_URL}

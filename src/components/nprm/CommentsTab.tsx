@@ -18,6 +18,7 @@ interface Props {
   comments: NprmComment[];
   themes: NprmTheme[];
   lastPull?: string;
+  lastChecked?: string;
   totalComments?: number;
   onAbout?: () => void;
 }
@@ -49,6 +50,7 @@ export default function CommentsTab({
   comments,
   themes,
   lastPull,
+  lastChecked,
   totalComments,
   onAbout,
 }: Props) {
@@ -155,7 +157,8 @@ export default function CommentsTab({
             Anonymized summaries of comments filed so far.
           </p>
           <p className="text-[11px] text-neutral/70 leading-relaxed">
-            Last updated <LocalDateTime value={lastPull} />.
+            Last checked <LocalDateTime value={lastChecked ?? lastPull} /> · comments as of{' '}
+            <LocalDateTime value={lastPull} />.
           </p>
         </NprmSectionHeading>
         <p className="text-xs leading-relaxed text-amber-800 bg-amber-50 border border-amber-200/80 rounded-md px-2.5 py-1.5">
