@@ -1,10 +1,8 @@
 export interface NprmStats {
   docket_id: string;
   total_comments: number;
-  /** When the comment set last changed (advances only on a new/changed comment). */
+  /** Single site-wide data timestamp: when the docket was last successfully polled. */
   last_pull: string;
-  /** When the docket was last polled, even if nothing changed (daily heartbeat). */
-  last_checked?: string;
   comment_period_ends: string;
   source: string;
   check_log?: string;
