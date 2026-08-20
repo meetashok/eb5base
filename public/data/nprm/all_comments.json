@@ -1,10 +1,22 @@
 {
   "docket_id": "USCIS-2026-0100",
-  "retrieved": "2026-08-20T00:44:25.650Z",
-  "total": 91,
+  "retrieved": "2026-08-20T05:23:04.766Z",
+  "total": 92,
   "source": "regulations.gov via api.data.gov",
   "mode": "first_party_anonymized_id_link_theme_summary",
   "comments": [
+    {
+      "id": "USCIS-2026-0100-0125",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-08-19T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0125",
+      "poster_type": "anonymous",
+      "poster_label": "Anonymous",
+      "theme_id": "sustainment",
+      "theme_title": "Capital back after about 2 years",
+      "ai_summary": "This comment argues: When I planned my EB-5 investment this year, I understood that my capital could remain committed for a substantial period because of visa availability. What concerns me is the possibility that, even after the required sustainment period has been completed, I could remain unable to recover my investment because capital is redeployed into a project I did not choose.",
+      "type": "comments"
+    },
     {
       "id": "USCIS-2026-0100-0124",
       "title": "Comment Submitted by Named person",

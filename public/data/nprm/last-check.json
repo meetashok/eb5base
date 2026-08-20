@@ -1,9 +1,9 @@
 {
-  "pulled_at": "2026-08-20T00:44:25.650Z",
+  "pulled_at": "2026-08-20T05:23:04.766Z",
   "docket_id": "USCIS-2026-0100",
   "document_id": "USCIS-2026-0100-0001",
   "object_id": "09000064b936259a",
-  "total_comments": 91,
+  "total_comments": 92,
   "source": "regulations.gov via api.data.gov",
   "notes": "First-party anonymized pull; no Meta dependency"
 }
