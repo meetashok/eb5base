@@ -1,10 +1,22 @@
 {
   "docket_id": "USCIS-2026-0100",
-  "retrieved": "2026-08-19T17:19:44.075Z",
-  "total": 90,
+  "retrieved": "2026-08-20T00:44:25.650Z",
+  "total": 91,
   "source": "regulations.gov via api.data.gov",
   "mode": "first_party_anonymized_id_link_theme_summary",
   "comments": [
+    {
+      "id": "USCIS-2026-0100-0124",
+      "title": "Comment Submitted by Named person",
+      "postedDate": "2026-08-19T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0124",
+      "poster_type": "named",
+      "poster_label": "Named person",
+      "theme_id": null,
+      "theme_title": null,
+      "ai_summary": "This comment argues: U.S. respectfully submits the attached comments concerning DHS Docket No. USCIS-2026-0100 and RIN 1615-AC94.",
+      "type": "comments"
+    },
     {
       "id": "USCIS-2026-0100-0123",
       "title": "Comment Submitted by Named person",
