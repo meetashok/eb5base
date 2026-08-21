@@ -1,10 +1,22 @@
 {
   "docket_id": "USCIS-2026-0100",
-  "retrieved": "2026-08-21T05:25:13.376Z",
-  "total": 94,
+  "retrieved": "2026-08-21T17:21:23.147Z",
+  "total": 95,
   "source": "regulations.gov via api.data.gov",
   "mode": "first_party_anonymized_id_link_theme_summary",
   "comments": [
+    {
+      "id": "USCIS-2026-0100-0128",
+      "title": "Comment Submitted by Named person",
+      "postedDate": "2026-08-21T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0128",
+      "poster_type": "named",
+      "poster_label": "Named person",
+      "theme_id": null,
+      "theme_title": null,
+      "ai_summary": "This comment includes an attachment on regulations.gov. Open the filing to read the full text; no separate body text was posted in the API.",
+      "type": "comments"
+    },
     {
       "id": "USCIS-2026-0100-0127",
       "title": "Comment Submitted by Named person",
