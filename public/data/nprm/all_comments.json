@@ -1,10 +1,34 @@
 {
   "docket_id": "USCIS-2026-0100",
-  "retrieved": "2026-08-20T05:23:04.766Z",
-  "total": 92,
+  "retrieved": "2026-08-21T05:25:13.376Z",
+  "total": 94,
   "source": "regulations.gov via api.data.gov",
   "mode": "first_party_anonymized_id_link_theme_summary",
   "comments": [
+    {
+      "id": "USCIS-2026-0100-0127",
+      "title": "Comment Submitted by Named person",
+      "postedDate": "2026-08-21T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0127",
+      "poster_type": "named",
+      "poster_label": "Named person",
+      "theme_id": "good_faith",
+      "theme_title": "If your regional center fails",
+      "ai_summary": "This comment argues: Protect Existing EB-5 Investors and Preserve Job Credit for Previously Approved Bridge-Financing Structures I am an individual EB-5 investor in a project whose Form I-956F was approved in January 2026. Relying on that approval, the project&rsquo;s disclosed financing structure, and existing USCIS policy norms, I filed my Form I-526E in February 2026.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0126",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-08-21T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0126",
+      "poster_type": "anonymous",
+      "poster_label": "Anonymous",
+      "theme_id": "bridge_financing",
+      "theme_title": "Bridge financing and your 10 jobs",
+      "ai_summary": "This comment argues: In February 2026, I committed my family's hard-earned savings to an I-956F approved rural project in India's chargeability queue, placing full trust in the rules published by USCIS at that time. Pulling the rug out from under families who thoroughly reviewed active agency guidance and invested in good faith severely undermines the credibility of the entire EB-5 program.",
+      "type": "comments"
+    },
     {
       "id": "USCIS-2026-0100-0125",
       "title": "Comment Submitted by Anonymous",
