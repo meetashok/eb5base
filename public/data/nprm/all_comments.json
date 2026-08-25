@@ -1,10 +1,34 @@
 {
   "docket_id": "USCIS-2026-0100",
-  "retrieved": "2026-08-24T17:24:03.828Z",
-  "total": 97,
+  "retrieved": "2026-08-25T17:24:07.211Z",
+  "total": 99,
   "source": "regulations.gov via api.data.gov",
   "mode": "first_party_anonymized_id_link_theme_summary",
   "comments": [
+    {
+      "id": "USCIS-2026-0100-0132",
+      "title": "Comment Submitted by Named person",
+      "postedDate": "2026-08-25T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0132",
+      "poster_type": "named",
+      "poster_label": "Named person",
+      "theme_id": null,
+      "theme_title": null,
+      "ai_summary": "This comment includes an attachment on regulations.gov. Open the filing to read the full text; no separate body text was posted in the API.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0131",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-08-25T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0131",
+      "poster_type": "anonymous",
+      "poster_label": "Anonymous",
+      "theme_id": null,
+      "theme_title": null,
+      "ai_summary": "This comment argues: Tighter restrictions would diminish that ability.",
+      "type": "comments"
+    },
     {
       "id": "USCIS-2026-0100-0130",
       "title": "Comment Submitted by Anonymous",
