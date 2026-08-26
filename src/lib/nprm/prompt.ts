@@ -6,6 +6,7 @@ import type {
   ProjectTypeOption,
   TopicCommentSelection,
 } from './types';
+import { TIMELINE_NOTE_PROMPT } from './constants';
 import { DOCUMENT_ID, FR_HTML, FR_PDF } from './utils';
 
 const PROJECT_TYPE_LABELS: Record<ProjectTypeOption, string> = {
@@ -208,7 +209,10 @@ export function buildPrompt(input: {
     `Personal story (required color for uniqueness; do not invent beyond this):`,
     personal.impact.trim() ||
       `(not provided — write a distinct comment without inventing autobiography; leave clear placeholders if a fact is missing)`,
-  ];
+    personal.include_timeline_note !== false
+      ? `Also mention (idea only — paraphrase; do not copy 4+ consecutive words):\n${TIMELINE_NOTE_PROMPT}`
+      : null,
+  ].filter((line): line is string => line != null);
 
   return [
     'You are helping me draft a public comment on a U.S. DHS/USCIS Notice of Proposed Rulemaking (NPRM) for the EB-5 program.',

@@ -502,6 +502,7 @@ export default function WriteTab({
     impact: '',
     investor_type: '',
     country: '',
+    include_timeline_note: true,
   });
   const [style, setStyle] = useState<StyleGuideline>('plain');
   const [copyMsg, setCopyMsg] = useState<string | null>(null);
@@ -927,6 +928,33 @@ export default function WriteTab({
               }
             />
           </div>
+          <label
+            className={`flex items-start gap-2 text-xs sm:text-sm cursor-pointer rounded-md px-2 py-1.5 transition-colors ${
+              personal.include_timeline_note !== false
+                ? 'bg-base-200/70 text-primary font-semibold ring-1 ring-secondary/35'
+                : 'text-primary/90 font-medium hover:bg-base-200/50'
+            }`}
+          >
+            <input
+              type="checkbox"
+              className="checkbox checkbox-xs checkbox-secondary mt-0.5 shrink-0 !rounded-sm"
+              checked={personal.include_timeline_note !== false}
+              onChange={(e) =>
+                setPersonal((p) => ({
+                  ...p,
+                  include_timeline_note: e.target.checked,
+                }))
+              }
+            />
+            <span className="leading-snug">
+              <span>Include a note about processing timelines</span>
+              <span className="block mt-0.5 text-[11px] font-normal text-neutral/80">
+                I-526/I-526E waits have been unpredictable and reserved visas
+                can go unused. Ask USCIS for more predictable processing and to
+                use those numbers.
+              </span>
+            </span>
+          </label>
           <label className="form-control">
             <span className="label-text text-xs flex justify-between">
               <span>Personal story (optional)</span>
