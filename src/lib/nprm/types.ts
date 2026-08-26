@@ -237,6 +237,8 @@ export interface PersonalBlock {
   impact: string;
   investor_type?: '' | 'pre_ria' | 'post_ria' | 'future' | 'family';
   country?: string;
+  /** Default on. When true, prompt includes a paraphrase-only processing-timeline ask. */
+  include_timeline_note?: boolean;
 }
 
 export interface PromptGuidelines {

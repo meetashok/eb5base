@@ -62,3 +62,7 @@ export const PROJECT_TYPE_OPTIONS = [
   { value: 'infrastructure', label: 'Infrastructure' },
   { value: 'mixed', label: 'Mixed' },
 ] as const;
+
+/** Step B checkbox: idea-only processing / reserved-visa ask (paraphrase, do not copy). */
+export const TIMELINE_NOTE_PROMPT =
+  'Processing timelines (idea only — paraphrase; do not invent how long I have waited unless I stated it in My Personal Story): I-526 and I-526E processing has been unreliable and not in a predictable order, and wait times have grown. Reserved rural, high-unemployment, and infrastructure visa numbers can go unused when too few petitions become visa-ready. Ask DHS/USCIS for more predictable I-526E processing and to use reserved-category visas instead of leaving them unused.';
