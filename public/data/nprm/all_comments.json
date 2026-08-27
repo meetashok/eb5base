@@ -1,10 +1,46 @@
 {
   "docket_id": "USCIS-2026-0100",
-  "retrieved": "2026-08-27T05:59:02.594Z",
-  "total": 149,
+  "retrieved": "2026-08-27T17:23:58.013Z",
+  "total": 152,
   "source": "regulations.gov via api.data.gov",
   "mode": "first_party_anonymized_id_link_theme_summary",
   "comments": [
+    {
+      "id": "USCIS-2026-0100-0185",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-08-27T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0185",
+      "poster_type": "anonymous",
+      "poster_label": "Anonymous",
+      "theme_id": "good_faith",
+      "theme_title": "If your regional center fails",
+      "ai_summary": "This comment argues: Please see the attached full comment regarding DHS Docket No. The principal recommendations are summarized below.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0184",
+      "title": "Comment Submitted by Named person",
+      "postedDate": "2026-08-27T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0184",
+      "poster_type": "named",
+      "poster_label": "Named person",
+      "theme_id": "sustainment",
+      "theme_title": "Capital back after about 2 years",
+      "ai_summary": "This comment argues: Thank you for the opportunity to provide feedback. I filed my I-526E for a rural project in June 2026.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0183",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-08-27T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0183",
+      "poster_type": "anonymous",
+      "poster_label": "Anonymous",
+      "theme_id": "good_faith",
+      "theme_title": "If your regional center fails",
+      "ai_summary": "This comment argues: Having committed my family's capital to a rural EB-5 development through Form I-526E in August 2026 under the post-RIA framework, with India chargeability, I submit these comments to ensure the regulations provide workable certainty. Delays and unpredictable order in petition adjudications already risk leaving reserved visa numbers unallocated, making clear, predictable guidelines essential.",
+      "type": "comments"
+    },
     {
       "id": "USCIS-2026-0100-0182",
       "title": "Comment Submitted by Named person",
