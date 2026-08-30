@@ -1,9 +1,10 @@
 name: NPRM comments refresh
 
-# Autonomously refresh the NPRM docket comments 3x/day at 10am, 5pm, and 10pm
+# Autonomously refresh the NPRM docket comments ~3x/day at 10am, 5pm, and 10pm
 # US Pacific. GitHub cron is UTC and does not observe DST, so we schedule the
-# UTC hours for BOTH PST (UTC-8) and PDT (UTC-7) and then gate each run on the
-# actual Pacific hour, so it runs exactly three times a day year-round.
+# UTC hours for BOTH PST (UTC-8) and PDT (UTC-7). Do not gate on the current
+# Pacific hour: GitHub often starts scheduled jobs hours late, and a strict
+# hour check would skip the pull (which froze the site count after Aug 28).
 on:
   schedule:
     # 10am PT = 17/18 UTC · 5pm PT = 00/01 UTC · 10pm PT = 05/06 UTC
@@ -21,37 +22,27 @@ jobs:
   refresh:
     runs-on: ubuntu-latest
     steps:
-      - name: Gate on Pacific hour (10 / 17 / 22)
-        id: gate
-        run: |
-          H=$(TZ=America/Los_Angeles date +%H)
-          echo "Pacific hour: $H"
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] \
-            || [ "$H" = "10" ] || [ "$H" = "17" ] || [ "$H" = "22" ]; then
-            echo "run=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "Not a scheduled Pacific slot; skipping."
-            echo "run=false" >> "$GITHUB_OUTPUT"
-          fi
+      # GitHub cron is often 1–4+ hours late. The old "Pacific hour must be
+      # exactly 10/17/22" gate then skipped the run, so the site froze on the
+      # last on-time pull (e.g. Aug 28 10:04 AM PDT while later crons no-op'd).
+      # Always pull on schedule/dispatch. The 6 UTC cron times still give PST
+      # and PDT three attempts/day; comment-diff + once-per-Pacific-day
+      # heartbeat already prevent extra commits.
 
       - name: Checkout
-        if: steps.gate.outputs.run == 'true'
         uses: actions/checkout@v4
 
       - name: Setup Node
-        if: steps.gate.outputs.run == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Pull latest NPRM comments
-        if: steps.gate.outputs.run == 'true'
         env:
           REGULATIONS_GOV_API_KEY: ${{ secrets.REGULATIONS_GOV_API_KEY }}
         run: npm run nprm:pull-comments
 
       - name: Commit changes / daily check heartbeat
-        if: steps.gate.outputs.run == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -73,7 +64,11 @@ jobs:
           # can show "still checking" - and at most once per Pacific day, so we
           # don't trigger 3 redeploys/day or churn the big data files.
           TODAY=$(TZ=America/Los_Angeles date +%Y-%m-%d)
-          PREV_DAY=$(git show HEAD:public/data/nprm/last-check.json 2>/dev/null | jq -r '(.pulled_at // "")' | cut -dT -f1)
+          PREV_ISO=$(git show HEAD:public/data/nprm/last-check.json 2>/dev/null | jq -r '(.pulled_at // "")')
+          PREV_DAY=""
+          if [ -n "$PREV_ISO" ] && [ "$PREV_ISO" != "null" ]; then
+            PREV_DAY=$(TZ=America/Los_Angeles date -d "$PREV_ISO" +%Y-%m-%d)
+          fi
           if [ "$PREV_DAY" = "$TODAY" ]; then
             echo "No new comments; heartbeat already committed today ($TODAY)."
             exit 0
