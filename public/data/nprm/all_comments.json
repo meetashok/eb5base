@@ -1,10 +1,58 @@
 {
   "docket_id": "USCIS-2026-0100",
-  "retrieved": "2026-08-28T17:04:34.062Z",
-  "total": 163,
+  "retrieved": "2026-08-30T13:35:09.200Z",
+  "total": 167,
   "source": "regulations.gov via api.data.gov",
   "mode": "first_party_anonymized_id_link_theme_summary",
   "comments": [
+    {
+      "id": "USCIS-2026-0100-0200",
+      "title": "Comment Submitted by Named person",
+      "postedDate": "2026-08-28T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0200",
+      "poster_type": "named",
+      "poster_label": "Named person",
+      "theme_id": null,
+      "theme_title": null,
+      "ai_summary": "This comment argues: thanks Agency for this opportunity to submit attached comment regarding definition of \"Infrastructure Project\" as provided by EB-5 Reform and Integrity Act of 2022.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0199",
+      "title": "Comment Submitted by Anonymous",
+      "postedDate": "2026-08-28T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0199",
+      "poster_type": "anonymous",
+      "poster_label": "Anonymous",
+      "theme_id": "sustainment",
+      "theme_title": "Capital back after about 2 years",
+      "ai_summary": "This comment argues that the commenter am a post-RIA EB-5 investor, and the uncertainty around the process has made it difficult for my family to travel to India. We have not traveled there in about four years.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0198",
+      "title": "Comment Submitted by Named person",
+      "postedDate": "2026-08-28T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0198",
+      "poster_type": "named",
+      "poster_label": "Named person",
+      "theme_id": "sustainment",
+      "theme_title": "Capital back after about 2 years",
+      "ai_summary": "This comment is submitted in response to the U.S. Citizenship and Immigration Services (&ldquo;USCIS&rdquo;) Notice of Proposed Rulemaking, EB-5 Reform and Integrity Act of 2022; Ensuring the Integrity of the EB-5 Program; Automatic Revocation of Petitions for Classification, 91 Fed.",
+      "type": "comments"
+    },
+    {
+      "id": "USCIS-2026-0100-0197",
+      "title": "Comment Submitted by Named person",
+      "postedDate": "2026-08-28T04:00:00Z",
+      "source_link": "https://www.regulations.gov/comment/USCIS-2026-0100-0197",
+      "poster_type": "named",
+      "poster_label": "Named person",
+      "theme_id": null,
+      "theme_title": null,
+      "ai_summary": "This comment includes an attachment on regulations.gov. Open the filing to read the full text; no separate body text was posted in the API.",
+      "type": "comments"
+    },
     {
       "id": "USCIS-2026-0100-0196",
       "title": "Comment Submitted by Anonymous",
