@@ -257,8 +257,10 @@ export default function OverviewTab({
           </div>
           <VolumeChart data={volume} />
           <p className="text-[9px] text-neutral/55 leading-snug -mt-2">
-            Last updated <LocalDateTime value={stats.last_pull} />. Data is not
-            real-time; it updates daily. For real-time data, visit{' '}
+            Last updated <LocalDateTime value={stats.last_pull} />. This count
+            is posted comments from the regulations.gov API, which can trail
+            the docket page for a while after the period closes. For the live
+            docket total, visit{' '}
             <a
               href={DOCKET_URL}
               target="_blank"

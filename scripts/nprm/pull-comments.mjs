@@ -285,6 +285,11 @@ async function main() {
     const pageData = await apiGet(`/comments?${q.toString()}`);
     listed.push(...(pageData.data || []));
     hasNext = Boolean(pageData.meta?.hasNextPage);
+    console.log(
+      `List page ${page}: ${pageData.data?.length ?? 0}  ` +
+        `totalElements=${pageData.meta?.totalElements ?? '?'}  ` +
+        `hasNext=${hasNext}`,
+    );
     page += 1;
     if (page > 20) break;
   }
