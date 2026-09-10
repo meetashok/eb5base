@@ -1,7 +1,7 @@
 {
   "dataset": "USCIS Form I-485 pending inventory, employment-based preference categories",
   "source_page": "https://www.uscis.gov/tools/reports-and-studies/immigration-and-citizenship-data",
-  "notes": "D = disclosure standards not met (count under 10, suppressed). \"-\" = zero or rounds to 0. Priority-date years outside the 10-year window are combined under \"Prior Years\". June and July 2025 snapshots were never published by USCIS.",
+  "notes": "D = disclosure standards not met (count under 10, suppressed). \"-\" = zero or rounds to 0. Priority-date years outside the 10-year window are combined under \"Prior Years\". June and July 2025 snapshots were never published by USCIS. The July 6, 2026 workbook is available at the standard USCIS URL (last-modified August 25, 2026 with the June/August batch) but was not linked on the Immigration and Citizenship Data library page as of August 26, 2026.",
   "files": [
     {
       "file": "eb_inventory_02222024.xlsx",
@@ -210,6 +210,30 @@
       "source_url": "https://www.uscis.gov/sites/default/files/document/data/eb_inventory_may_2026_v1.0.xlsx",
       "source_title": "Pending Applications for Employment-Based Preference Categories as of May 6, 2026",
       "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services,Chief Data and Analytics Office (CDAO) , CLAIMS 3, ELIS, queried May 2026 and updated May 6, 2026."
+    },
+    {
+      "file": "eb_inventory_june_2026_v1.0.xlsx",
+      "as_of_date": "2026-06-06",
+      "published_date": "2026-08-25",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/eb_inventory_june_2026_v1.0.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of June 6, 2026",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services,Chief Data and Analytics Office (CDAO) , CLAIMS 3, ELIS, queried July 2026 and updated July 6, 2026."
+    },
+    {
+      "file": "eb_inventory_july_2026_v1.0.xlsx",
+      "as_of_date": "2026-07-06",
+      "published_date": "2026-08-25",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/eb_inventory_july_2026_v1.0.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of July 6, 2026",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services,Chief Data and Analytics Office (CDAO) , CLAIMS 3, ELIS, queried July 2026 and updated July 6, 2026."
+    },
+    {
+      "file": "eb_inventory_august_2026_v1.0.xlsx",
+      "as_of_date": "2026-08-05",
+      "published_date": "2026-08-25",
+      "source_url": "https://www.uscis.gov/sites/default/files/document/data/eb_inventory_august_2026_v1.0.xlsx",
+      "source_title": "Pending Applications for Employment-Based Preference Categories as of August 5, 2026",
+      "source_note": "Department of Homeland Security, U.S. Citizenship and Immigration Services,Chief Data and Analytics Office (CDAO) , CLAIMS 3, ELIS, queried August 2026 and updated August 5, 2026."
     }
   ]
 }
