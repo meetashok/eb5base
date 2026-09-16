@@ -66,3 +66,7 @@ CREATE POLICY i485_cells_public_read ON public.i485_inventory_cells
 
 GRANT SELECT ON public.i485_releases TO anon, authenticated;
 GRANT SELECT ON public.i485_inventory_cells TO anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.i485_releases TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.i485_inventory_cells TO service_role;
+GRANT USAGE, SELECT ON SEQUENCE public.i485_releases_id_seq TO service_role;
+GRANT USAGE, SELECT ON SEQUENCE public.i485_inventory_cells_id_seq TO service_role;
