@@ -14,13 +14,13 @@ Routes:
 
 ## Data flow
 
-1. **Raw workbooks** live in `data/uscis-i485/` (26 XLSX files, Feb 2024 to
-   May 2026) with `manifest.json` recording each file's as-of date, USCIS
+1. **Raw workbooks** live in `data/uscis-i485/` (29 XLSX files, Feb 2024 to
+   August 2026) with `manifest.json` recording each file's as-of date, USCIS
    publish date, official download URL, and source note. Raw-data links shown
    on the site always point to uscis.gov, never to our copies.
 2. **Schema**: `supabase/migrations/20260812_i485_inventory.sql` creates
    `i485_releases` (one row per snapshot) and `i485_inventory_cells` (one row
-   per non-zero cell; ~2,300 rows per snapshot, ~61k total). Public read via
+   per non-zero cell; ~2,300 rows per snapshot, ~68k total). Public read via
    RLS; writes are service-role only.
 3. **Ingest**: `npm run analysis:ingest-i485` parses every workbook in the
    manifest and upserts into Supabase. Idempotent: re-running replaces each
@@ -99,5 +99,8 @@ underlying table.
 - EB-5 set-asides are one lump bucket (`EB5_SET_ASIDE`) from the May-July 2024
   snapshots; Rural / High Unemployment / Infrastructure are separate from
   August 2024 onward. Feb 2024 has EB-5 priority dates only through 2022.
-- June and July 2025 snapshots were never published by USCIS.
+- June and July 2025 snapshots were never published by USCIS. The July 6,
+  2026 workbook is on the standard USCIS URL (same August 25, 2026 upload
+  batch as June/August) but was not linked on the data library page as of
+  August 26, 2026.
 - Publish lag is roughly 1.5 to 5 months after the as-of date.
